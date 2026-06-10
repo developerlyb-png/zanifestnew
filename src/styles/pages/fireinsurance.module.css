@@ -1,0 +1,194 @@
+.fireContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 80px;
+  background-color: #fff;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.leftContent {
+  flex: 1;
+  max-width: 50%;
+}
+
+.leftContent h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1c1c1c;
+  margin-bottom: 16px;
+}
+
+.leftContent p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.leftContent a {
+  color: #0056d2;
+  text-decoration: none;
+}
+
+.featuresWithImage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.featureItem {
+  background-color: #f5f7ff;
+  color: #1c1c1c;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 15px;
+  display: flex;
+  width: 270px;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.fireImageSide {
+  width: 300px;
+  height: auto;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.insurerBar {
+  margin-top: 10px;
+}
+
+.insurerBar span {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.insurers {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.insurers img {
+  height: 40px;
+  object-fit: contain;
+}
+
+.rightForm {
+  flex: 1;
+  max-width: 40%;
+  background-color: #f8faff;
+  border-radius: 16px;
+  padding: 30px 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.rightForm h3 {
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.boldBlue {
+  color: #0056d2;
+  font-weight: 700;
+}
+
+.mobileInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.whatsappOptin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.checkBtn {
+  background-color: #0056d2;
+  color: white;
+  padding: 14px 20px;
+  font-size: 16px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkBtn:hover {
+  background-color: #003f9f;
+}
+
+.formNote {
+  font-size: 12px;
+  color: #555;
+  margin-top: 16px;
+}
+
+.formNote a {
+  color: #0056d2;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .container, .fireContainer {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .leftSection, .leftContent {
+    max-width: 100%;
+  }
+
+  .rightSection, .rightForm {
+    max-width: 100%;
+    margin-top: 30px;
+  }
+
+  .featuresWithImage {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .featureItem {
+    width: 100%;
+  }
+
+  .fireImageSide {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+.membersGrid {
+  grid-template-columns: repeat(2, 1fr);
+}
+}

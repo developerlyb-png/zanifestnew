@@ -1,0 +1,330 @@
+/* Base styles — Desktop (default) */
+.wrapper {
+  background: #eaf3ff;
+  padding: 24px 94px;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  color: #0066ff;
+  font-weight: 500;
+  font-size: 15px;
+  gap: 6px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.card {
+  display: flex;
+  gap: 24px;
+  background: #eaf3ff;
+  border-radius: 16px;
+  padding: 24px;
+  flex-wrap: wrap;
+}
+
+.left {
+  flex: 1;
+  min-width: 300px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+}
+
+.right {
+  width: 360px;
+  background: #f9fbff;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.green {
+  color: #00b386;
+}
+
+.info {
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.userRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.titleBox,
+.nameBox {
+  flex: 0;
+}
+
+.label {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.select {
+  padding: 12px 12px;
+  font-size: 15px;
+  border: 1px solid #cfd4dc;
+  border-radius: 10px;
+  width: 5rem;
+}
+
+.nameInputWrapper {
+  width: 27.5rem;
+  display: flex;
+  align-items: center;
+  border: 1px solid #cfd4dc;
+  border-radius: 10px;
+  height: 42px;
+  padding: 0 12px;
+  background: #fff;
+  justify-content: space-evenly;
+}
+
+.input {
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  flex: 1;
+}
+
+.editBtn {
+  border: none;
+  background: none;
+  color: #007bff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding-left: 12px;
+}
+
+.inputField {
+  width: 68%;
+  padding: 12px 12px;
+  font-size: 15px;
+  border: 1px solid #cfd4dc;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: white;
+  margin-top: 0.7rem;
+}
+
+.multiYearBox {
+  background: #e9f8ef;
+  padding: 16px;
+  border-radius: 12px;
+  width: 68%;
+  margin-top: 2rem;
+}
+
+.multiTitle {
+  font-size: 16px;
+  color: #1a8754;
+  margin-bottom: 6px;
+}
+
+.multiDesc {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.radioWrap {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.radioBtn {
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.radioBtn input {
+  accent-color: #0066ff;
+}
+
+.active {
+  border-color: #0066ff;
+  background: #e6f0ff;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.bikeIcon {
+  font-size: 20px;
+}
+
+.insurerBlock {
+  margin-bottom: 16px;
+}
+
+.idv {
+  font-size: 14px;
+  color: #222;
+}
+
+.alertBox {
+  background: #fff2e8;
+  border: 1px solid #ffcdac;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.alertTop {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.lawTag {
+  background: #b71c1c;
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 4px;
+}
+
+.alertNote {
+  font-size: 12px;
+  color: #444;
+}
+
+.pricing {
+  border-top: 1px solid #ddd;
+  padding-top: 16px;
+  font-size: 15px;
+}
+
+.pricing div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.total {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.totalAmt {
+  color: #0066ff;
+}
+
+.payBtn {
+  background: #0066ff;
+  color: white;
+  width: 100%;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.terms {
+  font-size: 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.terms a {
+  color: #0066ff;
+  text-decoration: underline;
+}
+
+/* Tablet (481px – 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .wrapper {
+    padding: 20px 32px;
+  }
+
+  .card {
+    flex-direction: column;
+  }
+
+  .left {
+    padding: 24px;
+  }
+
+  .right {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .inputField,
+  .multiYearBox,
+  .nameInputWrapper {
+    width: 96%;
+  }
+}
+
+/* Mobile (≤480px) */
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 16px;
+  }
+
+  .card {
+    flex-direction: column;
+    padding: 16px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .inputField,
+  .multiYearBox,
+  .nameInputWrapper {
+width: 90%;
+  max-width: 420px;
+  }
+
+  .nameInputWrapper {
+    flex-direction: row;
+    padding: 0 12px;
+  }
+
+  .payBtn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .select {
+    width: 4rem;
+  }
+
+  .back {
+    font-size: 14px;
+  }
+}

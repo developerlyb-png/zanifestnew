@@ -1,0 +1,202 @@
+/* =======================
+   Base Container
+   ======================= */
+.container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: Arial, sans-serif;
+}
+
+/* Heading + Subheading Row styled like cards */
+.headingSubheadingRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.headingSection,
+.subheadingSection {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.input,
+.textarea,
+.colorInput,
+.fileInput {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: orangered;
+  outline: none;
+}
+
+.textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.button {
+  padding: 10px 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  width: 60%;
+}
+
+.saveHeadingBtn,
+.saveSubheadingBtn {
+  background-color: #f97316;
+}
+
+.saveItemBtn {
+  background-color:#f97316;
+}
+
+.saveItemBtn:hover {
+  background-color: orangered;
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.itemCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.itemCardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.itemCard h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.previewImage {
+  width: 30%;
+  height: auto;
+  margin-top: 4px;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid #e5e7eb;
+}
+
+/* =======================
+   Live Preview
+   ======================= */
+.previewSection {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* =======================
+   Responsive
+   ======================= */
+@media (max-width: 1200px) {
+  .itemGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .itemGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .headingSubheadingRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .headingSection,
+  .subheadingSection {
+    width: 100%;
+  }
+
+  .previewSection {
+    display: none;
+  }
+
+  .itemGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .previewImage {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 400px) {
+  .previewImage {
+    max-height: 100px;
+  }
+
+  .itemCardContent {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .input,
+  .textarea,
+  .colorInput,
+  .fileInput,
+  .button {
+    font-size: 0.85rem;
+  }
+}

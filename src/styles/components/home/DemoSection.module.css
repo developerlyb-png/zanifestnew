@@ -1,0 +1,162 @@
+.cont {
+  display: grid;
+  width: 100%;
+  place-items: center;
+  margin-top: 40px;
+}
+
+.head {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  font-family: Arial;
+}
+
+.heading::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  width: 120px;
+  height: 5px;
+  background-color: #fa621a;
+  border-radius: 3px;
+}
+
+.subHeading {
+  max-width: 600px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.list {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 1fr 6fr;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  gap: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(99, 99, 99, 0.2);
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+.item:hover {
+  border-color: #fa621a;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.imageCont {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+.image {
+  width: 50px;
+  height: 50px;
+}
+
+.name {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.desc {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+
+.mobileEllipsis {
+  display: none;
+  row-gap: 2px;
+}
+
+/* ---------- TABLET ---------- */
+
+@media screen and (max-width: 900px) {
+
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 600px;
+    padding: 0 12px;
+  }
+
+  .item {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .name {
+    text-align: center;
+  }
+
+  .desc {
+    text-align: center;
+  }
+
+  .subHeading {
+    max-width: 80%;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+
+@media screen and (max-width: 600px) {
+
+  .list {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+  }
+
+  .heading {
+    font-size: 22px;
+    width: 90%;
+  }
+
+  .heading::after {
+    display: none;
+  }
+
+}
+
+/* ---------- SMALL MOBILE ---------- */
+
+@media screen and (max-width: 370px) {
+  .list {
+    width: 94%;
+  }
+}

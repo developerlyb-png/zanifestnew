@@ -1,0 +1,293 @@
+/* 
+
+.container {
+  padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoutButton {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #dc2626;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.loadingText {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+  width: 100%;
+  min-width: 400px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.th,
+.td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.th {
+  background-color: #f3f6f9;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tr:hover {
+  background-color: #f9fafb;
+}
+
+@media screen and (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heading {
+    font-size: 1.25rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .th,
+  .td {
+    padding: 10px;
+  }
+
+  .logoutButton {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+    margin-top: 100px;
+
+}
+
+.logoAnimation {
+  animation: rotateLogo 10s linear infinite;
+}
+
+
+
+@keyframes rotateLogo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+} */
+.container {
+  padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoutButton {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #dc2626;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.loadingText {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+  width: 100%;
+  min-width: 400px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.th,
+.td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.th {
+  background-color: #f3f6f9;
+  font-weight: 600;
+  color: #374151;
+}
+
+.row:hover {
+  background-color: #f9fafb;
+}
+
+@media screen and (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heading {
+    font-size: 1.25rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .th,
+  .td {
+    padding: 10px;
+  }
+
+  .logoutButton {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: 100px;
+}
+
+.logoAnimation {
+  animation: rotateLogo 10s linear infinite;
+}
+
+@keyframes rotateLogo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+/* ✅ Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+.pageButton {
+  padding: 8px 14px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.pageButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 1rem;
+  color: #374151;
+}

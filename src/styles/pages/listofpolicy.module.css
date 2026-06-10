@@ -1,0 +1,270 @@
+.pageContainer {
+  padding: 20px;
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tableWrapper {
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  /* border: 1px solid #ddd; */
+}
+
+.viewBtn {
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.textSection {
+  margin-top: 20px;
+}
+
+.textArea {
+  width: 100%;
+  height: 260px;
+}
+.tableHeading {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #111827;
+}
+
+.cellEdit {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.editIcon {
+  cursor: pointer;
+  color: orangered;
+}
+
+.editInput {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.verifyBtn {
+  margin-left: 8px;
+  background: orangered;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.verifyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.responsiveTable {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.verifiedText {
+  color: #28a745;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+/* ===== Search Bar with Icon ===== */
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  color: #888;
+  font-size: 16px;
+}
+
+.searchInput {
+  padding: 6px 10px 6px 34px; /* left space for icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 220px;
+}
+
+/* Header alignment */
+.tableHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .tableHeader {
+    justify-content: center;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}
+/* =========================
+   TABLE CARD + TABLE (ALL IN ONE)
+========================= */
+.responsiveTable {
+  width: 100%;
+  background: #ffffffe8;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 20px;
+  border-collapse: collapse;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+}
+
+/* =========================
+   HEADER (EXACT IMAGE STYLE)
+========================= */
+.responsiveTable thead {
+  background: #f8fafc; /* light blue-grey */
+}
+
+.responsiveTable thead th {
+  text-align: left;
+  padding: 18px 22px;
+  font-weight: 600;
+  font-size: 15.5px;
+  color: #334155;
+  border-bottom: 1px solid #e6edf5;
+}
+
+/* Rounded header corners */
+.responsiveTable thead tr th:first-child {
+  border-top-left-radius: 14px;
+}
+.responsiveTable thead tr th:last-child {
+  border-top-right-radius: 14px;
+}
+
+/* =========================
+   BODY ROWS
+========================= */
+.responsiveTable tbody tr {
+  border-bottom: 1px solid #eef2f7;
+  transition: background 0.2s ease;
+}
+
+.responsiveTable tbody tr:hover {
+  background: #f9fbff;
+}
+
+.responsiveTable tbody td {
+  padding: 16px 22px;
+  color: #0f172a;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+/* =========================
+   STATUS STYLES
+========================= */
+.statusVerified {
+  color: #16a34a;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusCold {
+  color: #0f172a;
+}
+
+.statusInterested {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* =========================
+   VIEW / ACTION BUTTON
+========================= */
+.viewBtn,
+.actionBtn {
+  background: #eb5625;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.viewBtn:hover,
+.actionBtn:hover {
+  background: #e04b25;
+}
+
+/* =========================
+   RESPONSIVE (MOBILE)
+========================= */
+@media (max-width: 768px) {
+  .responsiveTable {
+    font-size: 13px;
+  }
+
+  .responsiveTable thead {
+    display: none;
+  }
+
+  .responsiveTable tbody tr {
+    display: block;
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .responsiveTable tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .responsiveTable tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #475569;
+  }
+}

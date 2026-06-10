@@ -1,0 +1,226 @@
+/* ===== Page ===== */
+.container {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #ffffff;                 /* soft page blue */
+  min-height: 70vh;
+  padding: 24px 20px;
+  max-width: 1160px;                    /* center like mock */
+  margin: 0 auto;
+}
+
+/* ===== Back button (round) ===== */
+.backButton {
+  background: #ffffff;
+  border: 1px solid #e6ebf7;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  color: #2f3a5f;
+  cursor: pointer;
+  margin: 0 0 14px -6px;
+  /* box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08); */
+}
+
+/* ===== Plan summary card (mint) ===== */
+.planCard {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto; /* logo | name | sum | premium */
+  align-items: center;
+  gap: 16px;
+  background: #dff1ec;                 /* mint */
+  border: 1px solid #d4e8e2;
+  padding: 18px;
+  border-radius: 20px;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+  /* box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); */
+}
+
+.logo { height: 42px; width: auto; }
+
+.planDetails { min-width: 260px; }
+.planName {
+  font-size: 12px;
+  color: #7a859f;
+  margin: 0 0 2px;
+}
+.planTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: #0f214b;
+}
+
+.planAmount { text-align: right; min-width: 120px; }
+.planAmount p {
+  font-size: 12px;
+  color: #7a859f;
+  margin: 0;
+}
+.planAmount h4 {
+  font-size: 16px;
+  margin: 2px 0 0;
+  font-weight: 800;
+  color: #0f214b;
+}
+
+/* ===== Documents card (patterned) ===== */
+.docsCard {
+  background: #eaf1ff;
+  border: 1px solid #dfe6f7;
+  padding: 22px 20px;
+  border-radius: 20px;
+  /* box-shadow: 0 12px 28px rgba(13, 63, 243, 0.10); */
+  position: relative;
+  overflow: hidden;
+}
+
+.docsHeading {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: #0d1b3e;
+}
+.docsSubtext {
+  font-size: 14px;
+  color: #6b7391;
+  margin: 0 0 16px;
+}
+
+/* ===== Single document row ===== */
+.docItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;   /* left label | right upload */
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 16px 16px 46px;            /* extra bottom for pending */
+  border-radius: 16px;
+  border: 1px solid #eef2fb;
+  margin: 14px 8px;
+  /* box-shadow: 0 10px 20px rgba(15, 23, 42, 0.10); */
+}
+
+/* top/bottom divider above the pending line */
+.docItem::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 34px;
+  height: 1px;
+  background: #f3e9e5;                /* light warm divider */
+}
+
+.docLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #1a1f36;
+}
+.docIcon {
+  font-size: 22px;
+  color: #26c05a;                      /* green icon */
+}
+
+/* right side (Upload) */
+.docRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e9f3ff;
+  color: #0d63f3;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .2s ease, transform .05s ease, background .2s ease, color .2s ease;
+  /* box-shadow: 0 8px 16px rgba(13, 99, 243, 0.18); */
+}
+.uploadBtn:hover { background: #0d63f3; color: #fff; }
+.uploadBtn:active { transform: translateY(1px); }
+.uploadBtn:focus { outline: 3px solid rgba(13,99,243,.3); outline-offset: 2px; }
+
+/* Pending badge placed on the left bottom (no TSX change) */
+.pending {
+  position: absolute;
+  left: 16px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff5f2;
+  color: #e5523d;
+  font-size: 13px;
+  font-weight: 700;
+  /* box-shadow: 0 4px 10px rgba(229, 82, 61, .15); */
+}
+
+/* ===== Proceed button ===== */
+.proceedBtn {
+  display: block;
+  margin: 18px auto 4px;
+  background: orangered;               /* gray-blue like mock */
+  color: #fff;
+  padding: 12px 26px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter .2s ease, transform .05s ease;
+  /* box-shadow: 0 12px 22px rgba(141, 160, 198, 0.35); */
+}
+.proceedBtn:hover { filter: brightness(.97); }
+.proceedBtn:active { transform: translateY(1px); }
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .planCard {
+    grid-template-columns: 1fr 1fr;   /* stack amounts under */
+    row-gap: 10px;
+  }
+  .planAmount { text-align: left; }
+}
+
+@media (max-width: 640px) {
+  .container { padding: 18px 14px; }
+  .planCard {
+    border-radius: 16px;
+    padding: 14px;
+    align-self: center;
+    width: 100%;              /* keep card within parent */
+    box-sizing: border-box;   /* include padding in width */
+    word-wrap: break-word;    /* break long words */
+    overflow-wrap: anywhere;  /* allow wrapping if text too long */
+    white-space: normal;      /* ensure text wraps on multiple lines */
+  }
+  .planName {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    white-space: normal;        /* wrap lines */
+    word-break: break-word;     /* break long text if needed */
+  }
+  .planTitle { font-size: 16px; }
+  .docItem { grid-template-columns: 1fr; padding: 14px 14px 46px; }
+  .docRight { justify-content: flex-start; }
+  .uploadBtn { width: 100%; justify-content: center; }
+  .proceedBtn { width: 100%; }
+}

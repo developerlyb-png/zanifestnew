@@ -1,0 +1,236 @@
+/* ========== Base Styles ========== */
+
+/* ========== Layout Container ========== */
+.pageContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ========== Left Section ========== */
+.leftSection {
+  display: flex;
+  justify-content: center;
+}
+
+/* ========== Box Design ========== */
+.outerBox {
+  background-color: #fa4e1b;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.innerBox {
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== Section Title and Details ========== */
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+
+/* ========== Questions and Options ========== */
+.question {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.optionButton {
+  background: white;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #e1e1e1;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  position: relative;
+  color: #333;
+}
+
+.optionButton::after {
+  content: "›";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #999;
+}
+
+.optionButton:hover {
+  border-color: #fa4e1b;
+  background-color: #fff6f2;
+}
+
+/* ========== Right Section ========== */
+.rightSection {
+  display: flex;
+  justify-content: center;
+}
+
+.carImage {
+  max-width: 580px;
+  height: auto;
+  transform: scaleX(-1);
+}
+
+/* ========== Responsive Styles ========== */
+
+/* Tablet: ≤ 1024px */
+@media screen and (max-width: 1024px) {
+  .pageContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .rightSection {
+    order: -1;
+    padding: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .carImage {
+    max-width: 300px;
+    display: none;
+  }
+
+  .outerBox {
+    padding: 1.2rem;
+  }
+
+  .innerBox {
+    padding: 1.2rem;
+  }
+}
+
+/* Mobile: ≤ 768px */
+@media screen and (max-width: 768px) {
+  .pageContainer {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .carImage {
+    max-width: 250px;
+    display: none;
+  }
+
+  .outerBox,
+  .innerBox {
+    padding: 1rem;
+  }
+}
+
+/* Small Mobile: ≤ 480px */
+@media screen and (max-width: 480px) {
+  .pageContainer {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .carImage {
+    max-width: 220px;
+    display: none;
+  }
+
+  .outerBox,
+  .innerBox {
+    padding: 0.8rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .question {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .optionButton {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .optionButton::after {
+    right: 12px;
+    font-size: 1rem;
+  }
+}
+
+.backBtn {
+  position: absolute;
+  left: 2rem;
+  top: 30%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(230, 230, 229);
+  z-index: 10;
+}
+
+.arrowBack {
+  color: #000;
+  font-size: 20px;
+  margin: 4px 3px 0px 0px;
+  justify-items: center;
+}
+
+/* Tablet */
+@media screen and (max-width: 1024px) {
+  .backBtn {
+    left: 5rem;
+    top: 18%;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  .backBtn {
+    left: 1rem;
+    top: 16%;
+    width: 36px;
+    height: 36px;
+  }
+
+  .arrowBack {
+    font-size: 18px;
+  }
+}

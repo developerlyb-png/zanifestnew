@@ -1,0 +1,443 @@
+/* ===================== GLOBAL RESET ===================== */
+.wrapper :global(*) {
+  box-sizing: border-box;
+}
+.wrapper :global(*::before),
+.wrapper :global(*::after) {
+  box-sizing: border-box;
+}
+.wrapper :global(body) {
+  margin: 0;
+  padding: 0;
+  background-color: #fef6f3;
+  font-family: Arial, sans-serif;
+}
+
+/* ===================== BASE STYLES ===================== */
+.mainContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 5rem 0;
+  width: 85%;
+  margin: auto;
+  flex: 1;
+}
+
+.outerBox {
+  background-color: #fa4e1b;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 48vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.innerBox {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 0 0 2rem 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 50vw;
+  height: 31vw;
+  overflow: hidden;
+}
+
+.headingBox {
+  width: 100%;
+  min-height: 100px;
+  background-color: #f5fafa;
+  margin-bottom: 20px;
+  padding: 1.5rem 1rem;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.3rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.subtext {
+  color: #777;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.datepickerWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 1rem 0;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.helpLinkContainer {
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.helpLink {
+  font-size: 0.85rem;
+  color: #0000ff;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.helpLink:hover {
+  opacity: 0.8;
+}
+
+.rightSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+}
+
+.carImage {
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: scaleX(-1);
+}
+
+/* ===================== NEW CALENDAR STYLES ===================== */
+.calendarWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px;
+  background-color: white;
+  font-family: Arial, sans-serif;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.monthYear {
+  color: #3366cc;
+  font-size: 16px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.arrow {
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+}
+
+.daysRow {
+  display: grid;
+  grid-template-columns: repeat(7, 32px);
+  gap: 5px;
+}
+
+.day {
+  font-weight: bold;
+  color: #777;
+  text-align: center;
+  font-size: 12px;
+}
+
+.date {
+  text-align: center;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+}
+.date:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    justify-content: space-between;
+    align-items: center;
+  }
+  .monthYear {
+    flex: 1;
+    text-align: center;
+    font-size: 16px;
+  }
+  .arrow {
+    font-size: 20px;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+}
+
+/* ===================== CLAIM BOX (Carinsurance5) ===================== */
+.outerBoxClaim {
+  background-color: #fa4e1b;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.innerBoxClaim {
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+.question {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.optionButton {
+  background: white;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #e1e1e1;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  position: relative;
+  color: #333;
+}
+.optionButton::after {
+  content: "›";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #999;
+}
+.optionButton:hover {
+  border-color: #fa4e1b;
+  background-color: #fff6f2;
+}
+
+/* ===================== FORM WRAPPER (Carinsurance2) ===================== */
+.formWrapper {
+  background-color: #fff3e0;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.iconBox {
+  background-color: white;
+  padding: 6px;
+  border-radius: 8px;
+  margin-right: 0.75rem;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.flagImg {
+  border-radius: 2px;
+}
+.titleText {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4e3d2f;
+}
+.input {
+  height: 40px;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.mobileInputGroup {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: white;
+}
+.flagWrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  background-color: #fff;
+  border-right: 1px solid #ccc;
+  gap: 0.5rem;
+  font-size: 14px;
+}
+.mobileInput {
+  flex: 1;
+  height: 40px;
+  border: none;
+  padding: 0.75rem;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.mobileInput:focus,
+.input:focus {
+  outline: none;
+  border-color: #fa621a;
+}
+.submitButton {
+  background-color: #fa621a;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+.terms {
+  font-size: 12px;
+  text-align: center;
+  color: #777;
+}
+.link {
+  color: #fa621a;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ===================== BACK BUTTON (COMMON) ===================== */
+.backBtn {
+  position: fixed;
+  left: 2rem;
+  top: 30%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(230, 230, 229);
+  z-index: 10;
+}
+.arrowBack {
+  color: #000;
+  font-size: 20px;
+  margin: 4px 3px 0px 0px;
+  justify-items: center;
+}
+
+/* ===================== RESPONSIVE BREAKPOINTS ===================== */
+@media screen and (max-width: 1024px) {
+  .pageContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  .outerBox, .outerBoxClaim {
+    width: 100%;
+    max-width: 100%;
+  }
+  .innerBox, .innerBoxClaim {
+    width: 100%;
+    height: auto;
+  }
+  .rightSection { display: none; }
+  .backBtn { left: 5rem; top: 18%; }
+}
+
+@media screen and (max-width: 768px) {
+  .pageContainer { padding: 1.5rem; }
+  .outerBox, .outerBoxClaim { padding: 1.5rem; }
+  .heading { font-size: 1.1rem; }
+  .subtext { font-size: 0.85rem; }
+  .backBtn { left: 1rem; top: 16%; width: 36px; height: 36px; }
+  .arrowBack { font-size: 18px; }
+}
+
+@media screen and (max-width: 600px) {
+  .pageContainer { padding: 1rem; }
+  .outerBox, .outerBoxClaim { padding: 1rem; }
+  .heading { font-size: 1rem; }
+  .subtext { font-size: 0.8rem; }
+}
+
+@media screen and (max-width: 480px) {
+  .outerBox, .outerBoxClaim { padding: 0.8rem; }
+  .sectionTitle { font-size: 1rem; }
+  .question { font-size: 0.95rem; }
+  .optionButton { font-size: 0.95rem; padding: 0.8rem 1rem; }
+}
+
+@media screen and (max-width: 400px) {
+  .outerBox, .outerBoxClaim { border-radius: 16px; }
+  .innerBox, .innerBoxClaim { border-radius: 12px; }
+}

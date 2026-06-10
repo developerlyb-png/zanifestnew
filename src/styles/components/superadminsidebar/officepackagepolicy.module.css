@@ -1,0 +1,234 @@
+/* ================= PAGE ================= */
+.wrapper {
+  padding: 20px;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+/* CSS Modules safe */
+.wrapper,
+.wrapper * {
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #f97316;
+  margin-bottom: 18px;
+}
+
+/* ================= TABLE ================= */
+.tableWrapper {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.08);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  background: #f1f5f9;
+}
+
+.table th {
+  padding: 16px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  text-align: left;
+}
+
+.table td {
+  padding: 16px 18px;
+  font-size: 15px;
+  color: #1f2937;
+  border-top: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.table tbody tr:hover {
+  background: #fff7ed;
+  cursor: pointer;
+}
+
+/* ================= BUTTON ================= */
+.showBtn {
+  background: #f97316;
+  color: white;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.showBtn:hover {
+  background: #ea580c;
+}
+
+/* ================= LOADING ================= */
+.loading {
+  text-align: center;
+  font-size: 18px;
+  padding: 40px;
+}
+
+/* ================= MODAL ================= */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.modal {
+  width: 100%;
+  max-width: 1200px;
+  max-height: 92vh;
+  background: #ffffff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal h3 {
+  padding: 22px 32px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #f97316;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ================= MODAL CONTENT ================= */
+.modalContent {
+  padding: 30px 32px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 30px;
+  background: #f8fafc;
+  overflow-y: auto;
+}
+
+.modalContent p {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalContent strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.modalContent span {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  font-size: 16px;
+  min-height: 54px;
+  word-break: break-word;
+}
+
+/* ================= ASSIGN ================= */
+.assignLabel {
+  margin: 18px 32px 8px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.agentDropdown {
+  margin: 0 32px;
+  width: calc(100% - 64px);
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 16px;
+}
+
+/* ================= FOOTER ================= */
+.modalFooter {
+  padding: 24px 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.assignBtn {
+  background: #22c55e;
+  color: white;
+  padding: 14px 36px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.assignBtn:hover {
+  background: #16a34a;
+}
+
+.closeBtn {
+  background: #ef4444;
+  color: white;
+  padding: 14px 36px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: #dc2626;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .modalOverlay {
+    align-items: flex-start;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .modal {
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .modalContent {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .agentDropdown {
+    width: 100%;
+    margin: 0;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+  }
+
+  .assignBtn,
+  .closeBtn {
+    width: 100%;
+  }
+}

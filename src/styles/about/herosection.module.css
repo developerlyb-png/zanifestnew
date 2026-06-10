@@ -1,0 +1,1139 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 80px); /* navbar space */
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background image wrapper */
+.bgImage {
+  object-fit: cover;            /* fill width */
+  object-position: center top;  /* faces upar rahein */
+  z-index: 0;
+}
+
+/* IMPORTANT: soften zoom so it doesn't feel cropped */
+.bgImage {
+  transform: scale(1.05); /* 🔥 natural wide feel */
+}
+
+/* overlay same as reference */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  background: linear-gradient(
+    90deg,
+    rgba(20, 60, 100, 0.35),
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 140, 0, 0.35)
+  );
+}
+
+/* center card */
+/* center card */
+.card {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  padding: 0px 25px;
+  max-width: 760px;
+
+  text-align: center;        /* already ok */
+  border-radius: 24px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+
+  display: flex;             /* 🔥 ADD */
+  flex-direction: column;    /* 🔥 ADD */
+  align-items: center;       /* 🔥 ADD */
+}
+
+/* logo perfectly centered */
+.logo {
+  display: block;            /* 🔥 IMPORTANT */
+}
+
+
+
+
+.text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #222;
+}
+/* ================= SECOND SECTION ================= */
+
+.aboutSection {
+  background: #ffffff;
+  padding: 90px 0;
+}
+
+.aboutContainer {
+  max-width: 1400px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+/* IMAGE STACK */
+.imageStack {
+  position: relative;
+}
+
+.imageBack {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.imageFront {
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 75%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* TEXT */
+.aboutContent {
+  padding-right: 20px;
+}
+
+.aboutTag {
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #1c6fd5;
+}
+
+.aboutTitle {
+  font-size: 50px;
+  font-weight: 700;
+  margin: 14px 0 20px;
+  color: #111;
+  line-height: 1.25;
+}
+
+.aboutDesc {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #222121;
+  text-align: justify;
+}
+
+/* ===== VISION / MISSION SECTION ===== */
+
+.vmSection {
+  background: #f4f6f8;
+  padding: 100px 0;
+}
+
+.vmContainer {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* LEFT */
+.vmHex {
+  width: 450px;
+  height: auto;
+}
+
+/* RIGHT */
+.vmRight {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+/* CARD */
+.vmCard {
+  position: relative;
+  width: 520px;
+  height: auto;
+}
+
+/* BACKGROUND IMAGE */
+.vmBg {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* TEXT INSIDE IMAGE */
+.vmTextWrap {
+  position: absolute;
+  top: 28px;
+  left: 34px;
+  right: 34px;
+}
+
+.vmTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #000;
+  padding-left: 10px;
+  margin-bottom: 0%;
+  margin-top: 0;
+}
+
+.vmText {
+  font-size: 14px;
+  color: #333;
+  padding: 0px 10px;
+  text-align: justify;
+  font-weight: 400;
+}
+/* ================= LEADERSHIP ================= */
+
+.leaderSection {
+  background: #ffffff;
+  padding: 80px 0 0;
+  padding-bottom: 0%;
+  margin-bottom: 0%;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background: #f1f3f6;
+  border-radius: 40px;
+  width: fit-content;
+  margin: auto;
+  padding: 6px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  padding: 10px 26px;
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #000;
+  font-weight: 500;
+}
+
+.activeTab {
+  background: #ff6a13;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Content layout */
+.leaderContent {
+  max-width: 1200px;
+  margin: 60px auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 60px;
+  align-items: stretch;
+}
+
+/* Image */
+.leaderImage {
+  display: flex;
+  align-items: center;
+  max-height: 420px;        /* 🔥 height reduced */
+}
+
+.leaderImage img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+/* Text */
+.leaderText {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #222;
+  text-align: justify;     /* 🔥 required */
+}
+
+/* ================= STATS BAR ================= */
+
+.statsBar {
+  background: #0b5ed7;
+  padding: 14px 0;
+  display: flex;                     /* 🔥 grid → flex */
+  justify-content: center;            /* 🔥 tight center */
+  gap: 90px;                          /* 🔥 CONTROLLED GAP */
+  color: #ffffff;
+  margin-top: -60px;
+}
+
+
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;              /* icon + text */
+}
+
+
+.statIcon {
+  font-size: 28px;
+  opacity: 0.95;
+}
+
+.statText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.statsBar h3 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.statsBar span {
+  font-size: 14px;
+  opacity: 0.9;
+}
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  .aboutContainer,
+  .vmContainer,
+  .leaderContent {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .imageFront {
+    position: static;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .vmHex {
+    width: 300px;
+    margin: auto;
+  }
+
+  .vmCard {
+    width: 100%;
+  }
+
+  .vmBg {
+    border-radius: 16px;
+  }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+  /* HERO */
+  .hero {
+    height: 70vh;
+  }
+
+  .card {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .logo {
+    width: 260px;
+    height: auto;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  /* ABOUT SECTION */
+  .aboutTitle {
+    font-size: 34px;
+  }
+
+  /* LEADERSHIP */
+  .leaderContent {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .leaderImage {
+    justify-content: center;
+    max-height: 280px;
+  }
+
+  .leaderImage img {
+    max-height: 280px;
+  }
+
+  .leaderText {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* TABS */
+  .tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tab {
+    font-size: 14px;
+    padding: 8px 18px;
+  }
+
+  /* STATS BAR */
+  .statsBar {
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 20px 0;
+  }
+
+  .statItem {
+    width: 45%;
+    justify-content: center;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+
+  .aboutTitle {
+    font-size: 28px;
+  }
+
+  .leaderText {
+    text-align: left;
+  }
+
+  .statsBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .statItem {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ---------- TABLET & BELOW ---------- */
+@media (max-width: 1024px) {
+
+  .hero {
+    height: 75vh;
+    padding: 0 20px;
+  }
+
+  .card {
+    max-width: 90%;
+    padding: 30px 25px;
+  }
+
+  .aboutContainer,
+  .vmContainer,
+  .leaderContent {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .aboutContent {
+    padding-right: 0;
+  }
+
+  .imageFront {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    width: 90%;
+    margin: 25px auto 0;
+  }
+
+  .vmHex {
+    width: 320px;
+    margin: auto;
+  }
+
+  .vmCard {
+    width: 100%;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
+
+  /* HERO */
+  .hero {
+    height: auto;
+    min-height: 65vh;
+    padding: 40px 16px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .logo {
+    width: 240px;
+    height: auto;
+    margin-bottom: 14px;
+  }
+
+  .text {
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  /* ABOUT */
+  .aboutTitle {
+    font-size: 32px;
+    line-height: 1.3;
+  }
+
+  .aboutDesc {
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 10px;
+    padding-bottom: 0%;
+  }
+
+  /* VISION / MISSION */
+  .vmSection {
+    padding: 70px 16px;
+  }
+
+  .vmText {
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  /* LEADERSHIP */
+  .leaderContent {
+    margin: 40px auto;
+    gap: 30px;
+  }
+
+  .leaderImage {
+    justify-content: center;
+    max-height: 260px;
+  }
+
+  .leaderImage img {
+    max-height: 260px;
+    width: auto;
+  }
+
+  .leaderText {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Tabs scroll instead of breaking */
+  .tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    max-width: 100%;
+    padding: 6px;
+  }
+
+  .tab {
+    font-size: 14px;
+    padding: 8px 18px;
+  }
+
+  /* STATS */
+  .statsBar {
+    margin-top: 0;
+    padding: 30px 16px;
+    gap: 20px;
+  }
+
+  .statItem {
+    width: 48%;
+    justify-content: center;
+  }
+}
+
+/* ---------- SMALL MOBILE ---------- */
+@media (max-width: 470px) {
+
+  .logo {
+    width: 200px;
+  }
+
+  .aboutTitle {
+    font-size: 26px;
+    padding: 5px;
+    text-align: center;
+  }
+
+  .leaderText {
+    text-align: left;
+    font-size: 13.5px;
+  }
+
+  .vmHex {
+    width: 260px;
+  }
+
+  .vmText {
+    font-size: 7px;
+  }
+
+  .statsBar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .statItem {
+    width: 100%;
+  }
+}
+
+/* ---------- EXTRA SMALL (320px SAFETY) ---------- */
+@media (max-width: 360px) {
+
+  .card {
+    padding: 20px 14px;
+  }
+
+  .text {
+    font-size: 13px;
+  }
+
+  .aboutTitle {
+    font-size: 24px;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+}
+/* =====================================================
+   🔥 FINAL MOBILE & DESKTOP FIXES (SAFE PATCH)
+===================================================== */
+
+/* ---------------- STATS BAR FIX ---------------- */
+@media (max-width: 768px) {
+  .statsBar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 🔥 ONE ROW = 2 ITEMS */
+    gap: 24px 16px;
+    padding: 22px 16px;
+    margin-top: 0;
+    font-size: 10px;
+  }
+
+  .statItem {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .statText h3 {
+    font-size: 22px;
+  }
+
+  .statText span {
+    font-size: 13px;
+  }
+}
+
+/* ---------------- ABOUT IMAGE STACK FIX ---------------- */
+@media (max-width: 768px) {
+  .imageStack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+a
+  .imageBack,
+  .imageFront {
+    position: relative;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    border-radius: 14px;
+  }
+
+  .imageFront {
+    box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+  }
+}
+
+/* ---------------- LEADERSHIP TABS FIX ---------------- */
+@media (max-width: 768px) {
+  .tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 18px;
+    font-size: 14px;
+  }
+}
+
+/* ---------------- LEADER SECTION MOBILE POLISH ---------------- */
+@media (max-width: 768px) {
+  .leaderContent {
+    padding: 0 16px;
+    gap: 28px;
+  }
+
+  .leaderImage img {
+    max-height: 260px;
+    object-fit: contain;
+  }
+
+  .leaderText {
+    font-size: 14px;
+    line-height: 1.7;
+    text-align: justify;
+  }
+  .vmBg{
+    height: auto;
+  }
+}
+
+/* ---------------- HERO CARD MOBILE CENTER FIX ---------------- */
+@media (max-width: 768px) {
+  .hero {
+    padding: 40px 14px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .logo {
+    width: 220px;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+  .aboutTag{
+    padding: auto;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+/* ---------------- SMALL MOBILE (360px) ---------------- */
+@media (max-width: 360px) {
+  .statText h3 {
+    font-size: 20px;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  .logo {
+    width: 200px;
+  }
+}
+
+/* ---------------- DESKTOP SAFETY (NO BREAK) ---------------- */
+@media (min-width: 1200px) {
+  .aboutContainer,
+  .leaderContent,
+  .vmContainer {
+    padding: 0 40px;
+  }
+}
+/* ===================================================
+   EXACT ABOUT SECTION MOBILE MATCH (REFERENCE IMAGE)
+=================================================== */
+
+@media (max-width: 768px) {
+
+  /* Container spacing */
+  .aboutSection {
+    padding: 60px 16px;
+  }
+
+  .aboutContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  /* IMAGE STACK EXACT */
+  .imageStack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* 🔥 space between 2 images */
+  }
+
+  .imageBack,
+  .imageFront {
+    width: 100%;
+    position: relative;
+    right: 0;
+    bottom: 0;
+    border-radius: 18px; /* 🔥 rounded like screenshot */
+  }
+
+  .imageBack {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .imageFront {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+  }
+
+  /* TEXT SECTION */
+  .aboutContent {
+    padding: 0;
+    text-align: left;
+  }
+
+  .aboutTag {
+    font-size: 14px;
+    letter-spacing: 1.8px;
+    margin-bottom: 8px;
+  }
+
+  .aboutTitle {
+    font-size: 30px;
+    line-height: 1.25;
+    margin: 10px 0 16px;
+  }
+
+  .aboutDesc {
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 500;
+    text-align: left; /* 🔥 IMPORTANT */
+    color: #222;
+  }
+}
+
+/* -------- SMALL MOBILE SAFETY -------- */
+@media (max-width: 420px) {
+  .aboutTitle {
+    font-size: 26px;
+  }
+
+  .aboutDesc {
+    font-size: 13.5px;
+  }
+  .tabs{
+    padding-top: 10px;
+  }
+  .leaderSection{
+    padding-top: 20px;
+  }
+  
+}
+
+
+@media (max-width: 768px) {
+
+  .imageStack {
+    position: relative;
+    width: 100%;
+    padding-top: 10px;
+  }
+
+  .imageBack {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+  }
+
+  .imageFront {
+    position: absolute;        
+    bottom: -28px;              
+    right: 12px;               
+    width: 88%;                 
+    border-radius: 18px;
+    object-fit: cover;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.25);
+  }
+
+  .aboutContent {
+    margin-top: 40px;
+  }
+  .imageFront {
+    width: 72%;
+    right: 6px;
+    bottom: -22px;
+  }
+}
+
+/* ---------- SMALL MOBILE SAFETY ---------- */
+@media (max-width: 420px) {
+
+  .imageFront {
+    width: 72%;
+    right: 6px;
+    bottom: -22px;
+  }
+
+  .aboutContent {
+    margin-top: 36px;
+  }
+}
+/* ================= VM CARD MOBILE TEXT FIT FIX ================= */
+@media (max-width: 480px) {
+
+  .vmCard {
+    width: 100%;
+    height: auto;              
+    position: relative;
+  }
+
+  .vmBg {
+    width: 100%;
+    min-height: 220px;         
+    height: auto;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .vmTextWrap {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .vmTitle {
+    font-size: 16px;           /* 🔥 smaller title */
+    margin-bottom: 6px;
+    padding-left: 6px;
+  }
+
+  .vmText {
+    font-size: 12.8px;         /* 🔥 PERFECT mobile size */
+    line-height: 1.55;
+    font-weight: 400;
+    padding: 0 6px;
+    text-align: left;
+    overflow-wrap: break-word;
+  }
+}
+/* ================= TABS MOBILE ONE ROW FIX ================= */
+@media (max-width: 480px) {
+
+  .tabs {
+    display: flex;
+    flex-wrap: nowrap;              /* ❌ no wrap */
+    justify-content: space-between; /* 🔥 evenly spread */
+    align-items: center;
+
+    width: calc(100% - 24px);       /* 🔥 left-right margin */
+    margin: 12px auto;
+
+    padding: 6px 8px;               /* 🔥 inner padding */
+    border-radius: 40px;
+
+    overflow: hidden;               /* 🔥 clean edge */
+    background: #f1f3f6;
+  }
+
+  .tab {
+    flex: 1;                        /* 🔥 equal width */
+    text-align: center;
+
+    font-size: 13px;
+    padding: 8px 6px;               /* 🔥 balanced padding */
+    margin: 0 3px;                  /* 🔥 small gap */
+
+    border-radius: 22px;
+    white-space: nowrap;            /* 🔥 single line */
+  }
+}
+@media (max-width: 360px) {
+  .tab {
+    font-size: 12px;
+    padding: 7px 4px;
+  }
+   .valuesList{
+     font-size: 16px;
+  line-height: 1.5;
+  }
+}
+@media (max-width: 360px) {
+  .vmBg {
+    min-height: 240px;
+  }
+
+  .vmText {
+    font-size: 13.3px;
+    line-height: 1.5;
+  }
+  
+ 
+}
+/* ================= MOBILE LEADER INFO ================= */
+
+.mobileLeaderInfo {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .leaderContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .leaderImage {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 🔥 THIS IS KEY */
+  }
+
+  .leaderImage img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .mobileLeaderInfo {
+    display: block;
+    margin-top: 10px;
+    padding-left: 1px; /* slight left offset */
+    text-align: left; /* 🔥 FORCE LEFT */
+  }
+
+  .mobileLeaderName {
+    font-size: 17px;
+    font-weight: 600;
+    color:#ff6a13;
+    margin-bottom: 0%;
+  }
+
+  .mobileLeaderRole {
+    font-size: 14px;
+    color: #666;
+    margin-top: 2px;
+  }
+}
+.vmText{
+  margin-bottom: 0;
+}
+.valuesList{
+  font-size: 13px;
+  line-height: 1.3;
+}
+/* ===== ABOUT TITLE MOBILE 2-LINE FIX (FULL TEXT) ===== */
+
+@media (max-width: 768px) {
+  .aboutTitle {
+    font-size: 24px;      /* 🔥 smaller so text fits */
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  /* 🔥 Remove manual line breaks on mobile */
+  .aboutTitle br {
+    display: none;
+  }
+}
+/* Image + designation vertical stack */
+.leaderImageWrap {
+  display: flex;
+  flex-direction: column;   /* 🔥 niche laata hai */
+  align-items: center;      /* 🔥 center align */
+}
+
+/* DESKTOP designation */
+.desktopLeaderRole {
+  font-size: 18px;
+  margin-top: 4px;
+  font-weight: 600;
+  color: #ff6a13;           /* brand orange */
+  text-align: center;
+  margin-bottom: 10px;
+  translate: 0 -7px;
+}
+
+/* ❌ Mobile pe hide */
+@media (max-width: 768px) {
+  .desktopLeaderRole {
+    display: none;
+  }
+}
+/* ================= VALUES – STAR ONE LINE ================= */
+
+.valuesInline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;               /* 🔥 mobile safety */
+  gap: 14px;                     /* space between items */
+  margin-top: 8px;
+  font-size: 14px;
+  color: #000;
+}
+
+.valuesInline span {
+  white-space: nowrap;           /* 🔥 each value stays intact */
+  font-weight: 500;
+}
+
+/* Star color */
+.valuesInline span::first-letter {
+  color: #ff6a13;                /* brand orange star */
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+/* Mobile polish */
+@media (max-width: 768px) {
+  .valuesInline {
+    gap: 10px;
+    font-size: 13.5px;
+  }
+}
+@media (max-width: 768px) {
+  .leaderImage {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* image center */
+  }
+
+  .mobileLeaderInfo {
+    align-self: flex-start; /* text left */
+    text-align: left;
+    width: 100%;
+  }
+}

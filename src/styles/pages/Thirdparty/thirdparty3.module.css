@@ -1,0 +1,432 @@
+/* Wrapper */
+.wrapper {
+  font-family: "Inter", Arial, sans-serif;
+  background: #f6f9ff;
+  padding: 24px 40px;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.backBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.backIcon {
+  font-size: 18px;
+  color: #0066ff;
+}
+
+.backText {
+  font-size: 14px;
+  color: #0066ff;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 20px;
+}
+
+/* Layout */
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* Left */
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Insurance card */
+.insuranceCard {
+  background: #fff;
+  border: 1px solid #ffd966;
+  border-radius: 10px;
+  /* padding: 14px; */
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insuranceTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.insuranceLogo {
+  height: 38px;
+  width: auto;
+  border: 1px solid rgb(226, 223, 223);
+  padding:  15px 5px;
+  border-radius: 10px;
+    margin-left: 20px;
+    margin-top:20px;  
+
+}
+
+.head {
+  font-size: 15px;
+  /* font-weight: 600; */
+  color: #222;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.policyName {
+  font-size: 15px;
+  color: #444;
+  font-weight: 600;
+  margin: 0;
+}
+
+.note {
+  font-size: 15px;
+  font-weight: bold;
+  /* text-align: center; */
+  color: #343ec1;
+  border-top: 1px solid #eee;
+  padding: 8px 40px;
+  margin-bottom: 0;
+border-radius: 0px  0px 9px 9px ;
+ 
+  background: linear-gradient(
+    to right,
+    rgba(135, 206, 235, 0.7) 0%,     
+    rgba(135, 206, 235, 0.5) 50%,   
+    rgba(128, 128, 128, 0.2) 100%   
+  );
+
+
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+
+.highlight {
+  color: #00a651;
+  font-weight: 600;
+}
+
+/* Section box */
+.section {
+  background: #fff;
+  border: 1px solid #e4ebf7;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Section title bar */
+.sectionTitle {
+  background: #f5f9ff;
+  padding: 10px 14px;
+  font-size: 25px;
+  font-weight: 600;
+  color: #222;
+  border-bottom: 1px solid #e4ebf7;
+  margin: 0;
+}
+.sectionhead{
+  border-bottom: 2px solid rgb(241, 239, 239);
+  padding-bottom: 8px;
+}
+/* Subtext */
+.subText {
+  font-size: 15px;
+  color: #666;
+  margin: 14px 16px 6px 16px;
+  font-weight: 700;
+}
+
+/* Radio group */
+.radioGroup {
+  display: flex;
+  gap: 70px;
+  padding: 10px 16px 35px 16px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Radio button styling */
+.radioLabel input {
+  accent-color: #0066ff;  /* Blue highlight */
+  transform: scale(1.1);
+}
+
+.radioLabel span {
+  transition: color 0.2s ease;
+}
+
+.radioLabel input:checked + span {
+  color: #0066ff;
+  font-weight: 500;
+}
+
+/* Dropdown */
+.dropdown {
+  background: #fff;
+  border: 1px solid #dce2f0;
+  border-radius: 10px;
+  padding: 0px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.arrow {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Right */
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Main Card */
+.planSummary {
+  background: #fff;
+  border: 1px solid #e4ebf7;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0px 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Section Heading */
+.sectionhead {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #222;
+}
+
+/* Summary Rows */
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.amount {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Addon Box */
+.addonBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #f5f9ff;
+  border: 1px solid #d6e4ff;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+
+.addonLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.addonLeft input {
+  margin-top: 2px;
+  accent-color: #0066ff; /* Blue checkbox */
+}
+
+.addonLeft span {
+  line-height: 1.4;
+}
+
+.addonLeft a {
+  color: #0066ff;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.addonLeft a:hover {
+  text-decoration: underline;
+}
+
+.price {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Total Pay */
+.totalPay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.payText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.dot {
+  width: 14px;
+  height: auto;
+  background: rgb(254, 224, 2);
+  border-radius: 50%;
+  display: inline-block;
+  padding: 2px;
+}
+
+.totalPay h2 {
+  color: #e63900; /* Red bold */
+  font-size: 22px;
+  margin: 0;
+}
+
+/* Pay Button */
+.payBtn {
+  width: 100%;
+  background: #ff5a00;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.payBtn:hover {
+  background: #e14e00;
+}
+
+/* WhatsApp Checkbox */
+.whatsapp {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  margin-top: 10px;
+  gap: 6px;
+}
+
+.whatsappIcon {
+  color: #25d366; /* WhatsApp green */
+  font-size: 18px;
+}
+
+
+/* Terms Text */
+.terms {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.terms a {
+  color: #0066ff;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
+
+
+.nextStep {
+  background-color: #f5f9ff; /* light background like image */
+  border: 1px solid #e0e6f0; /* light border */
+  border-radius: 8px;
+  padding: 16px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  color: #333;
+  position: relative;
+}
+
+.nextStep h4 {
+  position: absolute;
+  top: -26px;
+  left: 4px;
+  background: #f0fbdc; /* light green background */
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.nextStep p {
+  margin: 0;
+  line-height: 1.5;
+  color: #444;
+  font-size: 14px;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    margin-left: 0;
+  }
+  .note{
+    font-size: 10px;
+  }
+  .head{
+    font-size: 10px;
+    margin-top: 15px;
+  }
+  .policyName{
+        font-size: 10px;
+font-weight: 800;
+  }
+  .sectionTitle{
+font-size: 15px;
+  }
+  .payBtn{
+    align-items: center;
+    font-size: 12px;
+    align-self: center;
+  }
+  
+  .totalPay h2{
+    font-size: 18px;
+  }
+}

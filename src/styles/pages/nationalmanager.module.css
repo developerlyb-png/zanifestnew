@@ -1,0 +1,636 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden; 
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  background-color: #ffffff;
+  padding: 0rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoutButton {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.editButton{
+    background-color: #ef4444;
+  color: white;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.mainArea {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 70px); 
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #ffffff;
+  padding: 2rem 1.2rem;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #4b5563;
+  padding: 0.5rem 0.6rem;
+  font-size: 14.5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menuItem:hover {
+  background-color: #f3f4f6;
+}
+
+
+.iconLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.cardIcon {
+  font-size: 2rem;
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  background-color: #f9fafb;
+  
+  overflow-y: auto;
+  width: auto;
+  max-width: none;
+}
+
+.dashboardTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 5rem;
+  
+}
+
+.card {
+  background-color: white;
+  margin-bottom: 1rem;
+  padding: 1rem  4rem;
+  /* padding-left: 5rem; */
+  text-align: center;
+  font-size: 18px;
+ 
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: #374151;
+}
+
+.subText {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+.infoCard {
+  background-color: white;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.amount {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  color: #2563eb;
+}
+
+.chartContainer {
+  margin-top: 30px;
+  background-color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.chartTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.agentTable {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  margin-top: 2rem;
+}
+
+.tableTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+}
+
+.agentListToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ef4444;
+  color: white;
+  padding: 0.75rem 1rem;
+  width: fit-content;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 1rem;
+}
+
+.menuToggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1024px) {
+  .mainArea {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .dashboardTitle {
+    font-size: 1.2rem;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .infoCard {
+    padding: 1rem;
+  }
+
+  .chartContainer {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .menuToggle {
+    display: inline-block;
+    margin-left: auto;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+
+.sidebarMobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    max-width: 380px;
+    height: calc(100vh - 70px);
+    background-color: #fff;
+    z-index: 999;
+    overflow-y: auto;
+    border-right: 1px solid #e5e7eb;
+    animation: slideIn 0.3s ease forwards;
+    padding-bottom: 1rem;
+  }
+  @keyframes slideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0rem 1rem;
+  }
+
+  .logoutButton {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(2fr);
+    gap: 1rem;
+  }
+
+  .agentListToggle {
+    margin: 10px auto 1rem auto;
+    justify-content: center;
+  }
+
+  .dateFilterSection {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .filterButton {
+    display: block;
+    margin: 0.8rem auto 0 auto;
+  }
+
+  .infoCard {
+    font-size: 0.95rem;
+  }
+
+  .chartTitle {
+    font-size: 0.95rem;
+  }
+
+  .amount {
+    font-size: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.7rem;
+  }
+
+  .menuItem {
+    font-size: 13px;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .iconLabel {
+    gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .logoContainer img {
+    width: 100px;
+    height: auto;
+  }
+
+  .dashboardTitle {
+    font-size: 1rem;
+  }
+
+  .chartContainer {
+    padding: 0.8rem;
+  }
+
+  .cardGrid {
+    margin-left: 10px;
+    gap: 0.8rem;
+  }
+
+  .infoCard {
+    padding: 0.8rem 1rem;
+  }
+
+  .content {
+    padding: 1rem 1rem;
+  }
+}
+
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background-color: #f1f5f9;
+}
+.desktopOnlyLogout {
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .desktopOnlyLogout {
+    display: none;
+  }
+
+  
+.mobileOnlyLogout {
+  position: absolute;
+  bottom: 20px;
+  left: 1;
+  padding: 1rem;
+  text-align: center;
+}
+  .logoContainer img {
+    width: 160px;
+    height: auto;
+    display: block;
+    margin: 0 30px;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .mobileOnlyLogout {
+    display: none;
+  }
+ 
+}
+
+.dateFilterSection {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.dateLabel {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.dateLabel input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 0.3rem;
+  font-size: 14px;
+}
+
+.buttonWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.filterButton {
+  padding: 8px 18px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filterButton:hover {
+  background-color: #0056b3;
+}
+
+@media screen and (max-width: 768px) {
+  .dateFilterSection {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .buttonWrapper {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .filterButton {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+/* Base Grid for desktop (unchanged) */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 3.5rem;
+}
+.mobileCardWrapper{
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menuIcon {
+    display: block;
+  }
+
+  .cardGridDesktop {
+    display: none;
+  }
+
+  .mobileCardWrapper {
+    padding: 1rem;
+    /* margin: 0 10px; */
+  }
+
+.mobileCardWrapper {
+    display: grid;
+      /* grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); */
+
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+}
+@media screen and (max-width: 768px) {
+  .cardGrid {
+    margin: 0 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    grid-template-areas:
+      "card1 card2"
+      "card3 card4"
+      "card5 card6";
+  }
+
+  .card:nth-child(1) { grid-area: card1; } /* Total Sales */
+  .card:nth-child(2) { grid-area: card2; } /* Monthly Sales */
+  .card:nth-child(3) { grid-area: card3; } /* No. of Agents */
+  .card:nth-child(4) { grid-area: card4; } /* Total Clients */
+  .card:nth-child(5) { grid-area: card5; } /* Total District Managers */
+  .card:nth-child(6) { grid-area: card6; } /* Total District Managers */
+
+}
+
+
+
+.container {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  padding: 30px;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 15px;
+}
+
+.table thead {
+  background: #3c75d7;
+  color: #fff;
+}
+
+.table th,
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.table tbody tr:hover {
+  background: #f5f7ff;
+  transition: 0.2s;
+}
+
+.table td {
+  color: #333;
+}
+
+.noData {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,130 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem 4rem;
+  gap: 2rem;
+  font-family: 'Inter', sans-serif;
+  height: 115vh;
+}
+
+
+
+/* ✅ Make the LEFT section sticky */
+.leftSection {
+  flex: 1;
+  position: sticky;
+  top: 6rem; /* Adjust for fixed navbar/UserDetails height */
+  align-self: flex-start;
+  height: fit-content;
+  z-index: 1;
+}
+
+/* ✅ The image wrapper stays normal */
+.imageWrapper {
+  max-width: 500px;
+  width: 100%;
+}
+
+/* ✅ Keep image styling as-is */
+.image {
+  max-width: 100%;
+  height: auto;
+  margin-top:5rem;
+  margin-left:2rem;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+
+.rightSection {
+  flex: 1;
+  position: relative;
+  height: 120vh; /* Ensure full viewport height */
+}
+
+.backButton {
+  position: absolute;
+  top: 0;
+  left: -40px;
+  background: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.question {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.yearGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.yearButton {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.yearButton:hover {
+  background-color: #f5f5f5;
+}
+
+/* Tablet */
+/* Tablet */
+@media screen and (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    padding: 2rem;
+    align-items: center;
+    height:auto;
+  }
+
+  .backButton {
+    position: static;
+    margin-bottom: 1rem;
+  }
+
+  .rightSection {
+    width: 100%;
+    height:auto;
+  }
+
+  .yearGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .imageWrapper {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 640px) {
+  .container {
+    padding: 1rem;
+    height: auto;
+  }
+
+  .yearGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .question {
+    text-align: center;
+  }
+
+  .imageWrapper {
+    display: none;
+  }
+}

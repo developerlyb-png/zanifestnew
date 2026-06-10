@@ -1,0 +1,361 @@
+
+.container {
+  margin: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.th {
+  background-color: #f3f6f9;
+  font-weight: 600;
+  color: #374151;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.td {
+  color: #4b5563;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.row:hover {
+  background-color: #f9fafb;
+}
+
+.loading {
+  text-align: center;
+  font-weight: 500;
+  padding: 1rem;
+  color: #6b7280;
+}
+
+.loaderWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: 100px;
+}
+
+.logoAnimation {
+  animation: rotateLogo 10s linear infinite;
+}
+
+@keyframes rotateLogo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    margin: 0.5rem;
+  }
+
+  .heading {
+    font-size: 1.25rem;
+  }
+
+  .table {
+    min-width: 700px;
+  }
+
+  .th,
+  .td {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+.pageButton {
+  padding: 8px 14px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.pageButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 1rem;
+  color: #374151;
+}
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color:  rgb(252, 87, 87);
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #22c55e; /* green */
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+.assignedToCell {
+  display: flex;
+  align-items: center;     
+  justify-content: space-between; 
+  gap: 8px;               
+  white-space: nowrap;    
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+
+.filterRow {
+  display: flex;
+  justify-content: space-between; /* left & right split */
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Left side filters group */
+.filtersLeft {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Dropdowns & Search input design */
+.filterSelect, .searchInput {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Reset button same as image */
+.resetButton {
+  background: #e60000;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  background: #cc0000;
+}
+
+/* Right side search */
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* ✅ Always push to right */
+}
+
+.searchInput {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.searchButton {
+  border: 1px solid #d1d5db;
+  border-left: none;
+  background: #fff;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+
+/* Responsive stack */
+@media (max-width: 768px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+  .filtersLeft {
+    width: 100%;
+    gap: 1rem; /* ✅ Mobile me chhota gap rakha */
+  }
+  .searchWrapper {
+    width: 100%;
+  }
+  .searchInput {
+    flex: 1;
+  }
+}
+/* Filters container */
+.filtersBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* mobile responsive ke liye */
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ✅ Responsive (mobile view) */
+@media (max-width: 768px) {
+  .filtersBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtersLeft,
+  .filtersRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}
+
+/* ✅ Delete Bin Button */
+.binButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 15%;
+  background-color: rgb(255, 95, 95);
+  cursor: pointer;
+  border: 2px solid rgb(255, 201, 201);
+  transition-duration: 0.3s;
+  position: relative;
+  overflow: hidden;
+    box-shadow: 0 4px 8px rgba(145, 68, 68, 0.2);
+
+}
+
+.binBottom {
+  width: 11px;
+  z-index: 2;
+}
+.binTop {
+  width: 11px;
+  transform-origin: right;
+  transition-duration: 0.3s;
+  z-index: 2;
+}
+.binButton:hover .binTop {
+  transform: rotate(45deg);
+}
+.binButton:hover {
+  background-color: rgb(255, 0, 0);
+}
+.binButton:active {
+  transform: scale(0.9);
+}
+.garbage {
+  position: absolute;
+  width: 10px;
+  height: auto;
+  z-index: 1;
+  opacity: 0;
+  transition: all 0.3s;
+}
+.binButton:hover .garbage {
+  animation: throw 0.4s linear;
+}
+@keyframes throw {
+  from {
+    transform: translate(-400%, -700%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+}
+

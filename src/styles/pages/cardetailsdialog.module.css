@@ -1,0 +1,214 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  max-width: 1150px;
+  width: 100%;
+  height: auto;              /* keep responsive */
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.vehicleImg {
+  width: 280px;              
+}
+
+.right {
+  flex: 2;
+  padding: 20px 0 30px 0;
+}
+
+.header {
+  align-items: center;
+  background: #ff5722;
+  border-radius: 8px;
+  margin: 0 20px 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fb6530;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.arrowBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+.navBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.vehicleGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 0 20px;
+}
+
+.vehicleGrid button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  color: #444;
+  min-height: 65px;        
+}
+
+.vehicleGrid button svg {
+  font-size: 32px;           
+}
+
+.vehicleGrid button span {
+  font-size: 14px;
+}
+
+.vehicleGrid button:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.active {
+  border-color: #007bff !important;
+  background: #fef4f0 !important;
+  color: #007bff !important;
+  font-weight: bold;
+}
+
+.otherType {
+  text-align: center;
+  margin: 24px 20px 0 20px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 2px solid #007bff;
+}
+
+.otherType a {
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+/* ✅ Responsive Design */
+@media (max-width: 1024px) {
+  .vehicleGrid {
+    grid-template-columns: repeat(3, 1fr); 
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    flex-direction: column;   
+  }
+
+  .left {
+    display: none;          
+  }
+  .overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-start;   
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  overflow-y: auto;          
+}
+
+  .right {
+    flex: 1;
+    padding: 20px ;
+  }
+
+  .vehicleGrid {
+    grid-template-columns: repeat(3, 1fr); 
+    margin: 0 10px;
+  }
+
+  .header {
+    margin: 0 10px 15px 10px;
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .header h2 {
+    font-size: 15px;
+  }
+
+  .vehicleGrid button {
+    padding: 15px;
+    min-height: 55px;
+  }
+
+  .vehicleGrid button svg {
+    font-size: 28px;
+  }
+
+  .vehicleGrid button span {
+    font-size: 13px;
+  }
+
+  .otherType {
+    margin: 20px 10px 0 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .vehicleGrid {
+    grid-template-columns: 1fr 1fr ; 
+    gap: 12px;
+  }
+
+  .vehicleGrid button {
+    padding: 12px;
+    min-height: 35px;
+  }
+
+  .header h2 {
+    font-size: 13px;
+  }
+  .vehicleImg {
+  width: 2o0px;              
+  height: 20px;
+}
+}

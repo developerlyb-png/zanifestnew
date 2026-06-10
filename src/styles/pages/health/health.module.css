@@ -1,0 +1,1698 @@
+/* ---------- COMMON WRAPPER ---------- */
+.wrapper {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 20px;
+}
+
+/* ---------- MAIN FLEX LAYOUT ---------- */
+.contentWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  max-width: 900px;
+  width: 100%;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+/* ---------- LEFT AVATAR + BACK BUTTON ---------- */
+.userIcon {
+  width: 140px;
+  height: auto;
+  border-radius: 50%;
+}
+
+.backBtn {
+  left: 25rem;
+  top: 48%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(230, 230, 229);
+}
+
+.arrowBack {
+  color: #000;
+  font-size: 20px;
+  margin: 4px 3px 0px 0px;
+  justify-items: center;
+}
+
+/* ---------- STEP 1: SELECT CITY ---------- */
+.rightContent {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  width: 100%;
+  justify-content: flex-start;
+  margin-left: 10rem;
+
+}
+
+.rightContent h2 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+.searchBar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background-color: transparent;
+}
+
+.searchIcon {
+  color: #555;
+}
+
+.popularCities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cityButton {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.cityButton:hover {
+  background-color: #e6e6e6;
+}
+
+.selectedCity {
+  background-color: #ff5a2c;
+  color: #fff;
+}
+
+/* ---------- STEP 2: SAVE PROGRESS FORM ---------- */
+.formSection {
+  max-width: 400px;
+  width: 100%;
+  text-align: left;
+  margin-left: 8rem;
+}
+
+.heading {
+  font-size: 25px;
+  /* font-weight: 700; */
+  color: #1d2c4c;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  font-size: 16px;
+  color: #5f6d7e;
+  margin-bottom: 24px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phoneGroup {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  height: 48px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1d2c4c;
+  background: #fff;
+}
+
+.mobileInput {
+  padding: 14px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- STEP 3: MEDICAL HISTORY ---------- */
+.content {
+  max-width: 520px;
+  width: 100%;
+  margin-left: 15rem;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1d2c4c;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #5f6d7e;
+  margin-bottom: 30px;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.option input {
+  margin-right: 10px;
+  accent-color: #ff5722;
+}
+
+.option:hover {
+  border-color: #ff5722;
+}
+
+/* ---------- BUTTONS (COMMON) ---------- */
+.continueBtn,
+.button {
+  width: 100%;
+  background-color: #ff5722;
+  color: #fff;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.continueBtn:hover,
+.button:hover {
+  background-color: #e64a19;
+}
+
+/* ---------- RESPONSIVE STYLES ---------- */
+
+/* Tablet (<= 991px) */
+@media (max-width: 991px) {
+  .wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .contentWrapper {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .userIcon {
+    display: none;
+  }
+
+  .rightContent h2 {
+    text-align: center;
+    font-size: 22px;
+  }
+
+  .heading {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .subtext {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .continueBtn {
+    font-size: 14px;
+  }
+
+  .content {
+    text-align: center;
+  }
+
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile (<= 600px) */
+@media (max-width: 600px) {
+  .wrapper {
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  .contentWrapper {
+    gap: 20px;
+  }
+
+  .userIcon {
+    display: none;
+  }
+
+  .rightContent h2 {
+    font-size: 20px;
+  }
+
+  .searchBar {
+    padding: 8px 12px;
+  }
+
+  .cityButton {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .continueBtn,
+  .button {
+    font-size: 14px;
+    padding: 12px;
+    margin-top: 1.5rem;
+  }
+
+  .heading {
+    font-size: 22px;
+  }
+
+  .subtext {
+    font-size: 14px;
+  }
+}
+
+/* Tablet back button */
+@media screen and (max-width: 1024px) {
+  .backBtn {
+    left: 5rem;
+    top: 18%;
+  }
+}
+
+/* Mobile back button */
+@media screen and (max-width: 768px) {
+  .backBtn {
+    left: 1rem;
+    top: 16%;
+    width: 36px;
+    height: 36px;
+  }
+
+  .arrowBack {
+    font-size: 18px;
+  }
+}
+
+
+/* dropdown */
+
+.customdropdown {
+  position: relative;
+  width: 250px;
+}
+
+.dropdowntoggle {
+  width: 100%;
+  padding: 12px 16px;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
+
+  border-radius: 6px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+  border: none;
+}
+
+.arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+.arrow.up {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* ✅ Dropdown Menu */
+.dropdownmenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%; 
+  border-radius: 6px;
+  background: #fff;
+  list-style: none;
+  margin: 4px 0 0 0;
+  padding: 0;
+  z-index: 100;
+   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdownmenu li {
+  padding: 10px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dropdownmenu li:hover {
+  background: #f5f5f5;
+  color: #000;
+}
+
+/* ✅ Selected Item */
+.selectedOption {
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.continueBtn {
+  padding: 12px 24px;
+  background-color: #ff5722;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.3s ease;
+}
+
+.continueBtn:hover {
+  background-color: #e64a19;
+}
+
+
+
+
+/* Tablet View */
+@media screen and (max-width: 1024px) {
+  .backBtn {
+    left: 5rem;
+    top: 18%;
+  }
+
+  .dropdown {
+    width: 220px;
+
+
+
+  }
+.avatar{
+  display:none;
+}
+  .title {
+    font-size: 24px;
+  }
+}
+
+/* Mobile View */
+@media screen and (max-width: 768px) {
+  .container {
+    margin: 0.5rem auto 1rem auto;
+    padding: 0 16px;
+    min-height: auto;
+    width: 100%;          /* ✅ full width लेगा */
+    max-width: 100%;      /* ✅ कोई extra space नहीं बचेगा */
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* ✅ सब center align */
+    box-sizing: border-box;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .dropdown {
+    width: 100%;        
+    max-width: 320px;   /* ✅ ज्यादा wide नहीं होगा */
+    margin: 0 auto;
+  }
+
+  .continueBtn {
+    width: 100%;
+    max-width: 320px;   /* ✅ dropdown के बराबर width */
+    font-size: 15px;
+    margin: 1rem auto 0 auto;
+    display: block;
+  }
+}
+
+/* ---------- STEP 1 ONLY BUTTON ---------- */
+.continueBtnStep1 {
+  padding: 12px 24px;
+  background-color: #ff5722;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.3s ease;
+
+  width: auto;
+  min-width: 250px;
+}
+
+.continueBtnStep1:hover {
+  background-color: #e64a19;
+}
+@media screen and (max-width: 768px) {
+  .formSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* ✅ horizontal center */
+    justify-content: flex-start; /* ✅ ऊपर से start */
+    text-align: center;
+    min-height: 50vh;        
+    padding: 10px 16px 16px;  /* ✅ ऊपर से 80px space, नीचे normal */
+    box-sizing: border-box;
+  }
+
+  .customdropdown {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .continueBtnStep1 {
+    width: 100%;
+    max-width: 320px;
+    margin: 20px auto 0 auto;
+  }
+
+  .heading {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .backBtn {
+    left: 1rem;
+    top: 22%;   /* ⬅️ पहले 16% था, अब थोड़ा नीचे */
+    width: 36px;
+    height: 36px;
+    margin-top: 20px;
+  }
+}
+/* 🔹 Container for member list */
+.membersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* 🔹 Individual member card */
+.memberCard {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  text-align: center;
+  width: 150px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.memberCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🔹 Member avatar image */
+.memberIcon {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+/* 🔹 Member name text */
+.memberCard p {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* 🔹 Dropdown styling (same structure as used in step 1) */
+.customdropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdowntoggle {
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dropdowntoggle:hover {
+  background: #f0f0f0;
+}
+
+.arrow {
+  float: right;
+  transition: transform 0.3s;
+}
+
+.up {
+  transform: rotate(180deg);
+}
+
+/* 🔹 Dropdown menu options */
+.dropdownmenu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+}
+
+.dropdownmenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: 0.2s;
+}
+
+.dropdownmenu li:hover {
+  background-color: #ffe8dc;
+  color: orangered;
+}
+
+.selectedOption {
+  background-color: #ffe8dc;
+  font-weight: 600;
+  color: orangered;
+}
+
+/* 🔹 Step 1 title */
+.heading {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #222;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* 🔹 Continue button */
+.continueBtnStep1 {
+  background-color: orangered;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  display: block;
+  margin: 2rem auto 0 auto;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.continueBtnStep1:hover {
+  background-color: #e33e00;
+}
+.headerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between back button and icon */
+  margin-bottom: 20px;
+}
+
+.backBtnStep1 {
+  margin-right: auto; /* back button stays aligned left when icon hidden */
+}
+
+.userIcon {
+  border-radius: 50%;
+  transition: opacity 0.3s ease;
+}
+
+.customdropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdowntoggle {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.arrow {
+  float: right;
+  transition: transform 0.2s ease;
+}
+
+.up {
+  transform: rotate(180deg);
+}
+
+.dropdownmenu {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  max-height: 180px; /* scrollable height */
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 4px;
+  list-style: none;
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdownmenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdownmenu li:hover {
+  background-color: #f5f5f5;
+}
+
+.selectedOption {
+  background-color: #e0f2ff;
+  font-weight: bold;
+}
+/* ---------- STEP 1 WRAPPER ---------- */
+.step1Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ---------- HEADER (BACK + ICON) ---------- */
+
+
+.step1BackBtn {
+  background: #e6e6e5;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step1BackBtn:hover {
+  background: #d9d9d9;
+}
+
+/* ---------- HEADING ---------- */
+.step1Heading {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ---------- MEMBERS LIST ---------- */
+.step1MembersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 90%;
+}
+
+.step1MemberCard {
+  width: 160px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.step1MemberCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.step1MemberIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  display: block;       /* Make image behave like block */
+  margin-left: auto;    /* Auto margin for horizontal centering */
+  margin-right: auto;   /* Auto margin for horizontal centering */
+}
+
+
+/* ---------- DROPDOWN ---------- */
+.step1Dropdown {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.step1DropdownToggle {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.step1Arrow {
+  float: right;
+  transition: transform 0.2s ease;
+}
+
+.up {
+  transform: rotate(180deg);
+}
+
+.step1DropdownMenu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  z-index: 10;
+}
+
+.step1DropdownMenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.step1DropdownMenu li:hover {
+  background-color: #ffe8dc;
+  color: orangered;
+}
+
+.step1SelectedOption {
+  background-color: #ffe8dc;
+  font-weight: 600;
+  color: orangered;
+}
+
+/* ---------- CONTINUE BUTTON ---------- */
+.step1ContinueBtn {
+  padding: 12px 24px;
+  background-color: orangered;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+  margin: 2rem auto 0 auto;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.step1ContinueBtn:hover {
+  background-color: #e33e00;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media screen and (max-width: 768px) {
+  .step1Wrapper {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .step1MemberCard {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .step1Dropdown {
+    width: 100%;
+  }
+
+  .step1ContinueBtn {
+    width: 100%;
+    max-width: 280px;
+    margin: 1.5rem auto 0 auto;
+  }
+}
+.step1Wrapper {
+  position: relative; 
+}
+
+
+.step1Header {
+  position: absolute;
+  top: 8rem; 
+  left: 0;
+  width: 20%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  padding: 0 20px; 
+}
+
+/* Mobile adjustment */
+@media screen and (max-width: 768px) {
+  .step1Header {
+    top: 50px; 
+    padding: 0 16px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .step1BackBtn {
+    width: 36px;       
+    height: 36px;
+    font-size: 18px;   
+  }
+
+  .userIcon {
+    width: 100px;   
+    height: 100px;
+  }
+
+  .step1Header {
+    top: 50px;      
+    gap: 10px;         
+    padding: 0 16px;
+  }
+}
+@media screen and (max-width: 420px) {
+ .step1MemberCard {
+    width: 100%;
+    max-width: 110px;
+  }
+  .step1Heading {
+  font-size: 1.2rem;
+  }
+  
+  .step1ContinueBtn {
+    width: 50%;
+   
+  }
+ 
+.step1DropdownToggle {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10px;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+}
+/* ===========================
+   MOBILE / TABLET RESPONSIVE
+   =========================== */
+
+/* ---------- TABLET & MOBILE (<= 768px) ---------- */
+@media screen and (max-width: 768px) {
+  /* Wrapper */
+  .wrapper {
+    padding: 16px;
+    min-height: auto;
+  }
+
+  /* Content Wrapper */
+  .contentWrapper {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  /* Hide user icon on mobile */
+  .userIcon {
+   display: none;
+  }
+
+  /* Step1 wrapper */
+  .step1Wrapper {
+    padding: 16px;
+    gap: 20px;
+    position: relative;
+  }
+
+  /* Step1 header */
+  .step1Header {
+    position: relative;
+    top: 50px;
+    gap: 10px;
+    padding: 0 16px;
+    width: 100%;
+  }
+
+  /* Step1 back button */
+  .step1BackBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  /* Step1 heading */
+  .step1Heading {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  /* Step1 members list */
+  .step1MembersList {
+    align-items: center;
+    width: 100%;
+  }
+
+  .step1MemberCard {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .step1MemberIcon {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Step1 dropdown */
+  .step1Dropdown,
+  .step1DropdownToggle {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .step1ContinueBtn {
+    width: 100%;
+    max-width: 280px;
+    margin: 1.5rem auto 0 auto;
+  }
+
+  /* Form Section adjustments */
+  .formSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    min-height: 50vh;
+    padding: 10px 16px 16px;
+    box-sizing: border-box;
+  }
+
+  /* Dropdown full width */
+  .customdropdown {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  /* Buttons */
+  .continueBtnStep1 {
+    width: 100%;
+    max-width: 320px;
+    margin: 20px auto 0 auto;
+  }
+
+  /* Heading adjustments */
+  .heading {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  /* Back button position */
+  .backBtn {
+    left: 1rem;
+    top: 22%;
+    width: 36px;
+    height: 36px;
+  }
+
+  .arrowBack {
+    font-size: 18px;
+  }
+
+  /* Mobile-friendly options grid */
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Content alignment */
+  .content,
+  .rightContent {
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .rightContent h2 {
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .searchBar {
+    padding: 8px 12px;
+  }
+
+  .cityButton {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .headingSubheadingRow {
+    flex-direction: column;
+  }
+}
+
+/* ---------- SMALL MOBILE (<= 420px) ---------- */
+@media screen and (max-width: 420px) {
+  .step1MemberCard {
+    width: 100%;
+    max-width: 110px;
+  }
+
+  .step1Heading {
+    font-size: 1.2rem;
+  }
+
+  .step1ContinueBtn {
+    width: 50%;
+  }
+
+  .step1DropdownToggle {
+    font-size: 10px;
+    padding: 8px 12px;
+  }
+
+  .continueBtnStep1 {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .contentWrapper {
+    gap: 15px;
+  }
+
+  .wrapper {
+    padding: 12px;
+  }
+
+  .heading {
+    font-size: 18px;
+  }
+
+  .cityButton {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .searchBar input {
+    font-size: 12px;
+  }
+
+  .optionsGrid {
+    gap: 12px;
+  }
+} 
+.wrapper {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column; /* stack content vertically for all steps */
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   BACK BUTTON + USER ICON
+   =========================== */
+.headerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between back button and icon */
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.backBtn,
+.step1BackBtn {
+  background: #e6e6e5;
+  border: none;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backBtn:hover,
+.step1BackBtn:hover {
+  background: #d9d9d9;
+}
+
+.userIcon {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+/* ===========================
+   STEP 1: SELECT CITY
+   =========================== */
+.step1Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  padding-bottom: 100px;
+  padding-top: 50px;
+}
+
+.step1Header {
+  display: flex;
+  align-items: center; 
+  gap: 12px;
+  width: 20%;
+  margin-bottom: 20px;
+}
+
+.step1Heading {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.step1MembersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.step1MemberCard {
+  width: 160px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.step1MemberCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.step1MemberIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Dropdown */
+.step1Dropdown {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.step1DropdownToggle {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.step1Arrow {
+  float: right;
+  transition: transform 0.2s ease;
+}
+
+.step1DropdownMenu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  z-index: 10;
+}
+
+.step1DropdownMenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.step1DropdownMenu li:hover,
+.step1SelectedOption {
+  background-color: #ffe8dc;
+  color: orangered;
+  font-weight: 600;
+}
+
+/* Continue Button */
+.step1ContinueBtn {
+  padding: 12px 24px;
+  background-color: orangered;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+  margin: 2rem auto 0 auto;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.step1ContinueBtn:hover {
+  background-color: #e33e00;
+}
+
+/* ===========================
+   STEP 2: SAVE PROGRESS FORM
+   =========================== */
+.formSection {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.heading {
+  font-size: 25px;
+  color: #1d2c4c;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  font-size: 16px;
+  color: #5f6d7e;
+  margin-bottom: 24px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phoneGroup {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.code,
+.mobileInput {
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.continueBtn {
+  width: 100%;
+  max-width: 320px;
+  margin: 2rem auto 0 auto;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #ff5722;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.continueBtn:hover {
+  background-color: #e64a19;
+}
+
+/* ===========================
+   STEP 3: MEDICAL HISTORY
+   =========================== */
+.content {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 50;
+  text-align: center;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1d2c4c;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #5f6d7e;
+  margin-bottom: 30px;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.option:hover {
+  border-color: #ff5722;
+}
+
+.option input {
+  margin-right: 10px;
+  accent-color: #ff5722;
+}
+
+/* ===========================
+   DROPDOWN (COMMON)
+   =========================== */
+.customdropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdowntoggle {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.arrow {
+  float: right;
+  transition: transform 0.2s ease;
+}
+
+.up {
+  transform: rotate(180deg);
+}
+
+.dropdownmenu {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 4px;
+  list-style: none;
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdownmenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdownmenu li:hover,
+.selectedOption {
+  background-color: #e0f2ff;
+  font-weight: bold;
+}
+
+/* ===========================
+   MEMBERS LIST
+   =========================== */
+.membersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.memberCard {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  text-align: center;
+  width: 150px;
+  transition: all 0.3s ease;
+}
+
+.memberCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.memberIcon {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media screen and (max-width: 1024px) {
+  .rightContent,
+  .content,
+  .formSection {
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .contentWrapper {
+    gap: 20px;
+    width: 100%;
+  }
+
+  .userIcon {
+    display: none;
+  }
+
+  .formSection,
+  .content,
+  .rightContent {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .step1MemberCard {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .step1ContinueBtn,
+  .continueBtn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .step1MemberCard {
+    max-width: 110px;
+  }
+
+  .step1ContinueBtn,
+  .continueBtn {
+    width: 50%;
+  }
+
+  .step1Heading {
+    font-size: 1.2rem;
+  }
+
+  .step1DropdownToggle {
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+   .step1Header {
+    position: relative;
+    top: 15px;
+    gap: 10px;
+    padding: 0 16px;
+    width: 100%;
+  }
+}

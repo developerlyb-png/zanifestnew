@@ -1,0 +1,68 @@
+.banner {
+  background-color: #2563eb; 
+  color: white;
+  padding: 2rem 1.5rem;
+}
+
+.bannerContainer {
+  max-width: 72rem;
+  margin: 0 auto;
+  height: 40vh;
+    position: absolutes;
+
+}
+
+.breadcrumb {
+  font-size: 0.875rem; 
+  margin-bottom: 0.5rem;
+}
+
+.link {
+  text-decoration: underline;
+}
+
+.heading {
+  font-size: 1rem; 
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtext {
+  font-size: 1.5rem; 
+}
+
+.cardWrapper {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: -10vh; 
+  position: relative;
+}
+
+@media screen and (min-width: 1024px) {
+  .cardWrapper {
+    flex-direction: row;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .cardWrapper {
+    flex-direction: row;
+  }
+}
+.contactLink {
+  cursor: pointer;
+  color: white;
+}
+.contactLink:hover {
+  text-decoration: underline;
+  color: white;
+}

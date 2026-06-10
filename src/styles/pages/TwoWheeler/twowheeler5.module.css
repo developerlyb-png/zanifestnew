@@ -1,0 +1,275 @@
+.wrapper {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: "Inter", sans-serif;
+  flex-wrap: wrap;
+}
+
+/* Toggle Icon (Mobile/Tab Only) */
+.toggleIcon {
+     display: none;
+    position: absolute;
+    top: 112px;
+    left: 16px;
+    z-index: 1000;
+    background: white;
+    padding: 5px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    align-items: center;
+    height: 30px;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: #f4f8ff;
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.card label {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.card p {
+  font-size: 0.9rem;
+}
+
+.card select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.edit {
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.link {
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  min-width: 300px;
+}
+
+.planControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.planBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d7e4f7;
+  border-radius: 12px;
+  background-color: #f6f9ff;
+  min-width: 260px;
+  flex: 1;
+  max-width: 300px;
+}
+
+.planLabel {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.planValue {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.planList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.planCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.planLeft {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 600;
+  font-size: 20px;
+  flex-wrap: wrap;
+}
+
+.planRight {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  text-align: right;
+}
+
+.idvLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0;
+  margin-left: 1rem;
+}
+
+.idvValue {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.buyBtn {
+  background-color:orangered;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  height: 50px;
+  width: 17%;
+  cursor: pointer;
+}
+
+.buyBtn span {
+  margin-left: 0.5rem;
+}
+
+.badge {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.6rem;
+  border-radius: 6px;
+  width: 100%;
+  display: inline-block;
+}
+
+.green {
+  background-color: #e7f9ec;
+  color: #0f9d58;
+}
+
+.orange {
+  background: linear-gradient(to right, #ff6a00, #ee0979);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* Mobile Sidebar Slide-In */
+.mobileSidebar {
+  position: fixed;
+  top: 70px;
+  left: -100%;
+  height: 100%;
+  width: 80%;
+  background: #f4f8ff;
+  z-index: 999;
+  padding: 1rem;
+  overflow-y: auto;
+  transition: all 0.3s ease-in-out;
+}
+
+.mobileSidebar.open {
+  left: 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+  .toggleIcon {
+    display: block;
+  }
+
+.planLeft{
+          flex-direction: row !important;
+        align-items: flex-start;
+}
+  .wrapper {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .sidebar {
+    width: 90%;
+  }
+
+  .card {
+            width: 80%;
+  }
+
+  .main {
+    margin-top: 1rem;
+  }
+
+  .planControls {
+    flex-direction: column;
+  }
+
+  .planBox {
+    width: 85%;
+  }
+
+  .planLeft {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buyBtn {
+    width: 100%;
+  }
+}

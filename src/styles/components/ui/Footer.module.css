@@ -1,0 +1,220 @@
+.cont {
+  background-color: #2a3440;
+  display: grid;
+  place-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  gap: 2rem;
+}
+.break{
+  color: white;
+}
+.top {
+  display: grid;
+  width: 90%;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 2rem;
+}
+
+.logoImage {
+  width: 18rem;
+  height: auto;
+}
+
+.list {
+  gap: 1rem;
+  padding-top: 2rem;
+}
+
+.icons {
+  display: flex;
+  padding: 0px 100px;
+  padding-top: 40px;
+  color: white;
+  gap: 2rem;
+}
+
+.head {
+  color: #fa621a;
+  font-size: 50px;
+  font-weight: 600;
+  padding-bottom: 20px;
+}
+
+.heading {
+  color: #989494;
+  padding: 1rem 0;
+  font-size: 20px;
+}
+
+.desc {
+  color: white;
+  font-size: 14px;
+}
+
+.linksList {
+  gap: 1rem;
+}
+
+.link {
+  color: white;
+  padding: 0.6rem 0;
+  font-size: 14px;
+}
+
+.atag {
+  text-decoration: none;
+  color: white;
+}
+
+/* .bottom {
+  display: grid;
+  width: 90%;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  justify-content: space-between;
+  padding-top: 50px;
+} */
+
+.bottom {
+  display: grid;
+  width: 90%;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding-top: 50px;
+  align-items: center;  
+  gap:2rem;
+  margin-left: 38rem;
+} 
+
+.bottomItem {
+  cursor: pointer;
+  color: white;
+}
+
+.bottomLinks {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.loginButtonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  grid-column: span 3;
+  margin-top: -30px;
+}
+
+.loginButton {
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+
+
+.loginagent {
+  cursor: pointer;
+  font-size: 20px;
+  justify-self: center;
+  transform: translateY(-45px);
+}
+
+@media screen and (max-width: 1200px) {
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .logoImage {
+    height: 3rem;
+    width: auto;
+  }
+
+  .loginButtonWrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0;
+  }
+
+  .loginButton {
+    width: 80%;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 415px) {
+  .bottom {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loginagent {
+    transform: translateY(0px);
+  }
+
+  .loginButtonWrapper {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .loginButton {
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media screen and (max-width: 370px) {
+  .head {
+    width: 70%;
+    overflow: scroll;
+  }
+
+  .icons {
+    width: 70%;
+    padding: 20px 0px;
+  }
+}
+
+.bottomLinks {
+  display: flex;
+  gap: 8px;   
+  align-items: center;
+}
+
+.bottomItem {
+  font-size: 14px;
+  color: white;
+}
+
+.footerBottomWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 93vw;
+
+  margin: 0;
+  padding: 15px 30px;
+  box-sizing: border-box;
+}
+
+
+@media screen and (max-width: 768px) {
+  .footerBottomWrapper {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+}

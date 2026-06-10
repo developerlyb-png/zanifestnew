@@ -1,0 +1,275 @@
+.cont {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 85%;
+  margin: auto;
+  place-items: center;
+  min-height: 60vh;
+  padding: 5vw 0;
+  gap: 2rem;
+}
+
+.formWrapper {
+  background-color: #fff3e0;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.iconBox {
+  background-color: white;
+  padding: 6px;
+  border-radius: 8px;
+  margin-right: 0.75rem;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.flagImg {
+  border-radius: 2px;
+}
+
+.titleText {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4e3d2f;
+}
+
+.arrow {
+  color: #4e3d2f;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.input {
+  height: 40px;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.mobileInputGroup {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: white;
+}
+
+.flagWrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  background-color: #fff;
+  border-right: 1px solid #ccc;
+  gap: 0.5rem;
+  font-size: 14px;
+}
+
+.mobileInput {
+  flex: 1;
+  height: 40px;
+  border: none;
+  padding: 0.75rem;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.mobileInput:focus,
+.input:focus {
+  outline: none;
+  border-color: #fa621a;
+}
+
+.submitButton {
+  background-color: #fa621a;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.terms {
+  font-size: 12px;
+  text-align: center;
+  color: #777;
+}
+
+.link {
+  color: #fa621a;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.imageCont {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+
+/* ========== Tablet & Mobile Styles ========== */
+@media screen and (max-width: 1024px) {
+  .cont {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    min-height: 40vh;
+    padding: 0rem 1rem 1.5rem;
+    
+  }
+
+  .imageCont {
+    order: -1;
+    padding: 1rem 0;
+  }
+
+  .formWrapper {
+    max-width: 100%;
+  }
+
+  .image {
+    max-width: 400px;
+  }
+}
+
+/* ========== Mobile Styles ========== */
+@media screen and (max-width: 768px) {
+  .cont {
+    display: flex;
+    flex-direction: column;
+    padding: 0rem 1.5rem 1.5rem 1.5rem;
+    width: 90%;
+    box-sizing: border-box;
+  }
+
+  .imageCont {
+    order: -1;
+    padding: 0rem 0;
+    display: none;
+  }
+
+  .formWrapper {
+    padding: 1.5rem;
+  }
+
+  .image {
+    max-width: 300px;
+    display: none;
+  }
+
+  .titleText {
+    font-size: 1rem;
+  }
+
+  .arrow {
+    font-size: 1rem;
+  }
+
+  .submitButton {
+    font-size: 15px;
+  }
+
+  .terms {
+    font-size: 11px;
+  }
+}
+
+/* ========== Small Mobile Styles ========== */
+@media screen and (max-width: 480px) {
+  .formWrapper {
+    padding: 1.2rem;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .iconBox {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+
+  .image {
+    max-width: 260px;
+    display: none;
+  }
+}
+
+.backBtn {
+  position: absolute;
+  left: 4rem;
+  top: 30%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(230, 230, 229);
+  z-index: 10;
+}
+
+.arrowBack {
+  color: #000;
+  font-size: 20px;
+  margin: 4px 3px 0px 0px;
+  justify-items: center;
+}
+
+/* Tablet */
+@media screen and (max-width: 1024px) {
+  .backBtn {
+    left: 5rem;
+    top: 18%;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  .backBtn {
+    left: 1rem;
+    top: 16%;
+    width: 36px;
+    height: 36px;
+  }
+
+  .arrowBack {
+    font-size: 18px;
+  }
+}

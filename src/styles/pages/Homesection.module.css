@@ -1,0 +1,208 @@
+.container {
+  max-width: 1200px;
+  padding: 1rem;
+}
+
+/* 🔹 Preview Section */
+.previewSection {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.previewLarge {
+  max-width: 400px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+/* 🔹 Uploaded Images */
+.uploadedSection {
+  width: 100%;
+
+  margin: 0 auto;
+  margin-top: 30px;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* 👇 fixed height with scroll */
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.card {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column; /* stack image + title + buttons */
+  align-items: left;
+    max-width: 590px;
+
+}
+
+.cardImage {
+  width: 30%;      /* 30% of card width */
+  height: auto;    /* maintain aspect ratio */
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  justify-content:start;
+  gap: 0.5rem;
+  margin-top: 0.5rem; /* space below image/title */
+  flex-wrap: wrap;    /* wrap buttons if container is small */
+}
+
+.btnEdit,
+.btnDelete {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  align-items:left;
+  text-align: left;
+}
+
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* 🔹 Upload Form */
+.formSection {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* 🔹 Buttons */
+.btnOrange {
+  padding: 0.6rem 1.5rem;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+.btnOrange:hover {
+  background: #ea580c;
+}
+
+.btnEdit {
+  background: #facc15;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #333;
+}
+.btnEdit:hover {
+  background: #eab308;
+}
+
+.btnDelete {
+  background: #ef4444;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+.btnDelete:hover {
+  background: #dc2626;
+}
+
+/* 🔹 Card */
+.card {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+.cardImage {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+.cardTitle {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.cardActions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* 🔹 Headings */
+.heading {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+.subHeading {
+  font-size: 1.2rem;
+  margin: 1.5rem 0 1rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* 🔹 Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #222;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}

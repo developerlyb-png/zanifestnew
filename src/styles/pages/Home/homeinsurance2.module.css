@@ -1,0 +1,247 @@
+
+
+.inputGroup {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 42px 14px 14px;
+  border: 1px solid #cfd5db;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
+
+.icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.subLabel {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+  margin: 8px 0 12px;
+  text-align: left;
+}
+
+.valueButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.valueBtn {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 0;
+  border: 1px solid #cfd5db;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.valueBtn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+/* Buttons layout */
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin: 25px 0;
+  gap: 15px;
+}
+
+.prevBtn {
+  display: inline-flex;       
+  align-items: center;        
+  justify-content: center;    
+  gap: 6px;                   
+  padding: 12px 70px;          /* width control */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1f36;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  flex: 0 0 auto;              /* sirf apni content ke hisaab se width lega */
+}
+
+.prevBtn:hover {
+  background: #f9fafb;
+}
+
+.prevBtn svg {
+  font-size: 18px;     /* react-icon size control */
+  color: #1a1f36;
+}
+
+
+.nextBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  transition: opacity 0.3s ease;
+}
+
+.nextBtn:hover {
+  opacity: 0.9;
+}
+
+/* OR Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  margin: 15px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 12px;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 12px;
+}
+
+.bottomText {
+  font-size: 16px;
+  color: #374151;
+  text-align: center;
+}
+
+.bottomText a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.bottomText a:hover {
+  text-decoration: underline;
+}
+.container {
+  max-width: 700px;
+  width: 100%;
+  margin: 40px auto;       
+  font-family: Arial, sans-serif;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.heading {
+  width: 100%;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ========== Mobile Responsive (≤768px) ========== */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px 10px;  
+    padding: 0;         
+    width: calc(100% - 20px); 
+    max-width: 100%;
+  }
+  .heading {
+    font-size: clamp(18px, 5vw, 24px); 
+    margin-bottom: 18px;
+    line-height: 1.3;
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 12px 38px 12px 12px;
+  }
+
+  .subLabel {
+    font-size: 13px;
+    margin: 6px 0 10px;
+  }
+
+  .valueBtn {
+    font-size: 13px;
+    padding: 8px 0;
+    min-width: 79px;
+  }
+
+    .buttonGroup {
+    flex-direction: row;   
+    gap: 10px;
+  }
+
+  .prevBtn,
+  .nextBtn {
+    width: 50%;           
+    padding: 12px;
+    font-size: 14px;
+  }
+.nextBtn {
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 12px;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap; 
+  transition: opacity 0.3s ease;
+  font-size: clamp(12px, 3vw, 15px);  
+}
+.heading{
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  font-size: clamp(16px, 4vw, 24px); 
+}
+
+  .divider {
+    font-size: 13px;
+    margin: 12px 0;
+  }
+
+  .bottomText {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}

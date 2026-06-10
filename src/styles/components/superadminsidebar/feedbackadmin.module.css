@@ -1,0 +1,275 @@
+/* feedbackadmin.module.css */
+
+.cont {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.cont h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Add New Card Button */
+.cont button {
+  background-color: orangered;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cont button:hover {
+  background-color: orangered;
+}
+
+/* Cards Container */
+.cont > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Individual Card */
+.cont > div > div {
+  background: #fff;
+  text-align: center;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.cont > div > div:hover {
+  transform: translateY(-4px);
+}
+
+.cont > div > div strong {
+  font-size: 1.1rem;
+  display: block;
+  margin: 8px 0 4px;
+}
+
+.cont > div > div p {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Edit / Delete Buttons */
+.cont > div > div button {
+  margin-right: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Modal Backdrop */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal Content */
+.modalContent {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 95%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Modal Form */
+.modalContent form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modalContent input,
+.modalContent textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.modalContent textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modalContent button[type="submit"] {
+  background: #4caf50;
+  color: #fff;
+  font-size: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.modalContent button[type="submit"]:hover {
+  background: #43a047;
+}
+
+/* Preview Box */
+.previewBox {
+  margin-top: 40px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.previewBox h3 {
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+/* ------------------ Responsive ------------------ */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .cont > div {
+    justify-content: center;
+  }
+
+  .modalContent {
+    width: 90%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .cont h2 {
+    font-size: 1.5rem;
+  }
+
+  .cont > div > div {
+    width: 100%;
+    max-width: 95%;
+  }
+
+  .modalContent {
+    padding: 20px;
+  }
+
+  .modalContent input,
+  .modalContent textarea {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .modalContent button[type="submit"] {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+}
+/* ------------------ Heading Section ------------------ */
+.headingSection {
+  margin-bottom: 30px;
+}
+
+.headingDisplay {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editHeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editHeading input {
+  width: 70%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.headingButtons {
+  display: flex;
+  gap: 10px;
+}
+
+/* ------------------ Responsive ------------------ */
+@media (max-width: 768px) {
+  /* Stack heading + button vertically on mobile */
+  .headingDisplay {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .editHeading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .editHeading input {
+    width: 100%;
+  }
+
+  .headingButtons {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .headingButtons button {
+    flex: 1;
+  }
+}

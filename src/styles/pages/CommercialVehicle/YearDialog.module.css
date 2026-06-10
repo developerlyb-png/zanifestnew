@@ -1,0 +1,244 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  min-height: 500px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 30px;
+  gap: 30px;
+}
+
+/* Left Section */
+.selectionBox {
+  flex: 1;
+  border-right: 1px solid #eee;
+}
+
+.selectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.selectionList {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 0;
+}
+
+.selectionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.selectionItem:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  margin-right: 10px;
+  color: #6b7280;
+}
+
+
+
+/* Right Section */
+.yearBox {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.yearHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fb6530;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.arrowBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.yearGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.yearButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.yearButton:hover {
+  border-color: #fb6530;
+}
+
+.activeYear {
+  background: #1d9bf0;
+  color: #fff;
+  border-color: #1d9bf0;
+}
+
+.arrow {
+  font-size: 16px;
+  color: inherit;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 1024px) {
+  .dialog {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .selectionBox {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .yearGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 15px; 
+  }
+  
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding: 30px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.selectionBox {
+    display: none; 
+  }
+  .dialog {
+    padding: 15px;
+    gap: 15px;
+    min-height: auto;
+  }
+
+  .selectionTitle {
+    font-size: 16px;
+  }
+
+  .selectionItem {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .yearHeader {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .yearGrid {
+    grid-template-columns: 1fr; 
+  }
+
+  .yearButton {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 15px; 
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    padding: 30px;
+    z-index: 9999;
+    overflow-y: auto;
+  }
+
+  .selectionBox {
+    display: none; 
+  }
+
+  .dialog {
+    padding: 15px;
+    gap: 15px;
+    min-height: auto;
+  }
+
+  .selectionTitle {
+    font-size: 16px;
+  }
+
+  .selectionItem {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .yearHeader {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .yearGrid { 
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .yearButton {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}

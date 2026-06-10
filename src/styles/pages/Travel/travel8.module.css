@@ -1,0 +1,222 @@
+.wrapper {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f9fbff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Progress Bar */
+.progressBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.step {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #e0e0e0;
+  font-size: 14px;
+  color: #666;
+}
+.step.active {
+  background: #0077ff;
+  color: #fff;
+}
+
+.line {
+  height: 2px;
+  width: 80px;
+  background: #ccc;
+  margin: 0 10px;
+}
+
+/* Main Container */
+.container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  padding: 20px 40px;
+}
+
+/* Left Menu */
+.leftSection {
+  flex: 0.8;
+}
+.tabMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-right: 1px solid #ddd;
+}
+.tabMenu li {
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+  color: #333;
+}
+.tabMenu li:hover {
+  background: #f0f6ff;
+}
+.activeTab {
+  background: #0077ff;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Middle Section */
+.middleSection {
+  flex: 2;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.upiContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.qrBox, .upiInputBox {
+  flex: 1;
+}
+
+.qrBox h4, .upiInputBox h4 {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.qrCode {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  background: #f9fbff;
+}
+.viewBtn {
+  background: #0077ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.viewBtn:hover {
+  background: #005ecc;
+}
+
+.orBox {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  margin-top: 40px;
+}
+
+.upiInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.verifyBtn {
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.verifyBtn:hover {
+  background: #e65c00;
+}
+
+.instructions {
+  font-size: 13px;
+  color: #555;
+  margin-top: 10px;
+  padding-left: 16px;
+}
+.instructions li {
+  margin-bottom: 6px;
+}
+
+.placeholderBox {
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Right Summary Section */
+.rightSection {
+  flex: 1;
+}
+.summaryCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.orderRow, .totalRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.orderNumber {
+  font-weight: bold;
+}
+.planRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.planLogo {
+  width: 40px;
+  height: auto;
+}
+.totalAmt {
+  font-weight: bold;
+  color: #000;
+}
+
+.accordion summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin: 10px 0;
+}
+.accordion p {
+  font-size: 13px;
+  color: #444;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+.footer a {
+  color: #0077ff;
+  text-decoration: none;
+  font-size: 13px;
+}
+.pciLogo {
+  height: 30px;
+}

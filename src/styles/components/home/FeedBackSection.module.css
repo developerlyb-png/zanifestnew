@@ -1,0 +1,371 @@
+.cont {
+  display: grid;
+  width: 100%;
+  place-items: center;
+  margin-top: 40px;
+}
+.heading {
+  font-size: 24px;
+  font-weight: bold;
+  color: black; /* default */
+}
+
+.orange {
+  color: orangered;
+}
+.head {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  position: relative;
+}
+
+.head::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  width: 25%;
+  height: 5px;
+  background-color: #fa621a;
+  border-radius: 3px;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+  padding-bottom: 17px;
+}
+
+.orange {
+  color: #fa621a;
+}
+
+.bottom {
+  width: 100%;
+  align-self: center;
+}
+
+.serviceItem {
+  position: relative;
+  min-width: 300px;
+  max-width: 300px;
+  flex-shrink: 0;
+  background-color: white;
+  padding: 20px;
+  border-radius: 22px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+}
+
+.namePost {
+  text-align: left;
+}
+
+.singlecar {
+  display: none;
+}
+
+.image {
+  width: 100px;
+  height: 100px;
+}
+
+.name {
+  all: unset;
+  font-size: 20px;
+  color: #1c75bb;
+  font-weight: 600;
+}
+
+.desc {
+  all: unset;
+  text-align: center;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.post {
+  font-size: 12px;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: grey;
+  border-radius: 50%;
+}
+
+.blue {
+  background-color: #1c75bb;
+}
+
+.claimCont {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  padding: 50px 100px;
+  background: url("../../../assets//home//claimbackground.png");
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+.claimLeft {
+  display: flex;
+  align-items: center;
+  font-size: 130px;
+}
+
+.fileImage {
+  width: 140px;
+  height: 170px;
+  filter: brightness(100);
+}
+
+.claimText {
+  display: grid;
+  gap: 1rem;
+}
+
+.CT1 {
+  font-size: 20px;
+}
+
+.CT2 {
+  font-size: 40px;
+}
+
+.claimRight {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.claimButton {
+  background-color: white;
+  color: black;
+  padding: 25px 60px;
+  font-size: 25px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.claimButton:hover {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.mobileEllipsis {
+  display: none;
+  row-gap: 2px;
+}
+
+@media screen and (max-width: 1200px) {
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .serviceItem {
+    max-width: 400px;
+  }
+  .claimCont {
+    padding: 50px 0px;
+  }
+  .singlecar {
+    display: block;
+  }
+  .multicar {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 530px) {
+  .claimCont {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .heading {
+    justify-content: center;
+  }
+}
+
+.carouselWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide {
+  transform: translateX(-33.33%);
+}
+
+.carouselWindow {
+  width: 100%;
+  max-width: 1020px;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+
+.track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  gap: 20px;
+  justify-content: flex-center;
+}
+
+.serviceItem {
+  min-width: 300px;
+  max-width: 300px;
+  margin: 10px 10px;
+  margin-top: 40px;
+  flex-shrink: 0;
+  background-color: white;
+  padding: 20px;
+  border-radius: 22px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+}
+
+.itemBottom {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  place-items: center;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(187, 187, 187, 0.2);
+  border: none;
+  padding: 10px 12px;
+  cursor: pointer;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+.left {
+  left: 10px;
+}
+
+.right {
+  right: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .heading {
+    font-size: 25px;
+  }
+
+  .left {
+    left: 20px;
+  }
+
+  .right {
+    right: 20px;
+  }
+
+  .serviceItem {
+    min-width: 345px;
+    max-width: 323px;
+    margin: 20px;
+    flex-shrink: 0;
+    background-color: white;
+    padding: 20px;
+    border-radius: 22px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    display: grid;
+    place-items: center;
+    gap: 1rem;
+  }
+}
+
+@media screen and (max-width: 370px) {
+  .heading {
+    font-size: 20px;
+  }
+  .serviceItem {
+    min-width: 293px;
+    max-width: 300px;
+    margin: 25px 18px;
+    flex-shrink: 0;
+    background-color: white;
+    padding: 20px;
+    border-radius: 22px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    display: grid;
+    place-items: center;
+    gap: 1rem;
+  }
+}
+@media screen and (max-width: 420px) {
+  .heading {
+    font-size: 20px;
+  }
+  .serviceItem {
+    min-width: 293px;
+    max-width: 300px;
+    margin: 0px 0px;
+    flex-shrink: 0;
+    background-color: white;
+    padding: 14px;
+    border-radius: 22px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    display: grid;
+    place-items: center;
+    gap: 1rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .head::after {
+    display: none;
+  }
+  .mobileEllipsis {
+    display: block;
+  }
+  .heading {
+    margin-bottom: 0%;
+    padding-bottom: 0%;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 0px;
+    position: relative;
+  }
+}
+
+.image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 480px) {
+  .serviceItem {
+    min-width: 94vw;
+    max-width: 94vw;
+    padding: 14px;
+  }
+}
+

@@ -1,0 +1,343 @@
+.container {
+  max-width: 650px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  justify-content: center;
+  align-self: center;
+  box-sizing: border-box;
+}
+
+.subTitle {
+  font-size: 20px;
+  color: #444;
+  margin-bottom: 5px;
+  font-weight: 300;
+}
+
+.title {
+  font-size: 30px;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+}
+
+.title span {
+  color: orangered;
+}
+.badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 20px;
+  flex-wrap: nowrap;          /* force one row */
+  overflow-x: auto;           /* scroll if needed */
+  -webkit-overflow-scrolling: touch;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f6f3ff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #532f9b;
+  line-height: 1.2;
+  white-space: nowrap;
+  flex: 1 1 auto;             /* flexible width */
+  min-width: 100px;           /* shrink limit */
+  max-width: 160px;           /* grow limit */
+  justify-content: center;
+  text-align: center;
+}
+
+.badgeIcon {
+  font-size: 13px;
+  color: #532f9b;
+  flex-shrink: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  padding: 0 10px;  
+  box-sizing: border-box;
+}
+
+.form > * {
+  width: 100%;
+}
+
+.inputGroup {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.inputIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+}
+
+.noSpam {
+  position: absolute;
+  right: 0px;  
+  bottom: -22px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1a73e8;           
+  background: #e8f2ff;      
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.coverSection {
+  width: 100%;        
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coverTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.coverTitle span {
+  font-weight: normal;
+  color: #666;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 6px 250px;
+  width: 100%; 
+  font-weight: 530;
+}
+
+.checkboxLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%; 
+}
+
+.submitBtn {
+  background: #ff4500;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  align-self: center;
+  margin-bottom: 5rem;
+}
+
+.submitBtn:hover {
+  background: #e13e00;
+}
+
+.whatsappRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 10px;
+  color: #222;
+  border: 1px solid #ddd;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+.icon {
+  font-size: 20px;
+  color: #25d366; /* WhatsApp green */
+}
+
+
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Checked State */
+.switch input:checked + .slider {
+  background-color: #ff5722; /* Orange-red like in image */
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+/* Terms */
+.terms {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
+
+
+/* ================== Mobile Responsive ================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px 10px; 
+  }
+.submitBtn{
+  margin-bottom: 0;
+}
+ .title {
+    font-size: 20px;
+  }
+
+  .subTitle {
+    font-size: clamp(10px, 3vw, 20px);  
+  }
+
+  
+  .badges {
+    flex-wrap: nowrap;            
+    justify-content: space-between; 
+    gap: 6px;
+    overflow-x: hidden;           
+  }
+
+  .badge {
+    flex: 1 1 0;              
+    min-width: 0;                  
+    font-size: clamp(9px, 2.5vw, 12px);  
+    padding: 4px 6px;             
+  }
+ 
+
+
+  .form {
+    padding: 0 5px; 
+  }
+
+  .input {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .noSpam {
+    right: 8px; 
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .coverSection {
+    gap: 8px;
+  }
+
+  .options {
+    grid-template-columns: 1fr;   
+    gap: 8px;
+  }
+
+  .checkboxLabel {
+    font-size: 12px;
+  }
+
+  .submitBtn {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .whatsappRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .terms {
+    font-size: 10px;
+    line-height: 1.4;
+    margin-top: 10px;
+  }
+}
+

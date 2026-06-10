@@ -1,0 +1,312 @@
+.wrapper {
+  width: 60%;                 
+  padding: 4rem 0;
+  margin: 0 auto;             
+  display: flex;
+  justify-content: center; 
+
+}
+
+.container {
+  font-family: "Segoe UI", Arial, sans-serif;
+  width: 100%;
+  background: #f5f7fa;        
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 8px 8px;
+
+}
+
+
+/* Top Info Bar */
+.infoBar {
+  background: #fff3cd;
+  border: 1px solid orangered;
+  padding: 10px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+    width: 98%;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    /* margin-left: 20px; */
+
+
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.infoIcon {
+  background: #ff9800;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+/* Layout */
+.mainContent {
+  display: flex;
+  align-items: flex-start; /* left aur right top se align honge */
+  gap: 20px;               /* dono ke beech thoda gap */
+  padding: 15px;
+}
+
+.leftSection {
+  flex: 1;               
+  display: flex;
+  flex-direction: column;  
+}
+
+.rightSection {
+  flex: 0 0 40%;           /* fixed 40% width */
+  border-left: 1px solid #e0e0e0;
+  padding-left: 20px;
+}
+
+/* Left Box */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.backLink {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.radioBox {
+  margin-top: 20px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.required {
+  color: red;
+}
+
+.radioLabel {
+  display: inline-block;
+  margin-right: 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Right Box */
+.planSummaryTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 0%;
+}
+
+.planSummary {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.planHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.logo {
+  margin-right: 5px;
+}
+
+.planType {
+  font-size: 13px;
+  color: #555;
+}
+
+.planName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Pricing */
+.priceDetails {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.totalPay {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+  font-weight: 600;
+}
+
+.totalAmount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e53935;
+}
+
+/* Button */
+.payBtn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: background 0.2s ease;
+}
+
+.payBtn:hover {
+  background: #d32f2f;
+}
+
+/* Terms */
+.terms {
+  font-size: 12px;
+  margin-bottom: 15px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Next Step */
+.nextStep {
+  border: 1px solid #ffc107;
+  background: #fff8e1;
+  padding: 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.stepTag {
+  background: #ffc107;
+  color: #000;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+/* responsive  */
+/* Existing CSS remains same (no changes to design) */
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .wrapper {
+    width: 90%;
+    padding: 2rem 0;
+  }
+
+  .mainContent {
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .rightSection {
+    flex: 0 0 45%;
+    padding-left: 15px;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .priceDetails, .totalPay {
+    font-size: 13px;
+  }
+}
+
+/* For all mobile devices*/
+@media (max-width: 768px) {
+  .wrapper {
+    width: 90%;
+    margin: 0 auto;
+    padding: 1rem 0.5rem;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .mainContent {
+    flex-direction: column; 
+    gap: 15px;
+  }
+
+  .leftSection,
+  .rightSection {
+    width: 100%;
+    border: none;
+    padding: 0;
+  }
+
+  /* ✅ Info bar scales smoothly */
+  .infoBar {
+    font-size: clamp(0.65rem, 2vw, 0.9rem);  /* auto text resize */
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  /* ✅ Info icon scales with screen size */
+  .infoIcon {
+    width: clamp(12px, 3vw, 16px);   /* auto shrink */
+    height: clamp(12px, 3vw, 16px);
+    font-size: clamp(10px, 2.5vw, 13px);
+    margin-left: 4px;
+  }
+
+  .planSummary {
+    padding: 12px;
+  }
+
+  .payBtn {
+    width: 100%;
+  }
+}

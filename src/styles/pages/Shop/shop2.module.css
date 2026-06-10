@@ -1,0 +1,395 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 80px 60px;
+  background: #f9fbff;
+  /* min-height: 100vh; */
+  box-sizing: border-box;
+
+}
+
+/* LEFT SECTION */
+.left {
+  flex: 1;
+  max-width: 55%;
+}
+
+.subHeading {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.highlight {
+  color: #e63946;
+  font-weight: 700;
+}
+
+.price {
+  color: #ff3d00;
+  font-weight: 700;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  margin: 15px 0 25px 0;
+  color: #444;
+}
+
+
+.middle {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.illustration img {
+  max-width: 500px;
+  height: auto; 
+}
+
+
+.partnersBox {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  max-width: 420px;   /* 🔑 width control */
+}
+
+.partnersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 40px;
+  margin-top: 15px;
+}
+
+.partner img {
+  max-width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+/* RIGHT SECTION */
+.right {
+  flex: 1;
+  max-width: 40%;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  padding: 30px;
+}
+
+.cardHeading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.businessOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.businessOptions button {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 13px;
+  background: #f9fbff;
+  cursor: pointer;
+}
+.businessOptions button:hover {
+  background: #eef4ff;
+  border-color: #5a8dee;
+}
+
+/* Owner / Tenant */
+.subText {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.ownerTenant {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.option {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.option p {
+  font-weight: 600;
+  margin: 6px 0;
+}
+
+.option small {
+  font-size: 11px;
+  color: #666;
+}
+
+.option.active {
+  border: 2px solid #ff3d00;
+  background: #fff6f2;
+}
+
+/* Button */
+.continueBtn {
+  width: 100%;
+  background: #ff3d00;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.continueBtn:hover {
+  background: #e63200;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .left,
+  .right {
+    max-width: 100%;
+  }
+
+  .partnerBox {
+    max-width: 100%;
+  }
+
+  .illustration {
+    max-width: 200px;
+  }
+}
+/* 📱 TABLETS & SMALL LAPTOPS (≤1024px) */
+@media (max-width: 1024px) {
+  .wrapper {
+    flex-direction: column;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+
+  .left,
+  .right {
+    max-width: 100%;
+  }
+
+  .middle {
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+  }
+
+  .illustration {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .illustration img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .partnersBox {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .partnersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+
+  .partner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .partner img {
+    max-width: 140px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+}
+/* 📱 PHONES & SMALL TABLETS (≤768px) */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 20px 15px;
+    gap: 25px;
+  }
+
+  .heading { font-size: 22px; }
+  .subHeading { font-size: 13px; }
+  .features { font-size: 13px; }
+
+  .partnersBox { padding: 20px; }
+
+  .partnersGrid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row */
+    gap: 15px;
+  }
+
+  .partner img {
+    max-width: 140px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .businessOptions { gap: 8px; }
+  .businessOptions button { font-size: 12px; padding: 6px 12px; }
+
+  .ownerTenant { flex-direction: column; gap: 12px; }
+  .option { padding: 10px; }
+
+  .card { padding: 22px; }
+}
+
+/* 📱 SMALL PHONES (≤480px) */
+@media (max-width: 480px) {
+  .wrapper { padding: 15px 10px; gap: 20px; }
+
+  .heading { font-size: 20px; }
+  .subHeading { font-size: 12px; }
+  .features { font-size: 12px; gap: 4px; }
+
+  .illustration img {
+    width: 100%;
+    height:auto;
+    max-width: 100%;
+  }
+
+  .partnersBox { padding: 18px; }
+
+  .partnersGrid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ still 2 per row */
+    gap: 10px;
+  }
+
+  .partner img {
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .card { padding: 20px; }
+  .cardHeading { font-size: 16px; }
+  .continueBtn { font-size: 14px; padding: 10px; }
+}
+.optionBtn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 25px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.optionBtn:hover {
+  background: #f3f4f6;
+}
+
+.optionBtn.active {
+  border: 2px solid #1e40af;
+  color: #1e40af;
+  background: #e0ecff;
+}
+
+/* ---------- Input box ---------- */
+.otherInputBox {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.textField {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.textField:focus {
+  border-color: #1e40af;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .optionBtn {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+
+  .otherInputBox {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .textField {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .optionBtn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .textField {
+    font-size: 12px;
+  }
+
+  .otherInputBox {
+    gap: 8px;
+  }
+}

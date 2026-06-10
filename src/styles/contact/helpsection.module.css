@@ -1,0 +1,116 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.leftSection {
+  flex: 1 1 55%;
+}
+
+.rightSection {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.heading{
+  color: #002060;
+  margin-bottom: 1.5rem;
+}
+
+.step {
+  border-top: 1px solid #e0e0e0;
+  padding: 1.2rem 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.level {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+  padding-right: 1rem;
+}
+
+.boldText {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.loginBtn {
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  background-color: transparent;
+  border: 1.5px solid #0070f3;
+  color: #0070f3;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.footerText {
+  margin-top: 2rem;
+  font-size: 14px;
+  color: #374151;
+}
+
+.footerText a {
+  color: #0070f3;
+  text-decoration: underline;
+}
+
+.card {
+  padding: 1rem 1rem;
+  border-radius: 10px;
+}
+
+.cardTitle {
+  font-weight: 600;
+  color: #1f2937;
+  /* margin-bottom: 0.3rem; */
+}
+
+.helpline {
+  font-size: 15px;
+  font-weight: 700;
+  color: #003366;
+}
+
+.time {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.nri {
+  font-weight: 600;
+  color: #0070f3;
+}
+
+.blueCard {
+  background-color: #eaf3ff;
+  width: 350px;
+}
+
+.cyanCard {
+  background-color: #e4f8f9;
+    width: 350px;
+
+  
+
+}
+
+.yellowCard {
+  background-color: #fff4dc;
+    width: 350px;
+
+}

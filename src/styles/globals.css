@@ -1,0 +1,104 @@
+/* ================= GOOGLE FONTS ================= */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;900&display=swap");
+
+/* ================= ROOT COLORS ================= */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --bg:#F5F7FB;
+  --white:#fff;
+  --border:#E7EEF7;
+  --shadow:0 6px 18px rgba(30, 62, 98, .06);
+  --text:#1f2937;
+  --muted:#6b7280;
+  --green:#16a34a;
+  --chip-bg:#F3F6FA;
+  --chip-bd:#E6ECF2;
+  --primary:#2563eb;
+  --cta:#ff6b00;
+  --cta-dark:#ea6405;
+  --cta-arrow:#ffffff;
+  --violet:#8b5cf6;
+
+  --bg-light: #f7f9fb;
+  --accent: #ff5a1f;
+  --card-blue-1: #dff4f9;
+  --card-blue-2: #cceffa;
+}
+
+/* ================= GLOBAL RESET ================= */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+
+  /* 🔥 Global Default Font */
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; /* default = description */
+
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* ================= MEDIA FIX ================= */
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container,
+section,
+div {
+  max-width: 100%;
+}
+
+/* ===================================================== */
+/* 🔥 GLOBAL TYPOGRAPHY SYSTEM (USE EVERYWHERE) */
+/* ===================================================== */
+
+/* ===== HEADING ===== */
+h1,
+h2,
+h3,
+.text-heading {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: var(--text);
+}
+
+/* ===== SUB HEADING ===== */
+h4,
+h5,
+.text-subheading {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ===== DESCRIPTION / PARAGRAPH ===== */
+p,
+span,
+li,
+a,
+.text-description {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* OPTIONAL: Button text */
+button {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+}

@@ -1,0 +1,135 @@
+.cont {
+  display: flex;
+  flex-direction: column; /* Default: mobile = image on top */
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  /* display: grid;
+  grid-template-columns: 1fr 1fr; */
+  width: 70%;
+  margin: auto;
+  place-items: center;
+  min-height: 60vh;
+  padding: 5vw 0 5vw 0;
+}
+
+/* On larger screens: reverse the order (text left, image right) */
+@media screen and (min-width: 1000px) {
+  .cont {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.imageCont {
+  width: 60%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.image {
+  width: 80%;
+  height: auto;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.headings {
+  margin: 0;
+  font-size: 25px;
+  padding: 4vw 0 2vw 0;
+  text-align: center;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  width:100%;
+  border-radius: 10px;
+  margin-bottom: 50px;
+  padding: 40px 20px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.form {
+  display: grid;
+
+  gap: 2rem;
+  width: 100%;
+}
+
+.heading {
+  margin: 0;
+  font-size: 20px;
+  text-align: left;
+  color: #888287;
+}
+
+.path {
+  display: flex;
+  align-items: center;
+  color: #888287;
+  gap: 1rem;
+  border-style: none none solid none;
+  border-width: 1px;
+  margin-bottom: 20px;
+}
+
+.bold {
+  font-size: 25px;
+}
+
+.input {
+  width: 100%;
+  padding: 20px 20px;
+  border-radius: 10px;
+  border-color: #dfe0e2;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.input::placeholder {
+  color: #afafaf;
+}
+
+.policy {
+  color: #609dff;
+}
+
+.button {
+  all: unset;
+  width: 88%;
+  padding: 20px 20px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: #f34653;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.transparentButton {
+  all: unset;
+  display: flex;
+  align-items: center;
+  color: #609dff;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 16px;
+  display: none;
+}
+
+@media screen and (max-width: 1000px) {
+  .cont {
+    grid-template-columns: 1fr;
+    width: 90%;
+  }
+  /* .imageCont {
+    display: none;
+  } */
+}

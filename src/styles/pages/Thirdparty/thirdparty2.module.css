@@ -1,0 +1,404 @@
+/* ===== Page wrapper ===== */
+.wrapper {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 280px 1fr 310px; /* left | main | right */
+  gap: 18px;
+  background: #eef3ff; /* page bg like mock */
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ===== Left sidebar ===== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Vehicle card */
+.carInfo {
+  background: #ffffff;
+  border: 1px solid #e6ebf7;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+}
+.carInfo h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0d1b3e;
+}
+.carInfo p {
+  margin: 0;
+  font-size: 13px;
+  color: #4b5568;
+}
+.carInfo a {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #0d63f3;
+  text-decoration: none;
+  font-weight: 700;
+}
+.carDetails {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed #e6ebf7;
+}
+.carDetails p { margin: 6px 0; }
+
+/* Filters card */
+.filterBox {
+  background: #ffffff;
+  border: 1px solid #e6ebf7;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+}
+.filterBox h4 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0d1b3e;
+}
+
+.filterSection + .filterSection {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #e6ebf7;
+}
+.filterSection h5 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #6b7391;
+  font-weight: 800;
+}
+.filterSection label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1f2437;
+  margin: 8px 0;
+}
+.filterSection input[type="checkbox"] { accent-color: #0d63f3; }
+.mustBuy {
+  margin-left: 6px;
+  background: #ffe7ec;
+  color: #e23b56;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.filterSection a {
+  display: inline-block;
+  margin-top: 6px;
+  color: #0d63f3;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+/* ===== Main content ===== */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs row */
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+.tab {
+  border: 1.6px solid #dbe4ff;
+  background: #f6f8ff;
+  color: #0f214b;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.active {
+  background: #233b7a;
+  color: #fff;
+  border-color: #233b7a;
+}
+
+/* Section headings */
+.sectionTitle {
+  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0d1b3e;
+  margin: 4px 0 -12px;
+}
+.priceTag {
+  color: #ff5a1f;
+  font-weight: 900;
+}
+.sectionSub {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #6b7391;
+}
+
+/* ===== Plan cards ===== */
+.planCard {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e6ebf7;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
+}
+
+.planLeft {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.img { width: 88px; height: auto; object-fit: contain; }
+.planText p { margin: 0; margin-left: 14px; }
+.planType {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f2437;
+  text-align: center;
+}
+.greenText {
+  font-size: 12px;
+  color: #2ea97f;
+  text-align: center;
+  margin-top: 4px;
+}
+.orangeText {
+  font-size: 12px;
+  color: #e98b32;
+  margin-top: 4px;
+}
+
+/* Right price + CTA */
+.planRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 160px;
+}
+.planPrice {
+  display: inline-block;
+  background: #ff5a1f;
+  color: #fff;
+  font-weight: 900;
+  padding: 8px 14px;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+}
+.planPrice::after {
+  content: "→";
+  margin-left: 8px;
+  font-weight: 900;
+}
+
+.compareBtn {
+  background: #eef3ff;
+  border: 1px solid #dbe4ff;
+  color: #0d63f3;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Show more plans bar */
+.showMore {
+  width: 100%;
+  background: #e6efff;
+  color: #1d4ed8;
+  border: 1px solid #cfe0ff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ===== Right sidebar (benefits) ===== */
+.rightSidebar {
+  position: sticky;
+  top: 14px;
+  height: fit-content;
+}
+.benefitsBox {
+  background: #f1f6ff;
+  border: 1px solid #dbe6ff;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+}
+.benefitsBox h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #0d1b3e;
+}
+.benefitsBox ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+  display: grid;
+  gap: 8px;
+  color: #3a415a;
+  font-size: 13px;
+}
+.benefitsBox li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: 8px;
+}
+.agentBox {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #cfe0ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.agentImg { border-radius: 50%; }
+
+.filtericons{
+  color: black;
+  border: 1px solid grey;
+  padding: 4px;
+  border-radius: 2px;
+  background-color: none;
+}
+
+/* ===== Mobile Filter Toggle ===== */
+.mobileFilterBtn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 12px;
+  background: none;
+}
+
+.sidebarHeader {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #0d1b3e;
+}
+/* ===== Responsive Sidebar (Mobile Drawer) ===== */
+@media (max-width: 980px) {
+  .mobileFilterBtn {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    padding: 16px;
+    overflow-y: auto;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebarOpen {
+    left: 0;
+  }
+
+  .sidebarHeader {
+    display: flex;
+  }
+
+  .wrapper {
+    grid-template-columns: 1fr;
+    padding-left: 5vw;   /* fluid spacing left */
+    padding-right: 5vw;  /* fluid spacing right */
+  }
+
+  .rightSidebar {
+    position: static;
+    margin-top: 20px;
+  }
+
+  /* Fix plan cards on narrow screens */
+  .planCard {
+    grid-template-columns: 1fr; /* stack left & right */
+    text-align: left;
+  }
+
+  .planRight {
+    align-items: flex-start;
+    min-width: auto;
+    margin-top: 10px;
+  }
+
+  /* Adjust logo sizes */
+  .img {
+    width: 70px;
+    max-width: 100%;
+  }
+
+  /* Make tabs scrollable if overflow */
+  .tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+}
+
+/* Extra small devices (below 400px) */
+@media (max-width: 400px) {
+  .wrapper {
+    padding-left: 4vw;
+    padding-right: 4vw;
+  }
+
+  .planPrice {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .compareBtn {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .tab {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}

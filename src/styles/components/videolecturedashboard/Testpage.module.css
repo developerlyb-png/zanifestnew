@@ -1,0 +1,751 @@
+/* ================= ROOT WRAPPER ================= */
+
+/* ✅ FIX: Desktop layout ko stable banao */
+
+.testWrap {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  justify-content: flex-start;   /* 🔥 ONLY CHANGE */
+  align-items: flex-start;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+/* ================= CENTER COLUMN ================= */
+
+.testCenterColumn {
+  width: 100%;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ================= HEADER ROW ================= */
+/* Passing Marks | Title | Timer */
+
+.testPageHeaderRow {
+  width: 100%;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+/* LEFT */
+.leftInfo {
+  background: #f3f4f6;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* CENTER */
+.testPageTitleWrap {
+  text-align: center;
+}
+
+.testPageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.testPageSub {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* RIGHT */
+.timerBox {
+  background: #fff4cc;
+  color: #92400e;
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ================= MAIN CARD ================= */
+
+.card {
+  width: 100%;
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* ================= INFO BOXES ================= */
+
+.examInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.examInfo span {
+  background: #f3f4f6;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ================= QUESTION ================= */
+
+.questionBox {
+  background: #3c7da6;
+  color: #ffffff;
+  padding: 22px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 20px 0 26px;
+}
+
+/* ================= ANSWERS ================= */
+
+.answersGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.choiceBtn {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.choiceBtn:hover {
+  background: #f4d7a8;
+  border: solid 1px #f59e0b;
+}
+
+.selected {
+      background: rgb(234, 100, 51) !important;
+  color: #ffffff !important;
+}
+
+/* ================= NAV BUTTONS ================= */
+
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.navBtn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.navBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.navBtn:hover:enabled {
+  background: #fc7d1c;
+}
+.submitBtn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgb(234, 100, 51);
+
+  cursor: pointer;
+}
+
+/* ================= PROGRESS BAR ================= */
+
+.progressWrap {
+  margin-top: 22px;
+  width: 100%;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #f59e0b;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* ================= RESULT ================= */
+
+.resultWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
+
+.score {
+  font-size: 40px;
+  font-weight: 700;
+  color: #3c7da6;
+}
+
+.actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.linkBtn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #3c7da6;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.greyBtn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #e5e7eb;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .testPageHeaderRow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .leftInfo,
+  .timerBox {
+    justify-self: center;
+  }
+
+  .answersGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .testPageTitle {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
+
+.imageBox {
+  position: relative;
+  display: inline-block;
+}
+
+/* FULL SCREEN CENTER */
+
+
+/* SOFT CONFETTI BG */
+.confettiBg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* CARD + MEDAL CONTAINER */
+.imageBox {
+  position: relative;
+  z-index: 2;
+  width: 800px;
+  height: 420px;
+  translate: 10px 0;
+}
+
+/* WHITE CARD IMAGE */
+.resultBackground {
+  width: 159vw;
+  height: auto;
+  border-radius: 20px;
+}
+
+/* MEDAL ON TOP CENTER */
+.medalTop {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  translate: -10px 0;
+}
+
+/* TEXT OVER CARD */
+.overlayContent {
+  position: absolute;   /* 🔥 IMPORTANT */
+  top: 40px;
+  left: 0;
+  ;
+  height: calc(100% - 40px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+translate: 0 15px;
+  text-align: center;
+  z-index: 4;
+}
+.congrats{
+  font-size: 30px;
+  font-weight: 700;
+    translate: -10px 0;
+
+}
+.resultSub{
+  font-size: 15px;
+      translate: -10px 0;
+
+}
+.finalScore{
+   translate: -10px 0;
+   font-size: 22px;
+}
+.esultText{
+    translate: -10px 0;
+    font-size: 16px;
+}
+.linkBtn{
+    translate: -10px 0;
+    
+}
+.greyBtn{
+    translate: -10px 0;
+    
+}
+
+/* ================= ANSWER OPTIONS ================= */
+
+.answersGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.choiceBtn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 2px solid #e5e7eb;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+/* OPTION LETTER */
+.optionLabel {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
+  background: #f3f4f6;
+  color: #374151;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* OPTION TEXT */
+.optionText {
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* HOVER */
+.choiceBtn:hover {
+  border-color: #f59e0b;
+  background: #fff7ed;
+  transform: translateY(-1px);
+}
+
+/* SELECTED */
+.selected {
+  background: rgb(234, 100, 51) !important;
+  border-color: rgb(234, 100, 51) !important;
+  color: #ffffff !important;
+}
+
+.selected .optionLabel {
+  background: #ffffff;
+  color: rgb(234, 100, 51);
+}
+@media (max-width: 1200px) {
+  .answersGrid {
+    gap: 14px;
+  }
+
+  .choiceBtn {
+    padding: 16px 18px;
+    font-size: 15px;
+  }
+}
+/* ================= FAIL RESULT ================= */
+
+.resultWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* MAIN CARD (SAME AS SUCCESS CARD) */
+.failCard {
+  position: relative;
+  width: 520px;
+  height: 360px;
+
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: visible;
+}
+
+/* IMAGE6 → CARD KE PEECHE (BIGGER) */
+.failCardBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.95;
+width: 100%;
+
+  /* 🔥 REAL SIZE INCREASE */
+  transform: scale(1.25);   /* 1.12–1.25 safe range */
+}
+
+
+
+/* TOP ICON GROUP */
+.failTopIcons {
+  position: absolute;
+  top: -46px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  z-index: 3;
+}
+
+/* CONTENT */
+.failOverlay {
+  position: relative;
+  z-index: 2;
+
+  text-align: center;
+  padding: 78px 32px 32px;
+  
+}
+
+/* TEXT */
+.failTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.failScore {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #ef4444;
+}
+
+.failScore span {
+  font-weight: 700;
+}
+
+.failSub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+  max-width: 340px;
+  margin-inline: auto;
+  line-height: 1.5;
+}
+
+/* ACTIONS */
+.failActions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* BUTTONS */
+.retryBtn {
+  background: #ef4444;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.retryBtn:hover {
+  background: #dc2626;
+}
+
+.greyBtn {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.greyBtn:hover {
+  background: #e5e7eb;
+}
+
+.failTopIcons {
+  position: absolute;
+  top: -64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 3;
+}
+.failSadIcon {
+  width: 280px;
+  height: 160px;
+    translate: 0 -20px;
+
+}
+.failWarningIcon {
+   width: 200px;
+  height: 100px;
+  translate: -150px -20px;
+}
+.failTitle{
+  font-size: 35px;
+  font-weight: 700;
+  color: #111827;
+  translate: 5px -35px;
+}
+.failScore{
+  margin-top: 10px;
+  font-size: 20px;
+  color: #ef4444;
+    translate: 0 -35px;
+}
+.failSub{
+    translate: 0 -35px;
+    font-size: 16px;
+    max-width: 400px;
+}
+.failActions{
+    translate: 0 -25px;
+}
+.resultBackground {
+  width: 100%;
+  max-width: 820px;   /* sidebar ke baad ka area */
+  height: auto;
+  border-radius: 20px;
+}
+.imageBox {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 750px;   /* 🔥 sidebar ke saath align */
+  height: auto;
+}
+.overlayContent{
+      text-align: center;
+    z-index: 4;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100% - 40px);
+    display: flex;
+    position: absolute;
+    top: 11px;
+    left: 0px;
+    translate: 0px 15px;
+    padding: 24px;
+}
+/* ================= RESULT – LOCKED DESKTOP LAYOUT ================= */
+
+.resultWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* CARD CONTAINER */
+.imageBox {
+  position: relative;
+  width: 100%;
+  max-width: 820px;   /* 🔒 LOCK AT 1200px */
+  height: auto;
+  z-index: 2;
+}
+
+/* CARD IMAGE */
+.resultBackground {
+  width: 100%;
+  max-width: 820px;
+  height: auto;
+  border-radius: 20px;
+  display: block;
+}
+
+/* MEDAL */
+.medalTop {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+/* TEXT OVER CARD */
+.overlayContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  z-index: 4;
+}
+
+/* TEXT SIZES */
+.congrats {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.resultText {
+  font-size: 16px;
+}
+
+.resultSub {
+  font-size: 15px;
+  margin-top: 6px;
+}
+
+.finalScore {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+/* BUTTONS */
+.actions {
+  margin-top: 22px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+/* 🔒 FORCE 1400px RESULT UI SAME ON 1200px */
+
+@media (min-width: 1200px) {
+
+  .imageBox {
+    width: 800px !important;
+    max-width: 800px !important;
+    height: 420px !important;
+    translate: 10px 0 !important;
+  }
+
+  .resultBackground {
+    width: 159vw !important;   /* jo 1400px pe hai wahi */
+  }
+
+  .overlayContent {
+    top: 40px !important;
+    height: calc(100% - 40px) !important;
+    translate: 0 15px !important;
+  }
+
+  .congrats,
+  .resultSub,
+  .finalScore,
+  .resultText,
+  .linkBtn,
+  .greyBtn {
+    translate: -10px 0 !important;
+  }
+
+  .medalTop {
+    translate: -10px 0 !important;
+  }
+}

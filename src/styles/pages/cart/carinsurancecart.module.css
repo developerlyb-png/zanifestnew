@@ -1,0 +1,369 @@
+.container {
+  background-color: #f5f8ff;
+  padding: 2rem;
+  margin: 1rem 10rem 0rem 10rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.heading {
+  font-style: bold;
+  font-weight: 600;
+}
+
+.pageTitle {
+  color: #1c1c1c;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  background-color: #f0f7ff;
+  height: 40px;
+  width: 100%;
+  border-top: 1px solid #c9cbd0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1c1c;
+  padding-left: 20px;
+}
+
+.main {
+  display: flex;
+  justify-content: space-between; /* ✅ keeps consistent gap */
+  gap: 1.5rem;
+}
+
+.left {
+  width: 58%; /* ✅ fixed proportion */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.right {
+  width: 36%; /* ✅ fixed proportion */
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  border: 1px solid #c9cbd0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  padding-bottom: 1rem;
+}
+
+.card1 {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #c9cbd0;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.optionGroup {
+  padding: 1rem 1.5rem;
+}
+
+.optionGroup p {
+  font-size: 15px;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.optionGroup label {
+  margin-right: 2rem;
+  font-size: 14px;
+  cursor: pointer;
+}
+.optionGroup label {
+  margin-right: 2rem;
+  font-size: 14px;
+  cursor: pointer;
+
+  display: inline-flex;   /* ✅ radio + text ek line me */
+  align-items: center;    /* ✅ vertically center */
+  gap: 6px;               /* ✅ thoda spacing between radio & text */
+}
+
+.optionGroup input[type="radio"],
+.optionGroup input[type="checkbox"] {
+  margin: 0; /* ✅ extra top-bottom spacing remove */
+}
+
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #5e5e5e;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 0.8rem;
+}
+
+.carTitle {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 0.25rem;
+}
+
+.carSubText {
+  font-size: 13px;
+  color: #555;
+}
+
+.summaryCard {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e3e6eb;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 14px;
+}
+
+.viewBtn {
+  font-size: 12px;
+  background: none;
+  color: #1e88e5;
+  border: none;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin: 1rem 0;
+  gap: 0.5rem;
+}
+
+.checkboxRow label {
+  flex: 1;
+}
+
+.price {
+  margin-left: auto;
+  font-weight: bold;
+}
+
+.totalBox {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.youPay {
+  font-size: 14px;
+  color: #1c1c1c;
+}
+
+.priceBig {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ff5722;
+}
+
+.payBtn {
+  width: 100%;
+  padding: 0.9rem;
+  background: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.terms {
+  font-size: 12px;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+.terms span {
+  color: #1e88e5;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.nextStep {
+  margin-top: 1rem;
+  background: #f5f5f5;
+  padding: 0.9rem;
+  font-size: 12px;
+  border-radius: 6px;
+  line-height: 1.4;
+}
+
+/* Tablet (481px – 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .container {
+    padding: 1.5rem;
+    margin: 1rem 2rem 0rem 2rem;
+  }
+
+  .main {
+    flex-direction: column; /* ✅ Right panel moves below */
+    gap: 1.5rem;
+  }
+
+  .card,
+  .card1,
+  .summaryCard {
+    width: 100%; /* ✅ Full width on tablet */
+    margin-left: 0;
+    height: auto;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+
+  .note {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .backArrow,
+  .backSummary {
+    display: none;
+  }
+}
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+    margin: 0;
+  }
+
+  .optionGroup {
+    font-size: 11px;
+    margin-right: 0;
+  }
+
+  .main {
+    flex-direction: column; /* ✅ Stacks nicely */
+    gap: 1rem;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+
+  .card,
+  .card1,
+  .summaryCard {
+    width: 100%; /* ✅ Full width for mobile */
+    margin: 0 auto;
+    padding: 1rem;
+    height: auto;
+  }
+
+  .sectionTitle {
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px;
+  }
+
+  .note {
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+  .row {
+    gap: 0.5rem;
+  }
+
+  .checkboxRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .payBtn {
+    font-size: 13px;
+    padding: 0.7rem;
+  }
+
+  .priceBig {
+    font-size: 18px;
+  }
+
+  .terms {
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .nextStep {
+    font-size: 11px;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .backArrow,
+  .backSummary {
+    display: none;
+  }
+}
+/* Checkbox / Radio proper vertical center */
+.checkboxRow,
+.optionGroup label,
+.summaryCard label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* spacing between checkbox/radio and text */
+  cursor: pointer;
+}
+
+.checkboxRow input,
+.optionGroup input,
+.summaryCard input {
+  margin: 0; /* remove default extra spacing */
+}
+
+/* Mandatory checkbox text alignment fix */
+.summaryCard .checkboxRow label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4; /* better readability */
+}
+
+/* Next step box padding fix */
+.nextStep {
+  margin-top: 1rem;
+  background: #f5f5f5;
+  padding: 1rem;   /* ✅ proper spacing inside */
+  font-size: 12px;
+  border-radius: 6px;
+  line-height: 1.4;
+}
+

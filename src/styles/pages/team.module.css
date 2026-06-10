@@ -1,0 +1,73 @@
+.teamSection {
+  padding: 3rem 1rem;
+  background-color: #ffffff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #f59e0b;
+  display: inline-flex;
+  align-items: center;
+}
+
+.titleUnderline {
+  display: inline-block;
+  margin-left: 0.75rem;
+  width: 3rem;
+  height: 0.25rem;
+  background-color: #f59e0b;
+}
+
+.description {
+  margin-top: 1rem;
+  color: #4b5563; /* gray-600 */
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.cardGrid {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.card {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cardImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.5rem;
+}
+
+.cardName {
+  margin-top: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827; /* gray-900 */
+}
+
+.cardTitle {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+}

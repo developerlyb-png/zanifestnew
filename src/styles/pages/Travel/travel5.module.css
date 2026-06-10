@@ -1,0 +1,655 @@
+/* ====== LAYOUT ====== */
+.wrapper {
+  display: flex;
+  gap: 40px;
+  padding: 48px 72px;
+  background: #ffffff;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* ====== LEFT ====== */
+.leftSection { flex: 1; }
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #2d6cdf;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Big page title */
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b1621;
+  margin: 0 0 18px;
+}
+
+/* ====== Stepper (1–2–3) ====== */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.step {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #d7dee9;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.active {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background: #e5ebf3;
+}
+
+/* Traveller tag */
+.travellerInfo { margin: 12px 0 16px; }
+.travellerTitle {
+  display: inline-block;
+  padding-left: 10px;
+  border-left: 3px solid #2d6cdf;
+  color: #0b1621;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ====== FORM ====== */
+.form { display: flex; flex-direction: column; gap: 14px; }
+.row  { display: flex; gap: 16px; }
+
+/* Inputs & selects (scoped for CSS Modules) */
+.form input,
+.form select {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #cdd6e1;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #0b1621;
+  outline: none;
+  box-sizing: border-box;
+}
+.form input::placeholder { color: #9aa8b7; }
+.form input:focus,
+.form select:focus {
+  border-color: #2d6cdf;
+  box-shadow: 0 0 0 3px rgba(45,108,223,0.12);
+}
+.form input[readonly] {
+  background: #f5f7fb;
+  color: #0b1621;
+}
+
+/* Gender buttons */
+.genderBtns { display: flex; gap: 12px; }
+.genderBtn {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #cdd6e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b1621;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.genderBtn:hover { border-color: #2d6cdf; color: #2d6cdf; }
+.genderIcon { font-size: 16px; }
+
+/* Checkboxes (fixed size) */
+.checkbox {
+ 
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 2px;
+}
+.checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2d6cdf;
+  cursor: pointer;
+margin-right: 10px;}
+
+/* Helper/notes */
+.helper { font-size: 13px; color: #374151; line-height: 1.3; }
+.whatsapp { color: #22c55e; font-weight: 600; }
+.helperNote { font-size: 13px; color: #2d6cdf; display: flex; align-items: center; gap: 6px; }
+
+/* Select wrapper & icon */
+.selectWrapper { position: relative; flex: 1; }
+.selectWrapper select { width: 100%; appearance: none; -webkit-appearance: none; }
+.selectIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+
+/* Phone group (country code + number) */
+.phoneWrapper {
+  display: flex;
+  flex: 1;
+  border: 1px solid #cdd6e1;
+  border-radius: 10px;
+  height: 48px;
+  overflow: hidden;
+  background: #fff;
+}
+.phoneWrapper select {
+  width: 92px;
+  flex: none;
+  border: none;
+  height: 100%;
+  padding: 0 12px;
+  background: #fff;
+  outline: none;
+}
+.phoneWrapper input {
+  flex: 1;
+  border: none;
+  height: 100%;
+  padding: 0 12px;
+  outline: none;
+  border-left: 1px solid #e3e9f1;
+}
+.formGroup input {
+  text-transform: capitalize;
+}
+/* Continue button */
+.continueBtn {
+  align-self: center;
+  width: 320px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: #ff5b21;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.continueBtn:hover { background: #e84f1c; }
+
+/* ====== RIGHT (Premium Summary) ====== */
+.rightSection {
+  flex: -2;
+  background: #ffffff;
+  padding: 24px;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  height: fit-content;
+}
+
+.summaryHeading { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #0b1621; }
+
+.summaryBox {
+  background: #ffffff;
+  border: 1px solid #e6eef7;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f3f8ff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b1621;
+}
+
+.planBox { padding: 14px 16px; }
+.planTitle { font-size: 14px; font-weight: 600; margin: 0 0 8px; color: #0b1621; }
+
+.planDetails { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.planLogo { width: 44px; height: 44px; object-fit: contain; border-radius: 6px; }
+
+.planName { font-size: 14px; font-weight: 700; color: #0b1621; }
+.planSum { font-size: 13px; color: #4b5563; }
+
+.premium { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #111827; margin-top: 8px; }
+
+.totalBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: #0b1621;
+}
+.totalPrice { color: #0b1621; font-size: 20px;}
+.gstNote { font-size: 12px; color: #6b7280; padding: 0 16px 14px; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 1024px) {
+  .wrapper { padding: 28px 24px; gap: 24px; }
+  .continueBtn { width: 100%; }
+}
+@media (max-width: 640px) {
+  .wrapper { flex-direction: column; }
+  .row { flex-direction: column; gap: 12px; }
+  .stepper { justify-content: center; }
+  .rightSection { order: 2; }
+  .continueBtn { width: 100%; }
+}
+/* Completed step (green checkmark background) */
+.completed {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+/* Step 2 medical box */
+.medicalBox {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subHeading {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0b1621;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  margin: 12px 0;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0b1621;
+}
+
+.radioOption input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2d6cdf;
+}
+/* Completed step */
+.completed {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+/* Step 2 Medical */
+.medicalBox {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.subHeading {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0b1621;
+}
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  margin: 12px 0;
+}
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0b1621;
+}
+.radioOption input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2d6cdf;
+}
+
+/* Step 3 Contact */
+.contactBox {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.editLink {
+  color: #2d6cdf;
+  font-size: 13px;
+  margin-left: 6px;
+}
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+.link {
+  color: #2d6cdf;
+  text-decoration: underline;
+}
+.payNowBtn {
+  align-self: center;
+  width: 320px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: #ff5b21;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 16px;
+}
+.payNowBtn:hover {
+  background: #e84f1c;
+}
+
+
+/* ====== Mobile (≤768px) ====== */
+@media (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+    padding: 20px 16px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .rightSection {
+    order: 2;
+    width: 100%;
+    padding: 20px 16px;   /* ✅ equal spacing left & right */
+    box-sizing: border-box;
+  }
+
+  .form input,
+  .form select,
+  .phoneWrapper {
+    height: 52px;          /* ✅ taller inputs */
+    font-size: 14px;
+    padding: 0 14px;       /* ✅ comfortable padding */
+  }
+
+  .continueBtn,
+  .payNowBtn {
+    width: 100%;
+    font-size: 15px;
+    height: 52px;          /* ✅ match input height */
+  }
+}
+
+/* ====== Small phones (≤480px) ====== */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 16px 20px;
+  }
+
+  .rightSection {
+    padding: 18px 14px;   /* ✅ keep equal margin on both sides */
+  }
+
+  .form input,
+  .form select,
+  .phoneWrapper {
+    height: 50px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+
+  .continueBtn,
+  .payNowBtn {
+    height: 50px;
+    font-size: 14px;
+  }
+}
+/* ===== Mobile form inputs & checkboxes ===== */
+@media (max-width: 768px) {
+  /* Input fields */
+  .form input,
+  .form select,
+  .form textarea {
+    height: 52px;           /* ✅ taller inputs */
+    line-height: 52px;      /* ✅ centers text vertically */
+    padding: 0 14px;        /* ✅ balanced padding */
+    font-size: 14px;
+  }
+
+  /* Phone input wrapper */
+  .phoneWrapper {
+    display: flex;
+    align-items: center;    /* ✅ aligns country code + input */
+    height: 52px;
+  }
+
+  /* Checkbox & radio buttons */
+  .form input[type="checkbox"],
+  .form input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle; /* ✅ aligns with label text */
+    margin-right: 8px;
+    position: relative;
+    top: -1px;              /* ✅ fine-tune for pixel-perfect line-up */
+  }
+
+  .form label {
+    
+    align-items: center;    /* ✅ ensures text aligns with input */
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+/* ====== Desktop sticky right section ====== */
+@media (min-width: 1025px) {
+  .rightSection {
+    position: sticky;
+    top: 24px;   /* distance from top of viewport */
+    align-self: flex-start;
+  }
+}
+
+/* ====== Stepper (1–2–3) ====== */
+.stepperWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.headingStepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.headingStepper h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1621;
+}
+
+/* Stepper itself (compact) */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; /* ✅ stays compact */
+  min-width: 100px; /* ✅ minimal width */
+}
+
+.step {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #d7dee9;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.active {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+}
+
+.line {
+  flex: 0 0 20px; /* ✅ shorter line so it doesn’t stretch */
+  height: 2px;
+  background: #e5ebf3;
+}
+
+/* Form group wrapper for labels above inputs */
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+/* ====== Form Controls Styling ====== */
+.formGroup input,
+.formGroup select {
+  height: 44px;              /* consistent height */
+  padding: 10px 14px;        /* breathing space inside */
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* For react-select or custom dropdowns */
+.formGroup .customSelect {
+  min-height: 44px;
+}
+
+/* Adjust label spacing */
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Fix checkbox spacing */
+.formGroupCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+/* Fix: Only apply to Nationality & Select Visa Type */
+.formGroup:nth-child(2) label,   /* Nationality */
+.row:nth-of-type(3) .formGroup:last-child label {  /* Select Visa Type */
+  display: block !important;
+  margin-bottom: 6px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  position: static !important; /* ✅ force it above, not inside */
+}
+
+.labelgroup{
+  translate:10px 20px;
+  z-index:10;
+  background-color:#fff;
+  width:25%;
+  padding-left:5px;
+}
+.labelgroup1{
+  translate:10px 20px;
+  z-index:10;
+  background-color:#fff;
+  width:17%;
+  padding-left:5px;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

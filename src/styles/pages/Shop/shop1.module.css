@@ -1,0 +1,354 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 80px 60px;
+  background: #f9fbff;
+  gap: 40px;
+}
+
+/* LEFT */
+.left {
+  flex: 1;
+  max-width: 55%;
+}
+
+.subHeading {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.heading {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.3;
+}
+
+.highlight {
+  color: #0d6efd;
+}
+
+.highlightRed {
+  color: #ff4500;
+}
+
+.features {
+  display: flex;
+  gap: 30px;
+  margin: 18px 0 25px;
+  list-style: none;
+  padding: 0;
+}
+
+.features li {
+  font-size: 14px;
+  color: #333;
+  position: relative;
+  padding-left: 20px;
+}
+
+.features li::before {
+  content: "✔";
+  color: #0d6efd;
+  position: absolute;
+  left: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.middle {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.illustration img {
+  max-width: 500px;
+  height: auto; 
+}
+
+
+.partnersBox {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  max-width: 420px;   /* 🔑 width control */
+}
+
+.partnersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 40px;
+  margin-top: 15px;
+}
+
+.partner img {
+  max-width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+
+/* RIGHT */
+.right {
+  flex: 1;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 28px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.formHeading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  color: #444;
+}
+
+.radioGroup input[type="radio"] {
+  accent-color: #ff4500;
+  margin-right: 6px;
+}
+
+.input {
+  width: 90%;
+  padding: 15px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid #d1d1d1;
+  font-size: 14px;
+}
+
+.whatsappIcon{
+  font-size:15px;
+  margin-left:10px;
+}
+.cta {
+  width: 100%;
+  background: #ff4500;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.cta::after {
+  content: "➔";
+  font-size: 18px;
+}
+
+.cta:hover {
+  background: #e03d00;
+}
+
+/* WhatsApp Toggle */
+.whatsapp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #25d366;
+  font-weight: 600;
+  margin-top: 10px;
+  font-size: 13px;
+  position: relative;
+  padding-right: 50px;
+}
+
+/* .whatsapp::after {
+  content: "";
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  background: #25d366;
+  border-radius: 20px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+} */
+
+.whatsapp::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* 📱 Mobile & Tablet Responsive */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px 10px;     /* ✅ equal 10px side space for container */
+    box-sizing: border-box;
+  }
+
+  /* Equal margin sections */
+  .left,
+  .right,
+  .partnersBox {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* LEFT */
+  .left {
+    text-align: center;
+  }
+
+  .heading {
+    font-size: 26px;
+    line-height: 1.4;
+  }
+
+  .features {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    margin: 15px 0 20px;
+    width: 100%;
+  }
+
+  .middle {
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  /* Illustration */
+  .illustration {
+    width: 100%;
+    text-align: center;
+  }
+
+  .illustration img {
+    max-width: 100%;   /* ✅ image fills available width */
+    height: auto;
+  }
+
+  /* Partners */
+  .partnersBox {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .partnersGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    justify-items: center;
+  }
+
+  .partner img {
+    max-width: 100px;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  /* RIGHT (form card) */
+  .right {
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .formHeading {
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .radioGroup {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .input {
+    width: 100%;              /* ✅ ensures inputs never overflow */
+    max-width: 100%;          /* ✅ safe guard */
+    font-size: 14px;
+    padding: 12px;
+    box-sizing: border-box;   /* ✅ includes padding in width */
+  }
+
+  .cta {
+    font-size: 15px;
+    padding: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .whatsapp {
+    justify-content: center;
+  }
+
+  .whatsapp::after,
+  .whatsapp::before {
+    position: relative;
+    right: unset;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 22px;
+  }
+
+  .subHeading {
+    font-size: 14px;
+  }
+
+  .features li {
+    font-size: 13px;
+  }
+
+  /* Logos in 2-column grid */
+  .partnersGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .partner img {
+    max-width: 90px;
+  }
+
+  .cta {
+    font-size: 14px;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,156 @@
+/* Container for the whole page */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  align-items: center;
+}
+
+/* White card box */
+.card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  margin-left: 0;
+  text-align: center;
+  width: 100%;
+  max-width: 600px; /* Optional: limits width on desktop */
+  box-sizing: border-box;
+}
+
+/* Title */
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Input fields */
+.headingInput {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 10px 0 16px 0;
+  font-size: 14px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Orange Save Buttons */
+.saveHeadingBtn,
+.saveOrderBtn {
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 0 auto;
+  display: block;
+  transition: background 0.3s ease;
+}
+
+.saveHeadingBtn:hover,
+.saveOrderBtn:hover {
+  background: #e65c00;
+}
+
+/* Reorder Box */
+.orderWrapper {
+  margin-top: 24px;
+}
+
+.orderLabel {
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* Drag/Drop Grid */
+.orderBox {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.orderItem {
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  cursor: grab;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.orderItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile: hide preview, make edit card full width */
+@media (max-width: 768px) {
+  .previewCard {
+    display: none !important;
+  }
+
+  .card {
+    max-width: 100%;
+    width: 100%;
+    padding: 24px;
+  }
+
+  .orderBox {
+    grid-template-columns: 1fr;
+  }
+
+  .saveHeadingBtn,
+  .saveOrderBtn {
+    width: 100%;
+  }
+}
+
+/* Smaller mobile tweaks */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 12px;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .headingInput {
+    padding: 10px 12px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .saveHeadingBtn,
+  .saveOrderBtn {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+  .previewCard{
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .previewContent {
+    display: none !important;
+  }
+}

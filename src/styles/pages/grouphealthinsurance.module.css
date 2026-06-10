@@ -1,0 +1,173 @@
+.groupHealthContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f9ff;
+  padding: 60px 80px;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.leftBlock {
+  flex: 1;
+  max-width: 50%;
+}
+
+.leftBlock h4 {
+  font-size: 16px;
+  color: #1c1c1c;
+  margin-bottom: 12px;
+}
+
+.leftBlock h2 {
+  font-size: 36px;
+  color: #1c1c1c;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.highlightBlue {
+  color: #0072ff;
+}
+
+.partnerBox {
+  background-color: #e7f0ff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.partnerBox p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.logos img {
+  height: 40px;
+  object-fit: contain;
+}
+
+.avatarImg {
+  max-width: 300px;
+  height: auto;
+  margin-top: 20px;
+}
+
+.rightForm {
+  flex: 1;
+  max-width: 40%;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.rightForm h3 {
+  font-size: 20px;
+  color: #1c1c1c;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.stepLabel {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.mobileInput {
+  width: 90%;
+  padding: 14px 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.otpNote {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.viewBtn {
+  background-color: #0072ff;
+  color: #fff;
+  padding: 14px 20px;
+  width: 100%;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.viewBtn:hover {
+  background-color: #005fd1;
+}
+
+.expertHelp {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 16px;
+}
+
+.whatsappOptin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 16px;
+}
+
+.formNote {
+  font-size: 12px;
+  color: #777;
+}
+
+.formNote a {
+  color: #0072ff;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .groupHealthContainer {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+
+  .leftBlock,
+  .rightForm {
+    max-width: 100%;
+  }
+
+  .logos {
+    justify-content: center;
+  }
+
+  .avatarImg {
+    max-width: 100%;
+  }
+}

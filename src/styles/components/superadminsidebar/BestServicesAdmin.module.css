@@ -1,0 +1,181 @@
+
+.container {
+  padding: 24px;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Page Title */
+.pageTitle {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+
+.headingBox {
+  margin: 0 auto;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.headingBox h3 {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.headingInput {
+  width: 70%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.headingBox button {
+  margin-left: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: orangered;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.headingBox button:hover {
+  background: #d84b0e;
+}
+
+.headingBox button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =======================
+   Services Grid
+   ======================= */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Service Card (Bootstrap-like) */
+.serviceCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.serviceCard:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+/* Card Title */
+.serviceCard h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+/* Inputs inside card */
+.serviceCard input,
+.serviceCard textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.serviceCard textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* Save button */
+.serviceCard button {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: orangered;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.serviceCard button:hover {
+  background: orangered;
+}
+
+.serviceCard button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =======================
+   Preview Section
+   ======================= */
+.previewBox {
+  border: 1px dashed #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  background: #fefefe;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* =======================
+   Responsive Styles
+   ======================= */
+@media (max-width: 768px) {
+  .headingBox {
+    width: 90%;
+  }
+
+  .previewBox {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .headingBox {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .serviceCard {
+    padding: 14px;
+  }
+}

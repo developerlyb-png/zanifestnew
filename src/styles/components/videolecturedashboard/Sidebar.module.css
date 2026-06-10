@@ -1,0 +1,64 @@
+/* SIDEBAR BASE */
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e4e4e4;
+  padding: 22px 18px;
+  position: sticky;
+  top: 0;
+}
+
+/* SECTION TITLES */
+.menuTitle {
+  font-size: 16px;      
+  font-weight: 700;       
+  color: #4b4b4b;
+  margin: 20px 0 12px;
+  text-transform: uppercase;
+}
+
+
+/* ITEM WRAPPER */
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+  transition: 0.25s ease;
+  margin-bottom: 10px;
+
+}
+
+/* Hover */
+.sidebarItem:hover {
+  background: #5487d9;
+  margin: 5px;
+}
+
+/* ACTIVE VIDEO */
+.activeItem {
+  background: #2559a8;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* LOCKED ITEMS */
+.lockedItem {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lockedItem:hover {
+  background: transparent !important;
+}
+
+/* Icon alignment */
+.itemIcon {
+  display: flex;
+  align-items: center;
+}

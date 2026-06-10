@@ -1,0 +1,41 @@
+.Hero {
+  background: rgb(235, 237, 239);
+  width: 100vw;
+  height: 70px;
+}
+.overlay {
+  /* if height is fixed or overflow is hidden */
+  overflow: hidden; 
+  height: 80vh;
+}
+
+
+.hero_container {
+  margin: 17px;
+  margin-left: 130px;
+  display: flex;
+  gap: 12rem;
+}
+
+.img img {
+  width: 169px;
+  height: 63px;
+}
+
+
+.hero_nav {
+    margin-top: 12px;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.signInBtn {
+  width: 80px;
+  border: 2px solid blue;
+  color: blue;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: transparent;
+}

@@ -1,0 +1,157 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  background-color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoutButton {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.mainArea {
+  display: flex;
+  height: 100%;
+  /* width: 50%; */
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #ffffff;
+  padding: 2rem 1.2rem;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #4b5563;
+  padding: 0.5rem 0.6rem;
+  font-size: 14.5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menuItem:hover {
+  background-color: #f3f4f6;
+}
+
+.iconLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.icon {
+  font-size: 16px;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.content {
+  
+  flex: 1;
+  padding: 2rem;
+  background-color: #f9fafb;
+}
+
+.dashboardTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #374151;
+}
+
+.subText {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.avatars {
+  display: flex;
+  gap: -0.5rem;
+}
+
+.avatar {
+  border-radius: 9999px;
+  border: 2px solid white;
+  margin-left: -10px;
+}
+
+.dots {
+  font-size: 1.25rem;
+  cursor: pointer;
+}

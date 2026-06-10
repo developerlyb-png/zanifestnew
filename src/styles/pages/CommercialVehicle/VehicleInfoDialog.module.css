@@ -1,0 +1,195 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;   
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;        
+  overflow-y: auto;      
+}
+.viewBtn {
+  background: #ff5722;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.3s;
+}
+
+.viewBtn:hover {
+  background: #e64a19;
+}
+
+.dialog {
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  width: 100%;           
+  max-width: 900px;      
+  margin: 0 10px;        
+  padding: 40px 30px;
+  gap: 90px;
+}
+
+.left {
+  width: 380px;
+  flex-shrink: 0;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.infoBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.editIcon {
+  color: #888;
+  cursor: pointer;
+}
+
+.input {
+  padding: 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
+.button {
+  background: #ff4d2f;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #e84228;
+}
+
+.terms {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+/* ✅ Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .dialog {
+    gap: 60px;
+    padding: 30px 20px;
+  }
+
+  .left {
+    width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    flex-direction: column;
+    gap: 30px;
+    padding: 25px 18px;
+  }
+
+  .heading {
+    text-align: center;
+  }
+
+  .overlay {
+    align-items: start;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    padding: 20px 15px;
+    gap: 20px;
+  }
+
+  .heading {
+    font-size: 15px;
+  }
+
+  .item {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .button {
+    padding: 12px;
+    font-size: 14px;
+    width: 50%;
+    align-self: center;
+  }
+  
+}
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: #333;
+  z-index: 1000; /* ✅ ensure it's above everything */
+}
+
+.closeBtn:hover {
+  color: red;
+}
+.dialog {
+  position: relative; /* ✅ required for close button */
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+}

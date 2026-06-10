@@ -1,0 +1,390 @@
+/* ===== Base Styles (desktop unchanged) ===== */
+.wrapper {
+  background: #f4f8ff;
+  min-height: 100vh;
+  padding: 24px 28px;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: #111827;
+  /* width: 100%; */
+}
+
+/* Back */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* Layout */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.left { min-width: 0; }
+.right { min-width: auto; }
+
+/* ------------------------------------------- */
+/* Success banner + selected plan              */
+/* ------------------------------------------- */
+
+.successWrap {
+  background: #eef5ff;
+  border: 1px solid #d9e6ff;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(20, 37, 63, 0.08);
+}
+
+.ribbon {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 10px;
+  align-items: start;
+  background: #e5f7e9;
+  border: 1px solid #c9edd5;
+  border-radius: 10px 10px 0 0;
+  padding: 22px 12px;
+}
+
+.ribbonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  font-size: 37px;
+  margin-top: 15px;
+}
+
+.ribbonText {
+  margin: 10px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: #0f172a;
+}
+
+.ribbonText strong { font-weight: 800; }
+
+.selectedCard {
+  background: #ffffff;
+  border: 1px solid #e6eef9;
+  border-radius: 0 0 10px 10px;
+  padding: 20px;
+}
+
+.selRow {
+  display: grid;
+  grid-template-columns: 96px 1fr 350px;
+  gap: 16px;
+  align-items: center;
+}
+
+.selLogoBox {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.selLogo { width: 70px; height: auto; object-fit: contain; }
+
+.selMid { display: grid; gap: 6px; justify-content: center; }
+.selRight { display: grid; gap: 6px; justify-items: start; }
+
+.metaLabel { font-size: 12px; color: #6b7280; }
+.metaValue { font-weight: 700; color: #111827; font-size: 14px; }
+
+/* section title */
+.subTitle {
+  margin: 18px 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* ------------------------------------------- */
+/* Policy card                                 */
+/* ------------------------------------------- */
+.policyCard {
+  background: #ffffff;
+  border: 1px solid #e6eef9;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(20, 37, 63, 0.08);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.badgeRow { margin-bottom: 8px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0ebff;
+  color: #6b3fd1;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+
+.badgeIcon { font-size: 13px; }
+
+.row {
+  display: grid;
+  grid-template-columns: 88px 1fr 220px 160px;
+  align-items: center;
+  gap: 14px;
+}
+
+.logoCol { display:flex; }
+.logoImg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.planCol { min-width: 0; }
+.planTitle { font-size: 18px; font-weight: 700; color: #253b5f; }
+
+.amountCol {
+  display: grid;
+  gap: 2px;
+  padding-left: 55px;
+  border-left: 2px solid #e8eef8;
+}
+
+.amountLabel { font-size: 13px; color: #6b7280; }
+.amountValue { font-size: 18px; font-weight: 800; color: #0f172a; }
+
+.priceCol { display:flex; justify-content: flex-end; }
+.priceBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f05429;
+  color: #fff;
+  font-weight: 800;
+  border: 0;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.06) inset;
+  transition: background .2s ease;
+}
+.priceBtn:hover { background: #e0461b; }
+
+.hr { height: 1px; background: #e6eef9; margin: 12px 0; }
+
+.covWrap { display: grid; gap: 10px; }
+.covTitle { color: #16a34a; font-weight: 800; font-size: 14px; }
+.pillRow { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #f6f7fb;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+.tick { color: #16a34a; font-size: 14px; }
+
+.pillGreen {
+  background:#E6FCFF;
+  color: #046c7f;
+  border: 1px solid #b7efc5;
+  font-weight: 700;
+}
+.pillArrow { font-size: 12px; }
+
+/* ------------------------------------------- */
+/* Help (right column)                          */
+/* ------------------------------------------- */
+.helpBox {
+  position: sticky;
+  top: 100px;  
+  right: calc((100% - 1166px) / 2); 
+  width: 340px;  
+  max-width: 100%; 
+  /* z-index: 1000; */
+  background: #ffffff;
+  border: 1px solid #e6eef9;
+  border-radius: 14px;
+  padding: 20px 18px;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(20, 37, 63, 0.08);
+}
+
+.agent { border-radius: 999px; object-fit: cover; }
+.helpTitle { margin: 10px 0 6px; font-size: 18px; font-weight: 800; color: #1f2937; }
+.helpText { margin: 0 0 14px; color: #6b7280; font-size: 14px; }
+
+.scheduleBtn,
+.callBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.scheduleBtn {
+  background: #fff;
+  border: 1.5px solid #f05429;
+  color: #f05429;
+  margin-bottom: 10px;
+}
+.scheduleBtn:hover { background: #fff3ef; }
+
+.callBtn {
+  background: #f05429;
+  color: #fff;
+  border: 0;
+}
+.callBtn:hover { background: #e0461b; }
+
+/* ------------------------------------------- */
+/* Responsive Fixes                            */
+/* ------------------------------------------- */
+@media (max-width: 1100px) {
+  .container { grid-template-columns: 1fr; }
+  .right { order: 2; }
+}
+
+@media (max-width: 900px) {
+  .row { grid-template-columns: 72px 1fr 1fr; }
+  .priceCol { grid-column: 1 / -1; justify-content: flex-start; margin-top: 10px; }
+  .amountCol { border-left: none; padding-left: 0; }
+  .planTitle { font-size: 17px; }
+  .amountValue { font-size: 17px; }
+}
+
+/* 🔥 Mobile Perfect Responsive */
+/* 🔥 Mobile Perfect Responsive */
+@media (max-width: 640px) {
+  .wrapper {
+    padding: 20px 10px;   /* ✅ Left/Right margin 10px */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .container {
+    grid-template-columns: 1fr; 
+    gap: 16px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ✅ Success card full width */
+  .successWrap,
+  .selectedCard,
+  .policyCard,
+  .helpBox {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  /* ✅ Help box fix - no sticky on mobile */
+  .helpBox {
+    position: relative;
+    top: auto;
+    right: auto;
+  }
+
+  /* ✅ Selected row -> logo + plan + sum insured in one row */
+  .selRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .logoBox {
+    flex: 0 0 56px; /* fixed logo size */
+  }
+
+  .planCol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Plan name left */
+    justify-content: center;
+  }
+
+  .planTitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    align-items: center;
+    align-self: center;
+  }
+
+  .metaLabel {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  /* ✅ Sum insured right aligned in the same row */
+  .sumCol {
+    flex: 0 0 auto;
+    text-align: right;
+  }
+  .amountLabel {
+    font-size: 13px;
+    color: #6b7280;
+    margin-right: 4px;
+  }
+  .amountValue {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* ✅ Price button 50% and centered */
+  .priceCol {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+  }
+  .priceBtn {
+    width: 50%;
+    justify-content: center;
+    /* margin-top: 0%; */
+  }
+
+  .ribbon{
+    padding: 0;
+  }
+
+  /* Typography scaling */
+  .ribbonText { font-size: 11px; line-height: 1.4; }
+  .metaValue { font-size: 13px; }
+  .pill { font-size: 12px; padding: 5px 10px; }
+  .badge { font-size: 12px; padding: 2px 8px; }
+}
+

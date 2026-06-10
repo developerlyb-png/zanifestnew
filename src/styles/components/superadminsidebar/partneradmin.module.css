@@ -1,0 +1,165 @@
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+/* Left Category List */
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.categoryItem:hover {
+  background: #f0f0f0;
+}
+
+.active {
+  font-weight: bold;
+}
+
+/* Editor Section */
+.editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Card Styling like Best Services */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+/* Card Headings */
+.card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  color: #111827;
+}
+
+/* Inputs */
+.card input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Images Grid */
+.imagesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.imageWrapper {
+  position: relative;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: red;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Save Button */
+.saveBtn {
+  padding: 10px 10px;
+  background: orangered;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 30%;
+  align-self: center;
+}
+
+.saveBtn:hover {
+  background: #d84b0e;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+  }
+}
+/* Admin image grid */
+.imagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 16px;
+}
+
+/* Force square */
+.imageWrapper {
+  width: 110px;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Image fit */
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* Delete icon */
+.deleteBtn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}

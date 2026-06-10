@@ -1,0 +1,241 @@
+.cont {
+  display: grid;
+  width: auto;
+  place-items: center;
+  padding-top: 40px;
+  background-color: #f6f7fb;
+  padding-bottom: 40px;
+}
+
+.orange {
+  color: #fa621a;
+}
+
+.head {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.head::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  width: 25%;
+  height: 5px;
+  background-color: #fa621a;
+  border-radius: 3px;
+}
+
+.heading {
+  margin: 0;
+  padding: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ✨ Same fade-in animation from DemoSection */
+.animateOnce {
+  animation: fadeInStay 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeInStay {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bottom {
+  width: 70%;
+  margin-top: 25px;
+  place-items: center;
+}
+
+.list {
+  display: grid;
+  gap: 1rem;
+}
+
+.item {
+  width: 100%;
+  background-color: white;
+  box-shadow: rgba(17, 23, 12, 0.2) 0px 6px 2px -5px;
+  padding: 0px 28px;
+  border-radius: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.ques {
+  font-size: 20px;
+  text-align: left;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+.mobileEllipsis {
+  display: none;
+}
+
+.ans {
+  font-size: 16px;
+  animation: open 0.5s forwards ease-in;
+  overflow: hidden;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.rightIndicator {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+.active {
+  color: #fa621a;
+}
+
+@keyframes open {
+  0% {
+    height: 0;
+  }
+  33% {
+    height: 25px;
+  }
+  66% {
+    height: 50px;
+  }
+  100% {
+    height: 100%;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .item {
+    padding: 0;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .heading {
+    justify-content: center;
+  }
+
+  .ans {
+    font-size: 16px;
+    text-align: justify;
+    max-height: auto;
+    overflow-y: auto;
+  }
+
+  .ques {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  .rightIndicator {
+    top: 8px;
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heading {
+    font-size: 25px;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .head::after {
+    display: none;
+  }
+  .mobileEllipsis {
+    display: block;
+  }
+  .heading {
+    margin-bottom: 0%;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 0px;
+    position: relative;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .item {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    padding: 5px 16px;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .bottom {
+    width: 95%;
+  }
+
+  .item {
+    width: 100%;
+    padding: 10px 18px; /* left-right padding thoda zyada */
+  }
+}
+@media screen and (max-width: 700px) {
+  .cont {
+    position: relative;
+    background: linear-gradient(
+      180deg,
+      #ecf4fb 0%,    
+      #eaf3fb 35%,   
+      #ffffff 70%,  
+      #ecf3fa 100%
+    );
+    padding-top: 30px;
+    padding-bottom: 40px;
+    margin-top: 20;
+  }
+}
+@media screen and (max-width: 700px) {
+  .cont::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0)
+    );
+    pointer-events: none;
+  }
+}
+@media screen and (max-width: 700px) {
+  .item {
+    background-color: white;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  }
+}
+@media screen and (max-width: 700px) {
+  .item {
+    margin: 5px 0;
+  }
+}

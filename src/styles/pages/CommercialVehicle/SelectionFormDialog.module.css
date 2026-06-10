@@ -1,0 +1,172 @@
+/* Main Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+/* Dialog Box */
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  max-width: 850px;
+  width: 100%;
+  min-height: 500px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 30px;
+  gap: 85px;
+}
+.left {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1d2b4f;
+}
+
+.selectionBox {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  font-size: 15px;
+  border-bottom: 1px solid #f1f2f4;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #606779;
+}
+
+.editIcon {
+  font-size: 15px;
+  color: #9398a6;
+  cursor: pointer;
+}
+
+
+.headingRight {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1d2b4f;
+}
+
+.input,
+.inputRed {
+  width: 92%;
+  padding: 15px 16px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e0;
+  margin-bottom: 20px;
+  font-size: 15px;
+  outline: none;
+}
+
+.inputRed {
+  border: 1px solid #ff6b4a;
+}
+
+.input:focus,
+.inputRed:focus {
+  border-color: #ff6b4a;
+}
+
+.viewBtn {
+  background: #ff5722;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.3s;
+}
+
+.viewBtn:hover {
+  background: #e64a19;
+}
+
+.policyText {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.policyText a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.policyText a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 768px) {
+  .dialog {
+    flex-direction: column;  
+    gap: 30px;
+    padding: 20px;
+    min-height: auto;
+    margin: 0 30px;   
+  max-width: 500px;
+  }
+
+  .left {
+    width: 100%;
+  }
+
+  .right {
+    width: 100%;
+  }
+  .overlay {
+  position: fixed;
+  inset: 0;
+  background: #f3f4f6;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding: 30px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+  .heading,
+  .headingRight {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .viewBtn {
+    width: 100%;
+  }
+}

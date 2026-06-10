@@ -1,0 +1,120 @@
+
+
+
+.cont {
+  background-color: #f7f7f7;
+  padding: 20px;
+  display: grid;
+}
+
+.greet {
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inner {
+  background-color: white;
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  font-size: 30px;
+  color: #1c75bb;
+  background-color: white;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.line {
+  height: 2px;
+  background-color: #1c75bb;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.inputDiv {
+  position: relative;
+  margin: 20px 0;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  background-color: transparent;
+}
+
+.label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 16px;
+  color: rgb(204, 204, 204);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.input:focus + .label {
+  top: -20px;
+  font-size: 12px;
+  color: #007bff;
+}
+
+.bottomButton {
+  position: relative;
+  height: 120px;
+}
+
+.button {
+  all: unset;
+  background-color: #1c75bb;
+  padding: 10px 30px;
+  color: white;
+  border-radius: 22px;
+  transition: all 0.5s;
+  position: absolute;
+  bottom: 30px;
+  right: 50px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #a9daff;
+  color: #1c75bb;
+}
+
+.button:active {
+  transform: scale(0.9);
+}
+
+@media screen and (max-width: 1000px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+  .header{
+    position:relative;
+    z-index: +2;
+  }
+}

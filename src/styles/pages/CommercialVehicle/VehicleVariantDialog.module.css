@@ -1,0 +1,240 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.dialog {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  width: 900px;
+    height: 550px;
+
+  max-width: 95%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+   max-height: calc(100vh - 90px); 
+  margin: 30px 0; 
+}
+
+/* Left Panel */
+.left {
+  flex: 0.35;
+  padding: 25px;
+  border-right: 1px solid #eee;
+}
+
+.leftTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.selectionBox {
+  flex: 1;
+  border: 1px solid #eee;
+}
+
+.selectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.selectionList {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 0;
+}
+
+.selectionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.selectionItem:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  margin-right: 10px;
+  color: #6b7280;
+}
+
+
+/* Right Panel */
+.right {
+  flex: 0.65;
+  padding: 25px;
+}
+
+.header {
+     display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    background: #fb6530;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.arrowBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 20px;
+}
+
+.searchIcon {
+  margin-right: 8px;
+  color: #777;
+}
+
+.searchBox input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.variantGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.variantBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.variantBtn:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.variantName {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.variantInfo {
+  font-size: 12px;
+  color: #666;
+}
+
+.arrow {
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  color: #999;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .dialog {
+    flex-direction: column;  
+    width: 90%;             
+    height: auto;            
+    margin: 20px;            
+  }
+
+  .left, .right {
+    flex: 1;
+    padding: 15px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+  .left {
+    display: none;
+  }
+
+  .leftTitle {
+    font-size: 16px;
+  }
+
+  .selectionItem {
+    font-size: 13px;
+  }
+
+  .header {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .searchBox input {
+    font-size: 12px;
+  }
+
+  .variantGrid {
+    grid-template-columns: 1fr; 
+  }
+
+  .variantBtn {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .variantName {
+    font-size: 14px;
+  }
+
+  .variantInfo {
+    font-size: 11px;
+  }
+}
+@media (max-width: 768px) {
+  .dialog {
+    flex-direction: column;  /* stack panels */
+    width: 95%;
+    max-height: 95vh;
+    margin: 10px;
+  }
+
+  .left {
+    display: none;          
+  }
+
+  .right {
+    flex: 1;
+    overflow-y: auto;      
+  }
+}
