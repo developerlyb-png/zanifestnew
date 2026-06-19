@@ -1,99 +1,60 @@
 "use client";
+
 import React, { useState } from "react";
-import Image from "next/image";
-import styles from "@/styles/pages/cardetailsdialog.module.css";
+import styles from "@/styles/pages/carinsurance.module.css";
 
-interface ChooseVehicleDialogProps {
-  onClose: () => void;
-  onSelectVehicle: (vehicle: string) => void;
-  onBackToInfo: () => void;
-  onNextToBrand: () => void;
-}
+import { rtoData } from "@/pages/src/data/rtoData";
 
-const cities = [
-  "Delhi",
-  "Gurgaon",
-  "Noida",
-  "Faridabad",
-  "Ghaziabad",
-  "Meerut",
-  "Agra",
-  "Lucknow",
-  "Kanpur",
-  "Prayagraj",
-  "Varanasi",
-  "Aligarh",
-];
-
-const ChoosecarDialog: React.FC<ChooseVehicleDialogProps> = ({
-  onClose,
-  onSelectVehicle,
-  onBackToInfo,
-  onNextToBrand,
-}) => {
-  const [active, setActive] = useState("");
-
-  // Function to handle city selection
-  const handleSelectCity = (city: string) => {
-    setActive(city);
-    onSelectVehicle(city);
-  };
+export default function Location({ onClose, onSelectVehicle }: any) {
+  const [state, setState] = useState<string | null>(null);
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.dialog}>
-        {/* Left Image */}
-        <div className={styles.left}>
-          <Image
-            src={require("@/assets/pageImages/blackcar.png")}
-            alt="car Image"
-            className={styles.image}
-          />
+    <div className={styles.locationOverlay}>
+      <div className={styles.locationBox}>
+        <div className={styles.locationHeader}>
+          <button onClick={onClose} className={styles.backBtn}>
+            ‹
+          </button>
+
+          <h2>{!state ? "Select Registration State" : "Select RTO Code"}</h2>
         </div>
 
-        {/* Right Content */}
-        <div className={styles.right}>
-          <div className={styles.header}>
-            <button className={styles.arrowBtn} onClick={onBackToInfo}>
-              ‹
-            </button>
-            <span>Select City</span>
-            <button
-              className={styles.arrowBtn}
-              onClick={() => {
-                // Right arrow works only if a city is selected
-                if (active) {
-                  onNextToBrand();
-                } else {
-                  alert("Please select a city first!");
-                }
-              }}
-            >
-              ›
-            </button>
-          </div>
+        <div className={styles.locationGrid}>
+          {/* STATE LIST */}
 
-          <div className={styles.vehicleGrid}>
-            {cities.map((v) => (
+          {!state &&
+            Object.keys(rtoData).map((item) => (
               <button
-                key={v}
-                onClick={() => handleSelectCity(v)}
-                className={`${styles.vehicleBtn} ${
-                  active === v ? styles.active : ""
-                }`}
+                key={item}
+                className={styles.locationItem}
+                onClick={() => {
+                  setState(item);
+                }}
               >
-                <span>{v}</span>
+                {item}
               </button>
             ))}
-          </div>
 
-          <div className={styles.otherType}>
-            <a href="#">Other Vehicle Type</a>
-          </div>
+          {/* RTO LIST */}
+
+          {state &&
+            rtoData[state].map((code: string) => (
+              <button
+                key={code}
+                className={styles.locationItem}
+                onClick={() => {
+                  onSelectVehicle({
+                    state: state,
+
+                    rto: code,
+                  });
+                }}
+              >
+                {code}
+              </button>
+            ))}
         </div>
       </div>
     </div>
   );
-};
-
-export default ChoosecarDialog;
+}

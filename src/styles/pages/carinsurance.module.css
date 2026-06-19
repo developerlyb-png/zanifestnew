@@ -418,3 +418,275 @@ cursor: pointer;
     transform: scale(1);
   }
 }
+/* ================= CAR YEAR MODAL ================= */
+
+
+.vehicleModal {
+  position: fixed;
+  inset: 0;
+  background: #eef4ff;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 40px 70px;
+}
+
+
+/* LEFT SECTION */
+
+.vehicleLeft {
+
+  width: 35%;
+  padding: 30px;
+
+}
+
+
+.vehicleLeft h2 {
+
+  font-size: 24px;
+  font-weight: 700;
+  color:#14294b;
+
+}
+
+
+.selectedBox {
+
+  margin-top:25px;
+
+  background:white;
+
+  height:70px;
+
+  border-radius:8px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:0 30px;
+
+  font-size:18px;
+
+}
+
+
+
+.editBtn {
+
+border:none;
+
+background:white;
+
+cursor:pointer;
+
+font-size:18px;
+
+}
+
+
+
+/* RIGHT SECTION */
+
+
+.vehicleRight {
+
+width:60%;
+
+background:#dceaff;
+
+border-radius:25px;
+
+padding:30px;
+
+}
+
+
+
+.vehicleRight h2 {
+
+display:flex;
+
+align-items:center;
+
+gap:20px;
+
+font-size:22px;
+
+color:#14294b;
+
+}
+
+
+
+.vehicleRight h2 button {
+
+height:40px;
+
+width:40px;
+
+border:none;
+
+background:white;
+
+border-radius:8px;
+
+font-size:28px;
+
+cursor:pointer;
+
+}
+
+
+
+
+.yearGrid {
+
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:24px;
+
+margin-top:35px;
+
+
+}
+
+
+
+.yearItem {
+
+
+height:60px;
+
+background:white;
+
+border:none;
+
+border-radius:8px;
+
+
+font-size:18px;
+
+font-weight:600;
+
+cursor:pointer;
+
+color:#14294b;
+
+
+}
+
+.locationOverlay{
+
+position:fixed;
+
+inset:0;
+
+background:#eef4ff;
+
+z-index:99999;
+
+display:flex;
+
+justify-content:center;
+
+align-items:flex-start;
+
+padding-top:50px;
+
+}
+
+
+.locationBox{
+
+width:700px;
+
+background:#dceaff;
+
+border-radius:25px;
+
+padding:30px;
+
+}
+
+
+.locationHeader{
+
+display:flex;
+
+align-items:center;
+
+gap:20px;
+
+}
+
+
+.locationHeader h2{
+
+font-size:24px;
+
+font-weight:700;
+
+}
+
+
+.backBtn{
+
+width:40px;
+
+height:40px;
+
+border:none;
+
+border-radius:8px;
+
+background:white;
+
+font-size:28px;
+
+cursor:pointer;
+
+}
+
+
+
+.locationGrid{
+
+margin-top:30px;
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:20px;
+
+}
+
+
+.locationItem{
+
+height:55px;
+
+background:white;
+
+border:none;
+
+border-radius:8px;
+
+font-size:17px;
+
+font-weight:600;
+
+cursor:pointer;
+
+}
+

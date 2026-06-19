@@ -238,3 +238,98 @@
     overflow-y: auto;      
   }
 }
+/* ==========================
+   POPUP SCROLL FIX
+========================== */
+
+.overlay {
+  overflow-y: auto;
+}
+
+
+.dialog {
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+
+.right,
+.rightPanel {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+/* model */
+.modelsGrid {
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  max-height: calc(45vh - 180px);
+
+  padding-right: 10px;
+
+}
+
+
+/* variant + fuel */
+.variantGrid {
+
+  display: grid;
+
+  grid-template-columns: repeat(2,1fr);
+
+  gap:12px;
+
+  align-items:start;
+
+  align-content:start;
+
+}
+
+/* brand */
+.brandGrid {
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  max-height: calc(90vh - 180px);
+
+  padding-right: 10px;
+
+}
+
+
+/* scrollbar */
+.modelsGrid::-webkit-scrollbar,
+.variantGrid::-webkit-scrollbar,
+.brandGrid::-webkit-scrollbar {
+
+ width: 6px;
+
+}
+
+
+.modelsGrid::-webkit-scrollbar-thumb,
+.variantGrid::-webkit-scrollbar-thumb,
+.brandGrid::-webkit-scrollbar-thumb {
+
+ background:#999;
+
+ border-radius:20px;
+
+}
+
+
+/* keep search fixed */
+.header,
+.searchBox {
+
+ flex-shrink:0;
+
+}

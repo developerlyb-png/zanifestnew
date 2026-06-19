@@ -17,26 +17,44 @@ const brands = [
 
 interface VehicleBrandDialogProps {
   onClose: () => void;
+
   vehicleNumber: string;
+
   selectedVehicle: string;
+
+  selectedYear: number | null;
+
+  selectedLocation: any;
+
   onBackToChooseVehicle: () => void;
+
   onNextToVehicleModel: () => void;
+
   onSelectBrand: (brand: string) => void;
 }
 
 const VehicleBrandDialog: React.FC<VehicleBrandDialogProps> = ({
   onClose,
+
   vehicleNumber,
+
   selectedVehicle,
+
+  selectedYear,
+
+  selectedLocation,
+
   onBackToChooseVehicle,
+
   onNextToVehicleModel,
+
   onSelectBrand,
 }) => {
   const [search, setSearch] = useState("");
   const [activeBrand, setActiveBrand] = useState("");
 
   const filteredBrands = brands.filter((b) =>
-    b.toLowerCase().includes(search.toLowerCase())
+    b.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -47,10 +65,16 @@ const VehicleBrandDialog: React.FC<VehicleBrandDialogProps> = ({
           <h3>Your selection</h3>
           <div className={styles.selectionBox}>
             <div className={styles.selectionItem}>
-              <FiMapPin className={styles.icon} /> {vehicleNumber}
+              <FiMapPin className={styles.icon} />
+
+              {selectedLocation?.rto
+                ? selectedLocation.rto
+                : vehicleNumber.substring(0, 4)}
             </div>
+
             <div className={styles.selectionItem}>
-              <FiMapPin className={styles.icon} /> {selectedVehicle}
+              📅
+              {selectedYear ? selectedYear : new Date().getFullYear()}
             </div>
           </div>
         </div>
