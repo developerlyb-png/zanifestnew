@@ -264,7 +264,7 @@ onClick={() => {
 {
 otpUser
 ?
-`👤 ${otpUser.name}`
+` ${otpUser.name}`
 :
 "Logout"
 }
@@ -342,7 +342,7 @@ setShowUserMenu(!showUserMenu)
 
 <p className={styles.loginText}>
 
-👤 {otpUser.name}
+ {otpUser.name}
 
 </p>
 

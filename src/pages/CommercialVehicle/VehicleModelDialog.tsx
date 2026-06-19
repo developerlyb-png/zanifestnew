@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "@/styles/pages/CommercialVehicle/VehicleModelDialog.module.css";
 import { FiMapPin, FiEdit2, FiSearch } from "react-icons/fi";
 import { FaTruck, FaCar } from "react-icons/fa";
@@ -24,16 +25,68 @@ const VehicleModelDialog: React.FC<VehicleModelDialogProps> = ({
   onNext,
 }) => {
   const [search, setSearch] = useState("");
+const [models,setModels] = useState<string[]>([]);
+useEffect(()=>{
 
-  const models = [
-    "TRAX",
-    "MATADOR",
-    "TEMPO",
-    "TEMPO TRAVELLER",
-    "TEMPO TRAX",
-    "TRAVELLER",
-    "LPT 709"
-  ];
+if(selectedBrand){
+
+getModels();
+
+}
+
+},[selectedBrand]);
+
+
+
+
+const getModels = async()=>{
+
+try{
+
+
+const res =
+await axios.get(
+`/api/zuno/cv/model?make=${selectedBrand}`
+);
+
+
+console.log(
+"CV MODELS",
+res.data
+);
+
+
+
+const modelList =
+res.data.map(
+(item:any)=> item.model
+);
+
+
+setModels(modelList);
+
+
+
+}
+catch(error){
+
+console.log(
+"MODEL ERROR",
+error
+);
+
+}
+
+};
+  // const models = [
+  //   "TRAX",
+  //   "MATADOR",
+  //   "TEMPO",
+  //   "TEMPO TRAVELLER",
+  //   "TEMPO TRAX",
+  //   "TRAVELLER",
+  //   "LPT 709"
+  // ];
 
   return (
     <div className={styles.overlay}>
@@ -85,13 +138,22 @@ const VehicleModelDialog: React.FC<VehicleModelDialogProps> = ({
               )
               .map((model, i) => (
                 <button
-                  key={i}
-                  className={styles.modelBtn}
-                  onClick={() => onSelectModel(model)}
-                >
-                  {model}
-                  <span className={styles.arrow}>›</span>
-                </button>
+ key={i}
+ className={styles.modelBtn}
+ onClick={() => 
+  onSelectModel(
+   model.replaceAll('"',"").trim()
+  )
+ }
+>
+
+{
+model.replaceAll('"',"").trim()
+}
+
+<span className={styles.arrow}>›</span>
+
+</button>
               ))}
           </div>
         </div>

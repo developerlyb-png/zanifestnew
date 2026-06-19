@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "@/styles/pages/CommercialVehicle/CommercialVehicle5.module.css";
 
 import { FiPhoneCall } from "react-icons/fi";
@@ -18,6 +19,11 @@ import { useRouter } from "next/navigation"; // ✅ Router import
 const CommercialVehicle5: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [vehicleData,setVehicleData] = useState<any>(null);
+
+const [quote,setQuote] = useState<any>(null);
+
+const [loading,setLoading] = useState(false);
   const router = useRouter(); // ✅ Router init
 
   useEffect(() => {
@@ -32,7 +38,100 @@ const CommercialVehicle5: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+useEffect(()=>{
 
+const saved =
+localStorage.getItem(
+"cvVehicle"
+);
+
+
+if(saved){
+
+const data =
+JSON.parse(saved);
+
+
+console.log(
+"CV PAGE5 DATA",
+data
+);
+
+
+setVehicleData(data);
+
+
+getQuote(data);
+
+}
+
+
+},[]);
+const getQuote = async(data:any)=>{
+
+try{
+
+setLoading(true);
+
+
+const res =
+await axios.post(
+"/api/zuno/cv/quick-quote",
+{
+
+claimInLastYearPolicy:"N",
+
+yearOfPurchase:
+data.yearOfPurchase,
+
+make:
+data.make,
+
+model:
+data.model,
+
+varient:
+data.varient,
+
+
+rtoDetails:
+data.rtoDetails
+
+}
+
+);
+
+
+
+console.log(
+"QUOTE RESPONSE",
+res.data
+);
+
+
+setQuote(
+res.data.data
+);
+
+
+}
+catch(error:any){
+
+
+console.log(
+"QUOTE ERROR",
+error.response?.data || error
+);
+
+
+}
+finally{
+
+setLoading(false);
+
+}
+
+};
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -67,8 +166,17 @@ const CommercialVehicle5: React.FC = () => {
               <div className={styles.vehicleDetails}>
                 <div className={styles.skoda}>
                   <div>
-                    <h3>SKODA SLAVIA</h3>
-                    <p>DL10CV4556 | 2023 | Petrol</p>
+                    <h3>
+{vehicleData?.make} {vehicleData?.model}
+</h3>
+
+<p>
+{vehicleData?.vehicleNumber}
+ |
+{vehicleData?.yearOfPurchase}
+ |
+{vehicleData?.varient}
+</p>
                   </div>
                   <div>
                     <p>
@@ -176,7 +284,12 @@ const CommercialVehicle5: React.FC = () => {
                   </div>
                   {/* ✅ Navigate on click */}
                   <button className={styles.button} onClick={goToNextPage}>
-                    ₹4,487 →
+                    {loading
+?
+"Loading..."
+:
+`₹${quote?.totalGrossPremiuim || "----"} →`
+}
                   </button>
                 </div>
               </div>
@@ -197,7 +310,12 @@ const CommercialVehicle5: React.FC = () => {
                     </div>
                   </div>
                   <button className={styles.button} onClick={goToNextPage}>
-                    ₹4,487 →
+                    {loading
+?
+"Loading..."
+:
+`₹${quote?.totalGrossPremiuim || "----"} →`
+}
                   </button>
                 </div>
               </div>

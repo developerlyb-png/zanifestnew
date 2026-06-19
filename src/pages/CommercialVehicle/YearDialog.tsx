@@ -76,9 +76,50 @@ const yearDialog: React.FC<YearDialogProps> = ({
                 key={year}
                 type="button"
                 className={styles.yearButton}
-                onClick={() => {
-                  onSelectYear(year);
-                }}
+               onClick={() => {
+
+const cvData = {
+
+vehicleNumber:
+vehicleNumber,
+
+vehicleType:
+selectedVehicle,
+
+make:
+selectedBrand,
+
+model:
+selectedModel,
+
+variant:
+selectedVariant,
+
+yearOfPurchase:
+String(year),
+
+rtoCity:
+"AHMEDABAD"
+
+};
+
+
+localStorage.setItem(
+"cvVehicleData",
+JSON.stringify(cvData)
+);
+
+
+console.log(
+"CV SAVED DATA",
+cvData
+);
+
+
+onSelectYear(year);
+
+
+}}
               >
                 {year}
                 <span className={styles.arrow}>›</span>

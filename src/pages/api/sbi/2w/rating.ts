@@ -71,7 +71,25 @@ export default async function handler(
  const token =
  await getZunoToken();
 
+const vehicle =
+req.body.vehicle;
 
+console.log(
+"FRONT VEHICLE DATA",
+JSON.stringify(vehicle)
+);
+const isNew =
+vehicle.isNewBike === "true";
+
+
+const today =
+new Date()
+.toISOString()
+.split("T")[0];
+
+
+const vehicleYear =
+vehicle.year || "2024";
 
 
  const zunoPayload:any = {
@@ -87,15 +105,15 @@ branch:"AHMEDABAD",
 // TEST MASTER DATA
 
 make:
-req.body.vehicle.make.toUpperCase(),
+vehicle.make,
 
 
 model:
-req.body.vehicle.model.toUpperCase(),
+vehicle.model,
 
 
 variant:
-req.body.vehicle.variant || "BS VI",
+vehicle.variant,
 
 
 idvCity:"AHMEDABAD",
@@ -113,32 +131,66 @@ clusterZone:"Cluster 3",
 carZone:"A",
 
 
-idv:"112182",
+idv:
+vehicle.idv,
 
 
-registrationDate:"2024-06-05",
+registrationDate:
+isNew
+?
+today
+:
+`${vehicleYear}-06-05`,
 
 
-previousInsurancePolicy:"0",
+previousInsurancePolicy:
+isNew ? "0" : "1",
 
 
-policyType:"Bundled Insurance",
+previousInsuranceCompanyName:
+isNew ? "" : "National Insurance Co. Ltd.",
+
+
+previousPolicyNo:
+isNew ? "" : "POL12345678",
+
+
+previousPolicyStartDate:
+isNew ? "" : "2024-06-10",
+
+
+previousPolicyEndDate:
+isNew ? "" : "2025-06-09",
+
+
+policyType:
+isNew
+?
+"Bundled Insurance"
+:
+"Package Policy",
 
 
 subPolicyType:"",
 
 
-typeOfBusiness:"New",
+typeOfBusiness:
+isNew ? "New" : "Rollover",
+
+policyStartDate:
+isNew
+?
+today
+:
+"2025-06-10",
 
 
-policyStartDate:"2024-06-05",
+policyTenure:
+isNew ? "5" : "1",
 
 
-policyTenure:"5",
-
-
-contractTenure:"5",
-
+contractTenure:
+isNew ? "5" : "1",
 
 claimDeclaration:"",
 
@@ -147,7 +199,8 @@ annualMileage:"",
 transmissionType:"",
 
 
-fuelType:"Petrol",
+fuelType:
+vehicle.fuelType,
 
 
 validLicenceNo:"Y",
@@ -165,13 +218,20 @@ proofOfNcb:"NCBRESRV",
 protectionofNcbValue:"",
 
 
-breakininsurance:"NBK",
+breakininsurance:
+isNew ? "NBK" : "No Break",
 
 
-renewalStatus:"New Policy",
+renewalStatus:
+isNew
+?
+"New Policy"
+:
+"Rollover",
 
 
-dateOfTransaction:"2024-06-05",
+dateOfTransaction:
+today,
 
 
 fibreGlassFuelTank:"Yes",
@@ -188,9 +248,12 @@ automobileAssociationMember:"Yes",
 
 bodystyleDescription:"COUPE",
 
-
 dateOfFirstPurchaseOrRegistration:
-"2024-06-05",
+isNew
+?
+today
+:
+`${vehicleYear}-06-05`,
 
 
 dateOfBirth:"1989-12-12",
@@ -266,62 +329,46 @@ limit:"Own Damage Basic Limit"
 
 
 
+...(isNew ? [
 
 {
-
 contract:"Addon Contract",
 
-
 coverage:{
-
-
 coverage:"Add On Coverage",
-
 
 deductible:
 "Key Replacement Deductible",
 
-
-
 underwriterDiscount:"0.0",
 
-
-
 subCoverage:[
-
 
 {
 subCoverage:"Return To Invoice"
 },
 
-
 {
 subCoverage:"Pillion Protect",
-
 limit:"Pillion Protect Limit",
-
 sumInsuredPerPerson:"50000"
-
 },
-
 
 {
 subCoverage:"Zero Depreciation"
 },
 
-
 {
 subCoverage:"Consumable Cover"
 }
 
-
 ]
-
 
 }
 
+}
 
-},
+] : []),
 
 
 

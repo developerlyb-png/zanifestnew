@@ -19,539 +19,723 @@ import "aos/dist/aos.css";
 // YEARS
 
 const currentYear =
-new Date().getFullYear();
+    new Date().getFullYear();
 
 
 const years =
-Array.from(
-{length:20},
-(_,i)=> currentYear - 1 - i
-);
+    Array.from(
+        { length: 20 },
+        (_, i) => currentYear - 1 - i
+    );
 
 // MAKES
 
 const makes = [
 
-{ name:"Honda", image:require("@/assets/home/hondacar.png") },
+    { name: "Honda", image: require("@/assets/home/hondacar.png") },
 
-{ name:"Bajaj", image:require("@/assets/home/bajaj logo.png") },
+    { name: "Bajaj", image: require("@/assets/home/bajaj logo.png") },
 
-{ name:"TVS", image:require("@/assets/home/tvs logo.png") },
+    { name: "TVS", image: require("@/assets/home/tvs logo.png") },
 
-{ name:"Yamaha", image:require("@/assets/home/yamaha.png") },
+    { name: "Yamaha", image: require("@/assets/home/yamaha.png") },
 
-{ name:"Hero Motorcorp", image:require("@/assets/home/hero (2).png") },
+    { name: "Hero Motorcorp", image: require("@/assets/home/hero (2).png") },
 
-{ name:"Royal Enfield", image:require("@/assets/home/royal logo.png") },
+    { name: "Royal Enfield", image: require("@/assets/home/royal logo.png") },
 
-{ name:"Suzuki", image:require("@/assets/home/SuzukiLogo (2).png") },
+    { name: "Suzuki", image: require("@/assets/home/SuzukiLogo (2).png") },
 
-{ name:"Mahindra", image:require("@/assets/home/Mahindra.png") },
+    { name: "Mahindra", image: require("@/assets/home/Mahindra.png") },
 
-{ name:"KTM", image:require("@/assets/home/ktm.png") },
+    { name: "KTM", image: require("@/assets/home/ktm.png") },
 
-{ name:"LML", image:require("@/assets/home/lml.png") },
+    { name: "LML", image: require("@/assets/home/lml.png") },
 
-{ name:"Ola", image:require("@/assets/home/ola.png") },
+    { name: "Ola", image: require("@/assets/home/ola.png") },
 
-{ name:"Harley Davidson", image:require("@/assets/home/harley.png") },
+    { name: "Harley Davidson", image: require("@/assets/home/harley.png") },
 
 ];
 
 
 
 
-// MODELS
-
-const modelList:any={
-
-
-Honda:{
-
-popular:[
-"ACTIVA",
-"CB SHINE",
-"CB UNICORN"
-],
-
-other:[
-"DIO",
-"AVIATOR"
-]
-
-},
 
 
 
-Bajaj:{
 
-popular:[
-"AVENGER 220 CRUISE"
-],
 
-other:[
-"PULSAR",
-"PLATINA",
-"CT 100"
-]
+
+
+export default function TwoWheeler() {
+
+
+    const router =
+        useRouter();
+
+
+
+    const [step, setStep] =
+        useState<
+            "years" |
+            "makes" |
+            "models" |
+            "variants" |
+            "vehicleDetails"
+        >("years");
+
+
+
+    const [selectedYear, setSelectedYear] =
+        useState("");
+
+    const [selectedMake, setSelectedMake] =
+        useState("");
+
+    const [selectedModel, setSelectedModel] =
+        useState("");
+
+    const [models, setModels] =
+        useState<any[]>([]);
+    const [variants, setVariants] =
+        useState<any[]>([]);
+
+
+    const [selectedVariant, setSelectedVariant] =
+        useState("");
+        const [idvData,setIdvData] =
+useState<any>(null);
+    const [showOtherModels, setShowOtherModels] =
+        useState(false);
+    const [engineNumber, setEngineNumber] =
+        useState("");
+
+    const [chassisNumber, setChassisNumber] =
+        useState("");
+
+
+
+
+
+
+    useEffect(() => {
+
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+    }, []);
+
+
+
+
+    useEffect(() => {
+
+        AOS.refresh();
+
+    }, [step]);
+
+
+
+
+
+
+
+    return (
+
+        <div>
+
+
+            <UserDetails />
+
+            <Navbar />
+
+
+
+
+            <div className={styles.container}>
+
+
+
+                <div className={styles.leftSection}>
+
+
+                    <div className={styles.imageWrapper}>
+
+
+                        <Image
+
+                            src={scooterImg}
+
+                            alt="Scooter"
+
+                            className={styles.image}
+
+                            priority
+
+                        />
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+                <div className={styles.rightSection}>
+
+
+
+
+
+                    {/* YEAR */}
+
+
+                    {step === "years" &&
+
+
+                        <div data-aos="fade-left">
+
+
+                            <h2 className={styles.question}>
+
+                                When did you buy your Bike/Scooter?
+
+                            </h2>
+
+
+
+                            <div className={styles.yearGrid}>
+                                <div
+                                    className={styles.yearButton}
+
+                                    onClick={() => {
+
+                                        setSelectedYear(
+                                            String(currentYear)
+                                        );
+
+
+                                        localStorage.setItem(
+                                            "isNewBike",
+                                            "true"
+                                        );
+
+
+                                        setStep("makes");
+
+                                    }}
+
+                                >
+
+                                    Brand New Bike  ›
+
+                                </div>
+
+                                {years.map((year) => (
+
+
+                                    <button
+
+                                        key={year}
+
+                                        className={styles.yearButton}
+
+                                        onClick={() => {
+
+
+                                            setSelectedYear(
+                                                String(year)
+                                            );
+
+
+                                            localStorage.setItem(
+                                                "isNewBike",
+                                                "false"
+                                            );
+
+
+                                            setStep("makes");
+
+
+                                        }}
+
+                                    >
+
+                                        {year}
+
+                                    </button>
+
+
+                                ))}
+
+
+                            </div>
+
+
+                        </div>
+
+                    }
+
+
+
+
+
+
+
+
+                    {/* MAKE */}
+
+
+                    {step === "makes" &&
+
+
+                        <div
+                            data-aos="fade-left"
+                            className={styles.makesWrapper}
+                        >
+
+
+                            <button
+
+                                className={styles.backButton}
+
+                                onClick={() => setStep("years")}
+
+                            >
+
+                                <FaArrowLeft />
+
+                            </button>
+
+
+
+                            <h3>
+                                Select two wheeler make
+                            </h3>
+
+
+
+                            <input
+
+                                type="text"
+
+                                placeholder="Search two wheeler make"
+
+                                className={styles.searchInput}
+
+                            />
+
+
+
+                            <p className={styles.popularTitle}>
+
+                                Popular makes
+
+                            </p>
+
+
+
+
+                            <div className={styles.grid}>
+
+
+                                {makes.map((make, index) => (
+
+
+                                    <div
+
+                                        key={index}
+
+                                        className={styles.makeCard}
+
+                                        onClick={async () => {
+
+
+                                            const makeName =
+                                                make.name.toUpperCase();
+
+
+                                            setSelectedMake(
+                                                makeName
+                                            );
+
+
+
+                                            const res =
+                                                await fetch(
+                                                    `/api/sbi/2w/master/model?make=${makeName}`
+                                                );
+
+
+                                            const data =
+                                                await res.json();
+
+
+
+                                            console.log(
+                                                "MODEL DATA",
+                                                data
+                                            );
+
+
+
+                                            console.log(
+"MODEL DATA",
+data
+);
+
+
+if(Array.isArray(data)){
+
+setModels(data);
+
+}
+else if(Array.isArray(data.data)){
+
+setModels(data.data);
+
+}
+else{
+
+console.log(
+"MODEL API ERROR",
+data
+);
+
+setModels([]);
 
 }
 
 
-};
-
-
-
-
-
-
-export default function TwoWheeler(){
-
-
-const router =
-useRouter();
-
-
-
-const [step,setStep] =
-useState<
-"years" |
-"makes" |
-"models" |
-"vehicleDetails"
->("years");
-
-
-
-const [selectedYear,setSelectedYear] =
-useState("");
-
-const [selectedMake,setSelectedMake] =
-useState("");
-
-const [selectedModel,setSelectedModel] =
-useState("");
-
-
-
-const [engineNumber,setEngineNumber] =
-useState("");
-
-const [chassisNumber,setChassisNumber] =
-useState("");
-
-
-
-
-
-
-useEffect(()=>{
-
-AOS.init({
-duration:1000,
-once:true
-});
-
-},[]);
-
-
-
-
-useEffect(()=>{
-
-AOS.refresh();
-
-},[step]);
-
-
-
-
-
-
-
-return(
-
-<div>
-
-
-<UserDetails/>
-
-<Navbar/>
-
-
-
-
-<div className={styles.container}>
-
-
-
-<div className={styles.leftSection}>
-
-
-<div className={styles.imageWrapper}>
-
-
-<Image
-
-src={scooterImg}
-
-alt="Scooter"
-
-className={styles.image}
-
-priority
-
-/>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div className={styles.rightSection}>
-
-
-
-
-
-{/* YEAR */}
-
-
-{step==="years" &&
-
-
-<div data-aos="fade-left">
-
-
-<h2 className={styles.question}>
-
-When did you buy your Bike/Scooter?
-
-</h2>
-
-
-
-<div className={styles.yearGrid}>
-<div
-className={styles.yearButton}
-
-onClick={()=>{
-
-setSelectedYear(
-String(currentYear)
+setStep(
+"models"
 );
 
 
-localStorage.setItem(
-"isNewBike",
-"true"
+
+                                            setStep(
+                                                "models"
+                                            );
+
+
+                                        }}
+
+                                    >
+
+
+                                        <div className={styles.makeImageWrapper} />
+
+
+                                        <span className={styles.makeText}>
+
+                                            {make.name}
+
+                                        </span>
+
+
+                                    </div>
+
+
+                                ))}
+
+
+                            </div>
+
+
+
+                            <p className={styles.searchText}>
+
+                                Can’t find your bike’s make? Click here to search
+
+                            </p>
+
+
+                        </div>
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+                    {/* MODELS */}
+
+
+
+                    {step === "models" &&
+
+
+                        <div
+                            data-aos="fade-left"
+                            className={styles.modelsWrapper}
+                        >
+
+
+
+                            <button
+
+                                className={styles.backButton}
+
+                                onClick={() => setStep("makes")}
+
+                            >
+
+                                <FaArrowLeft />
+
+                            </button>
+
+
+
+
+                            <h3 className={styles.title}>
+
+                                Select two wheeler model
+
+                            </h3>
+
+
+
+
+                            <input
+
+                                type="text"
+
+                                placeholder={`Search ${selectedMake} two wheeler model`}
+
+                                className={styles.searchInput}
+
+                            />
+
+
+
+
+
+
+
+                            <p className={styles.sectionTitle}>
+
+                                Popular models
+
+                            </p>
+
+
+
+                            <div className={styles.grids}>
+
+
+                                {Array.isArray(models) &&
+models.slice(0,6).map((item:any,index:number)=>(
+
+
+                                    <div
+
+                                        key={index}
+
+                                        className={styles.modelCard}
+
+                                 onClick={async()=>{
+
+
+setSelectedModel(
+item.model
 );
 
 
-setStep("makes");
 
-}}
-
->
-
-Brand New Bike  ›
-
-</div>
-
-{years.map((year)=>(
-
-
-<button
-
-key={year}
-
-className={styles.yearButton}
-
-onClick={()=>{
-
-
-setSelectedYear(
-String(year)
+const res =
+await fetch(
+`/api/sbi/2w/master/variant?make=${selectedMake}&model=${item.model}`
 );
 
 
-localStorage.setItem(
-"isNewBike",
-"false"
+const data =
+await res.json();
+
+
+console.log(
+"VARIANT DATA",
+data
 );
 
 
-setStep("makes");
-
-
-}}
-
->
-
-{year}
-
-</button>
-
-
-))}
-
-
-</div>
-
-
-</div>
-
-}
-
-
-
-
-
-
-
-
-{/* MAKE */}
-
-
-{step==="makes" &&
-
-
-<div
-data-aos="fade-left"
-className={styles.makesWrapper}
->
-
-
-<button
-
-className={styles.backButton}
-
-onClick={()=>setStep("years")}
-
->
-
-<FaArrowLeft/>
-
-</button>
-
-
-
-<h3>
-Select two wheeler make
-</h3>
-
-
-
-<input
-
-type="text"
-
-placeholder="Search two wheeler make"
-
-className={styles.searchInput}
-
-/>
-
-
-
-<p className={styles.popularTitle}>
-
-Popular makes
-
-</p>
-
-
-
-
-<div className={styles.grid}>
-
-
-{makes.map((make,index)=>(
-
-
-<div
-
-key={index}
-
-className={styles.makeCard}
-
-onClick={()=>{
-
-
-setSelectedMake(
-make.name
+setVariants(
+data
 );
 
 
-setStep("models");
+setStep(
+"variants"
+);
 
 
-}}
 
->
 
 
-<div className={styles.makeImageWrapper}/>
+                                        }}
 
+                                    >
 
-<span className={styles.makeText}>
 
-{make.name}
+                                        {item.model}
 
-</span>
 
+                                    </div>
 
-</div>
 
+                                ))}
 
-))}
 
+                            </div>
 
-</div>
+                            <p
+                                className={styles.sectionTitle}
 
+                                onClick={() => setShowOtherModels(
+                                    !showOtherModels
+                                )}
 
+                            >
 
-<p className={styles.searchText}>
+                                Other models
 
-Can’t find your bike’s make? Click here to search
+                            </p>
 
-</p>
 
+                            {showOtherModels &&
 
-</div>
+                                <div className={styles.modalOverlay}>
 
 
-}
+                                    <div className={styles.modelPopup}>
 
 
+                                        <div className={styles.popupHeader}>
 
 
+                                            <h3>
+                                                Other Models
+                                            </h3>
 
 
+                                            <button
+                                                onClick={() => setShowOtherModels(false)}
+                                            >
+                                                ×
+                                            </button>
 
 
+                                        </div>
 
 
-{/* MODELS */}
 
+                                        <div className={styles.grids}>
 
 
-{step==="models" &&
+                                            {Array.isArray(models) &&
+models.slice(6).map((item:any,index:number)=>(
 
 
-<div
-data-aos="fade-left"
-className={styles.modelsWrapper}
->
+                                                <div
 
+                                                    key={index}
 
+                                                    className={styles.modelCard}
 
-<button
 
-className={styles.backButton}
+                                                    onClick={async () => {
 
-onClick={()=>setStep("makes")}
 
->
+                                                        setSelectedModel(
+                                                            item.model
+                                                        );
 
-<FaArrowLeft/>
 
-</button>
+                                                        // VARIANT API CALL
 
+                                                        const res =
+                                                            await fetch(
+                                                                `/api/sbi/2w/master/variant?make=${selectedMake}&model=${item.model}`
+                                                            );
 
 
+                                                        const data =
+                                                            await res.json();
 
-<h3 className={styles.title}>
 
-Select two wheeler model
+                                                        console.log(
+                                                            "VARIANT DATA",
+                                                            data
+                                                        );
 
-</h3>
 
+                                                        setVariants(
+                                                            data
+                                                        );
 
 
+                                                        // popup close agar other model se aaye
 
-<input
+                                                        setShowOtherModels(false);
 
-type="text"
 
-placeholder={`Search ${selectedMake} two wheeler model`}
+                                                        // go to variant page
 
-className={styles.searchInput}
+                                                        setStep(
+                                                            "variants"
+                                                        );
 
-/>
 
+                                                    }}
 
+                                                >
 
 
+                                                    {item.model}
 
 
+                                                </div>
 
-<p className={styles.sectionTitle}>
 
-Popular models
+                                            ))}
 
-</p>
 
+                                        </div>
 
 
-<div className={styles.grids}>
+                                    </div>
 
 
-{(modelList[selectedMake]?.popular || [])
-.map((model:any,index:number)=>(
+                                </div>
 
 
-<div
+                            }
 
-key={index}
 
-className={styles.modelCard}
 
-onClick={()=>{
-
-
-setSelectedModel(model);
-
-
-setStep("vehicleDetails");
-
-
-}}
-
->
-
-{model}
-
-</div>
-
-
-))}
-
-
-</div>
-
-
-
-
-
-
-
+                            {/* 
 <p className={styles.sectionTitle}>
 
 Other models
 
-</p>
+</p> */}
 
 
 
-
+                            {/* 
 <div className={styles.grids}>
 
 
@@ -586,40 +770,29 @@ setStep("vehicleDetails");
 ))}
 
 
-</div>
+</div> */}
 
 
 
-</div>
+                        </div>
 
 
-}
-
-
-
-
+                    }
 
 
 
 
 
+{/* VARIANTS */}
 
 
-{/* ENGINE + CHASSIS */}
-
-
-
-{step==="vehicleDetails" &&
+{step==="variants" &&
 
 
 <div
-
 data-aos="fade-left"
-
 className={styles.modelsWrapper}
-
 >
-
 
 
 <button
@@ -635,65 +808,138 @@ onClick={()=>setStep("models")}
 </button>
 
 
+<h3 className={styles.title}>
 
-
-<h3>
-
-Enter Vehicle Details
+Select Variant
 
 </h3>
 
 
 
+<div className={styles.grids}>
 
-<input
 
-type="text"
+{variants.map((item:any,index:number)=>(
 
-placeholder="Engine Number"
 
-className={styles.searchInput}
+<div
 
-value={engineNumber}
+key={index}
 
-onChange={(e)=>
-setEngineNumber(
-e.target.value
+className={styles.modelCard}
+
+
+onClick={async()=>{
+
+
+setSelectedVariant(
+item.variant
+);
+
+
+
+// IDV API CALL
+const vehicleNo =
+(
+localStorage.getItem("vehicleNumber") || ""
 )
+.toUpperCase()
+.replace(/[^A-Z0-9]/g,"");
+
+
+let idvCity =
+"AHMEDABAD";
+
+
+if(
+vehicleNo.startsWith("MH")
+){
+
+idvCity =
+"MUMBAI";
+
 }
 
-/>
+else if(
+vehicleNo.startsWith("DL")
+){
 
+idvCity =
+"DELHI";
 
-
-
-<input
-
-type="text"
-
-placeholder="Chassis Number"
-
-className={styles.searchInput}
-
-value={chassisNumber}
-
-onChange={(e)=>
-setChassisNumber(
-e.target.value
-)
 }
 
-/>
+else if(
+vehicleNo.startsWith("GJ")
+){
+
+idvCity =
+"AHMEDABAD";
+
+}
+
+const res =
+await fetch(
+`/api/sbi/2w/master/idv?make=${selectedMake}&model=${selectedModel}&variant=${item.variant}&idvCity=${idvCity}`
+);
+
+
+const result =
+await res.json();
+
+
+console.log(
+"IDV DATA",
+result
+);
+
+
+setIdvData(
+result.data
+);
+
+
+
+// =================
+// RTO API CALL
+// =================
+
+const rtoRes =
+await fetch(
+`/api/sbi/2w/master/rto?idvCity=${idvCity}`
+);
+
+
+const rtoResult =
+await rtoRes.json();
+
+
+console.log(
+"RTO DATA",
+rtoResult
+);
+
+
+const selectedRto =
+rtoResult[0];
+
+
+localStorage.setItem(
+"selectedRto",
+JSON.stringify(selectedRto)
+);
 
 
 
 
+const isNew =
+localStorage.getItem(
+"isNewBike"
+);
 
-<button
 
-className={styles.yearButton}
 
-onClick={()=>{
+if(isNew==="true"){
 
 
 const vehicleData={
@@ -708,26 +954,55 @@ make:selectedMake,
 model:selectedModel,
 
 
-vehicleNumber:
-localStorage.getItem(
-"vehicleNumber"
+variant:item.variant,
+
+registrationNumber:"",
+idv:
+result.data?.idvAmount?.upto1Year || "",
+
+
+fuelType:
+result.data?.fuelType || "",
+
+
+capacity:
+result.data?.capacity || "",
+
+
+seatingCapacity:
+result.data?.seatingCapacity || "",
+
+
+exShowroomPrice:
+idvData?.exShowroomPrice,
+
+
+rto:
+JSON.parse(
+localStorage.getItem("selectedRto") || "{}"
 ),
 
 
-// ADD THIS
-isNewBike:
-localStorage.getItem(
-"isNewBike"
-),
+// OLD DATA
 
 
-engineNumber,
+isNewBike:"true",
 
 
-chassisNumber
+engineNumber:"",
+
+
+chassisNumber:""
 
 
 };
+
+
+
+console.log(
+"FINAL BIKE DATA",
+vehicleData
+);
 
 
 
@@ -741,21 +1016,42 @@ JSON.stringify(vehicleData)
 
 
 
-
 router.push(
 "./twowheeler5"
 );
 
 
 
+
+
+}
+
+else{
+
+
+setStep(
+"vehicleDetails"
+);
+
+
+}
+
+
 }}
 
 >
 
-Continue
 
-</button>
+{item.variant}
 
+
+</div>
+
+
+))}
+
+
+</div>
 
 
 </div>
@@ -767,21 +1063,222 @@ Continue
 
 
 
-</div>
-
-
-</div>
+                    {/* ENGINE + CHASSIS */}
 
 
 
-
-<Footer/>
-
-
-</div>
+                    {step === "vehicleDetails" &&
 
 
+                        <div
+
+                            data-aos="fade-left"
+
+                            className={styles.modelsWrapper}
+
+                        >
+
+
+
+                            <button
+
+                                className={styles.backButton}
+
+                                onClick={() => setStep("models")}
+
+                            >
+
+                                <FaArrowLeft />
+
+                            </button>
+
+
+
+
+                            <h3>
+
+                                Enter Vehicle Details
+
+                            </h3>
+
+
+
+
+                            <input
+
+                                type="text"
+
+                                placeholder="Engine Number"
+
+                                className={styles.searchInput}
+
+                                value={engineNumber}
+
+                                onChange={(e) =>
+                                    setEngineNumber(
+                                        e.target.value
+                                    )
+                                }
+
+                            />
+
+
+
+
+                            <input
+
+                                type="text"
+
+                                placeholder="Chassis Number"
+
+                                className={styles.searchInput}
+
+                                value={chassisNumber}
+
+                                onChange={(e) =>
+                                    setChassisNumber(
+                                        e.target.value
+                                    )
+                                }
+
+                            />
+
+
+
+
+
+                            <button
+
+                                className={styles.yearButton}
+
+                                onClick={() => {
+
+
+                                  const vehicleData = {
+
+
+year:
+selectedYear,
+
+
+make:
+selectedMake,
+
+
+model:
+selectedModel,
+
+
+// MASTER VARIANT DATA
+
+variant:
+selectedVariant,
+
+
+idv:
+idvData?.idvAmount?.upto1Year,
+
+
+fuelType:
+idvData?.fuelType,
+
+
+capacity:
+idvData?.capacity,
+
+
+seatingCapacity:
+idvData?.seatingCapacity,
+
+
+exShowroomPrice:
+idvData?.exShowroomPrice,
+
+
+// OLD DATA
+
+registrationNumber:
+localStorage.getItem(
+"vehicleNumber"
+),
+
+
+isNewBike:
+localStorage.getItem(
+"isNewBike"
+),
+
+
+engineNumber,
+
+
+chassisNumber,
+rto:
+JSON.parse(
+localStorage.getItem("selectedRto") || "{}"
+)
+
+};
+
+
+console.log(
+"FINAL SAVE BIKE DATA",
+vehicleData
 );
+
+
+
+                                    localStorage.setItem(
+
+                                        "selectedBikeData",
+
+                                        JSON.stringify(vehicleData)
+
+                                    );
+
+
+
+
+                                    router.push(
+                                        "./twowheeler5"
+                                    );
+
+
+
+                                }}
+
+                            >
+
+                                Continue
+
+                            </button>
+
+
+
+                        </div>
+
+
+                    }
+
+
+
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+            <Footer />
+
+
+        </div>
+
+
+    );
 
 
 }

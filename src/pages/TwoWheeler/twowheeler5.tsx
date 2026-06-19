@@ -109,31 +109,58 @@ const [zunoQuote, setZunoQuote] = useState<any>(null);
  policyType:"Comprehensive",
 
 
- vehicle:{
+vehicle:{
 
 
-  registrationNumber:
-  bike.vehicleNumber,
+registrationNumber:
+bike.vehicleNumber,
 
 
-  make:
-  bike.make,
+make:
+bike.make,
 
 
-  model:
-  bike.model,
+model:
+bike.model,
 
 
-  variant:
-  bike.variant || "BS VI",
+variant:
+bike.variant,
 
 
-  manufacturingYear:
-  bike.year
+idv:
+bike.idv,
 
 
- },
+fuelType:
+bike.fuelType,
 
+
+capacity:
+bike.capacity,
+
+
+seatingCapacity:
+bike.seatingCapacity,
+
+
+exShowroomPrice:
+bike.exShowroomPrice,
+
+
+manufacturingYear:
+bike.year,
+
+
+year:
+bike.year,
+
+
+isNewBike:
+bike.isNewBike
+
+
+},
 
  customer:{
 
@@ -376,32 +403,95 @@ useEffect(() => {
                   </div>
                   <button className={styles.buyBtn} onClick={() => {
 
-  const selectedPlan = {
-
-  company:
-  plan.name,
+ const selectedPlan = {
 
 
-  premium:
-  plan.price,
+company:
+plan.name,
 
 
-  idv:
-  plan.idv,
+premium:
+plan.price,
 
 
-  policyType:
-  "Bundled Insurance",
+idv:
+plan.idv,
+
+
+policyType:
+"Bundled Insurance",
+
 
 gst:
-plan.gst, 
-  bikeData,
+plan.gst,
 
 
-  zunoQuote:
-  zunoQuote
+// COMPLETE VEHICLE DATA
+
+bikeData:{
+
+
+...bikeData,
+
+
+make:
+bikeData?.make,
+
+
+model:
+bikeData?.model,
+
+
+variant:
+bikeData?.variant,
+
+
+masterIdv:
+bikeData?.idv,
+
+
+fuelType:
+bikeData?.fuelType,
+
+
+capacity:
+bikeData?.capacity,
+
+
+seatingCapacity:
+bikeData?.seatingCapacity,
+
+
+exShowroomPrice:
+bikeData?.exShowroomPrice,
+
+
+engineNumber:
+bikeData?.engineNumber,
+
+
+chassisNumber:
+bikeData?.chassisNumber
+
+
+},
+
+
+
+// FULL RATING RESPONSE
+
+zunoQuote:
+zunoQuote
+
 
 };
+
+
+
+console.log(
+"SAVE PLAN",
+selectedPlan
+);
 
 
 console.log(

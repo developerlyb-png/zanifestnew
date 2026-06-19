@@ -61,208 +61,290 @@ if (!selectedPlan) {
 // SEND WHATSAPP OTP
 // ======================
 
+// const sendWhatsappOtp = async () => {
+
+// try{
+
+
+// if(!mobile){
+
+//  alert("Enter mobile number");
+//  return;
+
+// }
+
+
+// setLoading(true);
+
+
+// const response =
+// await fetch(
+//  "/api/auth/send-whatsapp-otp",
+//  {
+
+//  method:"POST",
+
+//  headers:{
+//   "Content-Type":"application/json"
+//  },
+
+// body:JSON.stringify({
+
+// mobile,
+
+
+
+// fullName,
+
+// email
+
+// })
+
+//  }
+// );
+
+
+// const data =
+// await response.json();
+
+
+// console.log(
+//  "OTP RESPONSE",
+//  data
+// );
+
+
+// setLoading(false);
+
+
+
+// if(data.success){
+
+//  setMobileOtpSent(true);
+
+//  alert("OTP sent on WhatsApp");
+
+// }
+// else{
+
+//  alert(
+//   "OTP sending failed"
+//  );
+
+// }
+
+
+// }
+// catch(error){
+
+// console.log(error);
+
+// setLoading(false);
+
+// }
+
+
+// };
+
 const sendWhatsappOtp = async () => {
 
-try{
+ if(!mobile){
 
-
-if(!mobile){
-
- alert("Enter mobile number");
- return;
-
-}
-
-
-setLoading(true);
-
-
-const response =
-await fetch(
- "/api/auth/send-whatsapp-otp",
- {
-
- method:"POST",
-
- headers:{
-  "Content-Type":"application/json"
- },
-
-body:JSON.stringify({
-
-mobile,
-
-
-
-fullName,
-
-email
-
-})
+  alert("Enter mobile number");
+  return;
 
  }
-);
 
+ setLoading(true);
 
-const data =
-await response.json();
+ setTimeout(()=>{
 
+  setLoading(false);
 
-console.log(
- "OTP RESPONSE",
- data
-);
+  setMobileOtpSent(true);
 
+  alert("Dummy OTP sent on WhatsApp : 123456");
 
-setLoading(false);
-
-
-
-if(data.success){
-
- setMobileOtpSent(true);
-
- alert("OTP sent on WhatsApp");
-
-}
-else{
-
- alert(
-  "OTP sending failed"
- );
-
-}
-
-
-}
-catch(error){
-
-console.log(error);
-
-setLoading(false);
-
-}
-
+ },500);
 
 };
-
-
 
 
 // ======================
 // VERIFY OTP + LOGIN
 // ======================
 
+// const verifyWhatsappOtp = async () => {
+
+// try{
+
+
+// if(!mobileOtp){
+
+//  alert("Enter Mobile OTP");
+//  return;
+
+// }
+
+
+// setLoading(true);
+
+
+// const response =
+// await fetch(
+//  "/api/auth/verify-whatsapp-otp",
+//  {
+
+//  method:"POST",
+
+//  headers:{
+//   "Content-Type":"application/json"
+//  },
+
+//  body:JSON.stringify({
+
+//  mobile,
+
+//  otp:mobileOtp,
+
+//  fullName,
+
+//  email
+
+// })
+
+//  }
+
+// );
+
+
+
+// const data =
+// await response.json();
+
+
+
+// console.log(
+//  "VERIFY RESPONSE",
+//  data
+// );
+
+
+
+// setLoading(false);
+
+
+
+// if(data.success){
+
+
+// setMobileVerified(true);
+
+
+// if(data.user){
+
+// localStorage.setItem(
+// "user",
+// JSON.stringify(data.user)
+// );
+
+
+// window.dispatchEvent(
+// new Event("userLogin")
+// );
+
+// }
+
+
+// alert("Mobile Verified");
+
+
+// }
+
+// else{
+
+
+// alert(
+//  "Wrong OTP"
+// );
+
+
+// }
+
+
+// }
+// catch(error){
+
+// console.log(error);
+
+// setLoading(false);
+
+// }
+
+
+// };
 const verifyWhatsappOtp = async () => {
 
-try{
+ if(!mobileOtp){
 
-
-if(!mobileOtp){
-
- alert("Enter Mobile OTP");
- return;
-
-}
-
-
-setLoading(true);
-
-
-const response =
-await fetch(
- "/api/auth/verify-whatsapp-otp",
- {
-
- method:"POST",
-
- headers:{
-  "Content-Type":"application/json"
- },
-
- body:JSON.stringify({
-
- mobile,
-
- otp:mobileOtp,
-
- fullName,
-
- email
-
-})
+  alert("Enter Mobile OTP");
+  return;
 
  }
 
-);
+
+ setLoading(true);
 
 
-
-const data =
-await response.json();
+ setTimeout(()=>{
 
 
-
-console.log(
- "VERIFY RESPONSE",
- data
-);
+  if(mobileOtp === "123456"){
 
 
-
-setLoading(false);
-
+   setMobileVerified(true);
 
 
-if(data.success){
+   const dummyUser = {
+
+    fullName,
+
+    mobile,
+
+    email
+
+   };
 
 
-setMobileVerified(true);
+   localStorage.setItem(
+    "user",
+    JSON.stringify(dummyUser)
+   );
 
 
-if(data.user){
-
-localStorage.setItem(
-"user",
-JSON.stringify(data.user)
-);
+   window.dispatchEvent(
+    new Event("userLogin")
+   );
 
 
-window.dispatchEvent(
-new Event("userLogin")
-);
-
-}
+   alert("Mobile Verified");
 
 
-alert("Mobile Verified");
+  }
+  else{
+
+   alert("Wrong OTP");
+
+  }
 
 
-}
-
-else{
+  setLoading(false);
 
 
-alert(
- "Wrong OTP"
-);
-
-
-}
-
-
-}
-catch(error){
-
-console.log(error);
-
-setLoading(false);
-
-}
+ },500);
 
 
 };
-
 // ======================
 // SEND EMAIL OTP
 // ======================
@@ -368,9 +450,13 @@ headers:{
 
 body:JSON.stringify({
 
+mobile,
+
 email,
 
-otp:emailOtp
+otp:emailOtp,
+
+fullName
 
 })
 
@@ -479,43 +565,68 @@ const payload = {
 vehicle:{
 
 
- registrationNumber:
- selectedPlan?.bikeData?.vehicleNumber,
+registrationNumber:
+selectedPlan?.bikeData?.registrationNumber,
 
 
- make:
- selectedPlan?.bikeData?.make,
+make:
+selectedPlan?.bikeData?.make,
 
 
- model:
- selectedPlan?.bikeData?.model,
+model:
+selectedPlan?.bikeData?.model,
 
 
- year:
- selectedPlan?.bikeData?.year,
+variant:
+selectedPlan?.bikeData?.variant,
 
 
- isNewBike:
- selectedPlan?.bikeData?.isNewBike,
+idv:
+selectedPlan?.bikeData?.idv,
 
 
- engineNumber:
- selectedPlan?.bikeData?.engineNumber,
+capacity:
+selectedPlan?.bikeData?.capacity,
 
 
- chassisNumber:
- selectedPlan?.bikeData?.chassisNumber
+seatingCapacity:
+selectedPlan?.bikeData?.seatingCapacity,
 
 
+fuelType:
+selectedPlan?.bikeData?.fuelType,
+
+
+year:
+selectedPlan?.bikeData?.year,
+
+
+isNewBike:
+selectedPlan?.bikeData?.isNewBike,
+
+
+engineNumber:
+selectedPlan?.bikeData?.engineNumber,
+
+
+chassisNumber:
+selectedPlan?.bikeData?.chassisNumber,
+
+rto:
+selectedPlan?.bikeData?.rto
 }
 
 };
 
-
 console.log(
- "FULL QUOTE PAYLOAD",
- payload
+"FULL QUOTE PAYLOAD",
+payload
 );
+
+// console.log(
+//  "FULL QUOTE PAYLOAD",
+//  payload
+// );
 
 
 
@@ -529,54 +640,54 @@ console.log(
 // ======================
 
 
-const kycResponse =
-await fetch(
- "/api/sbi/2w/zuno-kyc",
- {
+// const kycResponse =
+// await fetch(
+//  "/api/sbi/2w/zuno-kyc",
+//  {
 
- method:"POST",
+//  method:"POST",
 
- headers:{
+//  headers:{
 
-  "Content-Type":
-  "application/json"
+//   "Content-Type":
+//   "application/json"
 
- },
+//  },
 
- body:
- JSON.stringify(payload)
+//  body:
+//  JSON.stringify(payload)
 
- }
-);
-
-
-
-const kycData =
-await kycResponse.json();
+//  }
+// );
 
 
 
-console.log(
- "KYC RESPONSE",
- kycData
-);
+// const kycData =
+// await kycResponse.json();
 
 
 
-if(!kycData.success){
+// console.log(
+//  "KYC RESPONSE",
+//  kycData
+// );
 
 
- alert(
-  "KYC Failed"
- );
+
+// if(!kycData.success){
 
 
- setLoading(false);
+//  alert(
+//   "KYC Failed"
+//  );
 
 
- return;
+//  setLoading(false);
 
-}
+
+//  return;
+
+// }
 
 
 
@@ -603,22 +714,12 @@ await fetch(
 
 
  body:
- JSON.stringify({
-
- ...payload,
-
-
- kyc:
- kycData.data
-
-
- })
+ JSON.stringify(payload)
 
 
  }
 
 );
-
 
 
 const quoteData =
@@ -742,119 +843,166 @@ alert(
             </div>
           </div>
 
-          <input
-  className={styles.inputField}
-  placeholder="Mobile number"
-  value={mobile}
-  onChange={(e) =>
-    setMobile(e.target.value)
-  }
+     {/* MOBILE ROW */}
+<div className={styles.otpRow}>
+
+<div className={styles.mobileBox}>
+<label className={styles.label}>
+Mobile number
+</label>
+
+<input
+ className={styles.otpInput}
+ value={mobile}
+ onChange={(e)=>setMobile(e.target.value)}
 />
+
+</div>
+
+
 {
 !mobileVerified && (
 
-<>
-
-{
 mobileOtpSent ?
-
-<>
-
-<input
-className={styles.inputField}
-placeholder="Enter Mobile OTP"
-value={mobileOtp}
-onChange={(e)=>
-setMobileOtp(e.target.value)}
-/>
-
-
-<button
-className={styles.payBtn}
-onClick={verifyWhatsappOtp}
->
-Verify Mobile
-</button>
-
-</>
+null
 
 :
 
 <button
-className={styles.payBtn}
-onClick={sendWhatsappOtp}
+ className={styles.otpBtn}
+ onClick={sendWhatsappOtp}
 >
-Send Mobile OTP
+Send OTP
 </button>
+
+)
 
 }
 
-</>
+</div>
 
-)
+
+{/* MOBILE OTP INPUT */}
+{
+mobileOtpSent &&
+!mobileVerified &&
+
+<div className={styles.otpRow}>
+
+<div className={styles.mobileBox}>
+
+<label className={styles.label}>
+OTP
+</label>
+
+<input
+ className={styles.otpInput}
+ placeholder="Enter Mobile OTP"
+ value={mobileOtp}
+ onChange={(e)=>setMobileOtp(e.target.value)}
+/>
+
+</div>
+
+
+<button
+ className={styles.otpBtn}
+ onClick={verifyWhatsappOtp}
+>
+Verify OTP
+</button>
+
+
+</div>
+
 }
 
 
 {
 mobileVerified &&
 
-<p style={{
-color:"green"
-}}>
+<p style={{color:"green"}}>
 ✓ Mobile Verified
 </p>
 
 }
-        {
+
+
+{/* EMAIL AFTER MOBILE VERIFY */}
+{
 mobileVerified &&
 
 <>
 
+<div className={styles.otpRow}>
+
+<div className={styles.mobileBox}>
+
+<label className={styles.label}>
+Email address
+</label>
+
 <input
-className={styles.inputField}
-placeholder="Email address"
-value={email}
-onChange={(e)=>
-setEmail(e.target.value)}
+ className={styles.otpInput}
+ value={email}
+ onChange={(e)=>setEmail(e.target.value)}
 />
 
+</div>
 
 {
-!emailVerified &&
+!emailVerified && (
 
-(
 emailOtpSent ?
-
-<>
-
-<input
-className={styles.inputField}
-placeholder="Enter Email OTP"
-value={emailOtp}
-onChange={(e)=>
-setEmailOtp(e.target.value)}
-/>
-
-
-<button
-className={styles.payBtn}
-onClick={verifyEmailOtp}
->
-Verify Email
-</button>
-
-</>
+null
 
 :
 
 <button
-className={styles.payBtn}
-onClick={sendEmailOtp}
+ className={styles.otpBtn}
+ onClick={sendEmailOtp}
 >
-Send Email OTP
+Send OTP
 </button>
 
 )
+
+}
+
+</div>
+
+
+{
+emailOtpSent &&
+!emailVerified &&
+
+<div className={styles.otpRow}>
+
+<div className={styles.mobileBox}>
+
+<label className={styles.label}>
+Email OTP
+</label>
+
+<input
+ className={styles.otpInput}
+ placeholder="Enter Email OTP"
+ value={emailOtp}
+ onChange={(e)=>setEmailOtp(e.target.value)}
+/>
+
+</div>
+
+
+<button
+ className={styles.otpBtn}
+ onClick={verifyEmailOtp}
+>
+Verify OTP
+</button>
+
+
+</div>
 
 }
 
@@ -862,15 +1010,15 @@ Send Email OTP
 {
 emailVerified &&
 
-<p style={{
-color:"green"
-}}>
+<p style={{color:"green"}}>
 ✓ Email Verified
 </p>
 
 }
 
 </>
+
+
 
 }
 {
@@ -922,7 +1070,7 @@ color:"green"
 </h4>
 
 <p>
-  {selectedPlan?.bikeData?.vehicleNumber}
+  {selectedPlan?.bikeData?.registrationNumber}
   {" | Registered in "}
   {selectedPlan?.bikeData?.year}
 </p>
@@ -931,15 +1079,15 @@ color:"green"
           </div>
 
           <div className={styles.insurerBlock}>
-            <Image
+   <Image
   src={
-    selectedPlan?.company === "SBI General"
-      ? "/assets/sbi.png"
-      : "/assets/bajaj.png"
+    selectedPlan?.companyLogo ||
+    selectedPlan?.logo ||
+    "/assets/default-insurance.png"
   }
-  alt="company"
-  width={100}
-  height={30}
+  alt={selectedPlan?.company}
+  width={120}
+  height={40}
 />
             <p>
   {selectedPlan?.company}
