@@ -1249,15 +1249,27 @@
 
 .backBtn,
 .step1BackBtn {
-  background: #e6e6e5;
-  border: none;
-  border-radius: 50%;
-  width: 27px;
-  height: 27px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position:absolute;
+  left:0;
+  top:145px;
+
+  background:#e6e6e5;
+
+  border:none;
+  border-radius:50%;
+
+  width:38px;
+  height:38px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+
+  font-size:28px;
+
+  z-index:20;
 }
 
 .backBtn:hover,
@@ -1277,25 +1289,28 @@
    STEP 1: SELECT CITY
    =========================== */
 .step1Wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  max-width: 900px;
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  position: relative;
-  padding-bottom: 100px;
-  padding-top: 50px;
-}
+  position:relative;
 
+  width:100%;
+  max-width:900px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  padding:20px 20px 40px;
+
+  gap:25px;
+}
 .step1Header {
-  display: flex;
-  align-items: center; 
-  gap: 12px;
-  width: 20%;
-  margin-bottom: 20px;
+  position:absolute;
+  left:0;
+  top:0;
+
+  width:auto;
+
+  padding:0;
+  margin:0;
 }
 
 .step1Heading {
@@ -1695,4 +1710,1165 @@
     padding: 0 16px;
     width: 100%;
   }
+}
+.cityBox{
+ width:500px;
+ margin:auto;
+}
+
+
+.cityLabel{
+ background:white;
+ padding:0 8px;
+ margin-left:20px;
+ position:relative;
+ top:10px;
+ color:#23364f;
+}
+
+
+.cityInputBox{
+ border:1px solid #23364f;
+ height:80px;
+ border-radius:10px;
+ display:flex;
+ align-items:center;
+ padding:0 20px;
+}
+
+
+.cityInput{
+ border:none;
+ outline:none;
+ flex:1;
+ font-size:22px;
+ color:#23364f;
+}
+
+
+.clearCity{
+ font-size:40px;
+ cursor:pointer;
+ color:#23364f;
+}
+
+
+.popularTitle{
+ margin-top:30px;
+ color:#23364f;
+}
+
+
+.cityList{
+ display:flex;
+ flex-wrap:wrap;
+ gap:15px;
+ margin-top:20px;
+}
+
+
+.cityChip{
+ padding:10px 25px;
+ border-radius:25px;
+ border:1px solid #ddd;
+ background:white;
+ font-size:18px;
+ cursor:pointer;
+ color:#23364f;
+}
+
+
+.activeCity{
+ border-color:#20b486;
+ color:#20b486;
+}
+
+
+.step2Wrapper .continueBtn{
+ margin-top:40px;
+}.cityMainWrapper{
+min-height:600px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:130px;
+position:relative;
+}
+
+
+.cityBack{
+position:absolute;
+left:150px;
+top:250px;
+height:40px;
+width:40px;
+background:#eee;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:35px;
+cursor:pointer;
+}
+
+
+.cityImageBox{
+width:250px;
+display:flex;
+justify-content:center;
+}
+
+
+.cityUserImage{
+width:180px;
+height:180px;
+object-fit:contain;
+border-radius:50%;
+}
+
+
+.cityRight{
+width:600px;
+}
+
+
+.cityRight h2{
+font-size:30px;
+font-weight:700;
+margin-bottom:40px;
+}
+
+
+
+.citySearchBox{
+height:65px;
+border:1px solid #cfcfcf;
+border-radius:8px;
+display:flex;
+align-items:center;
+padding:0 20px;
+}
+
+
+.citySearchBox input{
+border:none;
+outline:none;
+font-size:20px;
+width:100%;
+}
+
+
+.citySearchIcon{
+font-size:25px;
+color:#555;
+}
+
+
+.clearCity{
+font-size:35px;
+cursor:pointer;
+color:#26344d;
+}
+
+
+
+.cityList{
+margin-top:30px;
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+}
+
+
+.cityChip{
+border:none;
+background:#f2f2f2;
+border-radius:25px;
+padding:15px 25px;
+font-size:20px;
+cursor:pointer;
+}
+
+
+.activeCity{
+background:#e9fff6;
+color:#16b978;
+border:1px solid #16b978;
+}
+
+
+.cityContinueBtn{
+margin-top:80px;
+height:80px;
+width:480px;
+background:#ff5722;
+color:white;
+border:none;
+border-radius:8px;
+font-size:22px;
+font-weight:600;
+cursor:pointer;
+}
+
+/* ---------- FINAL HEALTH FLOW OVERRIDES ---------- */
+.wrapper {
+  min-height: 72vh;
+  align-items: flex-start;
+  padding: 70px 20px 40px;
+}
+
+.step1Wrapper {
+  max-width: 760px;
+  padding: 0 20px;
+  gap: 28px;
+}
+
+.step1Wrapper h2 {
+  margin: 0;
+  color: #07162b;
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.step1MembersList {
+  gap: 22px;
+}
+
+.step1MemberCard {
+  width: 150px;
+  border-radius: 8px;
+}
+
+.step1MemberIcon {
+  width: 74px;
+  height: 74px;
+  object-fit: contain;
+}
+
+.step1DropdownToggle {
+  min-height: 38px;
+}
+
+.cityMainWrapper {
+  width: min(100%, 1060px);
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 600px);
+  align-items: center;
+  justify-content: center;
+  column-gap: 120px;
+  position: relative;
+}
+
+.cityBack {
+  position: absolute;
+  left: 0;
+  top: 210px;
+  width: 40px;
+  height: 40px;
+  background: #eeeeee;
+  color: #07162b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.cityImageBox {
+  width: 260px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cityUserImage {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+}
+
+.cityRight {
+  width: 100%;
+}
+
+.cityRight h2 {
+  margin: 0 0 36px;
+  color: #07162b;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.citySearchBox {
+  height: 68px;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  box-sizing: border-box;
+}
+
+.citySearchBox input {
+  border: 0;
+  outline: 0;
+  width: 100%;
+  color: #07162b;
+  font-size: 20px;
+}
+
+.citySearchBox input::placeholder {
+  color: #6f7784;
+}
+
+.citySearchIcon {
+  flex: 0 0 auto;
+  color: #555;
+  font-size: 26px;
+}
+
+.clearCity {
+  flex: 0 0 auto;
+  color: #26344d;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cityList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.cityChip {
+  min-height: 56px;
+  border: 0;
+  border-radius: 28px;
+  background: #f0f0f0;
+  color: #07162b;
+  padding: 0 22px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.activeCity {
+  background: #fff0ea;
+  color: #ff5722;
+  border: 1px solid #ff5722;
+}
+
+.cityContinueBtn {
+  width: 480px;
+  max-width: 100%;
+  height: 78px;
+  margin: 78px 0 0 60px;
+  border: 0;
+  border-radius: 8px;
+  background: #ff5722;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cityContinueBtn:hover {
+  background: #e64a19;
+}
+
+.detailsMainWrapper {
+  width: min(100%, 1060px);
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 690px);
+  align-items: center;
+  justify-content: center;
+  column-gap: 90px;
+  position: relative;
+}
+
+.detailsBack {
+  position: absolute;
+  left: 0;
+  top: 172px;
+  width: 40px;
+  height: 40px;
+  background: #eeeeee;
+  color: #07162b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.detailsImageBox {
+  width: 260px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detailsUserImage {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+}
+
+.detailsRight {
+  width: 100%;
+}
+
+.detailsRight h2 {
+  margin: 0 0 24px;
+  color: #12284c;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.detailsSubtitle {
+  margin: 0 0 40px;
+  color: #5f6d7e;
+  font-size: 24px;
+}
+
+.detailsInput {
+  width: 100%;
+  height: 76px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  color: #25324a;
+  font-size: 22px;
+  font-weight: 400;
+  outline: none;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+.detailsInput::placeholder {
+  color: #6f7784;
+}
+
+.detailsInput:focus {
+  border-color: #b7c3d5;
+}
+
+.detailsPhoneGroup {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 12px;
+}
+
+.detailsCode {
+  height: 76px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  color: #12284c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.otpButton,
+.detailsContinueBtn {
+  width: 480px;
+  max-width: 100%;
+  min-height: 72px;
+  border: 0;
+  border-radius: 10px;
+  background: #ff5722;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto 24px;
+}
+
+.otpButton:hover,
+.detailsContinueBtn:hover {
+  background: #e64a19;
+}
+
+.otpButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.verifiedBox {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 10px;
+  background: #e4f8ea;
+  color: #088b3c;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.verifiedBox::before {
+  content: "✓";
+  margin-right: 8px;
+}
+
+.otpMessage {
+  color: #5f6d7e;
+  font-size: 14px;
+  margin: -10px 0 18px;
+}
+
+.detailsContinueBtn {
+  margin-top: 18px;
+}
+
+.detailsTerms {
+  color: #555;
+  font-size: 18px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+}
+
+@media screen and (max-width: 900px) {
+  .wrapper {
+    padding-top: 40px;
+  }
+
+  .cityMainWrapper {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+    text-align: center;
+  }
+
+  .detailsMainWrapper {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+    text-align: center;
+  }
+
+  .cityBack {
+    left: 20px;
+    top: 90px;
+  }
+
+  .detailsBack {
+    left: 20px;
+    top: 90px;
+  }
+
+  .cityImageBox {
+    width: 100%;
+    min-height: 170px;
+  }
+
+  .detailsImageBox {
+    width: 100%;
+    min-height: 170px;
+  }
+
+  .cityUserImage {
+    width: 150px;
+    height: 150px;
+  }
+
+  .detailsUserImage {
+    width: 150px;
+    height: 150px;
+  }
+
+  .cityRight {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .detailsRight {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cityList {
+    justify-content: center;
+  }
+
+  .cityContinueBtn {
+    margin: 46px auto 0;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .wrapper {
+    padding: 28px 16px;
+  }
+
+  .step1Wrapper h2,
+  .cityRight h2,
+  .detailsRight h2 {
+    font-size: 24px;
+  }
+
+  .detailsSubtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .step1MemberCard {
+    max-width: 136px;
+  }
+
+  .cityBack {
+    top: 82px;
+    left: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 32px;
+  }
+
+  .detailsBack {
+    top: 82px;
+    left: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 32px;
+  }
+
+  .cityImageBox {
+    min-height: 140px;
+  }
+
+  .detailsImageBox {
+    min-height: 140px;
+  }
+
+  .cityUserImage {
+    width: 120px;
+    height: 120px;
+  }
+
+  .detailsUserImage {
+    width: 120px;
+    height: 120px;
+  }
+
+  .citySearchBox {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .citySearchBox input,
+  .cityChip {
+    font-size: 16px;
+  }
+
+  .cityChip {
+    min-height: 46px;
+    padding: 0 18px;
+  }
+
+  .cityContinueBtn {
+    width: 100%;
+    height: 58px;
+    margin-top: 38px;
+    font-size: 18px;
+  }
+
+  .detailsInput,
+  .detailsCode {
+    height: 56px;
+    font-size: 16px;
+  }
+
+  .detailsPhoneGroup {
+    grid-template-columns: 68px 1fr;
+    gap: 10px;
+  }
+
+  .otpButton,
+  .detailsContinueBtn {
+    width: 100%;
+    min-height: 56px;
+    font-size: 16px;
+  }
+
+  .detailsTerms {
+    font-size: 14px;
+  }
+}
+
+/* ---------- COMPACT HEALTH FLOW OVERRIDES ---------- */
+.wrapper {
+  min-height: auto !important;
+  padding: 0 20px 30px !important;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+}
+
+.cityMainWrapper {
+  width: min(100%, 980px);
+  grid-template-columns: 210px minmax(0, 560px);
+  column-gap: 150px;
+}
+
+.cityBack,
+.detailsBack {
+  position: absolute;
+  left: 0;
+  top: 145px;
+
+  width: 36px;
+  height: 36px;
+
+  background: #eeeeee;
+  border-radius: 50%;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #333;
+
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+
+  padding-bottom: 4px;
+
+  cursor: pointer;
+  z-index: 10;
+}
+
+.cityBack {
+  top: 170px;
+}
+
+.cityImageBox,
+.detailsImageBox {
+  width: 210px;
+  min-height: 210px;
+}
+
+.cityUserImage,
+.detailsUserImage {
+  width: 150px;
+  height: 150px;
+      border-radius:50%;
+
+
+}
+
+.cityRight h2 {
+  margin-bottom: 26px;
+  font-size: 28px;
+}
+
+.citySearchBox {
+  height: 56px;
+  padding: 0 18px;
+}
+
+.citySearchBox input {
+  font-size: 18px;
+}
+
+.citySearchIcon {
+  font-size: 24px;
+}
+
+.clearCity {
+  font-size: 28px;
+}
+
+.cityList {
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.cityChip {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 17px;
+}
+
+.cityContinueBtn {
+  width: 400px;
+  height: 58px;
+  margin: 58px auto 0;
+  font-size: 20px;
+}
+
+.detailsMainWrapper {
+  width: min(100%, 940px);
+  grid-template-columns: 210px minmax(0, 560px);
+  align-items: start;
+  column-gap: 70px;
+}
+
+.detailsBack {
+  top: 96px;
+
+}
+
+.detailsRight h2 {
+  margin-bottom: 14px;
+  font-size: 24px;
+}
+
+.detailsSubtitle {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.detailsInput,
+.detailsCode {
+  height: 56px;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.detailsInput {
+  margin-bottom: 18px;
+  padding: 0 18px;
+}
+
+.detailsPhoneGroup {
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+}
+
+.detailsCode {
+  margin-bottom: 18px;
+}
+
+.otpButton,
+.detailsContinueBtn {
+  width: 420px;
+  min-height: 56px;
+  border-radius: 8px;
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+
+.verifiedBox {
+  min-height: 44px;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+
+.verifiedBox::before {
+  content: "";
+  margin-right: 0;
+}
+
+.detailsTerms {
+  font-size: 14px;
+  text-align: center;
+}
+
+@media screen and (max-width: 900px) {
+  .cityMainWrapper,
+  .detailsMainWrapper {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+
+  .cityBack,
+  .detailsBack {
+    top: 72px;
+  }
+
+  .cityImageBox,
+  .detailsImageBox {
+    width: 100%;
+    min-height: 130px;
+  }
+
+  .cityUserImage,
+  .detailsUserImage {
+    width: 115px;
+    height: 115px;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .wrapper {
+    padding: 24px 14px;
+  }
+
+  .cityRight h2,
+  .detailsRight h2 {
+    font-size: 22px;
+  }
+
+  .citySearchBox,
+  .detailsInput,
+  .detailsCode {
+    height: 52px;
+  }
+
+  .cityChip {
+    min-height: 40px;
+    font-size: 15px;
+  }
+
+  .cityContinueBtn,
+  .otpButton,
+  .detailsContinueBtn {
+    width: 100%;
+    min-height: 52px;
+    height: 52px;
+    font-size: 16px;
+  }
+}
+
+/* ============ MEDICAL FINAL LAYOUT ============ */
+/* ============ MEDICAL FINAL LAYOUT FIX ============ */
+
+.medicalOverlay{
+
+width:100%;
+
+background:#fff;
+
+display:flex;
+
+justify-content:center;
+
+align-items:flex-start;
+
+padding-top:15px;
+
+}
+
+
+.medicalBox{
+
+width:1050px;
+
+display:grid;
+
+grid-template-columns:220px 1fr;
+
+column-gap:60px;
+
+position:relative;
+
+}
+
+
+/* title */
+.medicalBox h2{
+
+grid-column:1/-1;
+
+text-align:center;
+
+font-size:32px;
+
+font-weight:800;
+
+color:#13294b;
+
+margin:0 0 20px;
+
+}
+
+
+/* avatar */
+
+.medicalAvatarBox{
+
+grid-column:1;
+
+grid-row:2 / span 3;
+
+display:flex;
+
+justify-content:center;
+
+padding-top:35px;
+
+}
+
+
+.medicalAvatar{
+
+width:160px;
+
+height:160px;
+
+object-fit:contain;
+
+}
+
+
+/* back circle */
+
+.medicalBack{
+
+position:absolute;
+
+left:0;
+
+top:190px;
+
+width:38px;
+
+height:38px;
+
+border-radius:50%;
+
+background:#eee;
+
+display:flex;
+
+align-items:flex-end;
+
+justify-content:center;
+
+font-size:30px;
+
+cursor:pointer;
+
+}
+
+
+/* Question */
+
+.medicalBox h3{
+
+grid-column:2;
+
+text-align:center;
+
+font-size:19px;
+
+font-weight:500;
+
+line-height:1.5;
+
+margin:0 0 15px;
+
+color:#172943;
+
+}
+
+
+.medicalBox p{
+
+grid-column:2;
+
+text-align:center;
+
+font-size:17px;
+
+color:#66758a;
+
+margin:0 0 25px;
+
+}
+
+
+/* cards */
+
+.diseaseGrid{
+
+grid-column:2;
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:16px 25px;
+
+}
+
+
+.diseaseItem{
+
+height:58px;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+display:flex;
+
+align-items:center;
+
+gap:20px;
+
+padding:0 22px;
+
+font-size:17px;
+
+}
+
+
+.diseaseItem input{
+
+width:17px;
+
+height:17px;
+
+}
+
+
+/* button */
+
+.medicalBottom{
+
+grid-column:2;
+
+margin-top:35px;
+
+display:flex;
+
+justify-content:center;
+
+}
+
+
+.finalBtn{
+
+width:500px;
+
+height:58px;
+
+border:none;
+
+border-radius:8px;
+
+background:#ff5722;
+
+color:white;
+
+font-size:21px;
+
+font-weight:700;
+
+cursor:pointer;
+margin-bottom:1rem;
+
 }

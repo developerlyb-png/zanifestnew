@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
+
 import { FiEdit2, FiMapPin } from "react-icons/fi";
 import { FaTruck, FaCar } from "react-icons/fa";
-import { BsCalendarDate } from "react-icons/bs";
+import { BsCalendarDate, BsFuelPumpDiesel } from "react-icons/bs";
+
 import { GiGearStickPattern } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 

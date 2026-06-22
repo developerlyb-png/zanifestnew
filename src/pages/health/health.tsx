@@ -1,379 +1,1123 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
-import { IoIosArrowBack } from "react-icons/io";
-import { FaSearch } from "react-icons/fa";
-import Image from "next/image";
-import { useRouter } from "next/router";
 
+import React, { useEffect, useRef, useState } from "react";
+import styles from "@/styles/pages/health/health.module.css";
+import { City } from "country-state-city";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import UserDetails from "@/components/ui/UserDetails";
+
+import Image from "next/image";
+import { FiSearch } from "react-icons/fi";
+
 import womanicon from "@/assets/pageImages/health/2.webp";
 import manicon from "@/assets/health/manicon.webp";
-import styles from "@/styles/pages/health/health.module.css";
+import { useRouter } from "next/router";
 
 const Health = () => {
-  const [step, setStep] = useState<number>(1);
-  const [gender, setGender] = useState<string>("male");
-  const [members, setMembers] = useState<{ name: string; image: any }[]>([]);
-  const [ages, setAges] = useState<{ [key: number]: string }>({});
-  const [isOpenIndex, setIsOpenIndex] = useState<number | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [mobile, setMobile] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const cities = [
-    "Delhi",
-    "Bengaluru",
-    "Pune",
-    "Hyderabad",
-    "Mumbai",
-    "Thane",
-    "Gurgaon",
-    "Chennai",
-    "Ghaziabad",
-    "Ernakulam",
-  ];
-  const ageOptions = Array.from({ length: 101 }, (_, i) => i.toString());
+  const [step, setStep] = useState(1);
 
-  // 🧠 Capture gender & selected members from query
+  const [gender, setGender] = useState("M");
+
+  const [members, setMembers] = useState<any[]>([]);
+
+  const [ages, setAges] = useState<{ [key: number]: string }>({});
+
+  const [selectedCity, setSelectedCity] = useState("");
+  const [citySearch,setCitySearch] = useState("");
+
+const [allCities,setAllCities] = useState<string[]>([]);
+  const popularCities = [
+  "Delhi",
+  "Bengaluru",
+  "Pune",
+  "Hyderabad",
+  "Mumbai",
+  "Thane",
+  "Gurgaon",
+  "Chennai",
+  "Ghaziabad",
+  "Ernakulam"
+];
+
+
+const [medical,setMedical] = useState<string[]>([]);
+
+const diseases = [
+ "Diabetes",
+ "Blood Pressure",
+ "Heart disease",
+ "Any Surgery",
+ "Thyroid",
+ "Asthma",
+ "Other disease",
+ "None of these"
+];
+  const [fullName, setFullName] = useState("");
+
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileOtp, setMobileOtp] = useState("");
+  const [emailOtp, setEmailOtp] = useState("");
+  const [mobileOtpSent, setMobileOtpSent] = useState(false);
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [mobileVerified, setMobileVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [otpMessage, setOtpMessage] = useState("");
+  const [otpLoading, setOtpLoading] = useState("");
+
+  const [isOpenIndex, setIsOpenIndex] = useState<number | null>(null);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const getMemberImage = (member?: any) => {
+    return member?.image || (gender === "F" ? womanicon : manicon);
+  };
+
   useEffect(() => {
-    if (router.query.gender) setGender(router.query.gender as string);
+    if (!router.isReady) return;
+
+    if (router.query.gender) {
+      setGender(router.query.gender as string);
+    }
 
     if (router.query.members) {
       try {
-        const parsed = JSON.parse(router.query.members as string);
-        setMembers(parsed);
-      } catch {
-        console.error("Error parsing members");
+        const data = JSON.parse(router.query.members as string);
+
+        setMembers(data);
+      } catch (error) {
+        console.log(error);
       }
     }
-  }, [router.query]);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [step]);
+  }, [router.isReady]);
 
   const handleAgeSelect = (index: number, age: string) => {
-    setAges((prev) => ({ ...prev, [index]: age }));
+    setAges((prev) => ({
+      ...prev,
+
+      [index]: age,
+    }));
+
     setIsOpenIndex(null);
   };
 
-  // 🧩 Members UI
-  const renderMembers = () => (
-    <div className={styles.step1MembersList}>
-     {members.map((m, idx) => {
+  const getDOBFromAge = (age: string) => {
+    const year = new Date().getFullYear() - Number(age);
 
-  const name = m.name.toLowerCase();
+    return `${year}-01-01`;
+  };
 
-  const minAge =
-    name === "son" || name === "daughter"
-      ? 0
-      : 18;
+  const postJson = async (url: string, body: Record<string, string>) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
-  const memberAgeOptions = Array.from(
-    { length: 101 - minAge },
-    (_, i) => (i + minAge).toString()
-  );
+    const data = await response.json();
 
-  return (
-    <div key={idx} className={styles.step1MemberCard}>
-      <Image
-        src={typeof m.image === "string" ? m.image : m.image}
-        alt={m.name}
-        className={styles.step1MemberIcon}
-      />
+    if (!response.ok || data?.success === false) {
+      throw new Error(data?.message || "Request failed");
+    }
 
-      <p>{m.name}</p>
+    return data;
+  };
 
-      <div className={styles.step1Dropdown} ref={dropdownRef}>
-        <button
-          type="button"
-          className={styles.step1DropdownToggle}
-          onClick={() => setIsOpenIndex(isOpenIndex === idx ? null : idx)}
-        >
-          {ages[idx] ? `Age: ${ages[idx]}` : "Select Age"}
+  // const sendMobileOtp = async () => {
+  //   if (!/^[6-9]\d{9}$/.test(mobile)) {
+  //     alert("Enter valid mobile");
+  //     return;
+  //   }
 
-          <span
-            className={`${styles.step1Arrow} ${
-              isOpenIndex === idx ? styles.up : ""
-            }`}
-          >
-            ▼
-          </span>
-        </button>
+  //   try {
+  //     setOtpLoading("mobile-send");
+  //     await postJson("/api/auth/send-whatsapp-otp", { mobile });
+  //     setMobileOtpSent(true);
+  //     setOtpMessage("Mobile OTP sent on WhatsApp");
+  //   } catch (error: any) {
+  //     alert(error.message || "Could not send mobile OTP");
+  //   } finally {
+  //     setOtpLoading("");
+  //   }
+  // };
+const sendMobileOtp = async () => {
 
-        {isOpenIndex === idx && (
-          <ul className={styles.step1DropdownMenu}>
-            {memberAgeOptions.map((age) => (
-              <li
-                key={age}
-                className={ages[idx] === age ? styles.step1SelectedOption : ""}
-                onClick={() => handleAgeSelect(idx, age)}
-              >
-                {age}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-})}
-    </div>
-  );
+if (!/^[6-9]\d{9}$/.test(mobile)) {
 
-  // 🧠 Submit data to backend (robust)
- const handleSubmit = async () => {
+alert("Enter valid mobile");
+
+return;
+
+}
+
+
+setOtpLoading("mobile-send");
+
+
+// static OTP mode
+console.log("STATIC WHATSAPP OTP : 123456");
+
+
+setTimeout(()=>{
+
+
+setMobileOtpSent(true);
+
+
+setOtpMessage(
+"Use OTP 123456"
+);
+
+
+setOtpLoading("");
+
+
+},500);
+
+
+};
+  // const verifyMobileOtp = async () => {
+  //   if (!mobileOtp.trim()) {
+  //     alert("Enter mobile OTP");
+  //     return;
+  //   }
+
+  //   try {
+  //     setOtpLoading("mobile-verify");
+  //     await postJson("/api/auth/verify-whatsapp-otp", {
+  //       mobile,
+  //       otp: mobileOtp,
+  //       fullName,
+  //       email,
+  //     });
+  //     setMobileVerified(true);
+  //     setOtpMessage("Mobile verified");
+  //   } catch (error: any) {
+  //     alert(error.message || "Could not verify mobile OTP");
+  //   } finally {
+  //     setOtpLoading("");
+  //   }
+  // };
+
+  const verifyMobileOtp = async () => {
+
+if(!mobileOtp.trim()){
+
+alert("Enter mobile OTP");
+
+return;
+
+}
+
+
+if(mobileOtp !== "123456"){
+
+alert("Invalid OTP");
+
+return;
+
+}
+
+
+setMobileVerified(true);
+
+setOtpMessage("Mobile verified");
+
+
+};
+  const sendEmailOtp = async () => {
+    if (!mobileVerified) {
+      alert("Verify mobile first");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Enter valid email");
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+      alert("Enter valid mobile first");
+      return;
+    }
+
     try {
-      // VALIDATIONS
-      if (!members || members.length === 0) {
-        alert("No members selected. Please select members first.");
-        router.push("/healthinsurance");
-        return;
-      }
+      setOtpLoading("email-send");
+      await postJson("/api/auth/send-email-otp", { email, mobile });
+      setEmailOtpSent(true);
+      setOtpMessage("Email OTP sent");
+    } catch (error: any) {
+      alert(error.message || "Could not send email OTP");
+    } finally {
+      setOtpLoading("");
+    }
+  };
 
-      // validate ages
+  const verifyEmailOtp = async () => {
+    if (!emailOtp.trim()) {
+      alert("Enter email OTP");
+      return;
+    }
+
+    try {
+      setOtpLoading("email-verify");
+      await postJson("/api/auth/verify-email-otp", {
+        mobile,
+        email,
+        otp: emailOtp,
+        fullName,
+      });
+      setEmailVerified(true);
+      setOtpMessage("Email verified");
+    } catch (error: any) {
+      alert(error.message || "Could not verify email OTP");
+    } finally {
+      setOtpLoading("");
+    }
+  };
+
+  const renderMembers = () => {
+    return (
+      <div className={styles.step1MembersList}>
+        {members.map((m: any, idx: number) => {
+          const memberName = m.name || m.relation;
+
+          const lower = memberName.toLowerCase();
+
+          const minAge = lower === "son" || lower === "daughter" ? 0 : 18;
+
+          const ageOptions = Array.from(
+            {
+              length: 101 - minAge,
+            },
+
+            (_, i) => (i + minAge).toString(),
+          );
+
+          return (
+            <div key={idx} className={styles.step1MemberCard}>
+               <Image
+
+src={getMemberImage(m)}
+
+alt={memberName}
+
+className={styles.step1MemberIcon}
+
+/>
+
+              <p>{memberName}</p>
+
+              <div className={styles.step1Dropdown} ref={dropdownRef}>
+                <button
+                  type="button"
+                  className={styles.step1DropdownToggle}
+                  onClick={() => {
+                    setIsOpenIndex(isOpenIndex === idx ? null : idx);
+                  }}
+                >
+                  {ages[idx] ? `Age: ${ages[idx]}` : "Select Age"}
+
+                  <span
+                    className={`${styles.step1Arrow} ${
+                      isOpenIndex === idx ? styles.up : ""
+                    }`}
+                  >
+                    ▼
+                  </span>
+                </button>
+
+                {isOpenIndex === idx && (
+                  <ul className={styles.step1DropdownMenu}>
+                    {ageOptions.map((age) => (
+                      <li
+                        key={age}
+                        className={
+                          ages[idx] === age ? styles.step1SelectedOption : ""
+                        }
+                        onClick={() => handleAgeSelect(idx, age)}
+                      >
+                        {age}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // ===============================
+  // FINAL SUBMIT
+  // ===============================
+
+  const handleSubmit = async () => {
+    try {
       for (let i = 0; i < members.length; i++) {
         if (!ages[i]) {
-          alert(`Please select age for ${members[i].name}`);
+          alert(`Select age for ${members[i].name || members[i].relation}`);
+
           setStep(1);
+
           return;
         }
       }
 
       if (!selectedCity) {
-        alert("Please select a city.");
+        alert("Select city");
+
         setStep(2);
+
         return;
       }
 
-      if (!fullName.trim() || fullName.trim().length < 2) {
-        alert("Enter a valid full name.");
+      if (!fullName) {
+        alert("Enter name");
+
         setStep(3);
+
         return;
       }
 
       if (!/^[6-9]\d{9}$/.test(mobile)) {
-        alert("Enter a valid 10-digit Indian mobile number.");
-        setStep(3);
+        alert("Enter valid mobile");
+
+        return;
+      }
+
+      if (!mobileVerified) {
+        alert("Verify mobile number");
+
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Enter valid email");
+
+        return;
+      }
+
+      if (!emailVerified) {
+        alert("Verify email");
+
         return;
       }
 
       const payload = {
-        gender,
-        members: members.map((m, i) => {
+        name: fullName,
+
+        gender: gender,
+
+        dob: getDOBFromAge(ages[0]),
+
+        mobile: mobile,
+
+        email: email,
+
+        pincode: "400070",
+
+        sumInsured: "500000",
+
+        members: members.map((m: any, index: number) => {
+          const relation = m.relation || m.name;
+
           return {
-            name: m.name,
-            image: typeof m.image === "string" ? m.image : m.image.src || "",
-            age: Number(ages[i]),
+            name: relation === "Self" ? fullName : relation,
+
+            relation: relation,
+
+            age: ages[index],
+
+            gender:
+              m.gender ||
+              ([
+                "Wife",
+                "Mother",
+                "Daughter",
+                "Grandmother",
+                "Mother-in-law",
+              ].includes(relation)
+                ? "F"
+                : "M"),
+
+            dob: getDOBFromAge(ages[index]),
           };
         }),
-        city: selectedCity,
-        fullName,
-        mobile,
-        medicalHistory: selectedDiseases,
-        // ❗ DO NOT send email – backend will auto detect user email from cookie
       };
 
-      console.log("Submitting health payload:", payload);
+      console.log(
+        "ZUNO HEALTH REQUEST",
 
-      const res = await fetch("/api/healthinsurance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",   // ⭐ REQUIRED LOGGED IN EMAIL CAPTURE
-        body: JSON.stringify(payload),
-      });
+        payload,
+      );
 
-      const text = await res.text();
-      let data: any = null;
+      const response = await fetch(
+        "/api/zuno/health/quick-quote",
 
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.warn("Non JSON response:", text);
-      }
+        {
+          method: "POST",
 
-      if (!res.ok) {
-        alert("❌ Failed: " + (data?.message || text));
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const result = await response.json();
+
+      console.log(
+        "ZUNO HEALTH RESPONSE",
+
+        result,
+      );
+
+      if (!response.ok) {
+        alert(result?.message || "Quote failed");
+
         return;
       }
 
-      if (data?.success) {
-        alert("Health insurance data saved successfully!");
-        router.push("./health6");
-      } else {
-        alert("⚠️ Something went wrong: " + (data?.message || text));
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert("Error submitting data: " + err.message);
+      // convert response for health6 page
+
+      const plans = [
+        {
+          company: "Zuno Health",
+
+          planName: "Zuno Health Gold",
+
+          sumInsured: payload.sumInsured,
+
+          premium:
+            result?.policyHolder?.ContractDetails?.[0]?.ContractPremium
+              ?.premiumAfterTax ||
+            result?.premium ||
+            "0",
+
+          rawData: result,
+        },
+      ];
+
+      router.push({
+        pathname: "./health6",
+
+        query: {
+          plans: JSON.stringify(plans),
+        },
+      });
+    } catch (error: any) {
+      console.log(
+        "HEALTH FRONT ERROR",
+
+        error,
+      );
+
+      alert(error.message || "Something went wrong");
     }
   };
+useEffect(()=>{
 
+const cities =
+City.getCitiesOfCountry("IN") || [];
+
+
+setAllCities(
+cities.map((item)=>item.name)
+);
+
+
+},[]);
+
+
+const searchedCities =
+citySearch
+?
+allCities.filter((city)=>
+
+city
+.toLowerCase()
+.includes(citySearch.toLowerCase())
+
+)
+.slice(0,50)
+
+:
+[];
   return (
     <div>
       <UserDetails />
+
       <Navbar />
 
       <div className={styles.wrapper}>
-        <div className={styles.step1Wrapper}>
-          <div className={styles.step1Header}>
-            <button
-              className={styles.step1BackBtn}
-              onClick={() =>
-                step > 1 ? setStep(step - 1) : router.push("/healthinsurance")
-              }
+  {step === 1 && (
+    <div className={styles.step1Wrapper}>
+<div
+  className={styles.step1BackBtn}
+  onClick={() => router.back()}
+>
+  ‹
+</div>
+
+      <h2>Select Age for Each Member</h2>
+
+      {renderMembers()}
+
+      <button
+        className={styles.continueBtn}
+        onClick={() => setStep(2)}
+      >
+        Continue
+      </button>
+
+    </div>
+  )}
+
+
+    {step === 2 && (
+
+<div className={styles.cityMainWrapper}>
+
+
+<div
+  className={styles.cityBack}
+  onClick={() => setStep(1)}
+>
+  ‹
+</div>
+
+
+
+<div className={styles.cityImageBox}>
+
+<Image
+
+src={getMemberImage(members[0])}
+
+alt="User"
+
+className={styles.cityUserImage}
+
+/>
+
+
+</div>
+
+
+
+
+
+<div className={styles.cityRight}>
+
+
+<h2>
+
+Select your city
+
+</h2>
+
+
+
+
+<div className={styles.citySearchBox}>
+
+
+<input
+
+value={citySearch}
+
+placeholder="Search your city"
+
+onChange={(e)=>
+setCitySearch(e.target.value)
+}
+
+/>
+
+{
+citySearch
+?
+<span
+
+className={styles.clearCity}
+
+onClick={()=>{
+
+setCitySearch("");
+
+}}
+
+>
+×
+
+</span>
+
+:
+<FiSearch
+className={styles.citySearchIcon}
+/>
+}
+</div>
+
+
+
+
+
+<div className={styles.cityList}>
+
+{
+(
+citySearch
+?
+searchedCities
+:
+popularCities
+)
+.map((city)=>(
+
+
+<button
+
+key={city}
+
+
+className={`${styles.cityChip} ${
+selectedCity === city
+?
+styles.activeCity
+:
+""
+}`}
+
+
+onClick={()=>{
+
+setSelectedCity(city);
+
+setCitySearch(city);
+
+}}
+>
+
+{city}
+
+
+</button>
+
+
+))
+
+}
+
+
+</div>
+
+
+
+
+
+
+<button
+
+className={styles.cityContinueBtn}
+
+
+onClick={()=>{
+
+
+if(!selectedCity){
+
+alert("Select city");
+
+return;
+
+}
+
+
+setStep(3);
+
+
+}}
+
+>
+
+Continue
+
+</button>
+
+
+
+
+</div>
+
+
+</div>
+
+)}
+        {step === 3 && (
+          <div className={styles.detailsMainWrapper}>
+            <div
+              className={styles.detailsBack}
+              onClick={() => setStep(2)}
             >
-              <IoIosArrowBack />
-            </button>
+              {"‹"}
+            </div>
 
-            {step !== 1 && (
+            <div className={styles.detailsImageBox}>
               <Image
-                src={gender === "female" ? womanicon : manicon}
-                alt="User Icon"
-                className={styles.userIcon}
+                src={getMemberImage(members[0])}
+                alt="User"
+                className={styles.detailsUserImage}
               />
-            )}
-          </div>
-
-          {/* Step 1 */}
-          {step === 1 && (
-            <>
-              <h2 className={styles.step1Heading}>Select Age for Each Member</h2>
-              {renderMembers()}
-              <button
-                className={styles.step1ContinueBtn}
-                onClick={() => {
-                  if (Object.keys(ages).length !== members.length) {
-                    alert("Please select age for all members.");
-                    return;
-                  }
-                  setStep(2);
-                }}
-              >
-                Continue
-              </button>
-            </>
-          )}
-
-          {/* Step 2 */}
-          {step === 2 && (
-            <div className={styles.rightContent}>
-              <h2>Select your city</h2>
-              <div className={styles.searchBar}>
-                <input
-                  type="text"
-                  placeholder="Search your city"
-                  onChange={(e) => {
-                    // optional: you can implement search to filter `cities`
-                  }}
-                />
-                <FaSearch className={styles.searchIcon} />
-              </div>
-              <div className={styles.popularCities}>
-                {cities.map((city, idx) => (
-                  <button
-                    key={idx}
-                    className={`${styles.cityButton} ${selectedCity === city ? styles.selectedCity : ""}`}
-                    onClick={() => setSelectedCity(city)}
-                  >
-                    {city}
-                  </button>
-                ))}
-              </div>
-              <button className={styles.continueBtn} onClick={() => setStep(3)}>
-                Continue
-              </button>
             </div>
-          )}
 
-          {/* Step 3 */}
-          {step === 3 && (
-            <div className={styles.formSection}>
-              <h2 className={styles.heading}>Save your progress</h2>
-              <p className={styles.subtext}>Get to plans directly next time you visit us</p>
+        <div className={styles.detailsRight}>
 
-              <input
-                type="text"
-                placeholder="Your full name"
-                className={styles.input}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
+<h2>Save your progress</h2>
 
-              <div className={styles.phoneGroup}>
-                <span className={styles.code}>+91</span>
-                <input
-                  type="tel"
-                  placeholder="Enter mobile number"
-                  className={styles.mobileInput}
-                  inputMode="numeric"
-                  maxLength={10}
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
-                />
-              </div>
+<p className={styles.detailsSubtitle}>
+Get to plans directly next time you visit us
+</p>
 
-              <button className={styles.continueBtn} onClick={() => setStep(4)}>
-                Continue
-              </button>
-            </div>
-          )}
 
-          {/* Step 4 */}
-          {step === 4 && (
-            <div className={styles.content}>
-              <h2 className={styles.title}>Medical history</h2>
-              <p className={styles.subtitle}>
-                Do any member(s) have any existing illnesses for which they take regular medication?
-              </p>
+{/* STEP 1 - NAME MOBILE */}
+{!mobileOtpSent && !mobileVerified && (
+<>
+<input
+className={styles.detailsInput}
+placeholder="Your full name"
+value={fullName}
+onChange={(e)=>setFullName(e.target.value)}
+/>
 
-              <div className={styles.optionsGrid}>
-                {[
-                  "Diabetes",
-                  "Blood Pressure",
-                  "Heart disease",
-                  "Any Surgery",
-                  "Thyroid",
-                  "Asthma",
-                  "Other disease",
-                  "None of these",
-                ].map((option) => (
-                  <label className={styles.option} key={option}>
-                    <input
-                      type="checkbox"
-                      checked={selectedDiseases.includes(option)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          if (option === "None of these") {
-                            setSelectedDiseases(["None of these"]);
-                          } else {
-                            setSelectedDiseases((prev) =>
-                              prev.filter((x) => x !== "None of these").concat(option)
-                            );
-                          }
-                        } else {
-                          setSelectedDiseases((prev) => prev.filter((d) => d !== option));
-                        }
-                      }}
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
 
-              <button className={styles.button} onClick={handleSubmit}>
-                View plans ›
-              </button>
-            </div>
-          )}
-        </div>
+<div className={styles.detailsPhoneGroup}>
+
+<span className={styles.detailsCode}>
++91
+</span>
+
+<input
+className={styles.detailsInput}
+placeholder="Enter mobile number"
+value={mobile}
+maxLength={10}
+inputMode="numeric"
+onChange={(e)=>
+setMobile(e.target.value.replace(/\D/g,""))
+}
+/>
+
+</div>
+
+
+<button
+className={styles.detailsContinueBtn}
+onClick={sendMobileOtp}
+disabled={Boolean(otpLoading)}
+>
+{otpLoading==="mobile-send"
+?"Sending..."
+:"Continue"}
+</button>
+
+</>
+)}
+
+
+
+{/* STEP 2 MOBILE OTP */}
+{mobileOtpSent && !mobileVerified && (
+<>
+
+<input
+className={styles.detailsInput}
+placeholder="Enter Mobile OTP"
+value={mobileOtp}
+maxLength={6}
+onChange={(e)=>
+setMobileOtp(e.target.value.replace(/\D/g,""))
+}
+/>
+
+
+<button
+className={styles.detailsContinueBtn}
+onClick={verifyMobileOtp}
+>
+Verify Mobile
+</button>
+
+</>
+)}
+
+
+
+
+{/* STEP 3 EMAIL */}
+{mobileVerified && !emailOtpSent && !emailVerified && (
+<>
+
+<div className={styles.verifiedBox}>
+✓ Mobile Verified
+</div>
+
+
+<input
+className={styles.detailsInput}
+placeholder="Enter Email"
+value={email}
+onChange={(e)=>setEmail(e.target.value)}
+/>
+
+
+<button
+className={styles.detailsContinueBtn}
+onClick={sendEmailOtp}
+>
+Send Email OTP
+</button>
+
+</>
+)}
+
+
+
+
+{/* STEP 4 EMAIL OTP */}
+{emailOtpSent && !emailVerified && (
+<>
+
+<input
+className={styles.detailsInput}
+placeholder="Enter Email OTP"
+value={emailOtp}
+maxLength={6}
+onChange={(e)=>
+setEmailOtp(e.target.value.replace(/\D/g,""))
+}
+/>
+
+
+<button
+className={styles.detailsContinueBtn}
+onClick={verifyEmailOtp}
+>
+Verify Email
+</button>
+
+</>
+)}
+
+
+
+
+{/* FINAL */}
+{mobileVerified && emailVerified && (
+<>
+
+<div className={styles.verifiedBox}>
+✓ Verified
+</div>
+
+<button
+className={styles.detailsContinueBtn}
+onClick={()=>setStep(4)}
+>
+View Plans
+</button>
+
+
+<p className={styles.detailsTerms}>
+By clicking on View Plans, you agree to our Privacy Policy & Terms of Use
+</p>
+
+</>
+)}
+
+
+{otpMessage && (
+<p className={styles.otpMessage}>
+{otpMessage}
+</p>
+)}
+
+</div> </div>
+        )}
       </div>
+{
+step === 4 && (
 
+<div className={styles.medicalOverlay}>
+
+
+<div className={styles.medicalBox}>
+
+<div
+className={styles.medicalBack}
+onClick={()=>setStep(3)}
+>
+‹
+</div>
+
+
+<div className={styles.medicalAvatarBox}>
+
+<Image
+
+src={getMemberImage(members[0])}
+
+alt="user"
+
+className={styles.medicalAvatar}
+
+/>
+
+</div>
+
+
+<h2>
+Medical history
+</h2>
+
+
+<h3>
+Do any member(s) have any existing illnesses for which they take regular medication?
+</h3>
+
+
+<p>
+That'll make sure their condition is covered and the claim isn't rejected.
+</p>
+
+
+
+<div className={styles.diseaseGrid}>
+
+
+{
+diseases.map((item)=>(
+
+
+<div
+
+key={item}
+
+className={`${styles.diseaseItem} ${
+medical.includes(item)
+?
+styles.activeDisease
+:
+""
+}`}
+
+onClick={()=>{
+
+
+if(item==="None of these"){
+
+setMedical(["None of these"]);
+
+}
+
+else{
+
+setMedical(prev=>{
+
+const removeNone =
+prev.filter(x=>x!=="None of these");
+
+
+return removeNone.includes(item)
+
+?
+
+removeNone.filter(x=>x!==item)
+
+:
+
+[...removeNone,item]
+
+
+});
+
+}
+
+
+}}
+
+>
+
+
+<input
+
+type="checkbox"
+
+checked={medical.includes(item)}
+
+readOnly
+
+/>
+
+
+<span>
+{item}
+</span>
+
+
+</div>
+
+
+))
+
+}
+
+
+</div>
+
+
+
+
+<div className={styles.medicalBottom}>
+
+
+
+
+
+<button
+
+className={styles.finalBtn}
+
+onClick={handleSubmit}
+
+>
+
+View plans ›
+
+</button>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+)
+
+}
       <Footer />
     </div>
   );

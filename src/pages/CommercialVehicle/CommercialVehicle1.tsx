@@ -127,7 +127,7 @@ error
         <div className={styles.container}>
           {/* Left Section */}
           <div className={styles.left}>
-            <span className={styles.badge}>GET POLICY IN 2 MINUTES</span>
+            <span className={styles.badge}>GET POLICY IN JUST 2 MINUTES</span>
             <h2 className={styles.title}>
               Commercial Vehicle Insurance <br />
               starting at <span className={styles.price}>₹3,139</span>
