@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import styles from "@/styles/pages/carinsurance.module.css";
 
-import { rtoData } from "@/pages/src/data/rtoData";
+import { rtoData } from "@/data/rtoData";
 
 export default function Location({ onClose, onSelectVehicle }: any) {
   const [state, setState] = useState<string | null>(null);
