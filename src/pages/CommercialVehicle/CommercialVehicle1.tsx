@@ -432,7 +432,7 @@ rtoZone:
 
 
 await fetchIdvDetails(
-rto.idvcity
+rto
 );
 
 
