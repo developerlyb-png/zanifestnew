@@ -41,7 +41,6 @@ selectedVehicle:string;
 }
 
 
-
 const VehicleVariantDialog:
 React.FC<VehicleVariantDialogProps> = ({
 
@@ -63,7 +62,6 @@ onBackToModel,
 onSelectVariant
 
 })=>{
-
 
 const [search,setSearch] =
 useState("");
@@ -194,7 +192,7 @@ item.fuel ||
 
 return text.includes(
 
-selectedFuel.toLowerCase()
+selectedFuel?.toLowerCase() || ""
 
 );
 
@@ -332,11 +330,12 @@ Your Selection
 
 <FiMapPin className={styles.icon}/>
 
-
 {
 selectedLocation?.rto ||
 
-vehicleNumber.substring(0,4)
+vehicleNumber?.substring(0,4) ||
+
+""
 }
 
 

@@ -49,25 +49,25 @@ interface SelectFuelTypeProps {
 const SelectFuelType:
 React.FC<SelectFuelTypeProps> = ({
 
-vehicleNumber,
+vehicleNumber = "",
 
-selectedBrand,
+selectedBrand = "",
 
-selectedModel,
+selectedModel = "",
 
-selectedVariant,
+selectedVariant = "",
 
-selectedFuel,
+selectedFuel = "",
 
-selectedYear,
+selectedYear = null,
 
-selectedLocation,
+selectedLocation = null,
 
-onBackToModel,
+onBackToModel = () => {},
 
-onNextToVariant,
+onNextToVariant = () => {},
 
-onSelectFuel
+onSelectFuel = () => {}
 
 })=>{
 
@@ -293,13 +293,10 @@ selectedModel
 const filteredFuel =
 
 fuelTypes.filter((fuel)=>
-
-
-fuel.toLowerCase()
+String(fuel)
+.toLowerCase()
 .includes(
-
 search.toLowerCase()
-
 )
 
 );
@@ -337,7 +334,8 @@ Your Selection
 
 {
 selectedLocation?.rto ||
-vehicleNumber.substring(0,4)
+vehicleNumber?.substring(0,4) ||
+""
 }
 
 </div>

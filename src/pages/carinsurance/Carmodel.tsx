@@ -31,13 +31,19 @@ onNext:()=>void;
 
 const VehicleModelDialog:React.FC<VehicleModelDialogProps>=({
 
-vehicleNumber,
-selectedBrand,
-selectedYear,
-selectedLocation,
-onSelectModel,
-onBack,
-onNext
+vehicleNumber = "",
+
+selectedBrand = "",
+
+selectedYear = null,
+
+selectedLocation = null,
+
+onSelectModel = () => {},
+
+onBack = () => {},
+
+onNext = () => {}
 
 })=>{
 
@@ -117,7 +123,7 @@ m.modelName ||
 m;
 
 
-return name
+return String(name)
 .toLowerCase()
 .includes(search.toLowerCase());
 
@@ -148,8 +154,11 @@ Your selection
 
 <FiMapPin className={styles.icon}/>
 
-{selectedLocation?.rto ||
-vehicleNumber.substring(0,4)}
+{
+selectedLocation?.rto ||
+vehicleNumber?.substring(0,4) ||
+""
+}
 
 </div>
 

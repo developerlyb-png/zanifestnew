@@ -34,21 +34,21 @@ interface VehicleBrandDialogProps {
 }
 
 const VehicleBrandDialog: React.FC<VehicleBrandDialogProps> = ({
-  onClose,
+  onClose = () => {},
 
-  vehicleNumber,
+  vehicleNumber = "",
 
-  selectedVehicle,
+  selectedVehicle = "",
 
-  selectedYear,
+  selectedYear = null,
 
-  selectedLocation,
+  selectedLocation = null,
 
-  onBackToChooseVehicle,
+  onBackToChooseVehicle = () => {},
 
-  onNextToVehicleModel,
+  onNextToVehicleModel = () => {},
 
-  onSelectBrand,
+  onSelectBrand = () => {},
 }) => {
   const [search, setSearch] = useState("");
   const [activeBrand, setActiveBrand] = useState("");
@@ -67,9 +67,9 @@ const VehicleBrandDialog: React.FC<VehicleBrandDialogProps> = ({
             <div className={styles.selectionItem}>
               <FiMapPin className={styles.icon} />
 
-              {selectedLocation?.rto
-                ? selectedLocation.rto
-                : vehicleNumber.substring(0, 4)}
+          {selectedLocation?.rto
+  ? selectedLocation.rto
+  : vehicleNumber?.substring(0, 4) || ""}
             </div>
 
             <div className={styles.selectionItem}>

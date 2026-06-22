@@ -45,31 +45,21 @@ interface VehicleInfoDialogProps {
 }
 
 const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
-  onClose,
+  onClose = () => {},
+  onChooseBrand = () => {},
+  onChooseModel = () => {},
+  onChooseFuelVariant = () => {},
+  onChooseYear = () => {},
+  oncommercialvehicle1 = () => {},
 
-  onChooseBrand,
+  vehicleNumber = "",
 
-  onChooseModel,
-
-  onChooseFuelVariant,
-
-  onChooseYear,
-
-  oncommercialvehicle1,
-
-  vehicleNumber,
-
-  selectedBrand,
-
-  selectedModel,
-
-  selectedVariant,
-
-  selectedFuel,
-
-  selectedYear,
-
-  selectedLocation,
+  selectedBrand = "",
+  selectedModel = "",
+  selectedVariant = "",
+  selectedFuel = "",
+  selectedYear = null,
+  selectedLocation = null,
 }) => {
   const router = useRouter();
 
@@ -308,11 +298,11 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
             <div className={styles.item}>
               <FiMapPin className={styles.icon} />
 
-              <span>
-                {selectedLocation?.rto
-                  ? selectedLocation.rto
-                  : vehicleNumber.substring(0, 4)}
-              </span>
+             <span>
+  {selectedLocation?.rto
+    ? selectedLocation.rto
+    : vehicleNumber?.substring(0, 4) || ""}
+</span>
 
               <FiEdit2
                 className={styles.editIcon}
