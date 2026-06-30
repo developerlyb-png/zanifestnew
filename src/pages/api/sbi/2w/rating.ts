@@ -2,7 +2,7 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from "next";
-
+import { mapZunoBike } from "@/utils/zunoBikeMapper";
 
 // TOKEN FUNCTION
 
@@ -88,388 +88,362 @@ new Date()
 .split("T")[0];
 
 
-const vehicleYear =
-vehicle.year || "2024";
 
 
- const zunoPayload:any = {
+
+const rto = vehicle.rto || {};
+
+const registrationDate =
+  vehicle.registrationDate ||
+  vehicle.registration_date ||
+  vehicle.regDate ||
+  `${vehicle.year}-06-01`;
+const zunoVehicle = mapZunoBike(vehicle);
+
+console.log(
+  "ZUNO MASTER VEHICLE",
+  zunoVehicle
+);
 
 
-commissionContractID:"1000014234",
 
-channelCode:"002",
+const getValue = (...keys: string[]) => {
+  for (const key of keys) {
+    const value = rto[key];
+    if (
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ""
+    ) {
+      return value;
+    }
+  }
+  return "";
+};
 
-branch:"AHMEDABAD",
+const getVehicle = (...keys: string[]) => {
+  for (const key of keys) {
+    const value = vehicle[key];
+    if (
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ""
+    ) {
+      return value;
+    }
+  }
+  return "";
+};
+const zunoPayload: any = {
 
+  commissionContractID:
+  vehicle.commissionContractID ||
+  process.env.ZUNO_COMMISSION_CONTRACT_ID ||
+  "",
 
-// TEST MASTER DATA
+  channelCode:
+  vehicle.channelCode ||
+  process.env.ZUNO_CHANNEL_CODE ||
+  "002",
+branch:
+vehicle.branch ||
+process.env.ZUNO_BRANCH ||
+"MUMBAI",
 
-make:
-vehicle.make,
+  // ===========================
+  // VEHICLE MASTER
+  // ===========================
 
+make: zunoVehicle?.make || getVehicle("make"),
 
-model:
-vehicle.model,
+model: zunoVehicle?.model || getVehicle("model"),
 
+variant: zunoVehicle?.variant || getVehicle("variant"),
 
-variant:
-vehicle.variant,
+  idvCity: getValue(
+    "idvcity",
+    "idvCity"
+  ),
 
+  rtoStateCode: getValue(
+    "statecode",
+    "stateCode"
+  ),
 
-idvCity:"AHMEDABAD",
+  rtoLocationName: getValue(
+    "rtolocation",
+    "rtoLocation",
+    "rtoCode"
+  ),
 
-rtoStateCode:"06",
+rtoZone:
+getValue(
+   "rtozone",
+   "zone",
+   "carzone"
+),
+  rtoCityOrDistrict: getValue(
+    "rtocityordistrict",
+    "city",
+    "rtoCityOrDistrict"
+  ),
 
-rtoLocationName:"GJ-01",
+  clusterZone: getValue(
+    "clusterzone",
+    "clusterZone"
+  ),
 
-rtoZone:"06",
+  carZone: getValue(
+    "carzone",
+    "carZone"
+  ),
 
-rtoCityOrDistrict:"Ahmedabad",
+  idv: getVehicle("idv"),
+  registrationDate,
 
-clusterZone:"Cluster 3",
+  previousInsurancePolicy: isNew ? "0" : "1",
 
-carZone:"A",
+  previousInsuranceCompanyName:
+  getVehicle("previousInsuranceCompanyName"),
 
+  previousPolicyNo:
+  getVehicle("previousPolicyNo"),
 
-idv:
-vehicle.idv,
-
-
-registrationDate:
+  previousPolicyStartDate:
 isNew
-?
-today
-:
-`${vehicleYear}-06-05`,
+  ? ""
+  : getVehicle(
+      "previousPolicyStartDate",
+      "previousPolicyFrom"
+    ),
 
-
-previousInsurancePolicy:
-isNew ? "0" : "1",
-
-
-previousInsuranceCompanyName:
-isNew ? "" : "National Insurance Co. Ltd.",
-
-
-previousPolicyNo:
-isNew ? "" : "POL12345678",
-
-
-previousPolicyStartDate:
-isNew ? "" : "2024-06-10",
-
-
-previousPolicyEndDate:
-isNew ? "" : "2025-06-09",
-
+ previousPolicyEndDate:
+isNew
+  ? ""
+  : getVehicle(
+      "previousPolicyEndDate",
+      "previousPolicyTo"
+    ),
 
 policyType:
-isNew
-?
-"Bundled Insurance"
-:
-"Package Policy",
+getVehicle("policyType") ||
+(isNew
+ ? "Bundled Insurance"
+ : "Package Policy"),
 
+  subPolicyType: "",
 
-subPolicyType:"",
+ typeOfBusiness:
+getVehicle("typeOfBusiness") ||
+(isNew ? "New" : "Rollover"),
 
+  policyStartDate:
+  getVehicle("policyStartDate") || today,
 
-typeOfBusiness:
-isNew ? "New" : "Rollover",
+  policyTenure:
+vehicle.policyTenure ||
+(isNew ? "5" : "1"),
 
-policyStartDate:
-isNew
-?
-today
-:
-"2025-06-10",
+  contractTenure:
+vehicle.contractTenure ||
+(isNew ? "5" : "1"),
 
+  claimDeclaration:
+getVehicle("claimDeclaration"),
 
-policyTenure:
-isNew ? "5" : "1",
+  annualMileage:
+getVehicle("annualMileage"),
 
+  transmissionType:
+    vehicle.transmissionType || "",
 
-contractTenure:
-isNew ? "5" : "1",
+  fuelType: getVehicle("fuelType"),
 
-claimDeclaration:"",
 
-annualMileage:"",
+  validLicenceNo:
+vehicle.validLicenceNo || "Y",
 
-transmissionType:"",
+  previousNcb:
+    vehicle.previousNcb || "",
 
+  transferOfNcb:
+    vehicle.transferOfNcb || "N",
 
-fuelType:
-vehicle.fuelType,
+  proofOfNcb:
+    vehicle.proofOfNcb || "NCBRESRV",
 
+  protectionofNcbValue:
+    vehicle.protectionofNcbValue || "",
 
-validLicenceNo:"Y",
+ breakininsurance:
+vehicle.breakininsurance ||
+(isNew ? "NBK" : "No Break"),
 
+ renewalStatus:
+vehicle.renewalStatus ||
+(isNew
+ ? "New Policy"
+ : "Rollover"),
 
-previousNcb:"",
+  dateOfTransaction: today,
 
+  fibreGlassFuelTank:
+    vehicle.fibreGlassFuelTank || "Yes",
 
-transferOfNcb:"N",
+ overrideAllowableDiscount:
+getVehicle("overrideAllowableDiscount") ||
+"N",
 
+  antiTheftDeviceInstalled:
+    vehicle.antiTheftDeviceInstalled || "Yes",
 
-proofOfNcb:"NCBRESRV",
+  automobileAssociationMember:
+    vehicle.automobileAssociationMember || "Yes",
 
+  bodystyleDescription:
+    vehicle.bodyStyle || "",
 
-protectionofNcbValue:"",
+  dateOfFirstPurchaseOrRegistration:
+    registrationDate,
 
+  dateOfBirth:
+    vehicle.dateOfBirth || "1989-12-12",
 
-breakininsurance:
-isNew ? "NBK" : "No Break",
+  policyHolderGender:
+    vehicle.gender || "Male",
 
+  occupationofpolicyholder:"MH",
 
-renewalStatus:
-isNew
-?
-"New Policy"
-:
-"Rollover",
+  typeOfGrid:
+    vehicle.typeOfGrid || "Grid1",
 
+  contractDetails: [
 
-dateOfTransaction:
-today,
+    {
+      contract: "Own Damage Contract",
 
+      coverage: {
 
-fibreGlassFuelTank:"Yes",
+        coverage: "Own Damage Coverage",
 
-
-overrideAllowableDiscount:"N",
-
-
-antiTheftDeviceInstalled:"Yes",
-
-
-automobileAssociationMember:"Yes",
-
-
-bodystyleDescription:"COUPE",
-
-dateOfFirstPurchaseOrRegistration:
-isNew
-?
-today
-:
-`${vehicleYear}-06-05`,
-
-
-dateOfBirth:"1989-12-12",
-
-
-policyHolderGender:"Male",
-
-
-policyholderOccupation:
-"Medium to High",
-
-
-typeOfGrid:"Grid1",
-
-
-
-
-contractDetails:[
-
-
-{
-contract:"Own Damage Contract",
-
-coverage:{
-
-coverage:"Own Damage Coverage",
-
-
-deductible:[
-
-"Own Damage Basis Deductible",
-
-"Voluntary Deductible"
-
-],
-
-
-voluntaryDeductible:"3000",
-
-
-
-discount:[
-
-"Auto Mobile Association Discount",
-
-"Voluntary Deductible Discount",
-
-"Side car Discount",
-
-"AntiTheft Discount"
-
-],
-
-
-
-subCoverage:[
-
-
-{
-
-subCoverage:"Own Damage Basic",
-
-limit:"Own Damage Basic Limit"
-
-}
-
-
-]
-
-}
-
-},
-
-
-
-...(isNew ? [
-
-{
-contract:"Addon Contract",
-
-coverage:{
-coverage:"Add On Coverage",
-
-deductible:
+        deductible: [
+          "Own Damage Basis Deductible",
+          "Voluntary Deductible"
+        ],
+
+        voluntaryDeductible:
+vehicle.voluntaryDeductible || "3000",
+
+        discount: [
+          "Auto Mobile Association Discount",
+          "Voluntary Deductible Discount",
+          "Side car Discount",
+          "AntiTheft Discount"
+        ],
+
+        subCoverage: [
+          {
+            subCoverage: "Own Damage Basic",
+            limit: "Own Damage Basic Limit"
+          }
+        ]
+      }
+    },
+
+    ...(isNew
+      ? [
+          {
+            contract: "Addon Contract",
+
+            coverage: {
+
+              coverage: "Add On Coverage",
+
+              deductible:
+getVehicle("keyReplacementDeductible") ||
 "Key Replacement Deductible",
 
-underwriterDiscount:"0.0",
 
-subCoverage:[
+              underwriterDiscount:
+vehicle.underwriterDiscount || "0.0",
 
-{
-subCoverage:"Return To Invoice"
-},
+              subCoverage: [
 
-{
-subCoverage:"Pillion Protect",
-limit:"Pillion Protect Limit",
-sumInsuredPerPerson:"50000"
-},
+                {
+                  subCoverage: "Return To Invoice"
+                },
 
-{
-subCoverage:"Zero Depreciation"
-},
+                {
+                  subCoverage: "Pillion Protect",
+                  limit: "Pillion Protect Limit",
+                  sumInsuredPerPerson:
+vehicle.paCover || "1500000",
+                },
 
-{
-subCoverage:"Consumable Cover"
-}
+                {
+                  subCoverage: "Zero Depreciation"
+                },
 
-]
+                {
+                  subCoverage: "Consumable Cover"
+                }
 
-}
+              ]
+            }
+          }
+        ]
+      : []),
 
-}
+    {
+      contract: "PA Compulsary Contract",
 
-] : []),
+      coverage: {
 
+        coverage: "PA Owner Driver Coverage",
 
+        subCoverage: {
 
+          subCoverage: "PA Owner Driver",
 
-{
+          limit: "PA Owner Driver Limit",
 
-contract:"PA Compulsary Contract",
+          sumInsuredPerPerson:
+vehicle.paCover || "1500000"
+        }
+      }
+    },
 
+    {
+      contract: "Third Party Multiyear Contract",
 
-coverage:{
+      coverage: {
 
+        coverage:
+          "Legal Liability to Third Party Coverage",
 
-coverage:
-"PA Owner Driver Coverage",
+        deductible: "TP Deductible",
 
+        discount:
+          "Third Party Property Damage Discount",
 
+        subCoverage: [
 
-subCoverage:{
+          {
+            subCoverage:
+              "Third Party Basic Sub Coverage",
 
+            limit:
+              "Third Party Property Damage Limit",
 
-subCoverage:
-"PA Owner Driver",
+            thirdPartyPropertyDamageLimit:
+vehicle.thirdPartyPropertyDamageLimit || "6000",
+          }
 
+        ]
+      }
+    }
 
-limit:
-"PA Owner Driver Limit",
-
-
-sumInsuredPerPerson:
-"1500000"
-
-
-}
-
-
-}
-
-},
-
-
-
-
-
-{
-
-contract:
-"Third Party Multiyear Contract",
-
-
-
-coverage:{
-
-
-
-coverage:
-"Legal Liability to Third Party Coverage",
-
-
-
-deductible:"TP Deductible",
-
-
-
-discount:
-"Third Party Property Damage Discount",
-
-
-
-
-subCoverage:[
-
-
-{
-
-
-subCoverage:
-"Third Party Basic Sub Coverage",
-
-
-limit:
-"Third Party Property Damage Limit",
-
-
-thirdPartyPropertyDamageLimit:
-"6000"
-
-
-}
-
-
-]
-
-
-}
-
-
-}
-
-
-]
-
+  ]
 };
 
 
@@ -481,7 +455,20 @@ console.log(
 );
 
 
+console.log(
+  "RTO OBJECT =>",
+  JSON.stringify(rto, null, 2)
+);
 
+console.log(
+  "ZUNO VEHICLE =>",
+  JSON.stringify(zunoVehicle, null, 2)
+);
+
+console.log(
+  "PAYLOAD =>",
+  JSON.stringify(zunoPayload, null, 2)
+);
 console.log(
  "FINAL ZUNO PAYLOAD",
  JSON.stringify(zunoPayload)

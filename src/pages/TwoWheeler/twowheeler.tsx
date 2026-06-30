@@ -74,7 +74,7 @@ export default function TwoWheeler() {
     const router =
         useRouter();
 
-
+const [loading, setLoading] = useState(false);
 
     const [step, setStep] =
         useState<
@@ -116,9 +116,155 @@ useState<any>(null);
 
 
 
+useEffect(() => {
 
+  const rc = localStorage.getItem("bikeRcDetails");
 
+  if (rc) {
+    loadVehicleFromVahan(JSON.parse(rc));
+  }
 
+}, []);
+
+const loadVehicleFromVahan = async (rc: any) => {
+
+  try {
+
+    setLoading(true);
+
+    localStorage.setItem(
+      "vahanExtra",
+      JSON.stringify(rc)
+    );
+
+    setEngineNumber(rc.engine);
+    setChassisNumber(rc.chassis);
+
+    setSelectedYear(
+      rc.year?.split("/")[1]
+    );
+
+    const makeName =
+      rc.brand.toUpperCase();
+
+    setSelectedMake(makeName);
+
+    // MODEL
+
+    const modelRes = await fetch(
+      `/api/sbi/2w/master/model?make=${encodeURIComponent(makeName)}`
+    );
+
+    const modelJson =
+      await modelRes.json();
+
+    const modelList =
+      Array.isArray(modelJson)
+        ? modelJson
+        : modelJson.data || [];
+
+    setModels(modelList);
+const rcModel = String(rc.model)
+  .toUpperCase()
+  .replace(/\(.*?\)/g, "")
+  .replace(/\+/g, "PLUS")
+  .replace(/XTEC/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const matchedModel = modelList.find((x: any) => {
+  const apiModel = String(x.model)
+    .toUpperCase()
+    .replace(/\+/g, "PLUS")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return (
+    apiModel === rcModel ||
+    apiModel.startsWith(rcModel) ||
+    rcModel.startsWith(apiModel) ||
+    apiModel.includes(rcModel) ||
+    rcModel.includes(apiModel)
+  );
+});
+
+setSelectedModel(matchedModel.model);
+
+    
+
+    // VARIANT
+
+    const variantRes = await fetch(
+      `/api/sbi/2w/master/variant?make=${encodeURIComponent(makeName)}&model=${encodeURIComponent(matchedModel.model)}`
+    );
+
+    const variantJson =
+      await variantRes.json();
+
+    const variantList =
+      Array.isArray(variantJson)
+        ? variantJson
+        : variantJson.data || [];
+
+    setVariants(variantList);
+
+    const matchedVariant =
+      variantList.find((x: any) =>
+        String(x.variant)
+          .toUpperCase()
+          .includes(
+            String(rc.model).toUpperCase()
+          )
+      ) || variantList[0];
+
+   if (!matchedVariant) {
+  console.log("NO VARIANT FOUND");
+  console.log("MODEL =>", matchedModel.model);
+  console.log("VARIANT LIST =>", variantList);
+
+  return;
+}
+
+setSelectedVariant(matchedVariant.variant);
+
+    // IDV
+
+    const idvRes = await fetch(
+      `/api/sbi/2w/master/idv?make=${encodeURIComponent(makeName)}&model=${encodeURIComponent(matchedModel.model)}&variant=${encodeURIComponent(matchedVariant.variant)}&idvCity=MUMBAI`
+    );
+
+    const idvJson =
+      await idvRes.json();
+
+    setIdvData(idvJson.data);
+
+    // RTO
+
+    const rtoRes = await fetch(
+      `/api/sbi/2w/master/rto?idvCity=MUMBAI`
+    );
+
+    const rtoJson =
+      await rtoRes.json();
+
+    localStorage.setItem(
+      "selectedRto",
+      JSON.stringify(rtoJson[0])
+    );
+
+    setStep("vehicleDetails");
+
+  } catch (e) {
+
+    console.log(e);
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
     useEffect(() => {
 
         AOS.init({
@@ -910,8 +1056,12 @@ await fetch(
 );
 
 
-const rtoResult =
-await rtoRes.json();
+const rtoResult = await rtoRes.json();
+
+console.log("RTO RESULT =", rtoResult);
+console.log("IS ARRAY =", Array.isArray(rtoResult));
+console.log("FIRST =", rtoResult[0]);
+console.log("DATA =", rtoResult.data);
 
 
 console.log(
@@ -1154,72 +1304,67 @@ setStep(
                                 onClick={() => {
 
 
-                                  const vehicleData = {
+          // Safe RTO Parse
+const storedRto = localStorage.getItem("selectedRto");
 
+let rto = {};
 
-year:
-selectedYear,
+try {
+  if (
+    storedRto &&
+    storedRto !== "undefined" &&
+    storedRto !== "null"
+  ) {
+    rto = JSON.parse(storedRto);
+  }
+} catch (err) {
+  console.error("Invalid selectedRto:", storedRto);
+  rto = {};
+}
 
+const vehicleData = {
 
-make:
-selectedMake,
+  year: selectedYear,
 
+  make: selectedMake,
 
-model:
-selectedModel,
+  model: selectedModel,
 
+  // MASTER VARIANT DATA
+  variant: selectedVariant,
 
-// MASTER VARIANT DATA
+  idv: idvData?.idvAmount?.upto1Year,
 
-variant:
-selectedVariant,
+  fuelType: idvData?.fuelType,
 
+  capacity: idvData?.capacity,
 
-idv:
-idvData?.idvAmount?.upto1Year,
+  seatingCapacity: idvData?.seatingCapacity,
 
+  exShowroomPrice: idvData?.exShowroomPrice,
 
-fuelType:
-idvData?.fuelType,
+  // OLD DATA
 
+  registrationNumber: localStorage.getItem("vehicleNumber"),
 
-capacity:
-idvData?.capacity,
+  isNewBike: localStorage.getItem("isNewBike"),
 
+  engineNumber,
 
-seatingCapacity:
-idvData?.seatingCapacity,
+  chassisNumber,
 
-
-exShowroomPrice:
-idvData?.exShowroomPrice,
-
-
-// OLD DATA
-
-registrationNumber:
-localStorage.getItem(
-"vehicleNumber"
-),
-
-
-isNewBike:
-localStorage.getItem(
-"isNewBike"
-),
-
-
-engineNumber,
-
-
-chassisNumber,
-rto:
-JSON.parse(
-localStorage.getItem("selectedRto") || "{}"
-)
+  rto: rto
 
 };
 
+console.log("FINAL SAVE BIKE DATA", vehicleData);
+
+localStorage.setItem(
+  "selectedBikeData",
+  JSON.stringify(vehicleData)
+);
+
+router.push("./twowheeler5");
 
 console.log(
 "FINAL SAVE BIKE DATA",

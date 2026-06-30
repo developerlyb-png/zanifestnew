@@ -3,7 +3,7 @@ import type {
  NextApiResponse
 } from "next";
 
-
+import { getZunoMakeName } from "@/utils/zunoBikeMapper";
 async function getZunoToken(){
 
  const auth = Buffer.from(
@@ -72,11 +72,11 @@ const {
 }=req.query;
 
 
-
+const makeName = getZunoMakeName(String(make));
 const response =
 await fetch(
 
-`${process.env.ZUNO_BASE_URL}/two-wheeler/variant?make=${make}&model=${model}`,
+`${process.env.ZUNO_BASE_URL}/two-wheeler/variant?make=${encodeURIComponent(makeName)}&model=${encodeURIComponent(String(model))}`,
 
 {
 
@@ -100,13 +100,18 @@ process.env.ZUNO_2W_MASTER_X_API_KEY!,
 );
 
 
-const data =
-await response.json();
+const responseText = await response.text();
 
+console.log("MAKE =>", makeName);
+console.log("MODEL =>", model);
+console.log("STATUS =>", response.status);
+console.log("VARIANT RESPONSE =>", responseText);
 
-return res
-.status(response.status)
-.json(data);
+return res.status(response.status).send(responseText);
+
+// return res
+// .status(response.status)
+// .json(data);
 
 
 

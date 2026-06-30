@@ -169,52 +169,35 @@ mobile
 
 if(!user){
 
+ user = await User.create({
 
+   mobile,
 
-if(email){
+   email: email || undefined,
 
+   userName: fullName || "Customer",
 
-user =
-await User.create({
+   isVerified:true
 
-email:
-email,
-
-mobile,
-
-userName:
-fullName || "Customer",
-
-isVerified:true
-
-});
-
-
-}
-
-
+ });
 
 }
 
 else{
 
+ user.mobile = mobile;
 
-user.mobile = mobile;
+ if(fullName){
+   user.userName = fullName;
+ }
 
+ if(email){
+   user.email = email;
+ }
 
-user.userName =
-fullName;
+ user.isVerified = true;
 
-
-user.email =
-email;
-
-
-user.isVerified=true;
-
-
-await user.save();
-
+ await user.save();
 
 }
 

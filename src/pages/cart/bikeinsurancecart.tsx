@@ -19,7 +19,11 @@ const [mobile, setMobile] =
 const [otp, setOtp] = useState("");
 const [mobileOtp,setMobileOtp] =
 useState("");
+const [isLoggedIn,setIsLoggedIn] =
+useState(false);
 
+const [userData,setUserData] =
+useState<any>(null);
 const [emailOtp,setEmailOtp] =
 useState("");
 
@@ -45,15 +49,73 @@ const [email, setEmail] =
  
 useEffect(() => {
 
-  const storedPlan = localStorage.getItem(
-    "selectedInsurancePlan"
-  );
 
-  if (storedPlan) {
-    setSelectedPlan(JSON.parse(storedPlan));
-  }
+const storedPlan =
+localStorage.getItem(
+"selectedInsurancePlan"
+);
 
-}, []);
+
+if(storedPlan){
+
+setSelectedPlan(
+JSON.parse(storedPlan)
+);
+
+}
+
+
+
+// CHECK LOGIN USER
+
+const user =
+localStorage.getItem("user");
+
+
+if(user){
+
+
+const parsed =
+JSON.parse(user);
+
+
+setUserData(parsed);
+
+setIsLoggedIn(true);
+
+
+// AUTO FILL
+
+setFullName(
+parsed.name ||
+parsed.fullName ||
+""
+);
+
+
+setMobile(
+parsed.mobile ||
+""
+);
+
+
+setEmail(
+parsed.email ||
+""
+);
+
+
+// SKIP OTP
+
+setMobileVerified(true);
+
+setEmailVerified(true);
+
+
+}
+
+
+},[]);
 if (!selectedPlan) {
   return <div>Loading...</div>;
 }
@@ -61,287 +123,360 @@ if (!selectedPlan) {
 // SEND WHATSAPP OTP
 // ======================
 
+const sendWhatsappOtp = async () => {
+
+try{
+
+
+if(!mobile){
+
+alert("Enter mobile number");
+return;
+
+}
+
+
+setLoading(true);
+
+
+const response =
+await fetch(
+"/api/auth/send-whatsapp-otp",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify({
+
+mobile
+
+})
+
+}
+
+);
+
+
+const data =
+await response.json();
+
+
+console.log(
+"WHATSAPP OTP RESPONSE",
+data
+);
+
+
+setLoading(false);
+
+
+if(data.success){
+
+setMobileOtpSent(true);
+
+alert(
+"OTP sent on WhatsApp"
+);
+
+}
+else{
+
+alert(
+data.message ||
+"OTP send failed"
+);
+
+}
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+setLoading(false);
+
+alert(
+"Something went wrong"
+);
+
+
+}
+
+
+};
+
+// ======================
+// SEND WHATSAPP OTP (DUMMY)
+// ======================
+
 // const sendWhatsappOtp = async () => {
 
-// try{
+//  if(!mobile){
 
-
-// if(!mobile){
-
-//  alert("Enter mobile number");
-//  return;
-
-// }
-
-
-// setLoading(true);
-
-
-// const response =
-// await fetch(
-//  "/api/auth/send-whatsapp-otp",
-//  {
-
-//  method:"POST",
-
-//  headers:{
-//   "Content-Type":"application/json"
-//  },
-
-// body:JSON.stringify({
-
-// mobile,
-
-
-
-// fullName,
-
-// email
-
-// })
+//   alert("Enter mobile number");
+//   return;
 
 //  }
-// );
 
 
-// const data =
-// await response.json();
+//  setLoading(true);
 
 
-// console.log(
-//  "OTP RESPONSE",
-//  data
-// );
+//  setTimeout(()=>{
 
 
-// setLoading(false);
+//   setLoading(false);
 
 
-
-// if(data.success){
-
-//  setMobileOtpSent(true);
-
-//  alert("OTP sent on WhatsApp");
-
-// }
-// else{
-
-//  alert(
-//   "OTP sending failed"
-//  );
-
-// }
+//   setMobileOtpSent(true);
 
 
-// }
-// catch(error){
+//   console.log(
+//    "DUMMY OTP : 123456"
+//   );
 
-// console.log(error);
 
-// setLoading(false);
+//   alert(
+//    "OTP sent on WhatsApp"
+//   );
 
-// }
+
+//  },500);
 
 
 // };
 
-const sendWhatsappOtp = async () => {
 
- if(!mobile){
-
-  alert("Enter mobile number");
-  return;
-
- }
-
- setLoading(true);
-
- setTimeout(()=>{
-
-  setLoading(false);
-
-  setMobileOtpSent(true);
-
-  alert("Dummy OTP sent on WhatsApp : 123456");
-
- },500);
-
-};
 
 
 // ======================
-// VERIFY OTP + LOGIN
+// VERIFY OTP + LOGIN (DUMMY)
 // ======================
 
 // const verifyWhatsappOtp = async () => {
 
-// try{
+
+//  if(!mobileOtp){
 
 
-// if(!mobileOtp){
+//   alert("Enter Mobile OTP");
+//   return;
 
-//  alert("Enter Mobile OTP");
-//  return;
-
-// }
-
-
-// setLoading(true);
-
-
-// const response =
-// await fetch(
-//  "/api/auth/verify-whatsapp-otp",
-//  {
-
-//  method:"POST",
-
-//  headers:{
-//   "Content-Type":"application/json"
-//  },
-
-//  body:JSON.stringify({
-
-//  mobile,
-
-//  otp:mobileOtp,
-
-//  fullName,
-
-//  email
-
-// })
 
 //  }
 
-// );
+
+
+//  setLoading(true);
 
 
 
-// const data =
-// await response.json();
+//  setTimeout(()=>{
+
+
+//  setLoading(false);
 
 
 
-// console.log(
-//  "VERIFY RESPONSE",
-//  data
-// );
+//  if(mobileOtp === "123456"){
 
 
 
-// setLoading(false);
+//  setMobileVerified(true);
 
 
 
-// if(data.success){
+//  const dummyUser = {
+
+//  name:
+//  fullName || "Customer",
+
+//  mobile,
+
+//  email
+
+//  };
 
 
-// setMobileVerified(true);
+
+//  localStorage.setItem(
+
+//  "user",
+
+//  JSON.stringify(dummyUser)
+
+//  );
 
 
-// if(data.user){
 
-// localStorage.setItem(
-// "user",
-// JSON.stringify(data.user)
-// );
+//  window.dispatchEvent(
 
+//  new Event("userLogin")
 
-// window.dispatchEvent(
-// new Event("userLogin")
-// );
-
-// }
+//  );
 
 
-// alert("Mobile Verified");
+
+//  alert(
+//  "Mobile Verified"
+//  );
 
 
-// }
 
-// else{
+//  }
+
+//  else{
 
 
-// alert(
+//  alert(
 //  "Wrong OTP"
-// );
+//  );
 
 
-// }
+//  }
 
 
-// }
-// catch(error){
 
-// console.log(error);
+//  },500);
 
-// setLoading(false);
-
-// }
 
 
 // };
 const verifyWhatsappOtp = async () => {
 
- if(!mobileOtp){
-
-  alert("Enter Mobile OTP");
-  return;
-
- }
+try{
 
 
- setLoading(true);
+if(!mobileOtp){
+
+alert("Enter Mobile OTP");
+return;
+
+}
 
 
- setTimeout(()=>{
+setLoading(true);
 
 
-  if(mobileOtp === "123456"){
+const response =
+await fetch(
+"/api/auth/verify-whatsapp-otp",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify({
+
+mobile,
+
+otp:mobileOtp,
+
+fullName,
+
+email
+
+})
+
+}
+
+);
 
 
-   setMobileVerified(true);
+const data =
+await response.json();
 
 
-   const dummyUser = {
-
-    fullName,
-
-    mobile,
-
-    email
-
-   };
+console.log(
+"VERIFY RESPONSE",
+data
+);
 
 
-   localStorage.setItem(
-    "user",
-    JSON.stringify(dummyUser)
-   );
+setLoading(false);
 
 
-   window.dispatchEvent(
-    new Event("userLogin")
-   );
+
+if(data.success){
 
 
-   alert("Mobile Verified");
+setMobileVerified(true);
 
 
-  }
-  else{
 
-   alert("Wrong OTP");
-
-  }
+if(data.user){
 
 
-  setLoading(false);
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(
+data.user
+)
+
+);
 
 
- },500);
+window.dispatchEvent(
+
+new Event(
+"userLogin"
+)
+
+);
+
+
+}
+
+
+alert(
+"Mobile Verified"
+);
+
+
+}
+
+else{
+
+
+alert(
+data.message ||
+"Wrong OTP"
+);
+
+
+}
+
+
+
+}
+catch(error){
+
+
+console.log(error);
+
+setLoading(false);
+
+
+alert(
+"Verification failed"
+);
+
+
+}
 
 
 };
@@ -564,56 +699,60 @@ const payload = {
 
 vehicle:{
 
-
 registrationNumber:
-selectedPlan?.bikeData?.registrationNumber,
+selectedPlan?.bikeData?.registrationNumber || "",
 
+registrationDate:
+selectedPlan?.bikeData?.registrationDate || "",
 
 make:
 selectedPlan?.bikeData?.make,
 
-
 model:
 selectedPlan?.bikeData?.model,
-
 
 variant:
 selectedPlan?.bikeData?.variant,
 
-
 idv:
 selectedPlan?.bikeData?.idv,
-
-
-capacity:
-selectedPlan?.bikeData?.capacity,
-
-
-seatingCapacity:
-selectedPlan?.bikeData?.seatingCapacity,
-
 
 fuelType:
 selectedPlan?.bikeData?.fuelType,
 
+capacity:
+selectedPlan?.bikeData?.capacity,
+
+seatingCapacity:
+selectedPlan?.bikeData?.seatingCapacity,
+
+exShowroomPrice:
+selectedPlan?.bikeData?.exShowroomPrice,
 
 year:
 selectedPlan?.bikeData?.year,
 
+manufacturingYear:
+selectedPlan?.bikeData?.year,
 
 isNewBike:
 selectedPlan?.bikeData?.isNewBike,
 
+previousPolicyStartDate:
+selectedPlan?.bikeData?.previousPolicyStartDate,
+
+previousPolicyEndDate:
+selectedPlan?.bikeData?.previousPolicyEndDate,
 
 engineNumber:
-selectedPlan?.bikeData?.engineNumber,
-
+selectedPlan?.bikeData?.engineNumber || "NA",
 
 chassisNumber:
-selectedPlan?.bikeData?.chassisNumber,
+selectedPlan?.bikeData?.chassisNumber || "NA",
 
 rto:
-selectedPlan?.bikeData?.rto
+selectedPlan?.bikeData?.rto || {}
+
 }
 
 };
@@ -753,14 +892,39 @@ if(!quoteData.success){
 
 
 
+// save full quote
+
 localStorage.setItem(
-
  "fullQuoteData",
-
  JSON.stringify(
   quoteData.data
  )
+);
 
+
+// update selected plan also
+
+const updatedPlan = {
+
+ ...selectedPlan,
+
+ zunoQuote:
+ quoteData.data,
+
+ customer:{
+
+ fullName,
+ mobile,
+ email
+
+ }
+
+};
+
+
+localStorage.setItem(
+ "selectedInsurancePlan",
+ JSON.stringify(updatedPlan)
 );
 
 
@@ -769,7 +933,8 @@ alert(
  "Full Quote Generated Successfully"
 );
 
-
+window.location.href =
+"/payment-success";
 
 setLoading(false);
 
@@ -843,10 +1008,49 @@ alert(
             </div>
           </div>
 
-     {/* MOBILE ROW */}
+{/* =========================
+    LOGIN USER DETAILS
+========================= */}
+
+{
+isLoggedIn && (
+
+<div>
+
+<p style={{color:"green"}}>
+✓ Logged in
+</p>
+
+<p>
+Mobile : {mobile}
+</p>
+
+<p>
+Email : {email}
+</p>
+
+</div>
+
+)
+}
+
+
+
+{/* =========================
+    GUEST OTP FLOW
+========================= */}
+
+{
+!isLoggedIn && (
+
+<>
+
+{/* MOBILE ROW */}
+
 <div className={styles.otpRow}>
 
 <div className={styles.mobileBox}>
+
 <label className={styles.label}>
 Mobile number
 </label>
@@ -854,7 +1058,8 @@ Mobile number
 <input
  className={styles.otpInput}
  value={mobile}
- onChange={(e)=>setMobile(e.target.value)}
+ onChange={(e)=>
+ setMobile(e.target.value)}
 />
 
 </div>
@@ -863,11 +1068,10 @@ Mobile number
 {
 !mobileVerified && (
 
-mobileOtpSent ?
+mobileOtpSent
+?
 null
-
 :
-
 <button
  className={styles.otpBtn}
  onClick={sendWhatsappOtp}
@@ -876,13 +1080,15 @@ Send OTP
 </button>
 
 )
-
 }
 
 </div>
 
 
-{/* MOBILE OTP INPUT */}
+
+
+{/* MOBILE OTP */}
+
 {
 mobileOtpSent &&
 !mobileVerified &&
@@ -899,7 +1105,8 @@ OTP
  className={styles.otpInput}
  placeholder="Enter Mobile OTP"
  value={mobileOtp}
- onChange={(e)=>setMobileOtp(e.target.value)}
+ onChange={(e)=>
+ setMobileOtp(e.target.value)}
 />
 
 </div>
@@ -912,10 +1119,10 @@ OTP
 Verify OTP
 </button>
 
-
 </div>
 
 }
+
 
 
 {
@@ -928,7 +1135,10 @@ mobileVerified &&
 }
 
 
+
+
 {/* EMAIL AFTER MOBILE VERIFY */}
+
 {
 mobileVerified &&
 
@@ -945,19 +1155,20 @@ Email address
 <input
  className={styles.otpInput}
  value={email}
- onChange={(e)=>setEmail(e.target.value)}
+ onChange={(e)=>
+ setEmail(e.target.value)}
 />
 
 </div>
 
+
 {
 !emailVerified && (
 
-emailOtpSent ?
+emailOtpSent
+?
 null
-
 :
-
 <button
  className={styles.otpBtn}
  onClick={sendEmailOtp}
@@ -970,6 +1181,7 @@ Send OTP
 }
 
 </div>
+
 
 
 {
@@ -988,7 +1200,8 @@ Email OTP
  className={styles.otpInput}
  placeholder="Enter Email OTP"
  value={emailOtp}
- onChange={(e)=>setEmailOtp(e.target.value)}
+ onChange={(e)=>
+ setEmailOtp(e.target.value)}
 />
 
 </div>
@@ -1007,6 +1220,8 @@ Verify OTP
 }
 
 
+
+
 {
 emailVerified &&
 
@@ -1016,13 +1231,15 @@ emailVerified &&
 
 }
 
+
 </>
 
-
-
 }
-{
 
+
+</>
+
+)
 
 }
 

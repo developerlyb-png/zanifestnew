@@ -147,15 +147,11 @@ mobile.replace(/\D/g,"");
 const payload={
 
 
-
-messaging_product:
-"whatsapp",
+to:to,
 
 
-
-to:
-to,
-
+recipient_type:
+"individual",
 
 
 type:
@@ -166,113 +162,72 @@ type:
 template:{
 
 
-
 name:
-"otp_verification",
-
-
+"otpverification",
 
 
 language:{
 
+policy:"deterministic",
 
-code:
-"en_US"
-
+code:"en"
 
 },
-
 
 
 
 components:[
 
 
-
-
 {
 
 
-type:
-"body",
-
+type:"body",
 
 
 parameters:[
 
-
 {
 
+type:"text",
 
-type:
-"text",
-
-
-
-text:
-otp
-
-
+text:otp
 
 }
 
-
 ]
-
 
 },
 
 
 
 
-
-
 {
 
+type:"button",
 
-type:
-"button",
+sub_type:"url",
 
-
-sub_type:
-"url",
-
-
-index:
-"0",
-
+index:"0",
 
 
 parameters:[
 
-
 {
 
+type:"text",
 
-type:
-"text",
-
-
-
-text:
-otp
-
-
+text:otp
 
 }
 
-
 ]
-
-
 
 }
 
 
 
 ]
-
-
 
 }
 
@@ -290,7 +245,7 @@ otp
 const response =
 await fetch(
 
-"https://crm.packvibeindia.com/api/meta/v19.0/908952548968056/messages",
+"https://crm.packvibeindia.com/api/meta/v19.0/1066377973231265/messages",
 
 {
 
