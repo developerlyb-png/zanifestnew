@@ -15,35 +15,6 @@ import { IoMdMenu, IoMdClose } from "react-icons/io"; // icons for toggle
 import {useRouter} from 'next/router'
 import { FaFilter } from "react-icons/fa";
 
-// const plans = [
-//   {
-//     id: 1,
-//     logo: bajaj,
-//     name: "Bajaj Allianz",
-//     idv: "₹15,642",
-//     price: "₹728",
-//     badge: "Free Road Side Assistance (RSA) included",
-//     highlight: "green",
-//   },
-//   {
-//     id: 2,
-//     logo: tata,
-//     name: "Tata AIG",
-//     idv: "₹17,201",
-//     price: "₹729",
-//     badge: "Instant buy in 30 sec",
-//     highlight: "orange",
-//   },
-//   {
-//     id: 3,
-//     logo: icici,
-//     name: "ICICI Lombard",
-//     idv: "₹23,550",
-//     price: "₹735",
-//     badge: "Value for money",
-//     highlight: "green",
-//   },
-// ];
 const dummyPlans = [
   {
     id: 1,
