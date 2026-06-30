@@ -8,109 +8,76 @@ import type {
 async function getZunoToken(){
 
 
- const auth = Buffer.from(
-  `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
- ).toString("base64");
+const auth =
+Buffer.from(
+`${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
+).toString("base64");
 
 
 
- const response =
- await fetch(
+const response =
+await fetch(
 
- `${process.env.ZUNO_BASE_URL}/oauth2/token`,
+`${process.env.ZUNO_BASE_URL}/oauth2/token`,
 
- {
+{
 
- method:"POST",
+method:"POST",
 
+headers:{
 
- headers:{
+Authorization:
+`Basic ${auth}`,
 
+"Content-Type":
+"application/x-www-form-urlencoded",
 
- Authorization:
- `Basic ${auth}`,
+"x-api-key":
+process.env.ZUNO_X_API_KEY!
 
+},
 
- "Content-Type":
- "application/x-www-form-urlencoded",
+body:
+"grant_type=client_credentials"
 
+}
 
- "x-api-key":
- process.env.ZUNO_X_API_KEY!,
-
-
- },
-
-
- body:
- "grant_type=client_credentials"
-
-
- }
-
- );
+);
 
 
 
- const data =
- await response.json();
+const data =
+await response.json();
 
 
+console.log(
+"TOKEN RESPONSE",
+data
+);
 
- return data.access_token;
+
+return data.access_token;
 
 
 }
+
+
+
 
 
 
 
 export default async function handler(
- req:NextApiRequest,
- res:NextApiResponse
+req:NextApiRequest,
+res:NextApiResponse
 ){
-
 
 
 try{
 
 
-if(req.method !== "GET"){
-
-
-return res.status(405).json({
-
-message:"Only GET"
-
-});
-
-
-}
-
-
-
-const {
-
-idvCity
-
-}=req.query;
-
-
-
-if(!idvCity){
-
-
-return res.status(400).json({
-
-message:
-"idvCity required"
-
-});
-
-
-}
-
-
+const city =
+req.query.idvCity || "DELHI";
 
 
 
@@ -119,83 +86,96 @@ await getZunoToken();
 
 
 
+console.log(
+"TOKEN OK",
+!!token
+);
+
+
+
+const url =
+`${process.env.ZUNO_BASE_URL}/rto/${city}`;
+
+
+
+console.log(
+"2W RTO URL",
+url
+);
+
+
 
 
 const response =
 await fetch(
-
-`${process.env.ZUNO_BASE_URL}/rto/${idvCity}`,
-
+url,
 {
 
-
 method:"GET",
-
-
 
 headers:{
 
 
 Authorization:
-`Bearer ${token}`,
+token,
 
 
-
-// RTO MASTER KEY
-"x-api-key":
+"X-API-KEY":
 process.env.ZUNO_2WR_MASTER_X_API_KEY!,
-
 
 
 "Content-Type":
 "application/json"
 
 
-
 }
 
-
 }
-
-
 );
 
 
 
-
-const data =
-await response.json();
-
+const text =
+await response.text();
 
 
 
 console.log(
-"RTO STATUS",
+"2W RTO STATUS",
 response.status
 );
 
 
-
 console.log(
-"RTO DATA",
-data
+"2W RTO RAW",
+text
 );
 
 
 
 
+try{
 
 return res
 .status(response.status)
-.json(data);
+.json(JSON.parse(text));
+
+}
+catch{
+
+return res
+.status(response.status)
+.json({
+message:text
+});
+
+}
 
 
 
 
-
-
-}catch(error:any){
-
+}
+catch(error:any){
 
 
 return res.status(500).json({
@@ -203,17 +183,13 @@ return res.status(500).json({
 message:
 "RTO API Failed",
 
-
 error:
 error.message
-
 
 });
 
 
-
 }
-
 
 
 }

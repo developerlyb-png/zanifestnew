@@ -16,53 +16,48 @@
 
 .header h2 {
   font-size: 28px;
-  font-weight: 900; /* Heading */
+  font-weight: 900;
   color: #2b2f38;
   margin-bottom: 6px;
 }
 
 .header span {
   font-size: 14px;
-  font-weight: 400; /* description */
+  font-weight: 400;
   color: #8b8f98;
 }
 
-/* ================= PROGRESS ================= */
-.progressBar {
-  width: 320px;
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 6px;
-  margin: 12px auto 6px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: #ff8a1f;
-  border-radius: 6px;
-}
-
-/* ================= FORM CARD ================= */
-:global(form) {
+/* ================= FORM ================= */
+.form {
   width: 600px;
   margin: 0 auto;
   background: #ffffff;
   padding: 32px;
   border-radius: 14px;
-  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); */
+}
+
+.formGrid {
+  width: 600px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
 }
 
 /* ================= SECTION TITLE ================= */
-:global(form h3) {
+.sectionTitle {
   font-size: 18px;
-  font-weight: 500; /* SubHeading */
+  font-weight: 500;
   color: #2b2f38;
   margin-bottom: 16px;
+  grid-column: 1 / -1;
 }
 
 /* ================= INPUT ================= */
-:global(form input) {
+.input {
   width: 100%;
   height: 44px;
   padding: 0 12px;
@@ -70,27 +65,94 @@
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 14px;
-  font-weight: 400; /* description */
+  font-weight: 400;
   background: #ffffff;
+  box-sizing: border-box;
 }
 
-:global(form input::placeholder) {
+.input::placeholder {
   color: #9ca3af;
 }
 
-:global(form input:focus) {
+.input:focus {
   outline: none;
   border-color: #ff8a1f;
 }
 
-:global(form input:disabled) {
+.input:disabled {
   background: #f3f4f6;
   cursor: not-allowed;
+}
+
+.select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  font-weight: 400;
+  background: #ffffff;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #ff8a1f;
+}
+
+/* ================= GRID COLUMN HELPERS ================= */
+.colFull {
+  grid-column: 1 / -1;
+}
+
+.colLeft {
+  grid-column: 1 / 2;
+}
+
+.colRight {
+  grid-column: 2 / 3;
+}
+
+/* ================= STEP 2 GRID ================= */
+.step2Grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.fullWidth {
+  grid-column: span 2;
 }
 
 /* ================= PASSWORD ================= */
 .passwordWrapper {
   position: relative;
+  grid-column: 2 / 3;
+  margin-bottom: 14px;
+}
+
+.passwordWrapper input {
+  width: 100%;
+  height: 44px;
+  padding: 0 40px 0 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.passwordWrapper input:focus {
+  outline: none;
+  border-color: #ff8a1f;
+}
+
+.passwordWrapper input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
 }
 
 .passwordWrapper span {
@@ -137,222 +199,6 @@
   color: #6b7280;
 }
 
-/* ================= ACTIONS ================= */
-.actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
-}
-
-.actions button {
-  height: 44px;
-  padding: 0 32px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.actions button[type="button"] {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.actions button[type="submit"],
-.actions button:last-child {
-  background: #ff8a1f;
-  color: #ffffff;
-}
-/* =========================
-   MOBILE RESPONSIVE
-   ========================= */
-
-/* Tablets & small laptops */
-@media (max-width: 1024px) {
-  :global(form) {
-    width: 90%;
-    padding: 28px;
-  }
-}
-
-/* Tablets */
-@media (max-width: 768px) {
-  .header h2 {
-    font-size: 24px;
-  }
-
-  .progressBar {
-    width: 260px;
-  }
-
-  :global(form) {
-    width: 92%;
-    padding: 24px;
-  }
-
-  :global(form h3) {
-    font-size: 16px;
-  }
-
-  .actions {
-    gap: 12px;
-  }
-
-  .actions button {
-    padding: 0 24px;
-    font-size: 13px;
-    max-width: 50%;
-    align-self:center;
-  }
-}
-
-/* Mobile devices */
-@media (max-width: 480px) {
-  .container {
-    padding: 20px 0;
-  }
-
-  .header h2 {
-    font-size: 20px;
-  }
-
-  .header span {
-    font-size: 13px;
-  }
-
-  .progressBar {
-    width: 220px;
-    height: 5px;
-  }
-
-  :global(form) {
-    width: 94%;
-    padding: 20px;
-    border-radius: 12px;
-  }
-
-  :global(form h3) {
-    font-size: 15px;
-  }
-
-  :global(form input) {
-    height: 42px;
-    font-size: 13px;
-  }
-
-  .simpleUploadBox {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .simpleUploadBox button {
-    width: 50%;
-  }
-
-  .actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .actions button {
-    width: 100%;
-    height: 42px;
-  }
-}
-
-/* Small mobile screens */
-@media (max-width: 360px) {
-  .header h2 {
-    font-size: 18px;
-  }
-
-  :global(form) {
-    padding: 16px;
-  }
-
-  .progressBar {
-    width: 200px;
-  }
-}
-/* ================= BASIC DETAILS LAYOUT FIX ================= */
-
-/* Target only the first step block */
-:global(form > h3 + input),
-:global(form > h3 + input + input),
-:global(form > h3 + input + input + input),
-:global(form > h3 + input + input + input + input),
-:global(form > h3 + input + input + input + input + .passwordWrapper) {
-  width: 100%;
-}
-
-/* Create grid for first step */
-/* Default form layout */
-:global(form) {
-  width: 600px;
-  margin: 0 auto;
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 14px;
-}
-
-/* Grid only for first step */
-.basicDetailsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 20px;
-}
-
-.step2Grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* full width fields */
-.fullWidth {
-  grid-column: span 2;
-}
-
-/* First Name */
-:global(form > h3 + input) {
-  grid-column: 1 / 2;
-}
-
-/* Last Name */
-:global(form > h3 + input + input) {
-  grid-column: 2 / 3;
-}
-
-/* Email - full row */
-:global(form > h3 + input + input + input) {
-  grid-column: 1 / -1;
-}
-
-.simpleUploadWrapper label {
-  margin-top: -16px;
-}
-.profileUpload {
-  display: flex;
-  flex-direction: column;
-}
-
-.profileUpload label {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 6px;
-}
-
-.profileUploadBox input {
-  height: 44px;
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 6px;
-  background: #fff;
-}
-
 .fileUpload {
   width: 100%;
 }
@@ -367,6 +213,8 @@
   padding: 0 10px;
   width: 100%;
   overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .fileBtn {
@@ -376,46 +224,60 @@
   padding: 4px 10px;
   font-size: 13px;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .fileText {
   font-size: 13px;
   color: #6b7280;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-
-/* =====================================================
-   FINAL GRID FIX — NO UI CHANGE, NO TSX CHANGE
-   ===================================================== */
-
-/* Phone input stays in left column */
-:global(form > h3 + input + input + input + input) {
-  grid-column: 1 / 2;
-}
-
-/* Tooltip MUST stay under Phone (same column) */
-:global(form > h3 + input + input + input + input + .tooltipError) {
-  grid-column: 1 / 2;
-}
-
-/* Password stays on the right (same row as Phone) */
-:global(
-  form > h3 + input + input + input + input + .tooltipError + .passwordWrapper
-),
-:global(
-  form > h3 + input + input + input + input + .passwordWrapper
-) {
-  grid-column: 2 / 3;
-}
-
-
-/* Continue button alignment */
+/* ================= ACTIONS ================= */
 .actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
   grid-column: 1 / -1;
 }
-/* ================= BOTTOM STEP INDICATOR ================= */
 
+.actions button {
+  height: 44px;
+  padding: 0 32px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btnBack {
+  background: #e5e7eb;
+  color: #374151;
+  height: 44px;
+  padding: 0 32px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btnNext {
+  background: #ff8a1f;
+  color: #ffffff;
+  height: 44px;
+  padding: 0 32px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================= BOTTOM STEP INDICATOR ================= */
 .bottomSteps {
   margin: 28px auto 0;
   display: flex;
@@ -452,54 +314,8 @@
   font-size: 16px;
   margin: 0 2px;
 }
-@media (max-width: 480px) {
-  .bottomSteps{
-    display: none;
-  }
-}
 
-/* =====================================================
-   MOBILE VIEW – FORCE IMAGE-LIKE SINGLE COLUMN
-   ===================================================== */
-@media (max-width: 480px) {
-
-  /* 🔒 Kill desktop grid completely on mobile */
-  :global(form) {
-    display: block !important;   /* 🔥 KEY FIX */
-    width: 90%;
-    max-width: 100%;
-  }
-
-  /* 🔒 All inputs stack vertically */
-  :global(form input),
-  :global(.passwordWrapper) {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* 🔒 Password input full width */
-  :global(.passwordWrapper input) {
-    width: 100% !important;
-  }
-
-  /* 🔒 Actions center like image */
-  .actions {
-    display: flex;
-    justify-content: center;
-  }
-
-  .actions button {
-    width: 70%;
-    max-width: 240px;
-  }
-
-  /* 🔒 Hide bottom steps (image has none on mobile) */
-  .bottomSteps {
-    display: none;
-  }
-}
-/* ================= STEP HEADER (IMAGE STYLE) ================= */
-
+/* ================= STEP HEADER ================= */
 .stepHeader {
   display: flex;
   align-items: center;
@@ -537,8 +353,142 @@
   color: #9ca3af;
 }
 
+/* ================= ERROR ================= */
+.errorInput {
+  border: 1.5px solid red !important;
+  outline: none;
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  grid-column: span 1;
+}
+
+/* ================= DOC ROW ================= */
+.docRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+/* ================= PROFILE UPLOAD ================= */
+.profileUploadWrapper {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
 /* ================= MOBILE ================= */
+@media (max-width: 1024px) {
+  .form,
+  .formGrid {
+    width: 90%;
+    padding: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header h2 {
+    font-size: 24px;
+  }
+
+  .form,
+  .formGrid {
+    width: 92%;
+    padding: 24px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+  .btnBack,
+  .btnNext {
+    padding: 0 24px;
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 480px) {
+  .container {
+    padding: 20px 0;
+  }
+
+  .header h2 {
+    font-size: 20px;
+  }
+
+  .header span {
+    font-size: 13px;
+  }
+
+  /* Stack grid to single column */
+  .formGrid {
+    display: block;
+    width: 94%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .form {
+    width: 94%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .step2Grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fullWidth {
+    grid-column: span 1;
+  }
+
+  .passwordWrapper {
+    grid-column: unset;
+  }
+
+  .sectionTitle {
+    font-size: 15px;
+  }
+
+  .input {
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .simpleUploadBox {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .simpleUploadBox button {
+    width: 50%;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btnBack,
+  .btnNext {
+    width: 100%;
+    height: 42px;
+  }
+
+  .bottomSteps {
+    display: none;
+  }
+
   .stepHeader {
     gap: 10px;
   }
@@ -548,208 +498,14 @@
     font-size: 13px;
   }
 }
-/* 🔴 Error message – always below input */
-.errorText {
-  grid-column: span 1;
-  color: red;
-  font-size: 12px;
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
-/* ================= PHONE INPUT ERROR BORDER ================= */
-input:has(+ .tooltipError) {
-  border: 1px solid #ff3b30;
-}
 
-/* ================= TOOLTIP UNDER SAME FIELD ================= */
-.tooltipError {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+@media (max-width: 360px) {
+  .header h2 {
+    font-size: 18px;
+  }
 
-  margin-top: 6px;        /* stays under phone */
-  margin-left: 4px;
-
-  background: #ffffff;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  padding: 6px 10px;
-
-  font-size: 12.5px;
-  color: #000;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  width: fit-content;
-  max-width: 100%;
-  position: relative;    /* arrow anchor */
-  white-space: nowrap;
-      /* translate: -276px 30px; */
-
-}
-
-/* ================= UPWARD ARROW ================= */
-.tooltipError::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 14px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent #d9d9d9 transparent;
-}
-
-.tooltipError::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 14px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent #ffffff transparent;
-}
-
-/* ================= WARNING ICON ================= */
-.icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #ff9800;
-  color: #ffffff;
-
-  font-size: 11px;
-  font-weight: bold;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-/* ================= MOBILE SAFE ================= */
-@media (max-width: 768px) {
-  .tooltipError {
-    white-space: normal;
+  .form,
+  .formGrid {
+    padding: 16px;
   }
 }
-.errorInput {
-  border: 1.5px solid red !important;
-  outline: none;
-}
-/* ================= RESULT WRAP ================= */
-.resultWrap {
-  position: fixed;
-  inset: 0;
-  background: #fafafa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  overflow: hidden;
-}
-
-/* ================= CONFETTI ================= */
-.confetti {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: auto;
-  opacity: 0.35;
-}
-
-.confettiBottom {
-  position: absolute;
-  bottom: -40px;
-  width: 100%;
-  opacity: 0.4;
-}
-
-/* ================= CARD ================= */
-.resultCard {
-  position: relative;
-  width: 440px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 75px 42px 40px;
-  text-align: center;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.15);
-  z-index: 2;
-}
-
-/* ================= MEDAL ================= */
-.medalWrap {
-  position: absolute;
-  top: -55px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.medal {
-  width: 92px;
-  height: auto;
-}
-
-/* ================= TEXT ================= */
-.congrats {
-  font-size: 26px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 8px;
-}
-
-.resultText {
-  font-size: 15px;
-  color: #4b5563;
-}
-
-.resultText span {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.resultSub {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 6px 0 18px;
-}
-
-/* ================= SCORE ================= */
-.finalScore {
-  font-size: 28px;
-  font-weight: 700;
-  color: #2563eb;
-  margin-bottom: 28px;
-}
-
-/* ================= BUTTONS ================= */
-.actions {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-}
-
-.linkBtn {
-  background: #f59e0b;
-  color: #ffffff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.linkBtn:hover {
-  background: #ea8c04;
-}
-
-.greyBtn {
-  background: #e5e7eb;
-  color: #374151;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-}
-

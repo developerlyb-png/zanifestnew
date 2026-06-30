@@ -571,8 +571,8 @@ getRegistration(vehicle);
 const prevPolicy =
 getPreviousPolicy(
 vehicle,
-"2024-06-10",
-"2025-06-09"
+previousStartDate,
+previousEndDate
 );
 
 return {
@@ -582,20 +582,22 @@ source:"",
 
 
 branch:
-"BANGALORE",
+body.branch ||
+process.env.ZUNO_BRANCH ||
+"MUMBAI",
 
 
 agentEmail:
-"shivakumar.bale@qualitykiosk.com",
-
+body.agentEmail ||
+process.env.ZUNO_AGENT_EMAIL,
 
 saleManagerCode:
-"26058",
-
+body.saleManagerCode ||
+process.env.ZUNO_SALE_MANAGER_CODE,
 
 saleManagerName:
-"Rahul B",
-
+body.saleManagerName ||
+process.env.ZUNO_SALE_MANAGER_NAME,
 
 mainApplicantField:
 "1",
@@ -736,7 +738,11 @@ vehicle.year,
 
 
 registrationDate:
-`${vehicle.year}-06-05`,
+isNew
+?
+`${vehicle.year}-06-05`
+:
+`${vehicle.year}-01-01`,
 
 
 
@@ -1019,7 +1025,11 @@ annualmileageofthecar:
 
 
 breakininsurance:
-policy.breakininsurance || "NBK",
+isNew
+?
+"NBK"
+:
+"N",
 
 
 

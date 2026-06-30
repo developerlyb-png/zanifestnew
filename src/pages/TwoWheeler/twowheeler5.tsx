@@ -12,6 +12,9 @@ import { RiEBikeLine } from "react-icons/ri";
 import { VscSettings } from "react-icons/vsc";
 import { LuTicketsPlane, LuArrowDownUp } from "react-icons/lu";
 import { IoMdMenu, IoMdClose } from "react-icons/io"; // icons for toggle
+import zunoLogo from "@/assets/CommercialVehicle/zuno.png";
+import sbiLogo from "@/assets/CommercialVehicle/sbi.png";
+import licLogo from "@/assets/CommercialVehicle/liclogo.png";
 import {useRouter} from 'next/router'
 import { FaFilter } from "react-icons/fa";
 
@@ -33,6 +36,7 @@ const twowheeler5 = () => {
 const [plans, setPlans] = useState(dummyPlans);
 const [bikeData, setBikeData] = useState<any>(null);
 const [zunoQuote, setZunoQuote] = useState<any>(null);
+
  useEffect(() => {
 
 
@@ -47,7 +51,9 @@ const [zunoQuote, setZunoQuote] = useState<any>(null);
           "selectedBikeData"
         );
 
-
+const selectedRto = JSON.parse(
+  localStorage.getItem("selectedRto") || "{}"
+);
       if(!storedData){
         return;
       }
@@ -82,56 +88,70 @@ const [zunoQuote, setZunoQuote] = useState<any>(null);
 
 vehicle:{
 
-
 registrationNumber:
-bike.vehicleNumber,
-
+bike.registrationNumber ||
+localStorage.getItem("vehicleNumber") ||
+"",
 
 make:
 bike.make,
 
-
 model:
 bike.model,
-
 
 variant:
 bike.variant,
 
-
 idv:
 bike.idv,
-
 
 fuelType:
 bike.fuelType,
 
-
 capacity:
 bike.capacity,
-
 
 seatingCapacity:
 bike.seatingCapacity,
 
-
 exShowroomPrice:
 bike.exShowroomPrice,
-
 
 manufacturingYear:
 bike.year,
 
-
 year:
 bike.year,
 
-
 isNewBike:
-bike.isNewBike
+bike.isNewBike,
 
+engineNumber:
+(
+bike.isNewBike === true ||
+bike.isNewBike === "true"
+)
+?
+"NA"
+:
+bike.engineNumber,
 
-},
+chassisNumber:
+(
+bike.isNewBike === true ||
+bike.isNewBike === "true"
+)
+?
+"NA"
+:
+bike.chassisNumber,
+
+// 👇 ADD THIS
+
+rto: selectedRto
+
+}
+,
 
  customer:{
 
@@ -157,7 +177,30 @@ bike.isNewBike
         result
       );
 
+const getCompanyLogo = (company:string)=>{
 
+const name =
+company?.toLowerCase();
+
+
+if(name?.includes("zuno")){
+return zunoLogo;
+}
+
+
+if(name?.includes("sbi")){
+return sbiLogo;
+}
+
+
+if(name?.includes("lic")){
+return licLogo;
+}
+
+
+return zunoLogo;
+
+};
 
    if(result.success){
 
@@ -178,7 +221,7 @@ setPlans([
 
 id:1,
 
-logo:bajaj,
+logo:zunoLogo,
 
 name:
 "Zuno General Insurance",
@@ -372,9 +415,31 @@ useEffect(() => {
                     <p className={styles.idvLabel}>IDV</p>
                     <p className={styles.idvValue}>{plan.idv}</p>
                   </div>
-                  <button className={styles.buyBtn} onClick={() => {
+                 <button className={styles.buyBtn} onClick={() => {
 
- const selectedPlan = {
+
+if(
+!(
+bikeData?.isNewBike === true ||
+bikeData?.isNewBike === "true"
+)
+&&
+(
+!bikeData?.engineNumber ||
+!bikeData?.chassisNumber
+)
+){
+
+alert(
+"Please enter engine number and chassis number"
+);
+
+return;
+
+}
+
+
+const selectedPlan = {
 
 
 company:
@@ -438,10 +503,24 @@ bikeData?.exShowroomPrice,
 
 
 engineNumber:
+(
+bikeData?.isNewBike === true ||
+bikeData?.isNewBike === "true"
+)
+?
+"NA"
+:
 bikeData?.engineNumber,
 
 
 chassisNumber:
+(
+bikeData?.isNewBike === true ||
+bikeData?.isNewBike === "true"
+)
+?
+"NA"
+:
 bikeData?.chassisNumber
 
 

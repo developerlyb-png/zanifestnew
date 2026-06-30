@@ -71,16 +71,78 @@ function bikeinsurance() {
                 placeholder="Your bike number ex - DL-10-CB-1234"
                 className={styles.input}
               />
-              <button
-                className={styles.button}
-                onClick={() => {
-  localStorage.setItem("vehicleNumber", carNumber);
+             <button
+className={styles.button}
+onClick={async()=>{
 
-  router.push("./twowheeler");
+try{
+
+ if(!carNumber){
+ alert("Enter bike number");
+ return;
+ }
+
+
+ const res = await fetch("/api/vahan/rc-check",{
+
+ method:"POST",
+
+ headers:{
+   "Content-Type":"application/json"
+ },
+
+ body:JSON.stringify({
+
+   registrationNumber:carNumber
+
+ })
+
+});
+
+
+ const data = await res.json();
+
+
+ console.log("BIKE RC",data);
+
+
+
+ if(!data.success){
+
+ alert(data.message || "RC not found");
+
+ return;
+
+ }
+
+
+ localStorage.setItem(
+ "vehicleNumber",
+ carNumber
+ );
+
+
+ localStorage.setItem(
+ "bikeRcDetails",
+ JSON.stringify(data.vehicle)
+ );
+
+
+ router.push("./twowheeler");
+
+
+}catch(err){
+
+console.log(err);
+
+alert("Something went wrong")
+
+}
+
 }}
-              >
-                Check Prices
-              </button>
+>
+Check Prices
+</button>
             </div>
             <p>
               By clicking, I agree to{" "}

@@ -56,36 +56,80 @@ function PaymentSuccess() {
 
               body: JSON.stringify({
 
-                proposalNumber:
-                  proposalData.proposalNumber,
 
-                customer: {
+fullQuote:
+selectedPlan.zunoQuote,
 
-                  fullName:
-                    proposalData
-                      .customer
-                      ?.fullName ||
-                    "AYUB KHAN",
 
-                },
 
-                vehicle: {
+customer:{
 
-                  number:
-                    proposalData
-                      .vehicle
-                      ?.vehicleNumber,
+fullName:
+selectedPlan?.customer?.fullName,
 
-                },
+mobile:
+selectedPlan?.customer?.mobile,
 
-                premium:
-                  Number(
-                    selectedPlan
-                      ?.premium
-                      ?.replace("₹", "")
-                  ) || 0,
+email:
+selectedPlan?.customer?.email
 
-              }),
+},
+
+
+
+
+vehicle:{
+
+
+registrationNumber:
+selectedPlan?.bikeData?.vehicleNumber,
+
+
+make:
+selectedPlan?.bikeData?.make,
+
+
+model:
+selectedPlan?.bikeData?.model,
+
+
+variant:
+selectedPlan?.bikeData?.variant,
+
+
+engineNumber:
+selectedPlan?.bikeData?.isNewBike
+?
+"NA"
+:
+selectedPlan?.bikeData?.engineNumber,
+
+
+chassisNumber:
+selectedPlan?.bikeData?.isNewBike
+?
+"NA"
+:
+selectedPlan?.bikeData?.chassisNumber,
+
+
+},
+
+
+
+
+premium:{
+
+
+amount:
+selectedPlan?.premium
+
+
+}
+
+
+
+}),
             }
           );
 

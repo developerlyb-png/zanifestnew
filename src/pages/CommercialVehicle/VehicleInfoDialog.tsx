@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 
 import { FiEdit2, FiMapPin } from "react-icons/fi";
@@ -93,7 +93,46 @@ useState(false);
 const [showEmailOtp,setShowEmailOtp] =
 useState(false);
 
+const [loggedUser,setLoggedUser] =
+useState<any>(null);
 
+
+
+useEffect(()=>{
+
+
+const user =
+localStorage.getItem("user");
+
+
+if(user){
+
+const parsed =
+JSON.parse(user);
+
+
+setLoggedUser(parsed);
+
+
+setFullName(
+parsed.name || ""
+);
+
+
+setEmail(
+parsed.email || ""
+);
+
+
+setMobile(
+"+91 " + parsed.mobile
+);
+
+
+}
+
+
+},[]);
 
 
 // NAME FORMAT
@@ -211,17 +250,113 @@ prefix+digits
 
 // SEND MOBILE OTP (DUMMY)
 
-const sendMobileOtp = async()=>{
+// const sendMobileOtp = async()=>{
 
-setShowMobileOtp(true);
+// try{
 
-// testing ke liye
-console.log("Dummy WhatsApp OTP: 123456");
 
-alert("OTP sent successfully");
+// const phone =
+// mobile
+// .replace(/\D/g,"")
+// .replace(/^91/,"");
 
-};
 
+// if(phone.length !== 10){
+
+// alert("Enter valid mobile number");
+// return;
+
+// }
+
+
+
+// const res =
+// await fetch(
+// "/api/auth/send-whatsapp-otp",
+// {
+
+// method:"POST",
+
+// headers:{
+// "Content-Type":"application/json"
+// },
+
+
+// body:
+// JSON.stringify({
+
+// mobile:phone,
+
+// fullName,
+
+// email
+
+// })
+
+
+// }
+
+// );
+
+
+
+// const data =
+// await res.json();
+
+
+
+// console.log(
+// "WHATSAPP OTP RESPONSE",
+// data
+// );
+
+
+
+// if(data.success){
+
+
+// setShowMobileOtp(true);
+
+
+// alert(
+// "OTP sent on WhatsApp"
+// );
+
+
+// }
+
+// else{
+
+
+// alert(
+// data.message ||
+// "OTP failed"
+// );
+
+
+// }
+
+
+
+// }
+// catch(error){
+
+
+// console.log(
+// error
+// );
+
+
+// alert(
+// "Something went wrong"
+// );
+
+
+// }
+
+
+
+// };
 
 // VERIFY MOBILE
 
@@ -277,23 +412,207 @@ alert("OTP sent successfully");
 // };
 
 // VERIFY MOBILE OTP (DUMMY)
+// =====================
+// SEND MOBILE OTP (DUMMY)
+// =====================
+
+const sendMobileOtp = async()=>{
+
+
+const phone =
+mobile
+.replace(/\D/g,"")
+.replace(/^91/,"");
+
+
+if(phone.length !== 10){
+
+alert("Enter valid mobile number");
+return;
+
+}
+
+
+setTimeout(()=>{
+
+
+setShowMobileOtp(true);
+
+
+console.log(
+"DUMMY OTP : 123456"
+);
+
+
+alert(
+"OTP sent on WhatsApp"
+);
+
+
+},500);
+
+
+
+};
+// =====================
+// VERIFY MOBILE OTP (DUMMY + SAVE USER)
+// =====================
+
 
 const verifyMobileOtp = async()=>{
 
-if(mobileOtp === "123456"){
+
+if(mobileOtp !== "123456"){
+
+alert("Invalid OTP");
+return;
+
+}
+
 
 setMobileVerified(true);
 
-alert("Mobile Verified");
 
-}
-else{
+alert(
+"Mobile Verified"
+);
 
-alert("Invalid OTP");
-
-}
 
 };
+// const verifyMobileOtp = async()=>{
+
+
+// try{
+
+
+// const res =
+// await fetch(
+// "/api/auth/verify-whatsapp-otp",
+// {
+
+// method:"POST",
+
+
+// headers:{
+
+// "Content-Type":"application/json"
+
+// },
+
+
+
+// body:
+// JSON.stringify({
+
+
+// mobile:
+// mobile
+// .replace(/\D/g,"")
+// .replace(/^91/,""),
+
+
+// otp:
+// mobileOtp,
+
+
+// fullName,
+
+
+// email
+
+
+// })
+
+
+// }
+
+
+// );
+
+
+
+// const data =
+// await res.json();
+
+
+
+// console.log(
+// "VERIFY OTP RESPONSE",
+// data
+// );
+
+
+
+
+// if(data.success){
+
+
+// setMobileVerified(true);
+
+
+
+// if(data.user){
+
+
+// localStorage.setItem(
+
+// "user",
+
+// JSON.stringify(data.user)
+
+// );
+
+
+// window.dispatchEvent(
+
+// new Event("userLogin")
+
+// );
+
+// }
+
+
+
+// alert(
+// "Mobile Verified"
+// );
+
+
+// }
+
+// else{
+
+
+// alert(
+// data.message ||
+// "Invalid OTP"
+// );
+
+
+// }
+
+
+
+
+// }
+// catch(error){
+
+
+
+// console.log(error);
+
+
+// alert(
+// "OTP verification failed"
+// );
+
+
+
+// }
+
+
+
+// };
 
 
 // SEND EMAIL OTP
@@ -382,7 +701,8 @@ headers:{
 },
 
 
-body:JSON.stringify({
+body:
+JSON.stringify({
 
 email,
 
@@ -390,7 +710,9 @@ otp:emailOtp
 
 })
 
+
 }
+
 );
 
 
@@ -403,21 +725,98 @@ await res.json();
 if(data.success){
 
 
+// ======================
+// UPDATE USER EMAIL IN DB
+// ======================
+
+
+await fetch(
+"/api/auth/dummy-login",
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:
+JSON.stringify({
+
+
+mobile:
+mobile
+.replace(/\D/g,"")
+.replace(/^91/,""),
+
+
+fullName,
+
+
+email
+
+
+})
+
+
+}
+
+);
+
+
+
+
+// ======================
+// SAVE LOCAL DATA
+// ======================
+
+
+const userData = {
+
+
+name:
+fullName,
+
+
+email,
+
+
+mobile:
+mobile
+.replace(/\D/g,"")
+.replace(/^91/,"")
+
+
+};
+
+
+
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(userData)
+
+);
+
+
 
 localStorage.setItem(
 
 "cvCustomer",
 
-JSON.stringify({
+JSON.stringify(userData)
 
-name:fullName,
+);
 
-email,
 
-mobile:
-mobile.replace("+91 ","")
 
-})
+window.dispatchEvent(
+
+new Event("userLogin")
 
 );
 
@@ -431,11 +830,17 @@ router.push(
 
 
 }
+
 else{
 
-alert("Invalid Email OTP");
+
+alert(
+"Invalid Email OTP"
+);
+
 
 }
+
 
 
 };
@@ -567,6 +972,48 @@ selectedRto?.rtocityordistrict
 <div className={styles.right}>
 
 
+{loggedUser ? (
+
+<>
+
+
+<h3 className={styles.heading}>
+
+Welcome {loggedUser.name}
+
+</h3>
+
+
+
+<button
+
+className={styles.viewBtn}
+
+onClick={()=>{
+
+
+router.push(
+"/CommercialVehicle/CommercialVehicle5"
+);
+
+
+}}
+
+>
+
+View Prices
+
+</button>
+
+
+</>
+
+
+) : (
+
+<>
+
+
 <h3 className={styles.heading}>
 Almost done! Just one last step
 </h3>
@@ -589,7 +1036,6 @@ className={styles.input}
 
 
 
-
 <input
 
 type="tel"
@@ -603,8 +1049,6 @@ onChange={handleMobileChange}
 className={styles.input}
 
 />
-
-
 
 
 
@@ -636,7 +1080,6 @@ className={styles.input}
 
 
 
-
 <button
 
 className={styles.viewBtn}
@@ -647,21 +1090,17 @@ onClick={()=>{
 if(!fullName){
 
 alert("Enter name");
-
 return;
 
 }
-
 
 
 if(mobile.length!==14){
 
 alert("Enter valid mobile");
-
 return;
 
 }
-
 
 
 if(!showMobileOtp){
@@ -669,12 +1108,12 @@ if(!showMobileOtp){
 sendMobileOtp();
 
 }
+
 else{
 
 verifyMobileOtp();
 
 }
-
 
 
 }}
@@ -697,9 +1136,6 @@ showMobileOtp
 </>
 
 )}
-
-
-
 
 
 
@@ -750,7 +1186,6 @@ className={styles.input}
 
 
 
-
 <button
 
 className={styles.viewBtn}
@@ -763,6 +1198,7 @@ if(!showEmailOtp){
 sendEmailOtp();
 
 }
+
 else{
 
 verifyEmailOtp();
@@ -790,6 +1226,13 @@ showEmailOtp
 </>
 
 )}
+
+
+
+</>
+
+)}
+
 
 
 

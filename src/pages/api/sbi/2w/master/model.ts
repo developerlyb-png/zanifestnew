@@ -3,7 +3,7 @@ import type {
  NextApiResponse
 } from "next";
 
-
+import { getZunoMakeName } from "@/utils/zunoBikeMapper";
 // TOKEN FUNCTION
 
 async function getZunoToken(){
@@ -76,43 +76,52 @@ await getZunoToken();
 const {make} =
 req.query;
 
+const makeName = getZunoMakeName(String(make));
 
+console.log("TOKEN =>", token);
 
-const response =
-await fetch(
+console.log("MAKE =>", makeName);
 
-`${process.env.ZUNO_BASE_URL}/two-wheeler/model?make=${make}`,
-
-{
-
-method:"GET",
-
-
-headers:{
-
-
-Authorization:
-`Bearer ${token}`,
-
-"x-api-key":
-process.env.ZUNO_2W_MASTER_X_API_KEY!,
-
-"Content-Type":
-"application/json"
-
-}
-
-
-}
-
+console.log(
+  "URL =>",
+  `${process.env.ZUNO_BASE_URL}/two-wheeler/model?make=${encodeURIComponent(makeName)}`
 );
+
+const response = await fetch(
+  `${process.env.ZUNO_BASE_URL}/two-wheeler/model?make=${encodeURIComponent(makeName)}`,
+  {
+    method: "GET",
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+
+      "x-api-key": process.env.ZUNO_2W_MASTER_X_API_KEY!,
+
+      "Content-Type": "application/json",
+    },
+  }
+);
+
+// Read response as text first
+const body = await response.text();
+
+console.log("STATUS =>", response.status);
+console.log("BODY =>", body);
+
+try {
+  return res.status(response.status).json(JSON.parse(body));
+} catch {
+  return res.status(response.status).send(body);
+}
 
 
 
 const data =
 await response.json();
 
-
+console.log("MAKE =>", makeName);
+console.log("STATUS =>", response.status);
+console.log("MODEL API RESPONSE =>", data);
 
 return res
 .status(response.status)

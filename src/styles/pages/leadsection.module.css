@@ -262,7 +262,7 @@
   }
 }
 /* REMOVE BLACK FOCUS BORDER */
-button:focus,
+/* button:focus,
 button:focus-visible,
 input:focus,
 input:focus-visible,
@@ -272,8 +272,8 @@ textarea:focus,
 textarea:focus-visible {
   outline: none;
   box-shadow: none;
-  border-color: #e5e7eb; /* same normal border */
-}
+  border-color: #e5e7eb; 
+} */
 /* SEARCH BAR – NO OUTLINE, NO BLACK BORDER */
 .searchBox input,
 .searchBox input:focus,

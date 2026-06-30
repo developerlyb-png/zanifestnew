@@ -94,65 +94,96 @@ try{
  // =====================
  // ZUNO ISSUE PAYLOAD
  // =====================
+// =====================
+// GET QUOTE DETAILS
+// =====================
+
+const quoteNo =
+
+req.body.fullQuote
+?.policyLevelDetails
+?.quoteNo
+||
+req.body.fullQuote
+?.policyLevelDetails
+?.quoteNumber;
 
 
- const issuePayload = {
+
+const quoteOptionNo =
+
+req.body.fullQuote
+?.policyLevelDetails
+?.quoteOptionNo
+||
+req.body.fullQuote
+?.policyLevelDetails
+?.quoteOptionNumber;
 
 
- ...req.body.fullQuote,
+console.log(
+"QUOTE NO",
+quoteNo
+);
 
 
- engineNumber:
- req.body.vehicle.engineNumber,
+console.log(
+"QUOTE OPTION NO",
+quoteOptionNo
+);
 
 
- engineeNumber:
- req.body.vehicle.engineNumber,
+if(
+!quoteNo ||
+!quoteOptionNo
+){
+
+return res.status(400).json({
+
+success:false,
+
+message:
+"Quote details missing"
+
+});
+
+}
+
+const issuePayload = {
 
 
- chassisNumber:
- req.body.vehicle.chassisNumber,
+ product: {
 
+  name:"EGICProductWebServicesV1",
 
- customerDetails:{
-
-
- fullName:
- req.body.customer.fullName,
-
-
- mobileNumber:
- req.body.customer.mobile,
-
-
- email:
- req.body.customer.email,
-
+  version:"1"
 
  },
 
 
- vehicleDetails:{
+ policyList:[
+
+  {
+
+   quoteNo:String(quoteNo),
+
+   quoteOptionNo:String(quoteOptionNo)
+
+  }
+
+ ],
 
 
- registrationNumber:
- req.body.vehicle.registrationNumber,
+ ipContextInfo:{
 
+  productName:"EGICProductWebServicesV1",
 
- make:
- req.body.vehicle.make,
-
-
- model:
- req.body.vehicle.model,
-
+  productVersion:"1"
 
  }
 
 
- };
-
-
+};
 
 
  console.log(
@@ -263,13 +294,15 @@ try{
  // =====================
 
 
- const policyNumber =
+const policyNumber =
 
- zunoData?.policyNumber ||
+zunoData?.PolicyNr ||
 
- zunoData?.policynrTt ||
+zunoData?.policyNumber ||
 
- Date.now().toString();
+Date.now().toString();
+
+
 
 
 
@@ -322,12 +355,13 @@ try{
 
 
  quoteNumber:
- zunoData?.quoteNumber,
+zunoData?.zzQuoteNo ||
+quoteNo,
 
 
- quoteOptionNumber:
- zunoData?.quoteOptionNumber,
-
+quoteOptionNumber:
+zunoData?.zzQuoteOptNo ||
+quoteOptionNo,
 
  customer:
  req.body.customer,

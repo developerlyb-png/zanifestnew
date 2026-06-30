@@ -10,8 +10,9 @@ import Image from "next/image";
 import agent from "@/assets/health/manicon.webp";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
-import shriram from "@/assets/CommercialVehicle/shriram.png";
-import icic from "@/assets/CommercialVehicle/ICICIlombard.png";
+import zunoLogo from "@/assets/CommercialVehicle/zuno.png";
+import sbiLogo from "@/assets/CommercialVehicle/sbi.png";
+import licLogo from "@/assets/CommercialVehicle/liclogo.png";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useRouter } from "next/navigation"; // ✅ Router import
 
@@ -22,7 +23,16 @@ const CommercialVehicle5: React.FC = () => {
   const [vehicleData,setVehicleData] = useState<any>(null);
 
 const [quote,setQuote] = useState<any>(null);
-
+const [plans,setPlans] = useState<any[]>([
+{
+company:"ZUNO",
+logo:zunoLogo,
+type:"Package Policy",
+premium:"4,497",
+idv:"29,980",
+claim:"98%"
+}
+]);
 const [loading,setLoading] = useState(false);
   const router = useRouter(); // ✅ Router init
 
@@ -109,10 +119,31 @@ res.data
 );
 
 
-setQuote(
-res.data.data
-);
+const apiQuote = res.data.data;
 
+setQuote(apiQuote);
+
+
+setPlans([
+
+{
+company:"ZUNO",
+
+logo:zunoLogo,
+
+type:"Package Policy",
+
+premium:
+apiQuote?.totalGrossPremiuim || "4,497",
+
+idv:
+apiQuote?.idv || "29,980",
+
+claim:"98%"
+
+}
+
+]);
 
 }
 catch(error:any){
@@ -260,138 +291,124 @@ setLoading(false);
               </div>
             )}
 
-            <h2 className={styles.heading}>2 Third Party plans</h2>
-            <p className={styles.subtext}>
-              cover damages caused to third party only and not your vehicle
-            </p>
+            <h2 className={styles.heading}>
+{plans.length} Package plans
+</h2>
 
-            {/* Third Party Cards */}
-            <div className={styles.cardGroup}>
-              <div className={styles.card}>
-                <div className={styles.cardContent}>
-                  <div className={styles.logoSection}>
-                    <Image
-                      src={icic}
-                      alt="ICICI Lombard"
-                      className={styles.logo}
-                      height={70}
-                      width={90}
-                    />
-                    <div>
-                      <p className={styles.title}>Third Party</p>
-                      <p className={styles.link}>Buy Without Inspection</p>
-                    </div>
-                  </div>
-                  {/* ✅ Navigate on click */}
-                  <button className={styles.button} onClick={goToNextPage}>
-                    {loading
-?
-"Loading..."
-:
-`₹${quote?.totalGrossPremiuim || "----"} →`
-}
-                  </button>
-                </div>
-              </div>
+<p className={styles.subtext}>
+cover damages caused to your vehicle as well as third party
+</p>
 
-              <div className={styles.card}>
-                <div className={styles.cardContent}>
-                  <div className={styles.logoSection}>
-                    <Image
-                      src={shriram}
-                      alt="Shriram"
-                      className={styles.logo}
-                      height={90}
-                      width={100}
-                    />
-                    <div>
-                      <p className={styles.title}>Third Party</p>
-                      <p className={styles.link}>Buy Without Inspection</p>
-                    </div>
-                  </div>
-                  <button className={styles.button} onClick={goToNextPage}>
-                    {loading
-?
-"Loading..."
-:
-`₹${quote?.totalGrossPremiuim || "----"} →`
-}
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            {/* Package Plans */}
-            <h2 className={styles.heading}>2 Package plans</h2>
-            <p className={styles.subtext}>
-              cover damages caused to your vehicle as well as third party
-            </p>
+<div className={styles.cardGroup}>
 
-            <div className={styles.cardGroup}>
-              <div className={styles.packageCard}>
-                <div className={styles.tagRow}>
-                  <span className={styles.tagWarning}>
-                    Requires Self-Video Inspection
-                  </span>
-                </div>
-                <div className={styles.packageMain}>
-                  <Image src={icic} alt="ICICI Lombard" height={90} width={100} />
-                  <div className={styles.packageInfo}>
-                    <p>
-                      IDV Cover <br />
-                      <span>₹ 29,980</span>
-                    </p>
-                    <p>
-                      Claims Settled <br />
-                      <span>99.7%</span>
-                    </p>
-                  </div>
-                  <button className={styles.priceBtn} onClick={goToNextPage}>
-                    ₹4,497 →
-                  </button>
-                </div>
-                <div className={styles.extraInfo}>
-                  <span>60% Advance Payment</span>
-                  <span>Spot Claims Upto Rs. 3,00,000</span>
-                </div>
-                <div className={styles.packageFooter}>
-                  <span></span>
-                  <span>
-                    <a href="#">3 Cashless garages</a> |{" "}
-                    <a href="#">View Coverage</a>
-                  </span>
-                </div>
-              </div>
 
-              <div className={styles.packageCard}>
-                <div className={styles.tagRow}>
-                  <span className={styles.tagSuccess}>Buy Without Inspection</span>
-                </div>
-                <div className={styles.packageMain}>
-                  <Image src={shriram} alt="Shriram" height={90} width={100} />
-                  <div className={styles.packageInfo}>
-                    <p>
-                      IDV Cover <br />
-                      <span>₹ 60,272</span>
-                    </p>
-                    <p>
-                      Claims Settled <br />
-                      <span>96%</span>
-                    </p>
-                  </div>
-                  <button className={styles.priceBtn} onClick={goToNextPage}>
-                    ₹4,891 →
-                  </button>
-                </div>
-                <div className={styles.packageFooter}>
-                  <span></span>
-                  <span>
-                    <a href="#">3 Cashless garages</a> |{" "}
-                    <a href="#">View Coverage</a>
-                  </span>
-                </div>
-              </div>
-            </div>
+{loading && (
+
+<p>Loading quotes...</p>
+
+)}
+
+
+{plans.map((plan,index)=>(
+
+
+<div 
+className={styles.packageCard}
+key={index}
+>
+
+
+<div className={styles.tagRow}>
+
+<span className={styles.tagSuccess}>
+Buy Without Inspection
+</span>
+
+</div>
+
+
+<div className={styles.packageMain}>
+
+
+<Image
+
+src={plan.logo}
+
+alt={plan.company}
+
+height={90}
+
+width={100}
+
+/>
+
+
+<div className={styles.packageInfo}>
+
+
+<p>
+
+IDV Cover <br/>
+
+<span>
+₹ {plan.idv || "---"}
+</span>
+
+</p>
+
+
+<p>
+
+Claims Settled <br/>
+
+<span>
+{plan.claim}
+</span>
+
+</p>
+
+
+</div>
+
+
+<button
+
+className={styles.priceBtn}
+
+onClick={goToNextPage}
+
+>
+
+₹ {plan.premium || "---"} →
+
+</button>
+
+
+</div>
+
+
+<div className={styles.packageFooter}>
+
+<span></span>
+
+<span>
+
+<a href="#">View Coverage</a>
+
+</span>
+
+
+</div>
+
+
+</div>
+
+
+))}
+
+
+</div>
           </div>
 
           {/* ===== RIGHT COLUMN ===== */}
