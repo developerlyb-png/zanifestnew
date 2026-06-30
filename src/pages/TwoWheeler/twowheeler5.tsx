@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/pages/TwoWheeler/twowheeler5.module.css";
 import Image from "next/image";
-import bajaj from "@/assets/liclogo.png";
-import tata from "@/assets/liclogo.png";
-import icici from "@/assets/liclogo.png";
+import bajaj from "@/assets/insurance/liclogo.png";
+import tata from "@/assets/insurance/liclogo.png";
+import icici from "@/assets/insurance/liclogo.png";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
 import UserDetails from "@/components/ui/UserDetails";

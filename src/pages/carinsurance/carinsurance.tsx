@@ -97,7 +97,7 @@ try{
 
 const response = await fetch(
 
-"/api/zuno/4w/vahan-check",
+"/api/vahan/4w/rc-check",
 
 {
 
@@ -126,7 +126,7 @@ const result = await response.json();
 
 
 console.log(
-"ZUNO VAHAN RESULT",
+"RechargeKit VAHAN RESULT",
 result
 );
 
@@ -142,82 +142,129 @@ if(result.success){
 
 
 const data =
-
-result.data?.data ||
-
 result.data;
 
-
+setRcDetails(data);
 
 console.log(
-"ZUNO VEHICLE DATA",
+"FULL RC DATA",
+JSON.stringify(data,null,2)
+);
+
+console.log(
+"RechargeKit VEHICLE DATA",
 data
 );
 
 
 
-
 setSelectedBrand(
 
-data?.make ||
-
-data?.maker ||
-
-data?.manufacturer ||
-
+data?.vehicle_manufacturer_name ||
 ""
 
 );
+
+
+// ======================
+// MODEL + VARIANT SPLIT
+// ======================
+// ======================
+// MODEL + VARIANT SPLIT
+// ======================
+
+const fullModel =
+data?.model || "";
+
+
+let carModel = "";
+let carVariant = "";
+
+
+// Hyundai Grand i10 Nios
+
+if(
+fullModel
+.toLowerCase()
+.includes("grandi10nios")
+){
+
+carModel =
+"Grand i10 Nios";
+
+
+carVariant =
+fullModel
+.replace(/grandi10nios/i,"")
+.replace(/([0-9])/g," $1")
+.replace(/mt/i," MT ")
+.replace(/amt/i," AMT ")
+.replace(/kappa/i," Kappa ")
+.replace(/sportz/i," Sportz")
+.replace(/magna/i," Magna")
+.replace(/asta/i," Asta")
+.trim();
+
+}
+
+else{
+
+const cleanModel =
+fullModel
+.replace(/([a-z])([A-Z])/g,"$1 $2")
+.replace(/([0-9])/g," $1");
+
+
+const modelArray =
+cleanModel.split(" ");
+
+
+carModel =
+modelArray
+.slice(0,3)
+.join(" ");
+
+
+carVariant =
+modelArray
+.slice(3)
+.join(" ");
+
+}
 
 
 
 setSelectedModel(
-
-data?.model ||
-
-data?.vehicleModel ||
-
-""
-
+carModel
 );
 
+
+setSelectedVariant(
+carVariant
+);
+// ======================
+// FUEL
+// ======================
 
 
 setSelectedFuel(
 
-data?.fuelType ||
-
+data?.type ||
+data?.fuel_type ||
+data?.vehicle_fuel_description ||
 data?.fuel ||
-
 ""
 
 );
-
-
-
-setSelectedVariant(
-
-data?.variant ||
-
-data?.vehicleVariant ||
-
-""
-
-);
-
 
 
 setSelectedYear(
 
 Number(
 
-data?.manufacturingYear ||
-
-data?.manufactureYear ||
-
-data?.year ||
-
-new Date().getFullYear()
+data?.vehicle_manufacturing_month_year
+?.split("/")
+?.[1]
 
 )
 
@@ -228,21 +275,11 @@ new Date().getFullYear()
 
 setSelectedLocation({
 
-state:
-
-data?.state ||
-
-"",
-
+state:"",
 
 rto:
-
-data?.rto ||
-
-data?.registrationAuthority ||
-
+data?.reg_authority ||
 reg.substring(0,4)
-
 
 });
 
@@ -591,7 +628,7 @@ selectedLocation={selectedLocation}
     selectedYear={selectedYear}
 
     selectedLocation={selectedLocation}
-
+rcDetails={rcDetails}
     onUpdateData={(data) => {
 
       if(data.vehicle)

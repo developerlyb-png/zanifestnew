@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 
 import { FiEdit2, FiMapPin, FiX } from "react-icons/fi";
@@ -40,7 +40,7 @@ interface VehicleInfoDialogProps {
   selectedYear: number | null;
 
   selectedLocation: any;
-
+rcDetails:any;
   onUpdateData: (data: any) => void;
 }
 
@@ -59,7 +59,10 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   selectedVariant = "",
   selectedFuel = "",
   selectedYear = null,
-  selectedLocation = null,
+selectedLocation = null,
+
+rcDetails = null,
+
 }) => {
   const router = useRouter();
 
@@ -86,7 +89,8 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   const [emailOtp, setEmailOtp] = useState("");
 
   const [emailVerified, setEmailVerified] = useState(false);
-
+const [loggedUser,setLoggedUser] =
+useState<any>(null);
   // NAME FORMAT
 
   const handleFullNameChange = (e: any) => {
@@ -103,6 +107,61 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
     setFullName(value);
   };
 
+
+  useEffect(()=>{
+
+
+const saved =
+localStorage.getItem("user");
+
+
+if(
+saved &&
+saved !== "undefined"
+){
+
+
+const user =
+JSON.parse(saved);
+
+
+console.log(
+"CAR LOGGED USER",
+user
+);
+
+
+setLoggedUser(user);
+
+
+// auto fill
+
+setFullName(
+user.name || ""
+);
+
+
+setEmail(
+user.email || ""
+);
+
+
+setMobile(
+"+91 " + user.mobile
+);
+
+
+// skip OTP
+
+setMobileVerified(true);
+
+setEmailVerified(true);
+
+
+}
+
+
+},[]);
   // MOBILE FORMAT
 
   const handleMobileChange = (e: any) => {
@@ -124,13 +183,115 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   };
 
   // SEND WHATSAPP OTP
+// SEND STATIC WHATSAPP OTP
 
+// const sendMobileOtp = async () => {
+
+
+//   if (mobile.length !== 14) {
+
+//     alert("Enter valid mobile number");
+
+//     return;
+
+//   }
+
+
+//   console.log("STATIC WHATSAPP OTP : 123456");
+
+
+//   setTimeout(()=>{
+
+
+//     setMobileOtpSent(true);
+
+
+//     alert("OTP Sent : 123456");
+
+
+//   },500);
+
+
+// };
   const sendMobileOtp = async () => {
-    if (mobile.length !== 14) {
-      alert("Enter valid mobile number");
+    const sendMobileOtp = async () => {
 
-      return;
-    }
+
+const mobileNumber =
+mobile.replace("+91 ","");
+
+
+if(!/^[6-9]\d{9}$/.test(mobileNumber)){
+
+
+alert(
+"Enter valid mobile number"
+);
+
+
+return;
+
+
+}
+
+
+
+const res =
+await fetch(
+"/api/auth/send-whatsapp-otp",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+mobile:mobileNumber
+
+})
+
+}
+);
+
+
+const data =
+await res.json();
+
+
+console.log(
+"WHATSAPP RESPONSE",
+data
+);
+
+
+if(res.ok && data.success){
+
+
+setMobileOtpSent(true);
+
+
+alert(
+"OTP Sent on WhatsApp"
+);
+
+
+}
+else{
+
+
+alert(
+data.message ||
+"OTP Failed"
+);
+
+
+}
+
+
+};
 
     const res = await fetch(
       "/api/auth/send-whatsapp-otp",
@@ -162,7 +323,43 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   };
 
   // VERIFY WHATSAPP OTP
+// VERIFY STATIC OTP
 
+// const verifyMobileOtp = async () => {
+
+
+//  if(!mobileOtp.trim()){
+
+
+//   alert("Enter OTP");
+
+
+//   return;
+
+
+//  }
+
+
+//  if(mobileOtp !== "123456"){
+
+
+//   alert("Invalid OTP");
+
+
+//   return;
+
+
+//  }
+
+
+
+//  setMobileVerified(true);
+
+
+//  alert("Mobile Verified");
+
+
+// };
   const verifyMobileOtp = async () => {
     const res = await fetch(
       "/api/auth/verify-whatsapp-otp",
@@ -247,41 +444,140 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
   // VERIFY EMAIL OTP
 
-  const verifyEmailOtp = async () => {
-    const res = await fetch(
-      "/api/auth/verify-email-otp",
+  // VERIFY EMAIL OTP + AUTO LOGIN USER
 
+const verifyEmailOtp = async () => {
+
+
+  const res = await fetch(
+    "/api/auth/verify-email-otp",
+    {
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+
+        email:email.trim(),
+
+        otp:emailOtp
+
+      })
+
+    }
+  );
+
+
+  const data = await res.json();
+
+
+  console.log(
+    "EMAIL VERIFY RESPONSE",
+    data
+  );
+
+
+
+  if(res.ok && data.success){
+
+
+
+    // ================================
+    // SAVE USER IN DB + LOGIN
+    // ================================
+
+
+    const loginRes = await fetch(
+      "/api/users/health-login",
       {
-        method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
         },
 
-        body: JSON.stringify({
-          email: email.trim(),
+        body:JSON.stringify({
 
-          otp: emailOtp,
-        }),
-      },
+          name:fullName,
+
+          email:email.trim(),
+
+          mobile:mobile.replace("+91 ","")
+
+        })
+
+      }
     );
 
-    const data = await res.json();
+
+
+    const loginData =
+    await loginRes.json();
+
+
 
     console.log(
-      "EMAIL VERIFY RESPONSE",
-
-      data,
+      "CAR USER LOGIN",
+      loginData
     );
 
-    if (res.ok && data.success) {
-      setEmailVerified(true);
 
-      alert("Email Verified");
-    } else {
-      alert(data.message || "Wrong Email OTP");
+
+    if(loginData.success){
+
+
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+
+          id:loginData.user.id,
+
+          name:loginData.user.name,
+
+          email:loginData.user.email,
+
+          mobile:loginData.user.mobile
+
+        })
+      );
+
+
+
+      window.dispatchEvent(
+        new Event("userLogin")
+      );
+
+
     }
-  };
+
+
+
+    setEmailVerified(true);
+
+
+    alert("Email Verified");
+
+
+  }
+
+  else{
+
+
+    alert(
+      data.message ||
+      "Wrong Email OTP"
+    );
+
+
+  }
+
+
+};
   return (
     <div className={styles.overlay}>
       <div className={styles.dialog}>
@@ -361,9 +657,16 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         </div>
 
         {/* RIGHT */}
+<div className={styles.right}>
 
-        <div className={styles.right}>
-          <h3 className={styles.heading}>Almost done! Just one last step</h3>
+
+{!loggedUser && (
+
+<>
+
+<h3 className={styles.heading}>
+Almost done! Just one last step
+</h3>
 
           <input
             className={styles.input}
@@ -402,12 +705,21 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
           {/* SEND MOBILE OTP */}
 
-          {mobile.length === 14 && !mobileOtpSent && !mobileVerified && (
-            <button className={styles.viewBtn} onClick={sendMobileOtp}>
-              Send OTP
-            </button>
-          )}
+     {!mobileOtpSent && !mobileVerified && (
 
+<button
+
+className={styles.viewBtn}
+
+onClick={sendMobileOtp}
+
+>
+
+Send Mobile OTP
+
+</button>
+
+)}
           {/* MOBILE OTP BOX */}
 
           {mobileOtpSent && !mobileVerified && (
@@ -436,7 +748,8 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
                 disabled={emailVerified}
                 onChange={(e) => setEmail(e.target.value)}
               />
-
+</>
+)}
               {emailVerified && (
                 <div
                   style={{
@@ -452,11 +765,21 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
                 </div>
               )}
 
-              {!emailOtpSent && !emailVerified && (
-                <button className={styles.viewBtn} onClick={sendEmailOtp}>
-                  Send Email OTP
-                </button>
-              )}
+             {mobileVerified && !emailOtpSent && !emailVerified && (
+
+<button
+
+className={styles.viewBtn}
+
+onClick={sendEmailOtp}
+
+>
+
+Send Email OTP
+
+</button>
+
+)}
 
               {emailOtpSent && !emailVerified && (
                 <>
@@ -477,38 +800,77 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
           {/* FINAL VIEW PRICE */}
 
-          {emailVerified && (
-           <button
+  {emailVerified && (
+
+<button
+
 className={styles.viewBtn}
 
 onClick={async()=>{
 
 
-const payload={
+// =======================
+// VEHICLE DATA
+// =======================
 
-registrationNumber:vehicleNumber,
 
-brand:selectedBrand,
+const vehicleData = {
 
-model:selectedModel,
 
-variant:selectedVariant,
+registrationNumber:
+vehicleNumber,
 
-fuel:selectedFuel,
 
-manufacturingYear:selectedYear
+brand:
+selectedBrand,
+
+
+model:
+selectedModel,
+
+
+variant:
+selectedVariant,
+
+
+fuel:
+selectedFuel,
+
+
+year:
+selectedYear,
+
+
+rto:
+selectedLocation?.rto
+
 
 };
 
 
+
 console.log(
-"SBI PAYLOAD",
-payload
+"ZUNO VEHICLE DATA",
+vehicleData
 );
 
 
-const res = await fetch(
-"/api/sbi/4w/full-quote",
+
+console.log(
+"RC DETAILS",
+rcDetails
+);
+
+
+
+// =======================
+// CALL ZUNO QUOTE
+// =======================
+
+
+const res =
+await fetch(
+"/api/zuno/4w/quote",
 {
 
 method:"POST",
@@ -519,36 +881,82 @@ headers:{
 
 },
 
-body:JSON.stringify(payload)
+body:
+JSON.stringify({
+
+vehicleData,
+
+rcDetails
+
+})
 
 }
 
 );
 
 
+
 const data =
 await res.json();
 
 
+
 console.log(
-"SBI QUOTE RESPONSE",
+"ZUNO QUOTE RESPONSE",
 data
 );
 
 
-// after quote success
+
+// SUCCESS
+
+
+if(data.success){
+
+
+localStorage.setItem(
+
+"selectedQuote",
+
+JSON.stringify(data.quote)
+
+);
+
+
 
 router.push(
+
 "/carinsurance/carinsurance3"
+
 );
+
+
+}
+
+else{
+
+
+alert(
+
+data.message ||
+
+"ZUNO Quote Failed"
+
+);
+
+
+}
 
 
 }}
 
 >
+
 View prices
+
 </button>
-          )}
+
+)}
 
           <p className={styles.terms}>
             By clicking on 'View prices', you agree to our

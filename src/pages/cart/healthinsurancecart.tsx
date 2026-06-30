@@ -6,7 +6,9 @@ import styles from "@/styles/pages/cart/healthinsurancecart.module.css";
 
 import Image from "next/image";
 
-import careLogo from "@/assets/liclogo.png";
+import zunoLogo from "@/assets/insurance/zuno.png";
+import licLogo from "@/assets/insurance/liclogo.png";
+import sbiLogo from "@/assets/insurance/sbi.png";
 
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
@@ -32,7 +34,38 @@ useState("1");
 const [loading,setLoading] =
 useState(false);
 
+const getCompanyLogo = (company:string)=>{
 
+
+const name =
+company?.toLowerCase();
+
+
+if(name?.includes("zuno")){
+
+return zunoLogo;
+
+}
+
+
+if(name?.includes("lic")){
+
+return licLogo;
+
+}
+
+
+if(name?.includes("sbi")){
+
+return sbiLogo;
+
+}
+
+
+return zunoLogo;
+
+
+};
 
 // =============================
 // GET PLAN FROM QUERY
@@ -111,13 +144,26 @@ plan?.sumInsured ||
 "500000";
 
 
+const formattedPremium =
+Math.round(Number(premium));
+
 
 const totalPremium =
-Number(premium) * Number(selectedPeriod);
+Math.round(
+Number(premium) * Number(selectedPeriod)
+);
 
 
 
+const companyName =
 
+plan?.company ||
+
+plan?.insurer ||
+
+plan?.rawData?.company ||
+
+"Zuno";
 // =============================
 // FULL QUOTE API
 // =============================
@@ -287,9 +333,9 @@ return (
 
 <Image
 
-src={careLogo}
+src={getCompanyLogo(companyName)}
 
-alt="Care Logo"
+alt={companyName}
 
 className={styles.logo}
 
@@ -303,8 +349,17 @@ className={styles.logo}
 <h3>
 
 {
+companyName
+}
+
+{
+" "
+}
+
+{
 plan?.planName ||
-"Zuno Health"
+plan?.productVariant ||
+"Health Plan"
 }
 
 </h3>
@@ -436,7 +491,7 @@ readOnly
 
 <span>
 
-1 Year @ ₹{premium}
+1 Year @ ₹{formattedPremium}
 
 </span>
 
@@ -476,7 +531,6 @@ selectedPeriod==="2"
 readOnly
 
 />
-
 
 <span>
 
@@ -525,7 +579,7 @@ readOnly
 
 <span>
 
-3 Years @ ₹{Number(premium) * 3}
+3 Years @ ₹{Math.round(Number(premium) * 3)}
 
 </span>
 
@@ -671,26 +725,24 @@ View add-ons
 
 
 
-
 <div className={styles.totalRow}>
 
 
 <span>
 
-Total premium ₹{totalPremium}
+Total premium
 
 </span>
 
 
 <strong>
 
-₹{premium}
+₹{totalPremium}
 
 </strong>
 
 
 </div>
-
 
 
 

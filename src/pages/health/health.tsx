@@ -18,7 +18,8 @@ const Health = () => {
   const router = useRouter();
 
   const [step, setStep] = useState(1);
-
+const [loggedUser,setLoggedUser] =
+useState<any>(null);
   const [gender, setGender] = useState("M");
 
   const [members, setMembers] = useState<any[]>([]);
@@ -75,7 +76,59 @@ const diseases = [
   const getMemberImage = (member?: any) => {
     return member?.image || (gender === "F" ? womanicon : manicon);
   };
+useEffect(()=>{
 
+
+const saved =
+localStorage.getItem("user");
+
+
+if(
+saved &&
+saved !== "undefined"
+){
+
+const user =
+JSON.parse(saved);
+
+
+console.log(
+"LOGIN USER FOUND",
+user
+);
+
+
+setLoggedUser(user);
+
+
+// auto fill
+
+setFullName(
+user.name || ""
+);
+
+
+setEmail(
+user.email || ""
+);
+
+
+setMobile(
+user.mobile || ""
+);
+
+
+// skip OTP validation
+
+setMobileVerified(true);
+
+setEmailVerified(true);
+
+
+}
+
+
+},[]);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -128,108 +181,108 @@ const diseases = [
     return data;
   };
 
-  // const sendMobileOtp = async () => {
-  //   if (!/^[6-9]\d{9}$/.test(mobile)) {
-  //     alert("Enter valid mobile");
-  //     return;
-  //   }
+  const sendMobileOtp = async () => {
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+      alert("Enter valid mobile");
+      return;
+    }
 
-  //   try {
-  //     setOtpLoading("mobile-send");
-  //     await postJson("/api/auth/send-whatsapp-otp", { mobile });
-  //     setMobileOtpSent(true);
-  //     setOtpMessage("Mobile OTP sent on WhatsApp");
-  //   } catch (error: any) {
-  //     alert(error.message || "Could not send mobile OTP");
-  //   } finally {
-  //     setOtpLoading("");
-  //   }
-  // };
-const sendMobileOtp = async () => {
+    try {
+      setOtpLoading("mobile-send");
+      await postJson("/api/auth/send-whatsapp-otp", { mobile });
+      setMobileOtpSent(true);
+      setOtpMessage("Mobile OTP sent on WhatsApp");
+    } catch (error: any) {
+      alert(error.message || "Could not send mobile OTP");
+    } finally {
+      setOtpLoading("");
+    }
+  };
+// const sendMobileOtp = async () => {
 
-if (!/^[6-9]\d{9}$/.test(mobile)) {
+// if (!/^[6-9]\d{9}$/.test(mobile)) {
 
-alert("Enter valid mobile");
+// alert("Enter valid mobile");
 
-return;
+// return;
 
-}
-
-
-setOtpLoading("mobile-send");
+// }
 
 
-// static OTP mode
-console.log("STATIC WHATSAPP OTP : 123456");
+// setOtpLoading("mobile-send");
 
 
-setTimeout(()=>{
+// // static OTP mode
+// console.log("STATIC WHATSAPP OTP : 123456");
 
 
-setMobileOtpSent(true);
+// setTimeout(()=>{
 
 
-setOtpMessage(
-"Use OTP 123456"
-);
+// setMobileOtpSent(true);
 
 
-setOtpLoading("");
+// setOtpMessage(
+// "Use OTP 123456"
+// );
 
 
-},500);
+// setOtpLoading("");
 
 
-};
-  // const verifyMobileOtp = async () => {
-  //   if (!mobileOtp.trim()) {
-  //     alert("Enter mobile OTP");
-  //     return;
-  //   }
+// },500);
 
-  //   try {
-  //     setOtpLoading("mobile-verify");
-  //     await postJson("/api/auth/verify-whatsapp-otp", {
-  //       mobile,
-  //       otp: mobileOtp,
-  //       fullName,
-  //       email,
-  //     });
-  //     setMobileVerified(true);
-  //     setOtpMessage("Mobile verified");
-  //   } catch (error: any) {
-  //     alert(error.message || "Could not verify mobile OTP");
-  //   } finally {
-  //     setOtpLoading("");
-  //   }
-  // };
 
+// };
   const verifyMobileOtp = async () => {
+    if (!mobileOtp.trim()) {
+      alert("Enter mobile OTP");
+      return;
+    }
 
-if(!mobileOtp.trim()){
+    try {
+      setOtpLoading("mobile-verify");
+      await postJson("/api/auth/verify-whatsapp-otp", {
+        mobile,
+        otp: mobileOtp,
+        fullName,
+        email,
+      });
+      setMobileVerified(true);
+      setOtpMessage("Mobile verified");
+    } catch (error: any) {
+      alert(error.message || "Could not verify mobile OTP");
+    } finally {
+      setOtpLoading("");
+    }
+  };
 
-alert("Enter mobile OTP");
+//   const verifyMobileOtp = async () => {
 
-return;
+// if(!mobileOtp.trim()){
 
-}
+// alert("Enter mobile OTP");
 
+// return;
 
-if(mobileOtp !== "123456"){
-
-alert("Invalid OTP");
-
-return;
-
-}
+// }
 
 
-setMobileVerified(true);
+// if(mobileOtp !== "123456"){
 
-setOtpMessage("Mobile verified");
+// alert("Invalid OTP");
+
+// return;
+
+// }
 
 
-};
+// setMobileVerified(true);
+
+// setOtpMessage("Mobile verified");
+
+
+// };
   const sendEmailOtp = async () => {
     if (!mobileVerified) {
       alert("Verify mobile first");
@@ -258,29 +311,114 @@ setOtpMessage("Mobile verified");
     }
   };
 
-  const verifyEmailOtp = async () => {
-    if (!emailOtp.trim()) {
-      alert("Enter email OTP");
-      return;
-    }
+ const verifyEmailOtp = async () => {
 
-    try {
-      setOtpLoading("email-verify");
-      await postJson("/api/auth/verify-email-otp", {
-        mobile,
-        email,
-        otp: emailOtp,
-        fullName,
-      });
-      setEmailVerified(true);
-      setOtpMessage("Email verified");
-    } catch (error: any) {
-      alert(error.message || "Could not verify email OTP");
-    } finally {
-      setOtpLoading("");
-    }
-  };
 
+if(!emailOtp.trim()){
+
+alert("Enter email OTP");
+
+return;
+
+}
+
+
+try{
+
+
+setOtpLoading("email-verify");
+
+
+await postJson("/api/auth/verify-email-otp",{
+
+mobile,
+email,
+otp:emailOtp,
+fullName,
+
+});
+
+
+// ===============================
+// CREATE USER LOGIN
+// ===============================
+
+
+const loginRes = await fetch(
+"/api/users/health-login",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+name:fullName,
+email,
+mobile
+
+})
+
+});
+
+
+const loginData = await loginRes.json();
+
+
+if(!loginData.success){
+
+alert(loginData.message);
+
+return;
+
+}
+
+
+// save login user
+
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(loginData.user)
+
+);
+
+
+// update navbar instantly
+
+window.dispatchEvent(
+
+new Event("userLogin")
+
+);
+
+
+setEmailVerified(true);
+
+setOtpMessage("Email verified");
+
+
+}
+catch(error:any){
+
+alert(
+error.message ||
+"Could not verify email OTP"
+);
+
+}
+finally{
+
+setOtpLoading("");
+
+}
+
+
+};
   const renderMembers = () => {
     return (
       <div className={styles.step1MembersList}>
@@ -743,7 +881,23 @@ return;
 }
 
 
+// if already login skip OTP screen
+
+if(loggedUser){
+
+
+setStep(4);
+
+
+}
+
+else{
+
+
 setStep(3);
+
+
+}
 
 
 }}
@@ -964,7 +1118,23 @@ step === 4 && (
 
 <div
 className={styles.medicalBack}
-onClick={()=>setStep(3)}
+onClick={()=>{
+
+
+if(loggedUser){
+
+setStep(2);
+
+}
+
+else{
+
+setStep(3);
+
+}
+
+
+}}
 >
 ‹
 </div>
