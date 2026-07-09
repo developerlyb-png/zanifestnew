@@ -1,8 +1,8 @@
+// src/pages/CommercialVehicle/CommercialVehicle5.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/pages/CommercialVehicle/CommercialVehicle5.module.css";
-
 import { FiPhoneCall } from "react-icons/fi";
 import { FaCircle, FaFilter, FaPlus } from "react-icons/fa";
 import { RiArrowRightWideLine } from "react-icons/ri";
@@ -11,30 +11,25 @@ import agent from "@/assets/health/manicon.webp";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import zunoLogo from "@/assets/CommercialVehicle/zuno.png";
-import sbiLogo from "@/assets/CommercialVehicle/sbi.png";
-import licLogo from "@/assets/CommercialVehicle/liclogo.png";
 import { IoIosCloseCircle } from "react-icons/io";
-import { useRouter } from "next/navigation"; // ✅ Router import
+import { useRouter } from "next/navigation";
 
+const inr = (n: any) =>
+  n == null || isNaN(Number(n))
+    ? "---"
+    : Math.round(Number(n)).toLocaleString("en-IN");
 
 const CommercialVehicle5: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [vehicleData,setVehicleData] = useState<any>(null);
+  const [vehicleData, setVehicleData] = useState<any>(null);
 
-const [quote,setQuote] = useState<any>(null);
-const [plans,setPlans] = useState<any[]>([
-{
-company:"ZUNO",
-logo:zunoLogo,
-type:"Package Policy",
-premium:"4,497",
-idv:"29,980",
-claim:"98%"
-}
-]);
-const [loading,setLoading] = useState(false);
-  const router = useRouter(); // ✅ Router init
+  const [quote, setQuote] = useState<any>(null); // Zuno raw response
+  const [quotePayload, setQuotePayload] = useState<any>(null); // payload the API built
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  const router = useRouter();
 
   useEffect(() => {
     const checkViewport = () => {
@@ -48,139 +43,94 @@ const [loading,setLoading] = useState(false);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
-useEffect(()=>{
 
-const saved =
-localStorage.getItem(
-"cvVehicle"
-);
+  useEffect(() => {
+    const saved = localStorage.getItem("cvVehicle");
+    if (saved) {
+      const data = JSON.parse(saved);
+      console.log("CV PAGE5 DATA", data);
+      setVehicleData(data);
+      getQuote(data);
+    }
+  }, []);
 
+  const getQuote = async (data: any) => {
+    try {
+      setLoading(true);
+      setError("");
 
-if(saved){
+      // RC-derived classification saved by CommercialVehicle1
+      const rcSaved = localStorage.getItem("cvRcDetails");
+      const rc = rcSaved ? JSON.parse(rcSaved) : {};
 
-const data =
-JSON.parse(saved);
+      const res = await axios.post("/api/zuno/cv/quick-quote", {
+        claimInLastYearPolicy: "N",
+        yearOfPurchase: data.yearOfPurchase,
+        make: data.make,
+        model: data.model,
+        varient: data.varient,
+        rtoDetails: data.rtoDetails,
+        // RC classification for correct rating (GCV vs PCV)
+        vehicleClass: rc.vehicleClass,
+        vehicleCategory: rc.vehicleCategory,
+        grossWeight: rc.grossWeight,
+        seatingCapacity: rc.seatingCapacity,
+        registrationDate: rc.registrationDate,
+      });
+      console.log("QUOTE RESPONSE", res.data);
 
+      const apiQuote = res.data.data; // Zuno raw: { status, requestId, policyData, premiumDetails... }
+      if (!res.data.success || apiQuote?.status === "error") {
+        setError("Could not fetch a quote. Please try again.");
+        return;
+      }
+      setQuote(apiQuote);
+      setQuotePayload(res.data.payloadUsed || null); // full payload built by the API route
+    } catch (error: any) {
+      console.log("QUOTE ERROR", error.response?.data || error);
+      setError("Could not fetch a quote. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-console.log(
-"CV PAGE5 DATA",
-data
-);
-
-
-setVehicleData(data);
-
-
-getQuote(data);
-
-}
-
-
-},[]);
-const getQuote = async(data:any)=>{
-
-try{
-
-setLoading(true);
-
-
-const res =
-await axios.post(
-"/api/zuno/cv/quick-quote",
-{
-
-claimInLastYearPolicy:"N",
-
-yearOfPurchase:
-data.yearOfPurchase,
-
-make:
-data.make,
-
-model:
-data.model,
-
-varient:
-data.varient,
-
-
-rtoDetails:
-data.rtoDetails
-
-}
-
-);
-
-
-
-console.log(
-"QUOTE RESPONSE",
-res.data
-);
-
-
-const apiQuote = res.data.data;
-
-setQuote(apiQuote);
-
-
-setPlans([
-
-{
-company:"ZUNO",
-
-logo:zunoLogo,
-
-type:"Package Policy",
-
-premium:
-apiQuote?.totalGrossPremiuim || "4,497",
-
-idv:
-apiQuote?.idv || "29,980",
-
-claim:"98%"
-
-}
-
-]);
-
-}
-catch(error:any){
-
-
-console.log(
-"QUOTE ERROR",
-error.response?.data || error
-);
-
-
-}
-finally{
-
-setLoading(false);
-
-}
-
-};
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
-  // ✅ Function to navigate
-  const goToNextPage = () => {
-    router.push("CommercialVehicle6");
+  // Real numbers from the quick-quote response
+  const premium = quote?.premiumDetails; // { netTotalPremium, gst, grossTotalPremium, ... }
+  const idv =
+    quotePayload?.idv ??
+    quote?.contractDetails?.insuredObject?.idvValue ??
+    null;
+
+  // Save everything CV6 needs, then navigate
+  const selectPlan = () => {
+    if (!quote || !premium) {
+      alert("Quote not loaded yet. Please wait a moment.");
+      return;
+    }
+    localStorage.setItem(
+      "cvSelectedQuote",
+      JSON.stringify({
+        requestId: quote.requestId,
+        premiumDetails: premium,
+        idv,
+      })
+    );
+    if (quotePayload) {
+      localStorage.setItem("cvQuotePayload", JSON.stringify(quotePayload));
+    }
+    router.push("/CommercialVehicle/CommercialVehicle6");
   };
 
   return (
     <>
       <Navbar />
-
       <div className={styles.container}>
-        {/* 🔹 Sidebar Backdrop (only in mobile) */}
         {isMobile && sidebarOpen && (
           <div className={styles.backdrop} onClick={closeSidebar}></div>
         )}
-
         <div className={styles.wrapper}>
           {/* ===== LEFT COLUMN (Sidebar) ===== */}
           <div
@@ -198,39 +148,45 @@ setLoading(false);
                 <div className={styles.skoda}>
                   <div>
                     <h3>
-{vehicleData?.make} {vehicleData?.model}
-</h3>
-
-<p>
-{vehicleData?.vehicleNumber}
- |
-{vehicleData?.yearOfPurchase}
- |
-{vehicleData?.varient}
-</p>
+                      {vehicleData?.make} {vehicleData?.model}
+                    </h3>
+                    <p>
+                      {vehicleData?.vehicleNumber} |{" "}
+                      {vehicleData?.yearOfPurchase} | {vehicleData?.varient}
+                    </p>
                   </div>
                   <div>
                     <p>
-                      <span className={styles.editCar}>Edit Car</span>
+                      <span
+                        className={styles.editCar}
+                        onClick={() =>
+                          router.push("/CommercialVehicle/CommercialVehicle1")
+                        }
+                      >
+                        Edit Vehicle
+                      </span>
                     </p>
                   </div>
                 </div>
                 <hr />
                 <div className={styles.detailRow}>
                   IDV Cover (Insured Value)
-                  <span className={styles.selectIdv}>Select IDV</span>
+                  <span className={styles.selectIdv}>
+                    {idv ? `₹ ${inr(idv)}` : "Select IDV"}
+                  </span>
                   <FaCircle className={styles.circle} />
                 </div>
                 <div className={styles.detailRow}>
-                  <p>No Claim Bonus (NCB)</p>
+                  <p>RTO</p>
                   <p>
-                    25% <RiArrowRightWideLine className={styles.rightArrow} />
+                    {vehicleData?.rtoDetails?.rtoLocationName || "--"}{" "}
+                    <RiArrowRightWideLine className={styles.rightArrow} />
                   </p>
                 </div>
                 <div className={styles.detailRow}>
-                  <p>OD Expiry Date</p>
+                  <p>Policy Type</p>
                   <p>
-                    13-Jun-2025{" "}
+                    Package Policy{" "}
                     <RiArrowRightWideLine className={styles.rightArrow} />
                   </p>
                 </div>
@@ -263,7 +219,6 @@ setLoading(false);
                   </label>
                   <p className={styles.seeAll}>See all ▼</p>
                 </div>
-
                 <div className={styles.filterSection}>
                   <h5>Sort by</h5>
                   <FaPlus className={styles.plusIcon} />
@@ -282,133 +237,79 @@ setLoading(false);
 
           {/* ===== MIDDLE COLUMN ===== */}
           <div className={styles.middle}>
-            {/* 🔹 Mobile Header with Toggle */}
             {isMobile && (
               <div className={styles.mobileHeader}>
-                <button className={styles.sidebarToggle} onClick={toggleSidebar}>
+                <button
+                  className={styles.sidebarToggle}
+                  onClick={toggleSidebar}
+                >
                   {sidebarOpen ? <IoIosCloseCircle /> : <FaFilter />}
                 </button>
               </div>
             )}
 
             <h2 className={styles.heading}>
-{plans.length} Package plans
-</h2>
+              {quote ? "1 Package plan" : loading ? "Fetching plans..." : "Plans"}
+            </h2>
+            <p className={styles.subtext}>
+              cover damages caused to your vehicle as well as third party
+            </p>
 
-<p className={styles.subtext}>
-cover damages caused to your vehicle as well as third party
-</p>
+            <div className={styles.cardGroup}>
+              {loading && <p>Loading quotes...</p>}
 
+              {!loading && error && (
+                <div>
+                  <p>{error}</p>
+                  <button
+                    className={styles.priceBtn}
+                    onClick={() => vehicleData && getQuote(vehicleData)}
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
 
-<div className={styles.cardGroup}>
-
-
-{loading && (
-
-<p>Loading quotes...</p>
-
-)}
-
-
-{plans.map((plan,index)=>(
-
-
-<div 
-className={styles.packageCard}
-key={index}
->
-
-
-<div className={styles.tagRow}>
-
-<span className={styles.tagSuccess}>
-Buy Without Inspection
-</span>
-
-</div>
-
-
-<div className={styles.packageMain}>
-
-
-<Image
-
-src={plan.logo}
-
-alt={plan.company}
-
-height={90}
-
-width={100}
-
-/>
-
-
-<div className={styles.packageInfo}>
-
-
-<p>
-
-IDV Cover <br/>
-
-<span>
-₹ {plan.idv || "---"}
-</span>
-
-</p>
-
-
-<p>
-
-Claims Settled <br/>
-
-<span>
-{plan.claim}
-</span>
-
-</p>
-
-
-</div>
-
-
-<button
-
-className={styles.priceBtn}
-
-onClick={goToNextPage}
-
->
-
-₹ {plan.premium || "---"} →
-
-</button>
-
-
-</div>
-
-
-<div className={styles.packageFooter}>
-
-<span></span>
-
-<span>
-
-<a href="#">View Coverage</a>
-
-</span>
-
-
-</div>
-
-
-</div>
-
-
-))}
-
-
-</div>
+              {!loading && quote && premium && (
+                <div className={styles.packageCard}>
+                  <div className={styles.tagRow}>
+                    <span className={styles.tagSuccess}>
+                      Buy Without Inspection
+                    </span>
+                  </div>
+                  <div className={styles.packageMain}>
+                    <Image
+                      src={zunoLogo}
+                      alt="Zuno General Insurance"
+                      height={90}
+                      width={100}
+                    />
+                    <div className={styles.packageInfo}>
+                      <p>
+                        IDV Cover <br />
+                        <span>₹ {inr(idv)}</span>
+                      </p>
+                      <p>
+                        Net + GST <br />
+                        <span>
+                          ₹ {inr(premium.netTotalPremium)} + ₹{" "}
+                          {inr(premium.gst)}
+                        </span>
+                      </p>
+                    </div>
+                    <button className={styles.priceBtn} onClick={selectPlan}>
+                      ₹ {inr(premium.grossTotalPremium)} →
+                    </button>
+                  </div>
+                  <div className={styles.packageFooter}>
+                    <span></span>
+                    <span>
+                      <a href="#">View Coverage</a>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ===== RIGHT COLUMN ===== */}
@@ -430,7 +331,6 @@ onClick={goToNextPage}
                 </div>
               </div>
             </div>
-
             <div className={styles.callBox}>
               <div className={styles.callContent}>
                 <div className={styles.callText}>
@@ -448,7 +348,6 @@ onClick={goToNextPage}
           </div>
         </div>
       </div>
-
       <Footer />
     </>
   );

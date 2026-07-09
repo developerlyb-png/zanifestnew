@@ -903,43 +903,63 @@ localStorage.setItem(
 
 
 // update selected plan also
-
+// update selected plan also
 const updatedPlan = {
-
- ...selectedPlan,
-
- zunoQuote:
- quoteData.data,
-
- customer:{
-
- fullName,
- mobile,
- email
-
- }
-
+  ...selectedPlan,
+  zunoQuote: quoteData.data,
+  customer: { fullName, mobile, email },
 };
 
-
 localStorage.setItem(
- "selectedInsurancePlan",
- JSON.stringify(updatedPlan)
+  "selectedInsurancePlan",
+  JSON.stringify(updatedPlan)
 );
 
+// ======================
+// CALL REAL ZUNO PAYMENT
+// ======================
 
+const quoteNo =
+  quoteData.data?.policyLevelDetails?.quoteNo;
 
-alert(
- "Full Quote Generated Successfully"
+const quoteOptionNo =
+  quoteData.data?.policyLevelDetails?.quoteOptionNo;
+
+console.log("PAYMENT IDS >>>", { quoteNo, quoteOptionNo });
+const payRes = await fetch(
+  "/api/sbi/2w/online-payment",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  body: JSON.stringify({
+    transactionId: quoteNo,
+    amount: selectedPlan?.premium,
+    customer:{
+        fullName,
+        mobile,
+        email
+    }
+})
+  }
 );
+const payData = await payRes.json();
 
-window.location.href =
-"/payment-success";
+console.log(
+  "ZUNO PAYMENT RESPONSE >>>",
+  JSON.stringify(payData, null, 2)
+);
 
 setLoading(false);
 
-
-
+// We don't know Zuno's response shape yet — inspect the log first.
+if (payData.success && payData.data?.data?.paymentLink) {
+    window.location.href = payData.data.data.paymentLink;
+} else {
+    console.log("PAYMENT RESPONSE", payData);
+    alert("Payment link not found");
+}
 }
 
 catch(error){

@@ -1,1310 +1,352 @@
-import type {
- NextApiRequest,
- NextApiResponse
-} from "next";
-
+import type { NextApiRequest, NextApiResponse } from "next";
 
 // ================= TOKEN =================
+async function getZunoToken() {
+  const auth = Buffer.from(
+    `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
+  ).toString("base64");
 
-async function getZunoToken(){
+  const response = await fetch(`${process.env.ZUNO_BASE_URL}/oauth2/token`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
 
- const auth =
- Buffer.from(
- `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
- ).toString("base64");
-
-
- const response =
- await fetch(
- `${process.env.ZUNO_BASE_URL}/oauth2/token`,
- {
-  method:"POST",
-
-  headers:{
-
-   Authorization:`Basic ${auth}`,
-
-   "Content-Type":
-   "application/x-www-form-urlencoded",
-
-   "x-api-key":
-   process.env.ZUNO_X_API_KEY!
-
-  },
-
-  body:
-  "grant_type=client_credentials"
-
- }
- );
-
-
- const data =
- await response.json();
-
-
- return data.access_token;
-
+  const data = await response.json();
+  return data.access_token;
 }
 
-
-
-// ================= DATE =================
-
-function getPolicyDate(){
-
-const d =
-new Date();
-
-return d
-.toISOString()
-.split("T")[0];
-
+// ================= DATE HELPERS =================
+function todayStr() {
+  return new Date().toISOString().split("T")[0];
+}
+function addYears(dateStr: string, years: number, minusOneDay = false) {
+  const d = new Date(dateStr);
+  d.setFullYear(d.getFullYear() + years);
+  if (minusOneDay) d.setDate(d.getDate() - 1);
+  return d.toISOString().split("T")[0];
 }
 
-function getPolicyEndDate(startDate:string){
-
-const d = new Date(startDate);
-
-d.setFullYear(
- d.getFullYear()+1
-);
-
-d.setDate(
- d.getDate()-1
-);
-
-return d
-.toISOString()
-.split("T")[0];
-
+// ================= REGISTRATION PARSE =================
+function parseReg(vehicle: any) {
+  const reg = (vehicle.registrationNumber || "")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toUpperCase();
+  const m = reg.match(/^([A-Z]{2})([0-9]{1,2})([A-Z]{1,3})([0-9]{1,4})$/);
+  if (!m) {
+    return {
+      stateLetters: "",
+      districtCode: "",
+      seriesNumber: "",
+      regNumber: "",
+      spaced: vehicle.registrationNumber || "",
+    };
+  }
+  return {
+    stateLetters: m[1],
+    districtCode: m[2],
+    seriesNumber: m[3],
+    regNumber: m[4],
+    spaced: `${m[1]} ${m[2]} ${m[3]} ${m[4]}`,
+  };
 }
 
-// ================= REGISTRATION =================
+// ================= BUILD FULL-QUOTE PAYLOAD =================
+function buildPayload(ratingData: any, body: any) {
+  const vehicle = body.vehicle || {};
+  const customer = body.customer || {};
+  const rto = vehicle.rto || {};
 
-function getRegistration(vehicle:any){
+  const policy = ratingData.policyData || {};
+  const ratingContract = ratingData.contractDetails?.[0] || {};
+  const io = ratingContract.insuredObject || {};
 
+  const isNew = vehicle.isNewBike === true || vehicle.isNewBike === "true";
 
-const reg =
-(
-vehicle.registrationNumber ||
-""
-)
-.replace(/[^a-zA-Z0-9]/g,"")
-.toUpperCase();
+  // Dates
+  const startDate = policy.policyStartDate || todayStr();
+  const endDate =
+    ratingData.contractDetails?.[0]?.contractEndDate ||
+    addYears(startDate, 1, true);
 
+  const reg = parseReg(vehicle);
 
+  // Vehicle age (consistent with year of manufacture)
+  const vehAge = isNew
+    ? "0"
+    : String(
+        new Date().getFullYear() -
+          Number(vehicle.year || new Date().getFullYear())
+      );
 
-const match =
-reg.match(
-/^([A-Z]{2})([0-9]{2})([A-Z]{1,3})([0-9]{3,5})$/
-);
+  // Consistent registration / first-purchase date
+  const regDate =
+    io.dateoffirstpurchaseorregistration ||
+    (isNew ? `${vehicle.year}-06-05` : `${vehicle.year}-06-01`);
 
+  // Previous policy (rollover only)
+  const prevEnd = addYears(startDate, 0, true); // day before start
+  const prevStart = addYears(prevEnd, -1);
+  prevStart; // (kept for clarity)
 
+  // ---- Zuno's exact ContractDetails template ----
+  const ContractDetails = [
+    {
+      contract: "Own Damage Contract",
+      coverage: {
+        coverage: "Own Damage Coverage",
+        deductible: [
+          "Own Damage Basis Deductible",
+          "Voluntary Deductible",
+        ],
+        voluntaryDeductible: "0",
+        discount: [
+          "Auto Mobile Association Discount",
+          "AntiTheft Discount",
+          "No Claim Bonus Discount",
+        ],
+        subCoverage: [
+          {
+            subCoverage: "Own Damage Basic",
+            limit: "Own Damage Basic Limit",
+          },
+        ],
+      },
+    },
+    {
+      contract: "PA Compulsary Contract",
+      coverage: {
+        coverage: "PA Owner Driver Coverage",
+        subCoverage: {
+          subCoverage: "PA Owner Driver",
+          limit: "PA Owner Driver Limit",
+          sumInsured: "1500000",
+        },
+      },
+    },
+    {
+      contract: "Third Party Multiyear Contract",
+      coverage: {
+        coverage: "Legal Liability to Third Party Coverage",
+        deductible: "TP Deductible",
+        discount: "Third Party Property Damage Discount",
+        subCoverage: [
+          {
+            subCoverage: "Third Party Basic Sub Coverage",
+            limit: "Third Party Property Damage Limit",
+            thirdPartyPropertyDamageLimit: "6000",
+          },
+        ],
+      },
+    },
+  ];
 
-if(!match){
+  return {
+    source: "",
+    branch: rto.rtocityordistrict || io.idvCity || "AHMEDABAD",
+    subIntermediaryCategory: "",
+    subIntermediaryCode: "",
+    subIntermediaryName: "",
+    subIntermediaryPhoneorEmail: "",
+    pospPanAadharNo: "",
+    businessSourceUniqueId: "",
+    accountNo: "",
+    agentName: "",
+    agentEmail:
+      process.env.ZUNO_AGENT_EMAIL || "shivakumar.bale@qualitykiosk.com",
+    float: "",
+    saleManagerCode: process.env.ZUNO_SALE_MANAGER_CODE || "26058",
+    saleManagerName: process.env.ZUNO_SALE_MANAGER_NAME || "Rahul B",
+    mainApplicantField: "1",
 
+    typeOfBusiness: isNew ? "New" : "Rollover",
+    policyType: "Package Policy",
+    subPolicyType: "",
 
-return {
+    policyStartDate: startDate,
+    policyStartTime: "000000",
+    policyEndDay: endDate,
+    policyEndTime: "235900",
 
+    previousInsurancePolicy: isNew ? "0" : "1",
+    policyHolderGender: "Male",
+    policyHolderOccupation: "Low to Medium",
+    kindOfPolicy: "Package With AddOn",
 
-stateCode:
-vehicle.rto?.statecode || "",
+    previousInsuranceCompanyName: isNew ? "" : "National Insurance Co. Ltd.",
+    previousInsuranceCompanyAddress: isNew ? "" : "Mumbai",
+    previousPolicyStartDate: isNew ? "" : prevStart,
+    previousPolicyEndDate: isNew ? "" : prevEnd,
+    previousPolicyNo: isNew ? "" : "PREV000001",
+    natureOfLoss: isNew ? "" : "Liability/Third Party",
+    previousClaimMade: isNew ? "" : "N",
 
+    policyTenure: "1",
 
-districtCode:
-"",
+    make: vehicle.make,
+    model: vehicle.model,
+    variant: vehicle.variant,
+    idvCity: io.idvCity || rto.idvcity || "AHMEDABAD",
+    cubicCapacity:
+      io.cubiccapacity || String(vehicle.capacity || "").replace(".0", "").replace(".00", ""),
+    licencedCarryingCapacity: String(vehicle.seatingCapacity || "2"),
+    validLicenceNo: "Y",
+    fuelType: vehicle.fuelType || "Petrol",
+    newOrUsed: isNew ? "New" : "Used",
+    yearOfManufacture: String(vehicle.year),
+    registrationDate: regDate,
+    vehicalAge: vehAge, // NOTE: Zuno's spelling (vehicalAge)
 
+    engineNumber: vehicle.engineNumber,
+    chassisNumber: vehicle.chassisNumber,
+    fibreGlassFuelTank: "Y",
+    bodystyleDescription: io.bodystyleDescription || "",
+    bodyType: "",
+    transmissionType: "",
+    validDrivingLicense: "",
+    handicapped: "N",
+    certifiedVintageCar: "N",
 
-rtoCode:
-vehicle.rto?.rtolocation || "",
+    automobileAssociationMember: "Y",
+    antiTheftDeviceInstalled: "Y",
+    typeOfDeviceInstalled: "Burglary Alarm",
+    automobileAssociationMembershipNumber: "454545",
+    automobileAssociationMembershipExpiryDate: addYears(todayStr(), 1),
 
+    // RTO — from master data, state-aware (NOT hardcoded Gujarat)
+    stateCode: io.rtoStateNameandCode || rto.statecode || "06",
+    districtCode: reg.districtCode || rto.districtcode || "01",
+    vehicleSeriesNumber: reg.seriesNumber,
+    registrationNumber: reg.regNumber,
+    vehicleRegistrationNumber: reg.spaced,
+    rtoLocationName: io.rtoLocationName || rto.rtolocation || `${reg.stateLetters}-${reg.districtCode}`,
+    rtoState: rto.rtostate || reg.stateLetters,
+    rtoCityOrDistrict: io.rtoCityorDistrict || rto.rtocityordistrict || "Ahmedabad",
+    clusterZone: rto.clusterzone || "Cluster 3",
+    carZone: rto.carzone || "A",
+    rtoZone: io.rtoZone || rto.rtozone || rto.statecode || "06",
 
-vehicleSeriesNumber:
-"",
+    transferOfNCB: isNew ? "N" : "N",
+    applicableNCB: "0",
 
+    originalIDVValue: io.systemIdv || vehicle.idv,
+    financeType: "",
+    financierName: "",
+    branchNameAndAddress: "",
 
-registrationNumber:
-"",
+    salutation: "Mr.",
+    firstName: customer.fullName,
+    middleName: "",
+    lastName: "Kumar",
+    gender: "Male",
+    maritalStatus: "Single",
+    dateOfBirth: "1995-06-19",
+    nationality: "IN",
 
+    currentAddressLine1: "187/A",
+    currentAddressLine2: "Tent Road",
+    currentAddressLine3: "RM Nagara",
+    currentCountry: "IN",
+    pincode: "560016",
+    currentCity: "Bengaluru",
+    currentState: "13",
+    street: "Tent Road",
+    area: "RM Nagara",
+    location: "ShivajiNagar",
+    pan: "",
+    gstNo: "",
+    aadharNo: "",
 
-vehicleRegistrationNumber:
-vehicle.registrationNumber || ""
+    mobileNumber: String(customer.mobile || "").slice(-10),
+    emailId: customer.email,
+    commissionContractID:
+      ratingData.commisionDetails?.commissionContractId || "1000014234",
+    occupation: "Salaried",
 
+    nomineeName: "Kumar",
+    relationshipWithApplicant: "Father",
+    other: "",
+    isNomineeMinor: "N",
+    nomineeDOB: "1994-05-25",
+    nomineeAge: "30",
+    guardianName: "",
 
-};
+    overrideAllowableDiscount: "N",
+    inspectionNumber: "",
+    policyNumber: "",
+    renewalstatus: isNew ? "New Policy" : "Rollover",
+    annualmileageofthecar: "10000",
+    breakininsurance: isNew ? "No Break" : "No Break",
+    typeofGrid: policy.typeofGrid || "GRID 1", // NOTE: space
+    staffCode: "",
 
+    driverDetails: {
+      nameofDriver: customer.fullName,
+      dateofBirth: "1995-06-19",
+      genderofTheDriver: "Male",
+      ageOfDriver: "30",
+      relationshipwithProposer: "SELF",
+      driverExperienceinyears: "5",
+      middleName: "",
+      lastName: "Kumar",
+    },
 
+    ContractDetails, // CAPITAL C — this was the killer bug
+  };
 }
 
-
-
-return {
-
-
-// Zuno state master code
-stateCode:
-vehicle.rto?.statecode || "",
-
-
-// 01,02,06 etc
-districtCode:
-match[2],
-
-
-// GJ-06, DL-01 etc
-rtoCode:
-`${match[1]}-${match[2]}`,
-
-
-vehicleSeriesNumber:
-match[3],
-
-
-registrationNumber:
-match[4],
-
-
-vehicleRegistrationNumber:
-reg
-
-
-};
-
-
-
-}
-// ================= PREVIOUS POLICY =================
-
-function getPreviousPolicy(
-vehicle:any,
-previousStartDate:string,
-previousEndDate:string
-){
-
-const isNew =
-vehicle.isNewBike === true ||
-vehicle.isNewBike === "true";
-
-
-if(isNew){
-
-return {
-
-previousInsurancePolicy:"0",
-previousInsuranceCompanyName:"",
-previousPolicyNo:"",
-previousPolicyStartDate:"",
-previousPolicyEndDate:""
-
-};
-
-}
-
-
-return {
-
-previousInsurancePolicy:"1",
-
-previousInsuranceCompanyName:
-"National Insurance Co. Ltd.",
-
-previousPolicyNo:
-"POL12345678",
-
-previousPolicyStartDate:
-previousStartDate,
-
-
-previousPolicyEndDate:
-previousEndDate
-
-};
-
-
-}
-
-
-
-// ================= CONTRACT =================
-
-// ================= CONTRACT =================
-
-// function buildContracts(
-// ratingData:any,
-// vehicle:any
-// ){
-
-
-// return (ratingData.contractDetails || [])
-// .map((item:any)=>{
-
-
-// const contract =
-// JSON.parse(JSON.stringify(item));
-
-
-// // keep contract name
-
-// contract.contract =
-// contract.salesProductTemplateId;
-
-
-// // ROOT LEVEL
-
-// contract.engineNumber =
-// vehicle.engineNumber;
-
-
-// contract.chassisNumber =
-// vehicle.chassisNumber;
-
-
-
-// // ======================
-// // FIX INSURED OBJECT ONLY
-// // ======================
-
-// if(contract.insuredObject){
-
-
-// contract.insuredObject.engineNumber =
-// vehicle.engineNumber;
-
-
-// contract.insuredObject.chassisNumber =
-// vehicle.chassisNumber;
-
-
-// // IMPORTANT KEEP MASTER
-
-// contract.insuredObject.make =
-// vehicle.make;
-
-
-// contract.insuredObject.model =
-// vehicle.model;
-
-
-// contract.insuredObject.variant =
-// vehicle.variant;
-
-
-// contract.insuredObject.fuelType =
-// vehicle.fuelType;
-
-
-// contract.insuredObject.systemIdv =
-// vehicle.idv;
-
-
-// contract.insuredObject.exshowroomPrice =
-// vehicle.exShowroomPrice;
-
-
-// contract.insuredObject.cubiccapacity =
-// vehicle.capacity;
-
-
-// contract.insuredObject.licencedCarryingcapacity =
-// vehicle.seatingCapacity;
-
-
-// }
-
-
-
-// // OD
-
-// if(
-// contract.salesProductTemplateId ===
-// "Own Damage Contract"
-// ){
-
-// contract.contractTenure="1";
-
-// contract.multiYear="1";
-
-// }
-
-
-
-// // TP
-
-// if(
-// contract.salesProductTemplateId ===
-// "Third Party Multiyear Contract"
-// ){
-
-// contract.contractTenure="1";
-
-// contract.multiYear="1";
-
-// }
-
-
-
-// // PA
-
-// if(
-// contract.salesProductTemplateId ===
-// "PA Compulsary Contract"
-// ){
-
-// contract.multiYear="1";
-
-// delete contract.contractTenure;
-
-// }
-
-
-// return contract;
-
-
-// });
-
-
-// }
-// ================= CONTRACT =================
-
-function buildContracts(
- ratingData:any,
- vehicle:any
-){
-
-return (ratingData.contractDetails || [])
-.map((item:any)=>{
-
-
-const contract =
-JSON.parse(JSON.stringify(item));
-
-
-// add required key
-
-contract.contract =
-contract.salesProductTemplateId;
-
-
-// DON'T REMOVE ANYTHING FROM RATING RESPONSE
-
-
-// update vehicle numbers only
-
-if(contract.insuredObject){
-
-
-contract.insuredObject.engineNumber =
-vehicle.engineNumber;
-
-
-contract.insuredObject.chassisNumber =
-vehicle.chassisNumber;
-
-
-// keep rating idv
-
-contract.insuredObject.systemIdv =
-contract.insuredObject.systemIdv;
-
-
-// keep original master values
-
-contract.insuredObject.make =
-contract.insuredObject.make;
-
-
-contract.insuredObject.model =
-contract.insuredObject.model;
-
-
-contract.insuredObject.variant =
-contract.insuredObject.variant;
-
-
-}
-
-
-// keep dates from rating
-
-contract.contractStartDate =
-item.contractStartDate;
-
-
-contract.contractEndDate =
-item.contractEndDate;
-
-
-contract.endTime =
-item.endTime || "235900";
-
-
-
-// OD
-
-if(
-contract.salesProductTemplateId ===
-"Own Damage Contract"
-){
-
-contract.contractTenure =
-"1";
-
-contract.multiYear =
-"1";
-
-}
-
-
-
-// TP
-
-if(
-contract.salesProductTemplateId ===
-"Third Party Multiyear Contract"
-){
-
-contract.contractTenure =
-"1";
-
-contract.multiYear =
-"1";
-
-}
-
-
-
-// PA
-
-if(
-contract.salesProductTemplateId ===
-"PA Compulsary Contract"
-){
-
-contract.multiYear =
-"1";
-
-delete contract.contractTenure;
-
-}
-
-
-
-return contract;
-
-
-});
-
-
-}
-
-function createPayload(
-ratingData:any,
-body:any
-){
-
-
-const vehicle =
-body.vehicle;
-
-
-const customer =
-body.customer;
-
-
-const rto =
-vehicle.rto || {};
-
-
-const policy =
-ratingData.policyData || {};
-
-
-// CURRENT POLICY DATE
-const today =
-getPolicyDate();
-
-
-const endDate =
-getPolicyEndDate(today);
-
-const prevEnd =
-new Date(today);
-
-prevEnd.setDate(
-prevEnd.getDate() - 1
-);
-
-const previousEndDate =
-prevEnd.toISOString().split("T")[0];
-
-
-const prevStart =
-new Date(previousEndDate);
-
-prevStart.setFullYear(
-prevStart.getFullYear() - 1
-);
-
-prevStart.setDate(
-prevStart.getDate() + 1
-);
-
-const previousStartDate =
-prevStart.toISOString().split("T")[0];
-
-const contract =
-ratingData.contractDetails?.[0] || {};
-
-
-
-const isNew =
-vehicle.isNewBike === true ||
-vehicle.isNewBike === "true";
-
-
-const isRenewal = false;
-
-const regData =
-getRegistration(vehicle);
-
-const prevPolicy =
-getPreviousPolicy(
-vehicle,
-previousStartDate,
-previousEndDate
-);
-
-return {
-
-
-source:"",
-
-
-branch:
-body.branch ||
-process.env.ZUNO_BRANCH ||
-"MUMBAI",
-
-
-agentEmail:
-body.agentEmail ||
-process.env.ZUNO_AGENT_EMAIL,
-
-saleManagerCode:
-body.saleManagerCode ||
-process.env.ZUNO_SALE_MANAGER_CODE,
-
-saleManagerName:
-body.saleManagerName ||
-process.env.ZUNO_SALE_MANAGER_NAME,
-
-mainApplicantField:
-"1",
-
-
-typeOfBusiness:
-isNew
-?
-"New"
-:
-isRenewal
-?
-"Renewal"
-:
-"Rollover",
-
-
-
-policyType:
-"Package Policy",
-
-
-
-subPolicyType:"",
-
-
-
-// UPDATED DATE FIX
-
-policyStartDate:
-ratingData.policyData.policyStartDate,
-
-
-policyStartTime:
-"000000",
-
-
-policyEndDay:
-ratingData.contractDetails?.[0]?.contractEndDate,
-
-
-policyEndTime:
-"235900",
-
-
-
-
-previousInsurancePolicy:
-prevPolicy.previousInsurancePolicy,
-
-
-
-previousInsuranceCompanyName:
-prevPolicy.previousInsuranceCompanyName,
-
-
-
-previousInsuranceCompanyAddress:"",
-
-
-
-previousPolicyStartDate:
-prevPolicy.previousPolicyStartDate,
-
-
-
-previousPolicyEndDate:
-prevPolicy.previousPolicyEndDate,
-
-
-
-previousPolicyNo:
-prevPolicy.previousPolicyNo,
-
-
-
-
-policyTenure:
-"1",
-
-
-
-make:
-vehicle.make,
-
-
-model:
-vehicle.model,
-
-
-variant:
-vehicle.variant,
-
-
-makeModelMasterCode:
-contract?.insuredObject?.makeModelMasterCode,
-
-
-
-idvCity:
-contract?.insuredObject?.idvCity
-||
-rto.idvcity,
-
-
-
-cubicCapacity:
-contract?.insuredObject?.cubiccapacity
-||
-String(vehicle.capacity)
-.replace(".00",""),
-
-
-
-licencedCarryingCapacity:
-vehicle.seatingCapacity || "2",
-
-
-
-validLicenceNo:
-policy.validLicenceNo || "Y",
-
-
-
-fuelType:
-vehicle.fuelType || "PETROL",
-
-
-
-newOrUsed:
-isNew ? "New":"Used",
-
-
-
-yearOfManufacture:
-vehicle.year,
-
-
-
-registrationDate:
-isNew
-?
-`${vehicle.year}-06-05`
-:
-`${vehicle.year}-01-01`,
-
-
-
-vehicleAge:
-isNew
-?
-"0"
-:
-contract?.insuredObject?.ageofVehicle || "2",
-
-
-
-
-engineNumber:
-vehicle.engineNumber,
-
-
-chassisNumber:
-vehicle.chassisNumber,
-
-
-
-fibreGlassFuelTank:
-"Y",
-
-
-
-bodystyleDescription:
-contract?.insuredObject?.bodystyleDescription || "",
-
-
-
-bodyType:"",
-
-
-transmissionType:"",
-
-
-
-handicapped:"N",
-
-
-certifiedVintageCar:"N",
-
-
-
-automobileAssociationMember:
-"N",
-
-
-antiTheftDeviceInstalled:
-"N",
-
-
-
-
-// RTO
-
-stateCode:
-contract?.insuredObject?.rtoStateNameandCode
-||
-rto.statecode
-||
-regData.stateCode,
-
-
-
-districtCode:
-regData.districtCode,
-
-
-vehicleSeriesNumber:
-regData.vehicleSeriesNumber,
-
-
-registrationNumber:
-regData.registrationNumber,
-
-
-vehicleRegistrationNumber:
-regData.vehicleRegistrationNumber,
-
-
-
-rtoLocationName:
-regData.rtoCode,
-
-rtoState:
-rto.rtostate,
-
-
-rtoCityOrDistrict:
-contract?.insuredObject?.rtoCityorDistrict
-||
-rto.rtocityordistrict,
-
-
-
-clusterZone:
-rto.clusterzone,
-
-
-carZone:
-rto.carzone,
-
-
-rtoZone:
-contract?.insuredObject?.rtoZone
-||
-rto.carzone,
-
-
-
-
-transferOfNCB:
-"N",
-
-
-applicableNCB:
-"0",
-
-
-
-originalIDVValue:
-vehicle.idv,
-
-
-
-financeType:"",
-
-
-financierName:"",
-
-
-
-
-salutation:
-"Mr.",
-
-
-firstName:
-customer.fullName,
-
-
-middleName:"",
-
-
-lastName:
-"Radhakrishnan",
-
-
-
-gender:
-"Male",
-
-
-maritalStatus:
-"Single",
-
-
-dateOfBirth:
-"1995-06-19",
-
-
-
-nationality:
-"IN",
-
-
-
-
-currentAddressLine1:
-"187/A",
-
-
-currentAddressLine2:
-"Tent Road",
-
-
-currentAddressLine3:"",
-
-
-currentCountry:
-"IN",
-
-
-pincode:
-"560016",
-
-
-currentCity:
-"Bengaluru",
-
-
-currentState:
-"13",
-
-
-street:
-"Tent Road",
-
-
-area:
-"RM Nagara",
-
-
-location:
-"ShivajiNagar",
-
-
-
-
-mobileNumber:
-String(customer.mobile)
-.slice(-10),
-
-
-
-emailId:
-customer.email,
-
-
-
-commissionContractID:
-ratingData.commisionDetails
-?.commissionContractId
-||
-"1000014234",
-
-
-
-
-occupation:
-"Salaried",
-
-
-
-
-nomineeName:
-"Radhakrishnan",
-
-
-
-relationshipWithApplicant:
-"Father",
-
-
-
-isNomineeMinor:
-"N",
-
-
-nomineeDOB:
-"1994-05-25",
-
-
-nomineeAge:
-"30",
-
-
-
-
-renewalstatus:
-isNew
-?
-"New Policy"
-:
-isRenewal
-?
-"Renewal"
-:
-"Rollover",
-
-
-
-
-annualmileageofthecar:
-"10000",
-
-
-
-breakininsurance:
-isNew
-?
-"NBK"
-:
-"N",
-
-
-
-typeofGrid:
-policy.typeofGrid || "Grid 1",
-
-
-
-
-driverDetails:{
-
-
-nameofDriver:
-customer.fullName,
-
-
-dateofBirth:
-"1995-06-19",
-
-
-genderoftheDriver:
-"Male",
-
-
-ageofDriver:
-"30",
-
-
-relationshipwithProposer:
-"SELF",
-
-
-drivingExperienceinyears:
-"5",
-
-
-middleName:"",
-
-
-lastName:
-"Radhakrishnan"
-
-
-},
-
-
-
-
-contractDetails:
-buildContracts(
-ratingData,
-vehicle
-)
-
-
-
-};
-
-
-}
-
-
-
-
-
-
-// ================= API =================
-
-
+// ================= HANDLER =================
 export default async function handler(
-req:NextApiRequest,
-res:NextApiResponse
-){
-
-
-try{
-
-
-if(req.method !== "POST"){
-
-return res.status(405).json({
-success:false
-});
-
-}
-
-
-
-const token =
-await getZunoToken();
-
-
-
-const ratingData =
-req.body.quote;
-
-
-
-if(!ratingData){
-
-return res.status(400).json({
-
-success:false,
-
-message:"quote missing"
-
-});
-
-}
-
-
-
-const payload =
-createPayload(
-ratingData,
-req.body
-);
-console.log("========= DATE CHECK =========");
-
-console.log({
- ratingPolicyStart:
- ratingData.policyData?.policyStartDate,
-
- ratingContractStart:
- ratingData.contractDetails?.[0]?.contractStartDate,
-
- ratingContractEnd:
- ratingData.contractDetails?.[0]?.contractEndDate,
-
- fullQuoteStart:
- payload.policyStartDate,
-
- fullQuoteEnd:
- payload.policyEndDay,
-
- previousStart:
- payload.previousPolicyStartDate,
-
- previousEnd:
- payload.previousPolicyEndDate
-});
-
-
-console.log("========= DRIVER CHECK =========");
-
-console.log(payload.driverDetails);
-
-
-console.log("========= RTO CHECK =========");
-
-console.log({
- number: payload.vehicleRegistrationNumber,
- rto: payload.rtoLocationName,
- city: payload.rtoCityOrDistrict,
- state: payload.rtoState
-});
-console.log(
-"POLICY CHECK",
-{
-policyType:payload.policyType,
-policyTenure:payload.policyTenure,
-typeOfBusiness:payload.typeOfBusiness,
-newOrUsed:payload.newOrUsed,
-previousInsurancePolicy:payload.previousInsurancePolicy
-}
-);
-
-
-console.log(
-"CONTRACT CHECK",
-JSON.stringify(payload.contractDetails)
-);
-
-console.log(
-"FINAL FULL QUOTE",
-JSON.stringify(payload)
-);
-
-
-
-
-const response =
-await fetch(
-
-`${process.env.ZUNO_BASE_URL}/motor-two-wheeler/full-quote`,
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json",
-
-Authorization:
-`Bearer ${token}`,
-
-"x-api-key":
-process.env.ZUNO_X_API_KEY!
-
-},
-
-
-body:
-JSON.stringify(payload)
-
-
-}
-
-);
-
-
-
-const text =
-await response.text();
-
-
-
-console.log(
-"STATUS",
-response.status
-);
-
-
-console.log(
-"RAW",
-text
-);
-
-
-
-let data;
-
-
-try{
-
-data=JSON.parse(text);
-
-}catch{
-
-data=text;
-
-}
-
-
-
-return res.status(response.status).json({
-
-success:
-response.ok,
-
-data
-
-});
-
-
-
-}
-catch(error:any){
-
-
-console.log(error);
-
-
-return res.status(500).json({
-
-success:false,
-
-message:error.message
-
-});
-
-
-}
-
-
-
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ success: false });
+    }
+
+    const ratingData = req.body.quote;
+    if (!ratingData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "quote (rating data) missing" });
+    }
+
+    const token = await getZunoToken();
+    const payload = buildPayload(ratingData, req.body);
+
+    console.log("FULL QUOTE PAYLOAD >>>", JSON.stringify(payload));
+
+    const response = await fetch(
+      `${process.env.ZUNO_BASE_URL}/motor-two-wheeler/full-quote`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "x-api-key": process.env.ZUNO_X_API_KEY!,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const text = await response.text();
+    console.log("FULL QUOTE STATUS", response.status);
+    console.log("FULL QUOTE RAW", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+
+    return res.status(response.status).json({ success: response.ok, data });
+  } catch (error: any) {
+    console.log("FULL QUOTE ERROR", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
 }

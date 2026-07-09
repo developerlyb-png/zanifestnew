@@ -1,183 +1,62 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
 
+async function getZunoToken() {
+  const auth = Buffer.from(
+    `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
+  ).toString("base64");
+
+  const r = await fetch(process.env.ZUNO_TOKEN_URL!, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
+  const d = await r.json();
+  return d.access_token;
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  try {
+    const { make, model } = req.query;
+    if (!make || !model) {
+      return res
+        .status(400)
+        .json({ success: false, message: "make and model required" });
+    }
 
+    const token = await getZunoToken();
 
-  if(req.method !== "GET"){
+    const url = `${process.env.ZUNO_CAR_MASTER_URL}/variant?make=${encodeURIComponent(
+      String(make)
+    )}&model=${encodeURIComponent(String(model))}`;
+    console.log("4W VARIANT URL", url);
 
-    return res.status(405).json({
-      message:"Only GET allowed"
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.ZUNO_CAR_API_KEY!,
+      },
     });
 
+    const text = await response.text();
+    console.log("4W VARIANT STATUS", response.status);
+    console.log("4W VARIANT RAW", text.slice(0, 2000));
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+
+    return res.status(response.status).json(data);
+  } catch (e: any) {
+    console.log("4W VARIANT ERROR", e);
+    return res.status(500).json({ success: false, message: e.message });
   }
-
-
-  try{
-
-
-    const {
-      make,
-      model
-    } = req.query;
-
-
-
-    console.log(
-      "VARIANT REQUEST",
-      make,
-      model
-    );
-
-
-
-    // ============ TOKEN ============
-
-
-    const basicToken =
-    Buffer.from(
-
-      `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
-
-    ).toString("base64");
-
-
-
-    const tokenResponse =
-    await axios.post(
-
-
-      process.env.ZUNO_TOKEN_URL!,
-
-
-      new URLSearchParams({
-
-        grant_type:"client_credentials"
-
-      }),
-
-
-      {
-
-        headers:{
-
-          Authorization:
-          `Basic ${basicToken}`,
-
-          "Content-Type":
-          "application/x-www-form-urlencoded"
-
-        }
-
-      }
-
-
-    );
-
-
-
-    const token =
-    tokenResponse.data.access_token;
-
-
-
-    console.log(
-      "VARIANT TOKEN OK"
-    );
-
-
-
-
-    // ============ ZUNO VARIANT ============
-
-
-    const response =
-    await axios.get(
-
-
-      `${process.env.ZUNO_CAR_MASTER_URL}/variant`,
-
-
-      {
-
-        params:{
-
-          make,
-          model
-
-        },
-
-
-        headers:{
-
-
-          Authorization:
-          `Bearer ${token}`,
-
-
-          "x-api-key":
-          process.env.ZUNO_CAR_API_KEY,
-
-
-          "Content-Type":
-          "application/json"
-
-
-        }
-
-      }
-
-
-    );
-
-
-
-
-    console.log(
-      "VARIANT RESPONSE",
-      JSON.stringify(
-        response.data,
-        null,
-        2
-      )
-    );
-
-
-
-
-    return res.status(200)
-    .json(response.data);
-
-
-
-
-  }
-
-  catch(error:any){
-
-
-    console.log(
-      "VARIANT ERROR",
-      error.response?.data ||
-      error.message
-    );
-
-
-
-    return res.status(500).json({
-
-      message:"Variant failed",
-
-      error:error.response?.data
-
-    });
-
-
-  }
-
-
 }

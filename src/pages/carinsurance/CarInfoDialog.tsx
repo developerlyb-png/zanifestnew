@@ -1,5 +1,5 @@
 "use client";
-
+import { buildCarQuoteInput, parseQuoteResponse } from "@/lib/zuno4w";
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 
@@ -40,7 +40,7 @@ interface VehicleInfoDialogProps {
   selectedYear: number | null;
 
   selectedLocation: any;
-rcDetails:any;
+  rcDetails: any;
   onUpdateData: (data: any) => void;
 }
 
@@ -59,10 +59,9 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   selectedVariant = "",
   selectedFuel = "",
   selectedYear = null,
-selectedLocation = null,
+  selectedLocation = null,
 
-rcDetails = null,
-
+  rcDetails = null,
 }) => {
   const router = useRouter();
 
@@ -89,8 +88,7 @@ rcDetails = null,
   const [emailOtp, setEmailOtp] = useState("");
 
   const [emailVerified, setEmailVerified] = useState(false);
-const [loggedUser,setLoggedUser] =
-useState<any>(null);
+  const [loggedUser, setLoggedUser] = useState<any>(null);
   // NAME FORMAT
 
   const handleFullNameChange = (e: any) => {
@@ -107,61 +105,31 @@ useState<any>(null);
     setFullName(value);
   };
 
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
 
-  useEffect(()=>{
+    if (saved && saved !== "undefined") {
+      const user = JSON.parse(saved);
 
+      console.log("CAR LOGGED USER", user);
 
-const saved =
-localStorage.getItem("user");
+      setLoggedUser(user);
 
+      // auto fill
 
-if(
-saved &&
-saved !== "undefined"
-){
+      setFullName(user.name || "");
 
+      setEmail(user.email || "");
 
-const user =
-JSON.parse(saved);
+      setMobile("+91 " + user.mobile);
 
+      // skip OTP
 
-console.log(
-"CAR LOGGED USER",
-user
-);
+      setMobileVerified(true);
 
-
-setLoggedUser(user);
-
-
-// auto fill
-
-setFullName(
-user.name || ""
-);
-
-
-setEmail(
-user.email || ""
-);
-
-
-setMobile(
-"+91 " + user.mobile
-);
-
-
-// skip OTP
-
-setMobileVerified(true);
-
-setEmailVerified(true);
-
-
-}
-
-
-},[]);
+      setEmailVerified(true);
+    }
+  }, []);
   // MOBILE FORMAT
 
   const handleMobileChange = (e: any) => {
@@ -183,115 +151,63 @@ setEmailVerified(true);
   };
 
   // SEND WHATSAPP OTP
-// SEND STATIC WHATSAPP OTP
+  // SEND STATIC WHATSAPP OTP
 
-// const sendMobileOtp = async () => {
+  // const sendMobileOtp = async () => {
 
+  //   if (mobile.length !== 14) {
 
-//   if (mobile.length !== 14) {
+  //     alert("Enter valid mobile number");
 
-//     alert("Enter valid mobile number");
+  //     return;
 
-//     return;
+  //   }
 
-//   }
+  //   console.log("STATIC WHATSAPP OTP : 123456");
 
+  //   setTimeout(()=>{
 
-//   console.log("STATIC WHATSAPP OTP : 123456");
+  //     setMobileOtpSent(true);
 
+  //     alert("OTP Sent : 123456");
 
-//   setTimeout(()=>{
+  //   },500);
 
-
-//     setMobileOtpSent(true);
-
-
-//     alert("OTP Sent : 123456");
-
-
-//   },500);
-
-
-// };
+  // };
   const sendMobileOtp = async () => {
     const sendMobileOtp = async () => {
+      const mobileNumber = mobile.replace("+91 ", "");
 
+      if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
+        alert("Enter valid mobile number");
 
-const mobileNumber =
-mobile.replace("+91 ","");
+        return;
+      }
 
+      const res = await fetch("/api/auth/send-whatsapp-otp", {
+        method: "POST",
 
-if(!/^[6-9]\d{9}$/.test(mobileNumber)){
+        headers: {
+          "Content-Type": "application/json",
+        },
 
+        body: JSON.stringify({
+          mobile: mobileNumber,
+        }),
+      });
 
-alert(
-"Enter valid mobile number"
-);
+      const data = await res.json();
 
+      console.log("WHATSAPP RESPONSE", data);
 
-return;
+      if (res.ok && data.success) {
+        setMobileOtpSent(true);
 
-
-}
-
-
-
-const res =
-await fetch(
-"/api/auth/send-whatsapp-otp",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-mobile:mobileNumber
-
-})
-
-}
-);
-
-
-const data =
-await res.json();
-
-
-console.log(
-"WHATSAPP RESPONSE",
-data
-);
-
-
-if(res.ok && data.success){
-
-
-setMobileOtpSent(true);
-
-
-alert(
-"OTP Sent on WhatsApp"
-);
-
-
-}
-else{
-
-
-alert(
-data.message ||
-"OTP Failed"
-);
-
-
-}
-
-
-};
+        alert("OTP Sent on WhatsApp");
+      } else {
+        alert(data.message || "OTP Failed");
+      }
+    };
 
     const res = await fetch(
       "/api/auth/send-whatsapp-otp",
@@ -323,43 +239,31 @@ data.message ||
   };
 
   // VERIFY WHATSAPP OTP
-// VERIFY STATIC OTP
+  // VERIFY STATIC OTP
 
-// const verifyMobileOtp = async () => {
+  // const verifyMobileOtp = async () => {
 
+  //  if(!mobileOtp.trim()){
 
-//  if(!mobileOtp.trim()){
+  //   alert("Enter OTP");
 
+  //   return;
 
-//   alert("Enter OTP");
+  //  }
 
+  //  if(mobileOtp !== "123456"){
 
-//   return;
+  //   alert("Invalid OTP");
 
+  //   return;
 
-//  }
+  //  }
 
+  //  setMobileVerified(true);
 
-//  if(mobileOtp !== "123456"){
+  //  alert("Mobile Verified");
 
-
-//   alert("Invalid OTP");
-
-
-//   return;
-
-
-//  }
-
-
-
-//  setMobileVerified(true);
-
-
-//  alert("Mobile Verified");
-
-
-// };
+  // };
   const verifyMobileOtp = async () => {
     const res = await fetch(
       "/api/auth/verify-whatsapp-otp",
@@ -446,138 +350,74 @@ data.message ||
 
   // VERIFY EMAIL OTP + AUTO LOGIN USER
 
-const verifyEmailOtp = async () => {
+  const verifyEmailOtp = async () => {
+    const res = await fetch("/api/auth/verify-email-otp", {
+      method: "POST",
 
-
-  const res = await fetch(
-    "/api/auth/verify-email-otp",
-    {
-
-      method:"POST",
-
-      headers:{
-        "Content-Type":"application/json"
+      headers: {
+        "Content-Type": "application/json",
       },
 
-      body:JSON.stringify({
+      body: JSON.stringify({
+        email: email.trim(),
 
-        email:email.trim(),
+        otp: emailOtp,
+      }),
+    });
 
-        otp:emailOtp
+    const data = await res.json();
 
-      })
+    console.log("EMAIL VERIFY RESPONSE", data);
 
-    }
-  );
+    if (res.ok && data.success) {
+      // ================================
+      // SAVE USER IN DB + LOGIN
+      // ================================
 
+      const loginRes = await fetch("/api/users/health-login", {
+        method: "POST",
 
-  const data = await res.json();
-
-
-  console.log(
-    "EMAIL VERIFY RESPONSE",
-    data
-  );
-
-
-
-  if(res.ok && data.success){
-
-
-
-    // ================================
-    // SAVE USER IN DB + LOGIN
-    // ================================
-
-
-    const loginRes = await fetch(
-      "/api/users/health-login",
-      {
-
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json"
+        headers: {
+          "Content-Type": "application/json",
         },
 
-        body:JSON.stringify({
+        body: JSON.stringify({
+          name: fullName,
 
-          name:fullName,
+          email: email.trim(),
 
-          email:email.trim(),
+          mobile: mobile.replace("+91 ", ""),
+        }),
+      });
 
-          mobile:mobile.replace("+91 ","")
+      const loginData = await loginRes.json();
 
-        })
+      console.log("CAR USER LOGIN", loginData);
 
+      if (loginData.success) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: loginData.user.id,
+
+            name: loginData.user.name,
+
+            email: loginData.user.email,
+
+            mobile: loginData.user.mobile,
+          }),
+        );
+
+        window.dispatchEvent(new Event("userLogin"));
       }
-    );
 
+      setEmailVerified(true);
 
-
-    const loginData =
-    await loginRes.json();
-
-
-
-    console.log(
-      "CAR USER LOGIN",
-      loginData
-    );
-
-
-
-    if(loginData.success){
-
-
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-
-          id:loginData.user.id,
-
-          name:loginData.user.name,
-
-          email:loginData.user.email,
-
-          mobile:loginData.user.mobile
-
-        })
-      );
-
-
-
-      window.dispatchEvent(
-        new Event("userLogin")
-      );
-
-
+      alert("Email Verified");
+    } else {
+      alert(data.message || "Wrong Email OTP");
     }
-
-
-
-    setEmailVerified(true);
-
-
-    alert("Email Verified");
-
-
-  }
-
-  else{
-
-
-    alert(
-      data.message ||
-      "Wrong Email OTP"
-    );
-
-
-  }
-
-
-};
+  };
   return (
     <div className={styles.overlay}>
       <div className={styles.dialog}>
@@ -594,11 +434,11 @@ const verifyEmailOtp = async () => {
             <div className={styles.item}>
               <FiMapPin className={styles.icon} />
 
-             <span>
-  {selectedLocation?.rto
-    ? selectedLocation.rto
-    : vehicleNumber?.substring(0, 4) || ""}
-</span>
+              <span>
+                {selectedLocation?.rto
+                  ? selectedLocation.rto
+                  : vehicleNumber?.substring(0, 4) || ""}
+              </span>
 
               <FiEdit2
                 className={styles.editIcon}
@@ -657,99 +497,85 @@ const verifyEmailOtp = async () => {
         </div>
 
         {/* RIGHT */}
-<div className={styles.right}>
-
-
-{!loggedUser && (
-
-<>
-
-<h3 className={styles.heading}>
-Almost done! Just one last step
-</h3>
-
-          <input
-            className={styles.input}
-            placeholder="Enter your full name"
-            value={fullName}
-            onChange={handleFullNameChange}
-          />
-
-          {/* MOBILE INPUT */}
-
-          <input
-            className={styles.input}
-            placeholder="Enter mobile number"
-            value={mobile}
-            maxLength={14}
-            disabled={mobileVerified}
-            onChange={handleMobileChange}
-          />
-
-          {/* MOBILE VERIFIED BADGE */}
-
-          {mobileVerified && (
-            <div
-              style={{
-                background: "#e6f8ec",
-                color: "#0a8f3c",
-                padding: "8px 12px",
-                borderRadius: "8px",
-                fontWeight: "600",
-                marginBottom: "12px",
-              }}
-            >
-              ✓ Mobile Verified
-            </div>
-          )}
-
-          {/* SEND MOBILE OTP */}
-
-     {!mobileOtpSent && !mobileVerified && (
-
-<button
-
-className={styles.viewBtn}
-
-onClick={sendMobileOtp}
-
->
-
-Send Mobile OTP
-
-</button>
-
-)}
-          {/* MOBILE OTP BOX */}
-
-          {mobileOtpSent && !mobileVerified && (
+        <div className={styles.right}>
+          {!loggedUser && (
             <>
+              <h3 className={styles.heading}>
+                Almost done! Just one last step
+              </h3>
+
               <input
                 className={styles.input}
-                placeholder="Enter Mobile OTP"
-                value={mobileOtp}
-                onChange={(e) => setMobileOtp(e.target.value)}
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={handleFullNameChange}
               />
 
-              <button className={styles.viewBtn} onClick={verifyMobileOtp}>
-                Verify OTP
-              </button>
-            </>
-          )}
+              {/* MOBILE INPUT */}
 
-          {/* EMAIL FLOW AFTER MOBILE VERIFY */}
-
-          {mobileVerified && (
-            <>
               <input
                 className={styles.input}
-                placeholder="Enter Email"
-                value={email}
-                disabled={emailVerified}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter mobile number"
+                value={mobile}
+                maxLength={14}
+                disabled={mobileVerified}
+                onChange={handleMobileChange}
               />
-</>
-)}
+
+              {/* MOBILE VERIFIED BADGE */}
+
+              {mobileVerified && (
+                <div
+                  style={{
+                    background: "#e6f8ec",
+                    color: "#0a8f3c",
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    marginBottom: "12px",
+                  }}
+                >
+                  ✓ Mobile Verified
+                </div>
+              )}
+
+              {/* SEND MOBILE OTP */}
+
+              {!mobileOtpSent && !mobileVerified && (
+                <button className={styles.viewBtn} onClick={sendMobileOtp}>
+                  Send Mobile OTP
+                </button>
+              )}
+              {/* MOBILE OTP BOX */}
+
+              {mobileOtpSent && !mobileVerified && (
+                <>
+                  <input
+                    className={styles.input}
+                    placeholder="Enter Mobile OTP"
+                    value={mobileOtp}
+                    onChange={(e) => setMobileOtp(e.target.value)}
+                  />
+
+                  <button className={styles.viewBtn} onClick={verifyMobileOtp}>
+                    Verify OTP
+                  </button>
+                </>
+              )}
+
+              {/* EMAIL FLOW AFTER MOBILE VERIFY */}
+
+              {mobileVerified && (
+                <>
+                  <input
+                    className={styles.input}
+                    placeholder="Enter Email"
+                    value={email}
+                    disabled={emailVerified}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </>
+              )}
               {emailVerified && (
                 <div
                   style={{
@@ -765,21 +591,11 @@ Send Mobile OTP
                 </div>
               )}
 
-             {mobileVerified && !emailOtpSent && !emailVerified && (
-
-<button
-
-className={styles.viewBtn}
-
-onClick={sendEmailOtp}
-
->
-
-Send Email OTP
-
-</button>
-
-)}
+              {mobileVerified && !emailOtpSent && !emailVerified && (
+                <button className={styles.viewBtn} onClick={sendEmailOtp}>
+                  Send Email OTP
+                </button>
+              )}
 
               {emailOtpSent && !emailVerified && (
                 <>
@@ -800,163 +616,57 @@ Send Email OTP
 
           {/* FINAL VIEW PRICE */}
 
-  {emailVerified && (
-
-<button
-
-className={styles.viewBtn}
-
-onClick={async()=>{
-
-
-// =======================
-// VEHICLE DATA
-// =======================
-
-
-const vehicleData = {
-
-
-registrationNumber:
-vehicleNumber,
-
-
-brand:
-selectedBrand,
-
-
-model:
-selectedModel,
-
-
-variant:
-selectedVariant,
-
-
-fuel:
-selectedFuel,
-
-
-year:
-selectedYear,
-
-
-rto:
-selectedLocation?.rto
-
-
-};
-
-
-
-console.log(
-"ZUNO VEHICLE DATA",
-vehicleData
-);
-
-
-
-console.log(
-"RC DETAILS",
-rcDetails
-);
-
-
-
-// =======================
-// CALL ZUNO QUOTE
-// =======================
-
-
-const res =
-await fetch(
-"/api/zuno/4w/quote",
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-body:
-JSON.stringify({
-
-vehicleData,
-
-rcDetails
-
-})
-
-}
-
-);
-
-
-
-const data =
-await res.json();
-
-
-
-console.log(
-"ZUNO QUOTE RESPONSE",
-data
-);
-
-
-
-// SUCCESS
-
-
-if(data.success){
-
-
-localStorage.setItem(
-
-"selectedQuote",
-
-JSON.stringify(data.quote)
-
-);
-
-
-
-router.push(
-
-"/carinsurance/carinsurance3"
-
-);
-
-
-}
-
-else{
-
-
-alert(
-
-data.message ||
-
-"ZUNO Quote Failed"
-
-);
-
-
-}
-
-
+          {emailVerified && (
+            <button
+              className={styles.viewBtn}
+            onClick={async () => {
+  try {
+    console.log("RC DETAILS >>>", rcDetails);
+
+    if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
+      alert("Vehicle data not found — please search your car number again");
+      return;
+    }
+
+    const quoteInput = await buildCarQuoteInput(rcDetails);
+    console.log("QUOTE INPUT >>>", quoteInput);
+
+    if ((quoteInput as any).error) {
+      console.log("CHAIN FALLBACK:", quoteInput);
+      alert("Could not auto-match vehicle: " + (quoteInput as any).error);
+      return;
+    }
+
+    const res = await fetch("/api/zuno/4w/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quoteInput),
+    });
+
+    const data = await res.json();
+    console.log("ZUNO QUOTE RESPONSE >>>", data);
+
+    if (data.success) {
+      const plan = parseQuoteResponse(data);
+      console.log("PLAN >>>", plan);
+
+      localStorage.setItem("selectedQuote", JSON.stringify(plan));
+      localStorage.setItem("carQuoteInput", JSON.stringify(quoteInput));
+      localStorage.setItem("carRcDetails", JSON.stringify(rcDetails)); // ← the missing save
+
+      router.push("/carinsurance/carinsurance3");
+    } else {
+      alert(data.message || "ZUNO Quote Failed");
+    }
+  } catch (err: any) {
+    console.log("VIEW PRICES ERROR >>>", err);
+    alert("Something went wrong: " + err?.message);
+  }
 }}
-
->
-
-View prices
-
-</button>
-
-)}
+            >
+              View prices
+            </button>
+          )}
 
           <p className={styles.terms}>
             By clicking on 'View prices', you agree to our

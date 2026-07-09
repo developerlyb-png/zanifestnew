@@ -22,34 +22,31 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const { make } = req.query;
-    if (!make) {
-      return res.status(400).json({ success: false, message: "make required" });
+    // Pass through whatever params the frontend supplies —
+    // typically make, model, variant, idvCity (confirm exact names in docs)
+    const params = new URLSearchParams(
+      req.query as Record<string, string>
+    ).toString();
+
+    if (!params) {
+      return res.status(400).json({ success: false, message: "params required" });
     }
 
-    let token: string | null = null;
-    try {
-      token = await getZunoToken();
-    } catch (e) {
-      console.log("4W TOKEN FETCH FAILED", e);
-    }
-    console.log("4W MODEL TOKEN:", token ? "YES" : "NO/UNDEFINED");
+    const token = await getZunoToken();
 
-    const url = `${process.env.ZUNO_CAR_MASTER_URL}/model?make=${encodeURIComponent(
-      String(make)
-    )}`;
-    console.log("4W MODEL URL", url);
+    const url = `${process.env.ZUNO_CAR_MASTER_URL}/idv?${params}`;
+    console.log("4W IDV URL", url);
 
-    const headers: Record<string, string> = {
-      "x-api-key": process.env.ZUNO_CAR_API_KEY!,
-    };
-    if (token) headers.Authorization = `Bearer ${token}`;
-
-    const response = await fetch(url, { headers });
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.ZUNO_CAR_API_KEY!,
+      },
+    });
 
     const text = await response.text();
-    console.log("4W MODEL STATUS", response.status);
-    console.log("4W MODEL RAW", text.slice(0, 2000));
+    console.log("4W IDV STATUS", response.status);
+    console.log("4W IDV RAW", text.slice(0, 3000));
 
     let data;
     try {
@@ -60,7 +57,7 @@ export default async function handler(
 
     return res.status(response.status).json(data);
   } catch (e: any) {
-    console.log("4W MODEL ERROR", e);
+    console.log("4W IDV ERROR", e);
     return res.status(500).json({ success: false, message: e.message });
   }
 }

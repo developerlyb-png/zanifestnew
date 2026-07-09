@@ -18,8 +18,7 @@ const Health = () => {
   const router = useRouter();
 
   const [step, setStep] = useState(1);
-const [loggedUser,setLoggedUser] =
-useState<any>(null);
+  const [loggedUser, setLoggedUser] = useState<any>(null);
   const [gender, setGender] = useState("M");
 
   const [members, setMembers] = useState<any[]>([]);
@@ -27,35 +26,34 @@ useState<any>(null);
   const [ages, setAges] = useState<{ [key: number]: string }>({});
 
   const [selectedCity, setSelectedCity] = useState("");
-  const [citySearch,setCitySearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
 
-const [allCities,setAllCities] = useState<string[]>([]);
+  const [allCities, setAllCities] = useState<string[]>([]);
   const popularCities = [
-  "Delhi",
-  "Bengaluru",
-  "Pune",
-  "Hyderabad",
-  "Mumbai",
-  "Thane",
-  "Gurgaon",
-  "Chennai",
-  "Ghaziabad",
-  "Ernakulam"
-];
+    "Delhi",
+    "Bengaluru",
+    "Pune",
+    "Hyderabad",
+    "Mumbai",
+    "Thane",
+    "Gurgaon",
+    "Chennai",
+    "Ghaziabad",
+    "Ernakulam",
+  ];
 
+  const [medical, setMedical] = useState<string[]>([]);
 
-const [medical,setMedical] = useState<string[]>([]);
-
-const diseases = [
- "Diabetes",
- "Blood Pressure",
- "Heart disease",
- "Any Surgery",
- "Thyroid",
- "Asthma",
- "Other disease",
- "None of these"
-];
+  const diseases = [
+    "Diabetes",
+    "Blood Pressure",
+    "Heart disease",
+    "Any Surgery",
+    "Thyroid",
+    "Asthma",
+    "Other disease",
+    "None of these",
+  ];
   const [fullName, setFullName] = useState("");
 
   const [mobile, setMobile] = useState("");
@@ -76,59 +74,28 @@ const diseases = [
   const getMemberImage = (member?: any) => {
     return member?.image || (gender === "F" ? womanicon : manicon);
   };
-useEffect(()=>{
 
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
 
-const saved =
-localStorage.getItem("user");
+    if (saved && saved !== "undefined") {
+      const user = JSON.parse(saved);
 
+      console.log("LOGIN USER FOUND", user);
 
-if(
-saved &&
-saved !== "undefined"
-){
+      setLoggedUser(user);
 
-const user =
-JSON.parse(saved);
+      // auto fill
+      setFullName(user.name || "");
+      setEmail(user.email || "");
+      setMobile(user.mobile || "");
 
+      // skip OTP validation
+      setMobileVerified(true);
+      setEmailVerified(true);
+    }
+  }, []);
 
-console.log(
-"LOGIN USER FOUND",
-user
-);
-
-
-setLoggedUser(user);
-
-
-// auto fill
-
-setFullName(
-user.name || ""
-);
-
-
-setEmail(
-user.email || ""
-);
-
-
-setMobile(
-user.mobile || ""
-);
-
-
-// skip OTP validation
-
-setMobileVerified(true);
-
-setEmailVerified(true);
-
-
-}
-
-
-},[]);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -150,7 +117,6 @@ setEmailVerified(true);
   const handleAgeSelect = (index: number, age: string) => {
     setAges((prev) => ({
       ...prev,
-
       [index]: age,
     }));
 
@@ -198,42 +164,7 @@ setEmailVerified(true);
       setOtpLoading("");
     }
   };
-// const sendMobileOtp = async () => {
 
-// if (!/^[6-9]\d{9}$/.test(mobile)) {
-
-// alert("Enter valid mobile");
-
-// return;
-
-// }
-
-
-// setOtpLoading("mobile-send");
-
-
-// // static OTP mode
-// console.log("STATIC WHATSAPP OTP : 123456");
-
-
-// setTimeout(()=>{
-
-
-// setMobileOtpSent(true);
-
-
-// setOtpMessage(
-// "Use OTP 123456"
-// );
-
-
-// setOtpLoading("");
-
-
-// },500);
-
-
-// };
   const verifyMobileOtp = async () => {
     if (!mobileOtp.trim()) {
       alert("Enter mobile OTP");
@@ -257,32 +188,6 @@ setEmailVerified(true);
     }
   };
 
-//   const verifyMobileOtp = async () => {
-
-// if(!mobileOtp.trim()){
-
-// alert("Enter mobile OTP");
-
-// return;
-
-// }
-
-
-// if(mobileOtp !== "123456"){
-
-// alert("Invalid OTP");
-
-// return;
-
-// }
-
-
-// setMobileVerified(true);
-
-// setOtpMessage("Mobile verified");
-
-
-// };
   const sendEmailOtp = async () => {
     if (!mobileVerified) {
       alert("Verify mobile first");
@@ -311,114 +216,59 @@ setEmailVerified(true);
     }
   };
 
- const verifyEmailOtp = async () => {
+  const verifyEmailOtp = async () => {
+    if (!emailOtp.trim()) {
+      alert("Enter email OTP");
+      return;
+    }
 
+    try {
+      setOtpLoading("email-verify");
 
-if(!emailOtp.trim()){
+      await postJson("/api/auth/verify-email-otp", {
+        mobile,
+        email,
+        otp: emailOtp,
+        fullName,
+      });
 
-alert("Enter email OTP");
+      // ===============================
+      // CREATE USER LOGIN
+      // ===============================
+      const loginRes = await fetch("/api/users/health-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: fullName,
+          email,
+          mobile,
+        }),
+      });
 
-return;
+      const loginData = await loginRes.json();
 
-}
+      if (!loginData.success) {
+        alert(loginData.message);
+        return;
+      }
 
+      // save login user
+      localStorage.setItem("user", JSON.stringify(loginData.user));
 
-try{
+      // update navbar instantly
+      window.dispatchEvent(new Event("userLogin"));
 
+      setEmailVerified(true);
+      setOtpMessage("Email verified");
+    } catch (error: any) {
+      alert(error.message || "Could not verify email OTP");
+    } finally {
+      setOtpLoading("");
+    }
+  };
 
-setOtpLoading("email-verify");
-
-
-await postJson("/api/auth/verify-email-otp",{
-
-mobile,
-email,
-otp:emailOtp,
-fullName,
-
-});
-
-
-// ===============================
-// CREATE USER LOGIN
-// ===============================
-
-
-const loginRes = await fetch(
-"/api/users/health-login",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-name:fullName,
-email,
-mobile
-
-})
-
-});
-
-
-const loginData = await loginRes.json();
-
-
-if(!loginData.success){
-
-alert(loginData.message);
-
-return;
-
-}
-
-
-// save login user
-
-localStorage.setItem(
-
-"user",
-
-JSON.stringify(loginData.user)
-
-);
-
-
-// update navbar instantly
-
-window.dispatchEvent(
-
-new Event("userLogin")
-
-);
-
-
-setEmailVerified(true);
-
-setOtpMessage("Email verified");
-
-
-}
-catch(error:any){
-
-alert(
-error.message ||
-"Could not verify email OTP"
-);
-
-}
-finally{
-
-setOtpLoading("");
-
-}
-
-
-};
   const renderMembers = () => {
     return (
       <div className={styles.step1MembersList}>
@@ -433,21 +283,16 @@ setOtpLoading("");
             {
               length: 101 - minAge,
             },
-
             (_, i) => (i + minAge).toString(),
           );
 
           return (
             <div key={idx} className={styles.step1MemberCard}>
-               <Image
-
-src={getMemberImage(m)}
-
-alt={memberName}
-
-className={styles.step1MemberIcon}
-
-/>
+              <Image
+                src={getMemberImage(m)}
+                alt={memberName}
+                className={styles.step1MemberIcon}
+              />
 
               <p>{memberName}</p>
 
@@ -494,7 +339,7 @@ className={styles.step1MemberIcon}
   };
 
   // ===============================
-  // FINAL SUBMIT
+  // FINAL SUBMIT  (now calls create-quote)
   // ===============================
 
   const handleSubmit = async () => {
@@ -502,78 +347,61 @@ className={styles.step1MemberIcon}
       for (let i = 0; i < members.length; i++) {
         if (!ages[i]) {
           alert(`Select age for ${members[i].name || members[i].relation}`);
-
           setStep(1);
-
           return;
         }
       }
 
       if (!selectedCity) {
         alert("Select city");
-
         setStep(2);
-
         return;
       }
 
       if (!fullName) {
         alert("Enter name");
-
         setStep(3);
-
         return;
       }
 
       if (!/^[6-9]\d{9}$/.test(mobile)) {
         alert("Enter valid mobile");
-
         return;
       }
 
       if (!mobileVerified) {
         alert("Verify mobile number");
-
         return;
       }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert("Enter valid email");
-
         return;
       }
 
       if (!emailVerified) {
         alert("Verify email");
-
         return;
       }
 
       const payload = {
         name: fullName,
-
         gender: gender,
-
         dob: getDOBFromAge(ages[0]),
-
         mobile: mobile,
-
         email: email,
-
-        pincode: "400070",
-
+        city: selectedCity,
         sumInsured: "500000",
+        policyTenure: 1,
+        medical: medical,
 
         members: members.map((m: any, index: number) => {
           const relation = m.relation || m.name;
 
           return {
             name: relation === "Self" ? fullName : relation,
-
             relation: relation,
-
             age: ages[index],
-
             gender:
               m.gender ||
               ([
@@ -585,111 +413,58 @@ className={styles.step1MemberIcon}
               ].includes(relation)
                 ? "F"
                 : "M"),
-
             dob: getDOBFromAge(ages[index]),
           };
         }),
       };
 
-      console.log(
-        "ZUNO HEALTH REQUEST",
+      console.log("ZUNO CREATE-QUOTE REQUEST", payload);
 
-        payload,
-      );
-
-      const response = await fetch(
-        "/api/zuno/health/quick-quote",
-
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify(payload),
+      const response = await fetch("/api/zuno/health/create-quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(payload),
+      });
 
       const result = await response.json();
 
-      console.log(
-        "ZUNO HEALTH RESPONSE",
-
-        result,
-      );
+      console.log("ZUNO CREATE-QUOTE RESULT", result);
 
       if (!response.ok) {
         alert(result?.message || "Quote failed");
-
         return;
       }
 
-      // convert response for health6 page
-
-      const plans = [
-        {
-          company: "Zuno Health",
-
-          planName: "Zuno Health Gold",
-
-          sumInsured: payload.sumInsured,
-
-          premium:
-            result?.policyHolder?.ContractDetails?.[0]?.ContractPremium
-              ?.premiumAfterTax ||
-            result?.premium ||
-            "0",
-
-          rawData: result,
-        },
-      ];
-
+      // Response shape from create-quote isn't finalized yet —
+      // pass the raw result through and inspect the console log.
       router.push({
         pathname: "./health6",
-
         query: {
-          plans: JSON.stringify(plans),
+          quote: JSON.stringify(result),
         },
       });
     } catch (error: any) {
-      console.log(
-        "HEALTH FRONT ERROR",
-
-        error,
-      );
-
+      console.log("HEALTH FRONT ERROR", error);
       alert(error.message || "Something went wrong");
     }
   };
-useEffect(()=>{
 
-const cities =
-City.getCitiesOfCountry("IN") || [];
+  useEffect(() => {
+    const cities = City.getCitiesOfCountry("IN") || [];
 
+    setAllCities(cities.map((item) => item.name));
+  }, []);
 
-setAllCities(
-cities.map((item)=>item.name)
-);
+  const searchedCities = citySearch
+    ? allCities
+        .filter((city) =>
+          city.toLowerCase().includes(citySearch.toLowerCase()),
+        )
+        .slice(0, 50)
+    : [];
 
-
-},[]);
-
-
-const searchedCities =
-citySearch
-?
-allCities.filter((city)=>
-
-city
-.toLowerCase()
-.includes(citySearch.toLowerCase())
-
-)
-.slice(0,50)
-
-:
-[];
   return (
     <div>
       <UserDetails />
@@ -697,232 +472,105 @@ city
       <Navbar />
 
       <div className={styles.wrapper}>
-  {step === 1 && (
-    <div className={styles.step1Wrapper}>
-<div
-  className={styles.step1BackBtn}
-  onClick={() => router.back()}
->
-  ‹
-</div>
+        {step === 1 && (
+          <div className={styles.step1Wrapper}>
+            <div className={styles.step1BackBtn} onClick={() => router.back()}>
+              ‹
+            </div>
 
-      <h2>Select Age for Each Member</h2>
+            <h2>Select Age for Each Member</h2>
 
-      {renderMembers()}
+            {renderMembers()}
 
-      <button
-        className={styles.continueBtn}
-        onClick={() => setStep(2)}
-      >
-        Continue
-      </button>
-
-    </div>
-  )}
-
-
-    {step === 2 && (
-
-<div className={styles.cityMainWrapper}>
-
-
-<div
-  className={styles.cityBack}
-  onClick={() => setStep(1)}
->
-  ‹
-</div>
-
-
-
-<div className={styles.cityImageBox}>
-
-<Image
-
-src={getMemberImage(members[0])}
-
-alt="User"
-
-className={styles.cityUserImage}
-
-/>
-
-
-</div>
-
-
-
-
-
-<div className={styles.cityRight}>
-
-
-<h2>
-
-Select your city
-
-</h2>
-
-
-
-
-<div className={styles.citySearchBox}>
-
-
-<input
-
-value={citySearch}
-
-placeholder="Search your city"
-
-onChange={(e)=>
-setCitySearch(e.target.value)
-}
-
-/>
-
-{
-citySearch
-?
-<span
-
-className={styles.clearCity}
-
-onClick={()=>{
-
-setCitySearch("");
-
-}}
-
->
-×
-
-</span>
-
-:
-<FiSearch
-className={styles.citySearchIcon}
-/>
-}
-</div>
-
-
-
-
-
-<div className={styles.cityList}>
-
-{
-(
-citySearch
-?
-searchedCities
-:
-popularCities
-)
-.map((city)=>(
-
-
-<button
-
-key={city}
-
-
-className={`${styles.cityChip} ${
-selectedCity === city
-?
-styles.activeCity
-:
-""
-}`}
-
-
-onClick={()=>{
-
-setSelectedCity(city);
-
-setCitySearch(city);
-
-}}
->
-
-{city}
-
-
-</button>
-
-
-))
-
-}
-
-
-</div>
-
-
-
-
-
-
-<button
-
-className={styles.cityContinueBtn}
-
-
-onClick={()=>{
-
-
-if(!selectedCity){
-
-alert("Select city");
-
-return;
-
-}
-
-
-// if already login skip OTP screen
-
-if(loggedUser){
-
-
-setStep(4);
-
-
-}
-
-else{
-
-
-setStep(3);
-
-
-}
-
-
-}}
-
->
-
-Continue
-
-</button>
-
-
-
-
-</div>
-
-
-</div>
-
-)}
-        {step === 3 && (
-          <div className={styles.detailsMainWrapper}>
-            <div
-              className={styles.detailsBack}
+            <button
+              className={styles.continueBtn}
               onClick={() => setStep(2)}
             >
+              Continue
+            </button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className={styles.cityMainWrapper}>
+            <div className={styles.cityBack} onClick={() => setStep(1)}>
+              ‹
+            </div>
+
+            <div className={styles.cityImageBox}>
+              <Image
+                src={getMemberImage(members[0])}
+                alt="User"
+                className={styles.cityUserImage}
+              />
+            </div>
+
+            <div className={styles.cityRight}>
+              <h2>Select your city</h2>
+
+              <div className={styles.citySearchBox}>
+                <input
+                  value={citySearch}
+                  placeholder="Search your city"
+                  onChange={(e) => setCitySearch(e.target.value)}
+                />
+
+                {citySearch ? (
+                  <span
+                    className={styles.clearCity}
+                    onClick={() => {
+                      setCitySearch("");
+                    }}
+                  >
+                    ×
+                  </span>
+                ) : (
+                  <FiSearch className={styles.citySearchIcon} />
+                )}
+              </div>
+
+              <div className={styles.cityList}>
+                {(citySearch ? searchedCities : popularCities).map((city) => (
+                  <button
+                    key={city}
+                    className={`${styles.cityChip} ${
+                      selectedCity === city ? styles.activeCity : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedCity(city);
+                      setCitySearch(city);
+                    }}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={styles.cityContinueBtn}
+                onClick={() => {
+                  if (!selectedCity) {
+                    alert("Select city");
+                    return;
+                  }
+
+                  // if already login skip OTP screen
+                  if (loggedUser) {
+                    setStep(4);
+                  } else {
+                    setStep(3);
+                  }
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className={styles.detailsMainWrapper}>
+            <div className={styles.detailsBack} onClick={() => setStep(2)}>
               {"‹"}
             </div>
 
@@ -934,360 +582,219 @@ Continue
               />
             </div>
 
-        <div className={styles.detailsRight}>
+            <div className={styles.detailsRight}>
+              <h2>Save your progress</h2>
 
-<h2>Save your progress</h2>
+              <p className={styles.detailsSubtitle}>
+                Get to plans directly next time you visit us
+              </p>
 
-<p className={styles.detailsSubtitle}>
-Get to plans directly next time you visit us
-</p>
+              {/* STEP 1 - NAME MOBILE */}
+              {!mobileOtpSent && !mobileVerified && (
+                <>
+                  <input
+                    className={styles.detailsInput}
+                    placeholder="Your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
 
+                  <div className={styles.detailsPhoneGroup}>
+                    <span className={styles.detailsCode}>+91</span>
 
-{/* STEP 1 - NAME MOBILE */}
-{!mobileOtpSent && !mobileVerified && (
-<>
-<input
-className={styles.detailsInput}
-placeholder="Your full name"
-value={fullName}
-onChange={(e)=>setFullName(e.target.value)}
-/>
+                    <input
+                      className={styles.detailsInput}
+                      placeholder="Enter mobile number"
+                      value={mobile}
+                      maxLength={10}
+                      inputMode="numeric"
+                      onChange={(e) =>
+                        setMobile(e.target.value.replace(/\D/g, ""))
+                      }
+                    />
+                  </div>
 
+                  <button
+                    className={styles.detailsContinueBtn}
+                    onClick={sendMobileOtp}
+                    disabled={Boolean(otpLoading)}
+                  >
+                    {otpLoading === "mobile-send" ? "Sending..." : "Continue"}
+                  </button>
+                </>
+              )}
 
-<div className={styles.detailsPhoneGroup}>
+              {/* STEP 2 MOBILE OTP */}
+              {mobileOtpSent && !mobileVerified && (
+                <>
+                  <input
+                    className={styles.detailsInput}
+                    placeholder="Enter Mobile OTP"
+                    value={mobileOtp}
+                    maxLength={6}
+                    onChange={(e) =>
+                      setMobileOtp(e.target.value.replace(/\D/g, ""))
+                    }
+                  />
 
-<span className={styles.detailsCode}>
-+91
-</span>
+                  <button
+                    className={styles.detailsContinueBtn}
+                    onClick={verifyMobileOtp}
+                  >
+                    Verify Mobile
+                  </button>
+                </>
+              )}
 
-<input
-className={styles.detailsInput}
-placeholder="Enter mobile number"
-value={mobile}
-maxLength={10}
-inputMode="numeric"
-onChange={(e)=>
-setMobile(e.target.value.replace(/\D/g,""))
-}
-/>
+              {/* STEP 3 EMAIL */}
+              {mobileVerified && !emailOtpSent && !emailVerified && (
+                <>
+                  <div className={styles.verifiedBox}>✓ Mobile Verified</div>
 
-</div>
+                  <input
+                    className={styles.detailsInput}
+                    placeholder="Enter Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
 
+                  <button
+                    className={styles.detailsContinueBtn}
+                    onClick={sendEmailOtp}
+                  >
+                    Send Email OTP
+                  </button>
+                </>
+              )}
 
-<button
-className={styles.detailsContinueBtn}
-onClick={sendMobileOtp}
-disabled={Boolean(otpLoading)}
->
-{otpLoading==="mobile-send"
-?"Sending..."
-:"Continue"}
-</button>
+              {/* STEP 4 EMAIL OTP */}
+              {emailOtpSent && !emailVerified && (
+                <>
+                  <input
+                    className={styles.detailsInput}
+                    placeholder="Enter Email OTP"
+                    value={emailOtp}
+                    maxLength={6}
+                    onChange={(e) =>
+                      setEmailOtp(e.target.value.replace(/\D/g, ""))
+                    }
+                  />
 
-</>
-)}
+                  <button
+                    className={styles.detailsContinueBtn}
+                    onClick={verifyEmailOtp}
+                  >
+                    Verify Email
+                  </button>
+                </>
+              )}
 
+              {/* FINAL */}
+              {mobileVerified && emailVerified && (
+                <>
+                  <div className={styles.verifiedBox}>✓ Verified</div>
 
+                  <button
+                    className={styles.detailsContinueBtn}
+                    onClick={() => setStep(4)}
+                  >
+                    View Plans
+                  </button>
 
-{/* STEP 2 MOBILE OTP */}
-{mobileOtpSent && !mobileVerified && (
-<>
+                  <p className={styles.detailsTerms}>
+                    By clicking on View Plans, you agree to our Privacy Policy &
+                    Terms of Use
+                  </p>
+                </>
+              )}
 
-<input
-className={styles.detailsInput}
-placeholder="Enter Mobile OTP"
-value={mobileOtp}
-maxLength={6}
-onChange={(e)=>
-setMobileOtp(e.target.value.replace(/\D/g,""))
-}
-/>
-
-
-<button
-className={styles.detailsContinueBtn}
-onClick={verifyMobileOtp}
->
-Verify Mobile
-</button>
-
-</>
-)}
-
-
-
-
-{/* STEP 3 EMAIL */}
-{mobileVerified && !emailOtpSent && !emailVerified && (
-<>
-
-<div className={styles.verifiedBox}>
-✓ Mobile Verified
-</div>
-
-
-<input
-className={styles.detailsInput}
-placeholder="Enter Email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
-
-
-<button
-className={styles.detailsContinueBtn}
-onClick={sendEmailOtp}
->
-Send Email OTP
-</button>
-
-</>
-)}
-
-
-
-
-{/* STEP 4 EMAIL OTP */}
-{emailOtpSent && !emailVerified && (
-<>
-
-<input
-className={styles.detailsInput}
-placeholder="Enter Email OTP"
-value={emailOtp}
-maxLength={6}
-onChange={(e)=>
-setEmailOtp(e.target.value.replace(/\D/g,""))
-}
-/>
-
-
-<button
-className={styles.detailsContinueBtn}
-onClick={verifyEmailOtp}
->
-Verify Email
-</button>
-
-</>
-)}
-
-
-
-
-{/* FINAL */}
-{mobileVerified && emailVerified && (
-<>
-
-<div className={styles.verifiedBox}>
-✓ Verified
-</div>
-
-<button
-className={styles.detailsContinueBtn}
-onClick={()=>setStep(4)}
->
-View Plans
-</button>
-
-
-<p className={styles.detailsTerms}>
-By clicking on View Plans, you agree to our Privacy Policy & Terms of Use
-</p>
-
-</>
-)}
-
-
-{otpMessage && (
-<p className={styles.otpMessage}>
-{otpMessage}
-</p>
-)}
-
-</div> </div>
+              {otpMessage && (
+                <p className={styles.otpMessage}>{otpMessage}</p>
+              )}
+            </div>
+          </div>
         )}
       </div>
-{
-step === 4 && (
 
-<div className={styles.medicalOverlay}>
+      {step === 4 && (
+        <div className={styles.medicalOverlay}>
+          <div className={styles.medicalBox}>
+            <div
+              className={styles.medicalBack}
+              onClick={() => {
+                if (loggedUser) {
+                  setStep(2);
+                } else {
+                  setStep(3);
+                }
+              }}
+            >
+              ‹
+            </div>
+
+            <div className={styles.medicalAvatarBox}>
+              <Image
+                src={getMemberImage(members[0])}
+                alt="user"
+                className={styles.medicalAvatar}
+              />
+            </div>
+
+            <h2>Medical history</h2>
+
+            <h3>
+              Do any member(s) have any existing illnesses for which they take
+              regular medication?
+            </h3>
+
+            <p>
+              That'll make sure their condition is covered and the claim isn't
+              rejected.
+            </p>
+
+            <div className={styles.diseaseGrid}>
+              {diseases.map((item) => (
+                <div
+                  key={item}
+                  className={`${styles.diseaseItem} ${
+                    medical.includes(item) ? styles.activeDisease : ""
+                  }`}
+                  onClick={() => {
+                    if (item === "None of these") {
+                      setMedical(["None of these"]);
+                    } else {
+                      setMedical((prev) => {
+                        const removeNone = prev.filter(
+                          (x) => x !== "None of these",
+                        );
+
+                        return removeNone.includes(item)
+                          ? removeNone.filter((x) => x !== item)
+                          : [...removeNone, item];
+                      });
+                    }
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={medical.includes(item)}
+                    readOnly
+                  />
+
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.medicalBottom}>
+              <button className={styles.finalBtn} onClick={handleSubmit}>
+                View plans ›
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-
-<div className={styles.medicalBox}>
-
-<div
-className={styles.medicalBack}
-onClick={()=>{
-
-
-if(loggedUser){
-
-setStep(2);
-
-}
-
-else{
-
-setStep(3);
-
-}
-
-
-}}
->
-‹
-</div>
-
-
-<div className={styles.medicalAvatarBox}>
-
-<Image
-
-src={getMemberImage(members[0])}
-
-alt="user"
-
-className={styles.medicalAvatar}
-
-/>
-
-</div>
-
-
-<h2>
-Medical history
-</h2>
-
-
-<h3>
-Do any member(s) have any existing illnesses for which they take regular medication?
-</h3>
-
-
-<p>
-That'll make sure their condition is covered and the claim isn't rejected.
-</p>
-
-
-
-<div className={styles.diseaseGrid}>
-
-
-{
-diseases.map((item)=>(
-
-
-<div
-
-key={item}
-
-className={`${styles.diseaseItem} ${
-medical.includes(item)
-?
-styles.activeDisease
-:
-""
-}`}
-
-onClick={()=>{
-
-
-if(item==="None of these"){
-
-setMedical(["None of these"]);
-
-}
-
-else{
-
-setMedical(prev=>{
-
-const removeNone =
-prev.filter(x=>x!=="None of these");
-
-
-return removeNone.includes(item)
-
-?
-
-removeNone.filter(x=>x!==item)
-
-:
-
-[...removeNone,item]
-
-
-});
-
-}
-
-
-}}
-
->
-
-
-<input
-
-type="checkbox"
-
-checked={medical.includes(item)}
-
-readOnly
-
-/>
-
-
-<span>
-{item}
-</span>
-
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
-
-
-
-<div className={styles.medicalBottom}>
-
-
-
-
-
-<button
-
-className={styles.finalBtn}
-
-onClick={handleSubmit}
-
->
-
-View plans ›
-
-</button>
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-)
-
-}
       <Footer />
     </div>
   );

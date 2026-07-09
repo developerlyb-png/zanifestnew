@@ -1,207 +1,155 @@
-import type {
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-
-// TOKEN GENERATE
-
+// =========================
+// GENERATE OAUTH TOKEN
+// =========================
 async function getZunoToken() {
+  const auth = Buffer.from(
+    `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
+  ).toString("base64");
 
-  const auth =
-    Buffer.from(
-      `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
-    )
-    .toString("base64");
-
-
-  const response =
-    await fetch(
-      `${process.env.ZUNO_BASE_URL}/oauth2/token`,
-      {
-
-        method:"POST",
-
-        headers:{
-
-          Authorization:
-            `Basic ${auth}`,
-
-          "Content-Type":
-            "application/x-www-form-urlencoded",
-
-        },
-
-        body:
-          "grant_type=client_credentials",
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  return data.access_token;
-
-}
-
-
-
-
-export default async function handler(
-  req:NextApiRequest,
-  res:NextApiResponse
-){
-
- try{
-
-
-  if(req.method !== "POST"){
-
-    return res.status(405).json({
-
-      success:false,
-
-      message:"Method not allowed"
-
-    });
-
-  }
-
-
-
-  // TOKEN
-
-
-  const token =
-    await getZunoToken();
-
-
-
-  console.log(
-    "TOKEN:",
-    token ? "YES":"NO"
+  const response = await fetch(
+    `${process.env.ZUNO_BASE_URL}/oauth2/token`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: "grant_type=client_credentials",
+    }
   );
 
+  const data = await response.json();
 
+  console.log("TOKEN RESPONSE:");
+  console.log(JSON.stringify(data, null, 2));
 
-  // PAYMENT API
-
-
-  const response =
-    await fetch(
-
-      `${process.env.ZUNO_BASE_URL}/motor-two-wheeler/online-payment-request`,
-
-      {
-
-        method:"POST",
-
-
-        headers:{
-
-
-          "Content-Type":
-            "application/json",
-
-
-          Authorization:
-            `Bearer ${token}`,
-
-
-          "x-api-key":
-            process.env.ZUNO_X_API_KEY!,
-
-        },
-
-
-        body:
-          JSON.stringify(req.body),
-
-
-      }
-
+  if (!response.ok) {
+    throw new Error(
+      data.error_description ||
+        data.message ||
+        "Unable to generate token"
     );
+  }
 
+  return data.access_token;
+}
 
-
-    console.log(
-      "PAYMENT STATUS:",
-      response.status
-    );
-
-
-
-    const text =
-      await response.text();
-
-
-
-    console.log(
-      "PAYMENT RAW:",
-      text
-    );
-
-
-
-    let data;
-
-
-    try{
-
-      data =
-        JSON.parse(text);
-
-    }catch{
-
-      data = {
-        raw:text
-      };
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({
+        success: false,
+        message: "Method Not Allowed",
+      });
     }
 
+    console.log("========== PAYMENT REQUEST ==========");
+    console.log(JSON.stringify(req.body, null, 2));
 
+    // =========================
+    // GET TOKEN
+    // =========================
+    const token = await getZunoToken();
 
-    return res
-      .status(response.status)
-      .json({
+    console.log("TOKEN GENERATED:", token ? "YES" : "NO");
 
-        success:
-          response.ok,
+    // =========================
+    // PAYMENT PAYLOAD
+    // =========================
 
-        data,
+    const amount = parseFloat(
+      String(req.body.amount)
+        .replace(/[₹,]/g, "")
+        .trim()
+    ).toFixed(2);
 
-      });
+    const paymentPayload = {
+      transactionId: String(req.body.transactionId),
 
+      amount,
 
+      client: "MGCOI",
 
+      customer: {
+        name:
+          req.body.customer?.fullName ||
+          req.body.customer?.name ||
+          "",
 
- }catch(error:any){
+        email:
+          req.body.customer?.email || "",
 
+        mobile:
+          req.body.customer?.mobile || "",
+      },
+    };
 
+    const url = `${process.env.ZUNO_PAY_BASE_URL}/request-link`;
+
+    console.log("URL:", url);
+    console.log("TOKEN:", token ? "YES" : "NO");
     console.log(
-      "PAYMENT ERROR",
-      error
+      "API KEY:",
+      process.env.ZUNO_PAY_X_API_KEY ? "YES" : "NO"
     );
 
+    console.log(
+      "PAYMENT PAYLOAD:"
+    );
+    console.log(
+      JSON.stringify(paymentPayload, null, 2)
+    );
 
+    // =========================
+    // PAYMENT REQUEST
+    // =========================
 
-    return res.status(500).json({
+    const response = await fetch(url, {
+      method: "POST",
 
-      success:false,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.ZUNO_PAY_X_API_KEY!,
+        "Content-Type": "application/json",
+      },
 
-      message:
-        "Payment failed",
-
-      error:
-        error.message
-
+      body: JSON.stringify(paymentPayload),
     });
 
+    console.log("PAYMENT STATUS:", response.status);
 
- }
+    const text = await response.text();
 
+    console.log("PAYMENT RESPONSE:");
+    console.log(text);
 
+    let data: any;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {
+        raw: text,
+      };
+    }
+
+    return res.status(response.status).json({
+      success: response.ok,
+      data,
+    });
+  } catch (error: any) {
+    console.log("PAYMENT ERROR");
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Payment Failed",
+      error: error.message,
+    });
+  }
 }

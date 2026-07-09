@@ -1,434 +1,208 @@
-import type {
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-
-// =====================
-// GET TOKEN
-// =====================
-
+// ================= TOKEN =================
 async function getZunoToken() {
+  const auth = Buffer.from(
+    `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
+  ).toString("base64");
 
-  const basicAuth =
-    Buffer.from(
-      `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`
-    ).toString("base64");
+  const response = await fetch(process.env.ZUNO_TOKEN_URL!, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
 
-
-  const response =
-    await fetch(
-      process.env.ZUNO_TOKEN_URL!,
-      {
-        method: "POST",
-
-        headers: {
-
-          Authorization:
-            `Basic ${basicAuth}`,
-
-          "Content-Type":
-            "application/x-www-form-urlencoded"
-
-        },
-
-        body:
-          "grant_type=client_credentials"
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  console.log(
-    "ZUNO TOKEN RESPONSE",
-    data
-  );
-
-
- return `${data.token_type} ${data.access_token}`;
+  const data = await response.json();
+  return data.access_token;
 }
 
+// Normalize RC manufacturer names to Zuno catalog makes
+function normalizeCarMake(raw: string) {
+  const b = (raw || "").toUpperCase().replace(/\s+/g, " ").trim();
+  if (b.includes("MARUTI")) return "MARUTI SUZUKI";
+  if (b.includes("HYUNDAI")) return "HYUNDAI";
+  if (b.includes("TATA")) return "TATA";
+  if (b.includes("MAHINDRA")) return "MAHINDRA";
+  if (b.includes("HONDA")) return "HONDA";
+  if (b.includes("TOYOTA")) return "TOYOTA";
+  if (b.includes("KIA")) return "KIA";
+  if (b.includes("VOLKSWAGEN")) return "VOLKSWAGEN";
+  if (b.includes("SKODA")) return "SKODA";
+  if (b.includes("RENAULT")) return "RENAULT";
+  if (b.includes("NISSAN")) return "NISSAN";
+  if (b.includes("MG")) return "MG";
+  if (b.includes("CHEVROLET")) return "CHEVROLET";
+  if (b.includes("FORD")) return "FORD";
+  return b;
+}
 
-
-
-
+// dd-mm-yyyy (RC format) -> yyyy-mm-dd
+function rcDateToIso(d: string) {
+  const m = String(d || "").match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
+  if (req.method !== "POST") {
+    return res.status(405).json({ success: false, message: "Only POST" });
+  }
 
   try {
+    const b = req.body;
+    console.log("4W QUOTE FRONTEND BODY", JSON.stringify(b));
 
+    // Accept BOTH shapes:
+    //  - nested (frontend): { vehicleData: {...}, rcDetails: {...}, ... }
+    //  - flat (Postman/testing): { make, model, variant, ... }
+    const v = b.vehicleData || {};
+    const rc = b.rcDetails || {};
 
-    if (req.method !== "POST") {
+    const make = normalizeCarMake(
+      v.brand || v.make || b.make || rc.vehicle_manufacturer_name || ""
+    );
 
-      return res.status(405).json({
-        success: false,
-        message: "Only POST allowed"
-      });
+    const model = (v.model || b.model || "")
+      .toUpperCase()
+      .replace(/\s+/g, " ")
+      .trim();
 
-    }
+    const variant = (v.variant || b.variant || "")
+      .toUpperCase()
+      .replace(/\s+/g, " ")
+      .trim();
 
+    const registrationDate =
+      b.registrationDate || rcDateToIso(rc.reg_date) || "";
 
-
-    const {
-      vehicleData,
-      rcDetails
-    } = req.body;
-
-
-
-
-    if (!vehicleData) {
-
-      return res.status(400).json({
-        success:false,
-        message:"Vehicle missing"
-      });
-
-    }
-
-
-
-
-    const token =
-      await getZunoToken();
-
-
-
-    if (!token) {
-
-      return res.status(401).json({
-        success:false,
-        message:"Token failed"
-      });
-
-    }
-
-
-
-
-    const today =
-      new Date()
-      .toISOString()
-      .split("T")[0];
-
-
-
+    const isNew = b.isNew === true || b.isNew === "true";
 
     const payload = {
+      channelCode: "002",
+      branch: b.branch || "Mumbai",
 
+      make,
+      model,
+      variant,
 
-      channelCode:"002",
-
-      branch:"Mumbai",
-
-
-
-      make:
-      vehicleData.brand,
-
-
-      model:
-      vehicleData.model,
-
-
-      variant:
-      (vehicleData.variant || "")
-      .replace(/\s+/g," ")
-      .replace("1. 2","1.2")
-      .trim(),
-
-
-      fuelType:
-      vehicleData.fuel,
-
-
-      transmissionType:
-      "Manual",
-
-
-
-
-      rtoLocationName:
-      rcDetails?.rto_code || "",
-
-
+      idvcity: b.idvcity || "MUMBAI",
+      rtoStateCode: b.rtoStateCode || "13",
+      rtoLocationName: b.rtoLocationName || "MH-02",
+      clusterZone: b.clusterZone || "Cluster 3",
+      carZone: b.carZone || "A",
+      rtoZone: b.rtoZone || b.rtoStateCode || "13",
       rtoCityOrDistrict:
-      rcDetails?.reg_authority || "",
+        b.rtoCityOrDistrict || "Andheri (Mumbai Western Suburbs)",
 
+      idv: String(b.idv || ""),
 
+      registrationDate,
+      previousInsurancePolicy: isNew ? "0" : "1",
+      previousPolicyExpiryDate: b.previousPolicyExpiryDate || "",
 
+      typeOfBusiness: isNew ? "New" : "Rollover",
+      renewalStatus: isNew ? "New Policy" : "Rollover",
 
-      registrationDate:
-      convertDate(rcDetails?.reg_date),
-
-
-      dateOfFirstPurchaseOrRegistration:
-      convertDate(rcDetails?.reg_date),
-
-
+      policyType: "Bundled Insurance",
       policyStartDate:
-      today,
+        b.policyStartDate || new Date().toISOString().split("T")[0],
+      policyTenure: String(b.policyTenure || "1"),
 
+      claimDeclaration: "",
+      previousNcb: "",
+      annualMileage: "10000",
 
-      dateOfTransaction:
-      today,
+      fuelType: v.fuel || b.fuelType || rc.type || "Petrol",
+      transmissionType: b.transmissionType || "Manual",
 
+      dateOfTransaction: new Date().toISOString().split("T")[0],
+      subPolicyType: "",
+      validLicenceNo: "Y",
 
+      transferOfNcb: "N",
+      transferOfNcbPercentage: "",
+      proofProvidedForNcb: "",
+      protectionofNcbValue: "",
 
+      breakinInsurance: "NBK",
+      contractTenure: String(b.policyTenure || "1"),
 
-      previousInsurancePolicy:"0",
+      overrideAllowableDiscount: "N",
+      fibreGlassFuelTank: "Y",
+      antiTheftDeviceInstalled: "Y",
+      automobileAssociationMember: "Y",
 
-      previousPolicyExpiryDate:"",
+      bodystyleDescription: (
+        b.bodystyleDescription ||
+        rc.body_type ||
+        "HATCHBACK"
+      )
+        .toUpperCase()
+        .replace(/\s+/g, ""),
 
-      typeOfBusiness:"Roll Over",
+      dateOfFirstPurchaseOrRegistration: registrationDate,
 
-      renewalStatus:"Renewal",
+      dateOfBirth: b.dateOfBirth || "1990-01-01",
+      policyHolderGender: b.gender || "Male",
+      policyholderOccupation: "Medium to High",
 
-      policyType:"Package Policy",
+      typeOfGrid: "Grid 1",
 
-      policyTenure:"1",
-
-      contractTenure:"1.0",
-
-      subPolicyType:"",
-
-      breakinInsurance:"NBK",
-
-
-
-
-      bodystyleDescription:
-      rcDetails?.body_type || "",
-
-
-      annualMileage:"10000",
-
-
-      idv:
-      vehicleData?.idv || "0",
-
-
-
-
-
-      dateOfBirth:"1995-01-01",
-
-      policyHolderGender:"Male",
-
-      policyholderOccupation:
-      "Medium to High",
-
-      typeOfGrid:"Grid 1",
-
-
-
-
-
-      transferOfNcb:"N",
-
-      transferOfNcbPercentage:"",
-
-      proofProvidedForNcb:"",
-
-      overrideAllowableDiscount:"N",
-
-      fibreGlassFuelTank:"N",
-
-      antiTheftDeviceInstalled:"N",
-
-      automobileAssociationMember:"N",
-
-
-
-
-
-      contractDetails:[
-
+      contractDetails: [
         {
-
-          contract:
-          "Own Damage Contract",
-
-
-          coverage:{
-
-            coverage:
-            "Own Damage Coverage",
-
-            subCoverage:[
-
+          contract: "Own Damage Contract",
+          coverage: {
+            coverage: "Own Damage Coverage",
+            deductible: "Own Damage Basis Deductible",
+            discount: ["Auto Mobile Association Discount"],
+            subCoverage: [
               {
-
-                subCoverage:
-                "Own Damage Basic",
-
-                limit:
-                "Own Damage Basic Limit"
-
-              }
-
-            ]
-
-          }
-
-        }
-
-      ]
-
-
+                subCoverage: "Own Damage Basic",
+                limit: "Own Damage Basic Limit",
+              },
+            ],
+          },
+        },
+      ],
     };
 
+    console.log("4W QUOTE PAYLOAD", JSON.stringify(payload));
 
+    const token = await getZunoToken();
+    console.log("4W TOKEN:", token ? "YES" : "NO");
 
+    const url = `${process.env.ZUNO_MOTOR_URL}/quote`;
+    console.log("CALLING 4W QUOTE URL", url);
 
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.ZUNO_MOTOR_API_KEY!,
+      },
+      body: JSON.stringify(payload),
+    });
 
-    console.log(
-      "QUOTE AUTH",
-      {
-        url:
-        `${process.env.ZUNO_BASE_URL}/motor/quote`,
+    const text = await response.text();
+    console.log("4W QUOTE STATUS", response.status);
+    console.log("4W QUOTE RAW", text);
 
-        token:
-        token.substring(0,20),
-
-        apiKey:
-        process.env.ZUNO_X_API_KEY ? "FOUND":"MISSING"
-      }
-    );
-
-
-
-
-
-
-    const quoteResponse =
-      await fetch(
-        `${process.env.ZUNO_BASE_URL}/motor/quote`,
-        {
-
-          method:"POST",
-
-
-          headers:{
-
-            "Content-Type":
-            "application/json",
-
-
-            "x-api-key":
-            process.env.ZUNO_X_API_KEY!,
-
-
-            // HIZUNO TOKEN
-            Authorization:
-            token
-
-          },
-
-
-          body:
-          JSON.stringify(payload)
-
-        }
-      );
-
-
-
-
-
-    const result =
-      await quoteResponse.json();
-
-
-
-
-    console.log(
-      "ZUNO 4W RESPONSE",
-      result
-    );
-
-
-
-
-    if (!quoteResponse.ok) {
-
-      return res.status(400).json({
-        success:false,
-        error:result
-      });
-
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
     }
 
-
-
-
-
-    return res.status(200).json({
-
-      success:true,
-
-      quote:
-      result
-
-    });
-
-
-
-
-
+    return res.status(response.status).json({ success: response.ok, data });
+  } catch (error: any) {
+    console.log("4W QUOTE ERROR", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
-
-  catch(error:any){
-
-
-    console.log(
-      "QUOTE ERROR",
-      error
-    );
-
-
-    return res.status(500).json({
-
-      success:false,
-
-      message:
-      error.message
-
-    });
-
-  }
-
-
-}
-
-
-
-
-
-
-
-function convertDate(date?:string){
-
-
-if(!date)
-return "";
-
-
-const arr =
-date.split("-");
-
-
-if(arr.length!==3)
-return date;
-
-
-return `${arr[2]}-${arr[1]}-${arr[0]}`;
-
 }
