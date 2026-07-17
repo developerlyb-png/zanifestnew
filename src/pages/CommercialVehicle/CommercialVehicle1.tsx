@@ -343,6 +343,7 @@ const CommercialVehicle1: React.FC = () => {
           vehicleClass: rc.vehicleClass, // e.g. "GOODS CARRIER"
           vehicleCategory: rc.vehicleCategory, // e.g. "LGV" / "HGV"
           grossWeight: rc.grossWeight, // e.g. "7490"
+          cubicCapacity: rc.cubicCapacity, // e.g. "7450" — needed by fullQuote
           seatingCapacity: rc.seatingCapacity,
           fuelType: rc.fuelType,
           registrationDate: rc.registrationDate, // real date, not year-03-03
@@ -350,6 +351,7 @@ const CommercialVehicle1: React.FC = () => {
           engineNumber: rc.engineNumber,
           permitType: rc.permitType,
           previousInsurer: rc.previousInsurer,
+          previousPolicyNumber: rc.previousPolicyNumber,
           insuranceUpto: rc.insuranceUpto,
         })
       );

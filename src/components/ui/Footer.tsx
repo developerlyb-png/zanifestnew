@@ -1,12 +1,14 @@
 import React from "react";
 
-import { FaLinkedin, FaXTwitter } from "react-icons/fa6";
-import { BsFacebook } from "react-icons/bs";
+
+
 
 import styles from "@/styles/components/ui/Footer.module.css";
 import Image from "next/image";
 import Link from "next/link";
-
+import { FaLinkedin, FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { BsFacebook } from "react-icons/bs";
 const LIST = [
   {
     head: "Health Insurance",
@@ -61,12 +63,70 @@ function Footer() {
             solutions to dedicated claim assistance team, we offer you a
             complete peace of mind.
           </div>
+<br />
 
-          <div className={styles.icons}>
-            <FaLinkedin size={40} />
-            <BsFacebook size={40} />
-            <FaXTwitter size={40} />
+          {/* ✅ Structured Company Info (No layout change) */}
+          <div className={styles.desc}>
+            <strong>Zanifest Insurance Broker Private Limited</strong><br />
+            <strong>CIN :</strong> U66220PB2025PTC063559<br />
+            <strong>License category :</strong> Insurance Broker Direct (General)<br />
+            <strong>Registration No :</strong> 1119<br />
+            <strong>Registration Code :</strong> IRDAI/INT/BRK/DB1242/2025<br />
+            <strong>Valid Till :</strong> 27/11/2028
           </div>
+
+          <div className={styles.desc}>
+            <strong>Customer Care Email :</strong>{" "}
+            <a
+  href="mailto:support@zanifestinsurance.com"
+  style={{ color: "orange" }}
+>
+  support@zanifestinsurance.com
+</a>
+            <br />
+            <strong>Tel  :</strong> 01762-496934
+          </div>
+
+         <div className={styles.icons}>
+
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/zanifestinsurance?igsh=MWN2bXp1MngxN2JoMA%3D%3D"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaInstagram size={30} color="#fff" />
+  </a>
+
+  {/* YouTube */}
+  <a
+    href="https://youtube.com/@zanifestinsurance?si=qeoR8nGF2vM9qSLu"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaYoutube size={30} color="#fff" />
+  </a>
+
+  {/* LinkedIn */}
+  <a
+    href="https://www.linkedin.com/company/zanifest-insurance-broker-pvt-ltd/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaLinkedin size={30} color="#fff"/>
+  </a>
+
+  {/* Facebook (link mile to yaha daal dena) */}
+  <a href="https://www.facebook.com/people/Zanifest-Insurance/61587951775182/?rdid=ugTU8cAvrghxwvyw&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18a9DHo2th%2F" target="_blank" rel="noopener noreferrer">
+    <BsFacebook size={30} color="#fff" />
+  </a>
+
+ {/* Twitter / X */}
+  <a href="#" target="_blank" rel="noopener noreferrer">
+    <FaXTwitter size={30} color="#fff" />
+  </a>
+
+</div>
         </div>
 
         {/* Dynamic Footer Links */}

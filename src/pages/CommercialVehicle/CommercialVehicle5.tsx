@@ -63,6 +63,10 @@ const CommercialVehicle5: React.FC = () => {
       const rcSaved = localStorage.getItem("cvRcDetails");
       const rc = rcSaved ? JSON.parse(rcSaved) : {};
 
+      // /cv/idv master data fetched in CommercialVehicle1
+      const idvSaved = localStorage.getItem("cvIdvDetails");
+      const idvDetails = idvSaved ? JSON.parse(idvSaved) : null;
+
       const res = await axios.post("/api/zuno/cv/quick-quote", {
         claimInLastYearPolicy: "N",
         yearOfPurchase: data.yearOfPurchase,
@@ -70,12 +74,16 @@ const CommercialVehicle5: React.FC = () => {
         model: data.model,
         varient: data.varient,
         rtoDetails: data.rtoDetails,
-        // RC classification for correct rating (GCV vs PCV)
+        // RC facts for the real /quote contract
         vehicleClass: rc.vehicleClass,
         vehicleCategory: rc.vehicleCategory,
         grossWeight: rc.grossWeight,
         seatingCapacity: rc.seatingCapacity,
         registrationDate: rc.registrationDate,
+        cubicCapacity: rc.cubicCapacity,
+        fuelType: rc.fuelType,
+        insuranceUpto: rc.insuranceUpto,
+        idvDetails, // /cv/idv master data (idv, exshowroom, fuel, cc)
       });
       console.log("QUOTE RESPONSE", res.data);
 
@@ -116,6 +124,21 @@ const CommercialVehicle5: React.FC = () => {
         requestId: quote.requestId,
         premiumDetails: premium,
         idv,
+        exshowroomPrice:
+          quote?.contractDetails?.insuredObject?.exshowroomPrice ||
+          quotePayload?.exshowroomPrice ||
+          "",
+        policyNumber:
+          quote?.policyLevelDetails?.policyNumber ||
+          quote?.policyNumber ||
+          "",
+        // Zuno's OWN master attributes for this make/model/variant —
+        // authoritative over RC values for rating (fuel/CC must match
+        // the master's rate row or the core service errors).
+        masterFuelType:
+          quote?.contractDetails?.insuredObject?.fuelType || "",
+        masterCubicCapacity:
+          quote?.contractDetails?.insuredObject?.cubiccapacity || "",
       })
     );
     if (quotePayload) {

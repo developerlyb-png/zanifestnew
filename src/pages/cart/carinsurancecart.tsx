@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/pages/cart/carinsurancecart.module.css";
 import Navbar from "@/components/ui/Navbar";
@@ -12,6 +11,7 @@ const carinsurancecart = () => {
   const [hasCng, setHasCng] = useState("no");
   const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState("");
 
   // Real data
   const [plan, setPlan] = useState<any>(null);
@@ -102,7 +102,8 @@ const carinsurancecart = () => {
         new Date().getFullYear() - new Date(nomineeDob).getFullYear()
       );
 
-      // ================= FULL QUOTE =================
+      // ================= STEP 1: FULL QUOTE =================
+      setLoadingStep("Creating quote...");
       const res = await fetch("/api/zuno/4w/full-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -160,102 +161,149 @@ const carinsurancecart = () => {
         return;
       }
 
+      // ================= STEP 2: KYC — SKIPPED (TESTING MODE) =================
+      // No KYC API call. Use the stored KYC request number and send it
+      // as VISoF_KYC_Req_No (override field via localStorage carKycField).
+      const kycNo = localStorage.getItem("carApprovedKycNo") || "";
+      const kycField =
+        localStorage.getItem("carKycField") || "VISoF_KYC_Req_No";
+      const kycVerified = false;
+      console.log("KYC (stored) >>>", kycField, "=", kycNo || "(none)");
+
+      if (!kycNo) {
+        setLoading(false);
+        alert("Set localStorage carApprovedKycNo first (zuno-... number)");
+        return;
+      }
+
+      // Persist everything before issuing
       localStorage.setItem(
         "carFullQuote",
-        JSON.stringify({ quoteNo, quoteOptionNo, raw: fullQuote })
+        JSON.stringify({
+          quoteNo,
+          quoteOptionNo,
+          kycNo,
+          zunoKycNo: kycNo,
+          kycVerified,
+          fullQuote,
+          quoteInput,
+          rc,
+          customer: {
+            firstName,
+            lastName,
+            gender,
+            dob,
+            mobile,
+            email,
+            address1,
+            city,
+            pincode,
+            nomineeName,
+            nomineeRelation,
+            nomineeDob,
+            pan,
+          },
+        })
       );
 
-      // ================= KYC (SIGNZY) =================
-      const kycRes = await fetch("/api/zuno/4w/kyc", {
+      // ================= STEP 3: ISSUE POLICY (no KYC redirect) =================
+      setLoadingStep("Issuing policy...");
+      const issueRes = await fetch("/api/zuno/4w/issue-policy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          quoteNo,
+          quoteOptionNo,
+          kycNo,
+          kycField, // "VISoF_KYC_Req_No" (default) or "IC_KYC_No"
+        }),
+      });
+
+      const issueData = await issueRes.json();
+      console.log(
+        "ISSUE POLICY RESPONSE >>>",
+        JSON.stringify(issueData, null, 2)
+      );
+
+      if (!issueRes.ok || !issueData.success) {
+        setLoading(false);
+        alert("Issue Policy failed — check console for the raw response");
+        return;
+      }
+
+      // Extract policy number — real Zuno shape:
+      // issuePolicyObject.issuepolicy.policynrTt
+      const issued = issueData.data || {};
+      const ip = issued.issuePolicyObject?.issuepolicy || {};
+      const policyNo =
+        ip.policynrTt ||
+        issued.policyNo ||
+        issued.policyNumber ||
+        "";
+
+      console.log("POLICY NO >>>", policyNo);
+
+      localStorage.setItem(
+        "carPolicyResult",
+        JSON.stringify({
+          policyNo,
+          quoteNo,
+          quoteOptionNo,
+          amount: plan?.grossPremium,
+          raw: issued,
+        })
+      );
+
+      // ================= STEP 4: PAYMENT LINK =================
+      setLoadingStep("Creating payment link...");
+      const payRes = await fetch("/api/sbi/2w/online-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transactionId: policyNo || `TXN${Date.now()}`,
+          amount: plan?.grossPremium,
           customer: {
             fullName: `${firstName} ${lastName}`.trim(),
-            firstName,
-            lastName,
-            pan,
-            dateOfBirth: dob,
-            gender,
-            mobile,
             email,
+            mobile,
           },
         }),
       });
 
-      const kycData = await kycRes.json();
-      console.log("SIGNZY KYC RESULT >>>", JSON.stringify(kycData, null, 2));
+      const payData = await payRes.json();
+      console.log("PAYMENT RESPONSE >>>", JSON.stringify(payData, null, 2));
 
-      if (!kycRes.ok || !kycData.success) {
-        setLoading(false);
-        alert("KYC request failed — check console");
-        return;
-      }
+      // Try common locations for the hosted payment link
+      const pd = payData.data?.data || payData.data || {};
+      const payLink =
+        pd.paymentLink ||
+        pd.payment_url ||
+        pd.paymentUrl ||
+        pd.link ||
+        pd.url ||
+        pd.shortUrl ||
+        pd.redirectUrl ||
+        "";
 
-      // Signzy response can be nested — cover common shapes
-      const kycBody = kycData.data?.result || kycData.data?.data || kycData.data || {};
+      console.log("PAYMENT LINK >>>", payLink);
 
-      // Signzy verification status — different field names possible across responses
-      const kycStatus =
-        kycBody.kycStatus ??
-        kycBody.status ??
-        kycBody.KYC_Status ??
-        kycBody.verificationStatus;
-
-      const isVerified =
-        kycStatus === true ||
-        String(kycStatus).toUpperCase() === "SUCCESS" ||
-        String(kycStatus).toUpperCase() === "VERIFIED" ||
-        String(kycStatus).toUpperCase() === "COMPLETED";
-
-      if (!isVerified) {
-        console.log(
-          "SIGNZY KYC NOT VERIFIED — status:",
-          kycStatus,
-          "| Proceeding with reference for UAT; issuance will decide."
-        );
-        // PRODUCTION TODO: if not verified, hit /api/zuno/4w/kyc-url to get a
-        // web KYC URL (Signzy /create-url) and redirect user to complete KYC.
-      }
-
-      // Signzy reference number — try all common keys
-      const kycNo =
-        kycBody.kycReferenceNumber ||
-        kycBody.kycRefNo ||
-        kycBody.kycId ||
-        kycBody.referenceId ||
-        kycBody.leadId ||
-        kycBody.IC_Unique_ID ||
-        null;
-
-      console.log("SIGNZY KYC REFERENCE >>>", kycNo);
-
-      if (!kycNo) {
-        setLoading(false);
-        alert("KYC reference number missing — check console");
-        return;
-      }
-
-      // ================= ISSUE POLICY =================
-      const issueRes = await fetch("/api/zuno/4w/issue-policy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quoteNo, quoteOptionNo, kycNo }),
-      });
-
-      const issueData = await issueRes.json();
-      console.log("ISSUE RESULT >>>", JSON.stringify(issueData, null, 2));
+      localStorage.setItem(
+        "carPaymentResult",
+        JSON.stringify({ payLink, raw: payData })
+      );
 
       setLoading(false);
 
-      if (!issueRes.ok || !issueData.success) {
-        alert("Policy issuance failed — check console");
+      if (payRes.ok && payData.success && payLink) {
+        // Hand off to Zuno's hosted payment page
+        window.location.href = payLink;
         return;
       }
 
-      localStorage.setItem("issuedCarPolicy", JSON.stringify(issueData.data));
-      alert("Policy issued successfully! Check console for policy number.");
-      // TODO: router.push to a 4W success page (NOT /payment-success — that's the 2W page)
+      // Payment link failed — policy is issued though, so land on
+      // the success page which will show the failure state
+      alert("Payment link failed — check console (policy IS issued)");
+      router.push("/cart/car-policy-success");
     } catch (e: any) {
       setLoading(false);
       console.log("PAY ERROR", e);
@@ -479,7 +527,7 @@ const carinsurancecart = () => {
                 onClick={handlePay}
                 disabled={loading}
               >
-                {loading ? "PROCESSING..." : "PAY SECURELY →"}
+                {loading ? loadingStep || "PROCESSING..." : "PAY SECURELY →"}
               </button>
               <div className={styles.terms}>
                 <label>

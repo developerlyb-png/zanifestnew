@@ -37,17 +37,31 @@ export default async function handler(
     if (!kycNo) {
       return res.status(400).json({
         success: false,
-        message: "kycNo (IC_Unique_ID from KYC) is required",
+        message: "kycNo is required (VISoF_KYC_Req_No or IC_KYC_No value)",
       });
     }
 
-    // Superset payload — quote numbers in every plausible location
-    // (runtime validator differs from the Swagger sample), plus the KYC ref.
+    // Zuno validator (E1000): "Please provide either VISoF_KYC_Req_No
+    // or IC_KYC_No". Send EXACTLY ONE of them.
+    //   VISoF_KYC_Req_No -> the e-KYC request reference (zunoKycNo)  [default]
+    //   IC_KYC_No        -> the IC's KYC number for an approved record
+    const kycField =
+      req.body.kycField === "IC_KYC_No" ? "IC_KYC_No" : "VISoF_KYC_Req_No";
+
+    const kycValue = req.body.stripKycPrefix
+      ? String(kycNo).replace(/^zuno-/i, "")
+      : String(kycNo);
+
+    const kycFields = { [kycField]: kycValue };
+    console.log("4W ISSUE KYC FIELD >>>", kycField, "=", kycValue);
+
+    // Superset payload — quote numbers + KYC ref in every plausible
+    // location (runtime validator differs from the Swagger sample).
     const payload = {
       // top-level (flat)
       quoteNo: String(quoteNo),
       quoteOptionNo: String(quoteOptionNo),
-      IC_KYC_No: String(kycNo),
+      ...kycFields,
 
       product: {
         name: "EGICProductWebServicesV1",
@@ -58,19 +72,19 @@ export default async function handler(
         // directly under policyRequest
         quoteNo: String(quoteNo),
         quoteOptionNo: String(quoteOptionNo),
-        IC_KYC_No: String(kycNo),
+        ...kycFields,
 
         issuePolicyList: [
           {
             // documented shape
             quoteNo: String(quoteNo),
             quoteOptionNo: String(quoteOptionNo),
-            IC_KYC_No: String(kycNo),
+            ...kycFields,
             // wrapped shape (2W collection style)
             issuePolicy: {
               quoteNo: String(quoteNo),
               quoteOptionNo: String(quoteOptionNo),
-              IC_KYC_No: String(kycNo),
+              ...kycFields,
             },
           },
         ],

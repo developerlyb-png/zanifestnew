@@ -238,12 +238,12 @@ function buildPayload(ratingData: any, body: any) {
     branchNameAndAddress: "",
 
     salutation: "Mr.",
-    firstName: customer.fullName,
+    firstName: "Ankit",
     middleName: "",
-    lastName: "Kumar",
+    lastName: "Singh",
     gender: "Male",
     maritalStatus: "Single",
-    dateOfBirth: "1995-06-19",
+    dateOfBirth: "1998-08-05",
     nationality: "IN",
 
     currentAddressLine1: "187/A",
@@ -271,7 +271,7 @@ function buildPayload(ratingData: any, body: any) {
     other: "",
     isNomineeMinor: "N",
     nomineeDOB: "1994-05-25",
-    nomineeAge: "30",
+    nomineeAge: "32",
     guardianName: "",
 
     overrideAllowableDiscount: "N",
@@ -284,14 +284,14 @@ function buildPayload(ratingData: any, body: any) {
     staffCode: "",
 
     driverDetails: {
-      nameofDriver: customer.fullName,
-      dateofBirth: "1995-06-19",
+      nameofDriver: "Ankit Singh",
+      dateofBirth: "1998-08-05",
       genderofTheDriver: "Male",
-      ageOfDriver: "30",
+      ageOfDriver: "27",
       relationshipwithProposer: "SELF",
       driverExperienceinyears: "5",
       middleName: "",
-      lastName: "Kumar",
+      lastName: "Singh",
     },
 
     ContractDetails, // CAPITAL C — this was the killer bug
