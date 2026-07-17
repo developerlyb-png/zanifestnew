@@ -10,13 +10,13 @@ function UserDetails() {
     <div className={styles.cont}>
       <div className={styles.detailsSection}>
         <div className={styles.detailItem}>
-          <FaPhoneAlt />
-          <h4 className={styles.detailsText}>+91 8146777455</h4>
+          {/* <FaPhoneAlt /> */}
+          {/* <h4 className={styles.detailsText}>+91 8146777455</h4> */}
         </div>
-        <div className={styles.line}></div>
+        {/* <div className={styles.line}></div> */}
         <div className={styles.detailItem}>
-          <MdEmail />
-          <h4 className={styles.detailsText}>support@zanifestinsurance.com </h4>
+          {/* <MdEmail /> */}
+          {/* <h4 className={styles.detailsText}>support@zanifestinsurance.com </h4> */}
         </div>
         {/* <button onClick={() => signOut()}>
           Logout
