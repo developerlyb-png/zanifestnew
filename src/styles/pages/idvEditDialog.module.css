@@ -1,0 +1,191 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.box {
+  width: 90%;
+  max-width: 440px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #777;
+  margin: 4px 0 0;
+}
+
+.closeBtn {
+  background: #f1f3f6;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.optionRow:hover {
+  border-color: #90c0ff;
+}
+
+.optionRowSelected {
+  border-color: #007bff;
+  background-color: #f0f7ff;
+}
+
+.radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #b7c0cc;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.radio[data-checked="true"] {
+  border-color: #007bff;
+}
+
+.radio[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #007bff;
+}
+
+.optionLabel {
+  flex: 1;
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+}
+
+.optionValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.sliderBlock {
+  padding: 4px 14px 10px;
+  margin-bottom: 6px;
+}
+
+.slider {
+  width: 100%;
+  accent-color: #007bff;
+  cursor: pointer;
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.infoToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.infoText {
+  font-size: 12.5px;
+  color: #666;
+  line-height: 1.5;
+  background: #f8f9fb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+}
+
+.errorText {
+  color: #e74c3c;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.updateBtn {
+  width: 100%;
+  background: #007bff;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.updateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -25,7 +25,7 @@ const LIST = [
       { name: "Two Wheeler Insurance", url: "/TwoWheeler/bikeinsurance" },
       { name: "Pay as you Drive", url: "#" },
       { name: "Third Party Insurance", url: "/ThirdParty/Thirdparty1" },
-      { name: "Commercial Vehicle Insurance", url: "/CommercialVehicle/CommercialVehicle1" },
+      { name: "Commercial Vehicle", url: "/CommercialVehicle/CommercialVehicle1" },
     ],
   },
   {

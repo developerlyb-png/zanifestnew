@@ -5,17 +5,86 @@ import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import {
   FaFilter,
-  FaPlus,
   FaVideo,
   FaTrophy,
-  FaCircle,
   FaTimes,
+  FaShieldAlt,
+  FaRoad,
+  FaTools,
+  FaOilCan,
+  FaKey,
+  FaFileInvoiceDollar,
+  FaSuitcaseRolling,
+  FaAward,
+  FaCheckCircle,
+  FaChevronDown,
+  FaChevronUp,
+  FaPencilAlt,
 } from "react-icons/fa";
 import { RiArrowRightWideLine } from "react-icons/ri";
 import UserDetails from "@/components/ui/UserDetails";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import zunoLogo from "@/assets/images.jpeg"; // TODO: replace with a Zuno logo asset
+import IdvEditDialog from "./IdvEditDialog";
+import { requoteWithAddons, requoteWithIdv } from "@/lib/zuno4w";
+
+// Confirmed Zuno 4W addon subCoverage names (from the "Motor Addon Bundling" collection)
+const ADDON_CATALOG = [
+  {
+    key: "Zero Depreciation",
+    label: "Zero Depreciation",
+    description: "Full claim value with no deduction for wear and tear on parts",
+    icon: FaShieldAlt,
+  },
+  {
+    key: "Basic Road Assistance",
+    label: "Roadside Assistance",
+    description: "24x7 emergency support for breakdowns, towing and flat tyres",
+    icon: FaRoad,
+  },
+  {
+    key: "Engine Protect",
+    label: "Engine Protection",
+    description: "Covers engine damage from water ingress, oil leakage or seizure",
+    icon: FaTools,
+  },
+  {
+    key: "Consumable Cover",
+    label: "Consumables Cover",
+    description: "Covers cost of nuts, bolts, engine oil and other consumables",
+    icon: FaOilCan,
+  },
+  {
+    key: "Key Replacement",
+    label: "Key & Lock Replacement",
+    description: "Covers cost of replacing lost or stolen keys and locks",
+    icon: FaKey,
+  },
+  {
+    key: "Return To Invoice",
+    label: "Return to Invoice",
+    description: "Get the full invoice value of your car on total loss or theft",
+    icon: FaFileInvoiceDollar,
+  },
+  {
+    key: "Loss of Personal Belongings",
+    label: "Personal Belongings Cover",
+    description: "Covers personal items lost from inside the vehicle",
+    icon: FaSuitcaseRolling,
+  },
+  {
+    key: "Protection of NCB",
+    label: "NCB Protection",
+    description: "Keep your No Claim Bonus intact even after making a claim",
+    icon: FaAward,
+  },
+];
+
+const DEFAULT_VISIBLE_ADDONS = 5;
+
+const sameAddonSet = (a: string[], b: string[]) =>
+  a.length === b.length && [...a].sort().join("|") === [...b].sort().join("|");
 
 const CarInsurance3 = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -24,6 +93,23 @@ const CarInsurance3 = () => {
   // Real quote data
   const [plan, setPlan] = useState<any>(null);
   const [quoteInput, setQuoteInput] = useState<any>(null);
+
+  // Original Zuno-quoted IDV, fixed as the baseline for the edit range
+  const [defaultIdv, setDefaultIdv] = useState<number | null>(null);
+  const [showIdvDialog, setShowIdvDialog] = useState(false);
+  const [idvLoading, setIdvLoading] = useState(false);
+  const [idvError, setIdvError] = useState<string | null>(null);
+
+  // Whether the initial localStorage read has completed (drives the loading skeleton)
+  const [loaded, setLoaded] = useState(false);
+
+  // Addons currently baked into `plan`'s premium vs. the checkbox draft selection
+  const [appliedAddons, setAppliedAddons] = useState<string[]>([]);
+  const [draftAddons, setDraftAddons] = useState<string[]>([]);
+  const [showAllAddons, setShowAllAddons] = useState(false);
+  const [addonLoading, setAddonLoading] = useState(false);
+  const [addonError, setAddonError] = useState<string | null>(null);
+  const [showCoverageDetails, setShowCoverageDetails] = useState(false);
 
   const router = useRouter();
 
@@ -45,10 +131,24 @@ const CarInsurance3 = () => {
     try {
       const p = localStorage.getItem("selectedQuote");
       const q = localStorage.getItem("carQuoteInput");
-      if (p && p !== "undefined") setPlan(JSON.parse(p));
+      const a = localStorage.getItem("carSelectedAddons");
+      if (p && p !== "undefined") {
+        const parsedPlan = JSON.parse(p);
+        setPlan(parsedPlan);
+        setDefaultIdv(Number(parsedPlan.idv));
+      }
       if (q && q !== "undefined") setQuoteInput(JSON.parse(q));
+      if (a && a !== "undefined") {
+        const parsedAddons = JSON.parse(a);
+        if (Array.isArray(parsedAddons)) {
+          setAppliedAddons(parsedAddons);
+          setDraftAddons(parsedAddons);
+        }
+      }
     } catch (e) {
       console.log("PLAN LOAD ERROR", e);
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -57,6 +157,64 @@ const CarInsurance3 = () => {
 
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
+
+  const toggleDraftAddon = (key: string) => {
+    setDraftAddons((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const hasPendingAddonChanges = !sameAddonSet(draftAddons, appliedAddons);
+
+  const applyAddons = async () => {
+    if (!plan || !quoteInput) return;
+    setAddonLoading(true);
+    setAddonError(null);
+    try {
+      const updatedPlan = await requoteWithAddons(
+        quoteInput,
+        Number(plan.idv),
+        draftAddons
+      );
+      setPlan(updatedPlan);
+      setAppliedAddons(draftAddons);
+      localStorage.setItem("selectedQuote", JSON.stringify(updatedPlan));
+      localStorage.setItem("carSelectedAddons", JSON.stringify(draftAddons));
+    } catch (e: any) {
+      setAddonError(e.message || "Failed to update the quote with these addons");
+    } finally {
+      setAddonLoading(false);
+    }
+  };
+
+  const addonLabel = (key: string) =>
+    ADDON_CATALOG.find((a) => a.key === key)?.label || key;
+
+  const isCustomIdv =
+    plan && defaultIdv != null && Number(plan.idv) !== defaultIdv;
+
+  const applyRecommendedIdv = async () => {
+    if (!plan || !quoteInput || defaultIdv == null || !isCustomIdv) return;
+    setIdvLoading(true);
+    setIdvError(null);
+    try {
+      const updatedPlan = await requoteWithIdv(
+        quoteInput,
+        defaultIdv,
+        appliedAddons
+      );
+      setPlan(updatedPlan);
+      localStorage.setItem("selectedQuote", JSON.stringify(updatedPlan));
+    } catch (e: any) {
+      setIdvError(e.message || "Failed to switch to the recommended IDV");
+    } finally {
+      setIdvLoading(false);
+    }
+  };
+
+  const visibleAddons = showAllAddons
+    ? ADDON_CATALOG
+    : ADDON_CATALOG.slice(0, DEFAULT_VISIBLE_ADDONS);
 
   return (
     <div>
@@ -129,11 +287,59 @@ const CarInsurance3 = () => {
                 </div>
               </div>
               <hr />
-              <div className={styles.detailRow}>
-                IDV Cover (Insured Value)
-                <span className={styles.selectIdv}>{inr(plan?.idv)}</span>
-                <FaCircle className={styles.circle} />
+
+              <div className={styles.idvCard}>
+                <p className={styles.idvCardTitle}>IDV (Car value)</p>
+
+                <div
+                  className={`${styles.idvOption} ${
+                    isCustomIdv ? styles.idvOptionSelected : ""
+                  }`}
+                  onClick={() => {
+                    if (plan && quoteInput) setShowIdvDialog(true);
+                  }}
+                >
+                  <span
+                    className={styles.idvRadio}
+                    data-checked={Boolean(isCustomIdv)}
+                  />
+                  <span className={styles.idvOptionLabel}>Selected IDV</span>
+                  <span className={styles.idvOptionValue}>
+                    {inr(plan?.idv)}
+                  </span>
+                  <FaPencilAlt
+                    className={styles.idvPencil}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (plan && quoteInput) setShowIdvDialog(true);
+                    }}
+                  />
+                </div>
+
+                <div
+                  className={`${styles.idvOption} ${
+                    !isCustomIdv ? styles.idvOptionSelected : ""
+                  }`}
+                  onClick={applyRecommendedIdv}
+                >
+                  <span
+                    className={styles.idvRadio}
+                    data-checked={!isCustomIdv}
+                  />
+                  <span className={styles.idvOptionLabel}>
+                    Recommended IDV
+                  </span>
+                  <span className={styles.idvOptionValue}>
+                    {defaultIdv != null ? inr(defaultIdv) : "--"}
+                  </span>
+                </div>
+
+                {idvLoading && (
+                  <p className={styles.idvHint}>Updating IDV...</p>
+                )}
+                {idvError && <p className={styles.addonError}>{idvError}</p>}
               </div>
+
               <div className={styles.detailRow}>
                 <p>RTO</p>
                 <p>
@@ -151,51 +357,71 @@ const CarInsurance3 = () => {
             </div>
           </div>
 
-          {/* Sidebar 2 - Filters (kept; addons wire up at fullQuote stage) */}
+          {/* Sidebar 2 - Addons (real, wired to Zuno's Addon Contract) */}
           <div className={styles.sidebar1}>
-            <h3 className={styles.sidebarTitle}>Filters</h3>
-            <div className={styles.filters}>
-              <h4>
-                <FaFilter className={styles.icon} /> Sort & Filter
-              </h4>
-              <div className={styles.filterSection1}>
-                <h5>Addons</h5>
-                <label>
-                  <input type="checkbox" /> Zero Depreciation
-                </label>
-                <label>
-                  <input type="checkbox" /> 24x7 Roadside Assistance
-                </label>
-                <label>
-                  <input type="checkbox" /> Engine Protection Cover
-                </label>
-                <label>
-                  <input type="checkbox" /> Consumables
-                </label>
-                <label>
-                  <input type="checkbox" /> Key & Lock Replacement
-                </label>
-                <p className={styles.seeAll}>See all ▼</p>
-              </div>
-              <div className={styles.filterSection}>
-                <h5>Sort by</h5>
-                <FaPlus className={styles.plusIcon} />
-              </div>
-              <div className={styles.filterSection}>
-                <h5>Deductibles</h5>
-                <FaPlus className={styles.plusIcon} />
-              </div>
-              <div className={styles.filterSection}>
-                <h5>Accessories cover</h5>
-                <FaPlus className={styles.plusIcon} />
-              </div>
+            <h3 className={styles.sidebarTitle}>
+              <FaFilter className={styles.icon} /> Addons
+            </h3>
+            <div className={styles.addonGrid}>
+              {visibleAddons.map((addon) => {
+                const Icon = addon.icon;
+                const selected = draftAddons.includes(addon.key);
+                return (
+                  <button
+                    key={addon.key}
+                    type="button"
+                    className={`${styles.addonCard} ${
+                      selected ? styles.addonCardSelected : ""
+                    }`}
+                    onClick={() => toggleDraftAddon(addon.key)}
+                  >
+                    <div className={styles.addonCardHeader}>
+                      <Icon className={styles.addonIcon} />
+                      <span className={styles.addonLabel}>{addon.label}</span>
+                      {selected && (
+                        <FaCheckCircle className={styles.addonCheck} />
+                      )}
+                    </div>
+                    <p className={styles.addonDescription}>
+                      {addon.description}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
+
+            {ADDON_CATALOG.length > DEFAULT_VISIBLE_ADDONS && (
+              <p
+                className={styles.seeAll}
+                onClick={() => setShowAllAddons((prev) => !prev)}
+              >
+                {showAllAddons ? "See less ▲" : "See all ▼"}
+              </p>
+            )}
+
+            {addonError && <p className={styles.addonError}>{addonError}</p>}
+
+            {hasPendingAddonChanges && (
+              <button
+                type="button"
+                className={styles.updateQuoteBtn}
+                onClick={applyAddons}
+                disabled={addonLoading}
+              >
+                {addonLoading ? "Updating..." : "Update Quote →"}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Main Content — REAL ZUNO PLAN */}
         <div className={styles.mainContent}>
-          {plan ? (
+          {!loaded ? (
+            <div className={styles.skeletonCard}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+              <div className={styles.skeletonBlock} />
+            </div>
+          ) : plan ? (
             <>
               <h2>1 plan available</h2>
               <p>Covers damages to your car. Premium includes GST.</p>
@@ -215,9 +441,24 @@ const CarInsurance3 = () => {
                     <div style={{ color: "#5a5959" }}>
                       IDV Cover <strong>{inr(plan.idv)}</strong>
                     </div>
-                    <div style={{ color: "#5a5959", fontSize: "0.85em" }}>
-                      Net {inr(plan.netPremium)} + GST {inr(plan.gst)}
+                    <div className={styles.premiumBreakdown}>
+                      <span>
+                        Own Damage {inr(plan.odPremium ?? plan.netPremium)}
+                      </span>
+                      {appliedAddons.length > 0 && (
+                        <span>Addons {inr(plan.addonPremium)}</span>
+                      )}
+                      <span>GST {inr(plan.gst)}</span>
                     </div>
+                    {appliedAddons.length > 0 && (
+                      <div className={styles.addonTags}>
+                        {appliedAddons.map((key) => (
+                          <span key={key} className={styles.addonTag}>
+                            <FaCheckCircle /> {addonLabel(key)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className={styles.actions}>
                     <div
@@ -237,9 +478,36 @@ const CarInsurance3 = () => {
                 <div className={styles.cashless}>
                   <div className={styles.garages}>Zuno Cashless Garages</div>
                   <div className={styles.coverage}>
-                    <a href="#">View Coverage</a>
+                    <span
+                      className={styles.coverageToggle}
+                      onClick={() => setShowCoverageDetails((prev) => !prev)}
+                    >
+                      View Coverage{" "}
+                      {showCoverageDetails ? (
+                        <FaChevronUp />
+                      ) : (
+                        <FaChevronDown />
+                      )}
+                    </span>
                   </div>
                 </div>
+
+                {showCoverageDetails && (
+                  <div className={styles.coverageDetails}>
+                    <div className={styles.coverageRow}>
+                      <strong>Own Damage Cover</strong>
+                      <span>Own Damage Basic</span>
+                    </div>
+                    {appliedAddons.length > 0 && (
+                      <div className={styles.coverageRow}>
+                        <strong>Add On Cover</strong>
+                        <span>
+                          {appliedAddons.map(addonLabel).join(", ")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </>
           ) : (
@@ -259,6 +527,22 @@ const CarInsurance3 = () => {
         </div>
       </div>
       <Footer />
+
+      {plan && quoteInput && defaultIdv != null && (
+        <IdvEditDialog
+          open={showIdvDialog}
+          defaultIdv={defaultIdv}
+          currentIdv={Number(plan.idv)}
+          quoteInput={quoteInput}
+          addons={appliedAddons}
+          onClose={() => setShowIdvDialog(false)}
+          onApply={(newIdv, updatedPlan) => {
+            setPlan(updatedPlan);
+            localStorage.setItem("selectedQuote", JSON.stringify(updatedPlan));
+            setShowIdvDialog(false);
+          }}
+        />
+      )}
     </div>
   );
 };

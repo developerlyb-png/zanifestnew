@@ -82,6 +82,37 @@ export default async function handler(
 
     const isNew = b.isNew === true || b.isNew === "true";
 
+    const addons: string[] = Array.isArray(b.addons) ? b.addons : [];
+
+    const contractDetails: any[] = [
+      {
+        contract: "Own Damage Contract",
+        coverage: {
+          coverage: "Own Damage Coverage",
+          deductible: "Own Damage Basis Deductible",
+          discount: ["Auto Mobile Association Discount"],
+          subCoverage: [
+            {
+              subCoverage: "Own Damage Basic",
+              limit: "Own Damage Basic Limit",
+            },
+          ],
+        },
+      },
+    ];
+
+    if (addons.length) {
+      contractDetails.push({
+        contract: "Addon Contract",
+        coverage: {
+          underwriterDiscount: "0.0",
+          coverage: "Add On Coverage",
+          deductible: "Key Replacement Deductible",
+          subCoverage: addons.map((name) => ({ subCoverage: name })),
+        },
+      });
+    }
+
     const payload = {
       channelCode: "002",
       branch: b.branch || "Mumbai",
@@ -113,7 +144,7 @@ export default async function handler(
         b.policyStartDate || new Date().toISOString().split("T")[0],
       policyTenure: String(b.policyTenure || "1"),
 
-      claimDeclaration: "",
+      claimDeclaration: b.claimDeclaration || "",
       previousNcb: "",
       annualMileage: "10000",
 
@@ -129,7 +160,7 @@ export default async function handler(
       proofProvidedForNcb: "",
       protectionofNcbValue: "",
 
-      breakinInsurance: "NBK",
+      breakinInsurance: b.breakinInsurance || "NBK",
       contractTenure: String(b.policyTenure || "1"),
 
       overrideAllowableDiscount: "N",
@@ -153,22 +184,9 @@ export default async function handler(
 
       typeOfGrid: "Grid 1",
 
-      contractDetails: [
-        {
-          contract: "Own Damage Contract",
-          coverage: {
-            coverage: "Own Damage Coverage",
-            deductible: "Own Damage Basis Deductible",
-            discount: ["Auto Mobile Association Discount"],
-            subCoverage: [
-              {
-                subCoverage: "Own Damage Basic",
-                limit: "Own Damage Basic Limit",
-              },
-            ],
-          },
-        },
-      ],
+      ...(addons.length ? { addOnRateType: "MENU" } : {}),
+
+      contractDetails,
     };
 
     console.log("4W QUOTE PAYLOAD", JSON.stringify(payload));

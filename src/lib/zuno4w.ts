@@ -137,6 +137,19 @@ export function rcDateToIso(d: string) {
   return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
 }
 
+// Break-in-insurance status from the previous OD policy's expiry date:
+// NBK = No Break (expiring today/future), SBK = Short Break (<=90 days lapsed),
+// LBK = Long Break (>90 days lapsed, or expiry unknown)
+export function computeBreakinStatus(previousPolicyExpiryDate: string | null) {
+  if (!previousPolicyExpiryDate) return "LBK";
+  const diffDays = Math.round(
+    (Date.now() - new Date(previousPolicyExpiryDate).getTime()) / 86400000
+  );
+  if (diffDays <= 0) return "NBK";
+  if (diffDays <= 90) return "SBK";
+  return "LBK";
+}
+
 // ============ THE FULL CHAIN ============
 export async function buildCarQuoteInput(rc: any) {
   const make = normalizeCarMake(rc.vehicle_manufacturer_name);
@@ -248,13 +261,54 @@ export async function buildCarQuoteInput(rc: any) {
 export function parseQuoteResponse(resp: any) {
   const d = resp?.data || resp;
   const p = d?.premiumDetails || {};
-  const io = d?.contractDetails?.insuredObject || {};
+  // contractDetails comes back as a single object when only "Own Damage Contract"
+  // is sent, but as an array (one entry per contract) once an Addon Contract is
+  // added — normalize both shapes before reading insuredObject off it.
+  const rawContracts = d?.contractDetails;
+  const contractList = Array.isArray(rawContracts)
+    ? rawContracts
+    : rawContracts
+    ? [rawContracts]
+    : [];
+  const io = contractList.find((c: any) => c?.insuredObject)?.insuredObject || {};
   return {
     netPremium: p.netTotalPremium,
     gst: p.gst,
     grossPremium: p.grossTotalPremium,
+    odPremium: p.totalODPremium,
+    addonPremium: p.totalAddOnPremium,
     idv: io.systemIdv,
     makeModelMasterCode: io.makeModelMasterCode,
     raw: d,
   };
+}
+
+// Re-quote with a user-overridden IDV (e.g. from the Edit IDV slider),
+// carrying forward whichever addons are currently applied so they aren't dropped
+export async function requoteWithIdv(
+  quoteInput: any,
+  idv: number,
+  addons: string[] = []
+) {
+  const res = await fetch("/api/zuno/4w/quote", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...quoteInput, idv: String(idv), addons }),
+  });
+
+  const data = await res.json();
+  if (!data.success) {
+    throw new Error(data.message || "Failed to re-quote with the new IDV");
+  }
+
+  return parseQuoteResponse(data);
+}
+
+// Re-quote with a user-selected addon set (subCoverage names), keeping the current IDV
+export async function requoteWithAddons(
+  quoteInput: any,
+  idv: number,
+  addons: string[]
+) {
+  return requoteWithIdv(quoteInput, idv, addons);
 }

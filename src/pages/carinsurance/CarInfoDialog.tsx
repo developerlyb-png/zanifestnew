@@ -1,5 +1,9 @@
 "use client";
-import { buildCarQuoteInput, parseQuoteResponse } from "@/lib/zuno4w";
+import {
+  buildCarQuoteInput,
+  parseQuoteResponse,
+  computeBreakinStatus,
+} from "@/lib/zuno4w";
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 
@@ -9,6 +13,8 @@ import { BsCalendarDate, BsFuelPumpDiesel } from "react-icons/bs";
 import { GiGearStickPattern } from "react-icons/gi";
 
 import { useRouter } from "next/navigation";
+import PolicyExpiryDialog from "./PolicyExpiryDialog";
+import ClaimDetailDialog, { ClaimAnswer } from "./ClaimDetailDialog";
 
 interface VehicleInfoDialogProps {
   onClose: () => void;
@@ -89,6 +95,13 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
   const [emailVerified, setEmailVerified] = useState(false);
   const [loggedUser, setLoggedUser] = useState<any>(null);
+
+  // Policy-expiry + claim modal flow (before fetching the real quote)
+  const [showExpiryDialog, setShowExpiryDialog] = useState(false);
+  const [showClaimDialog, setShowClaimDialog] = useState(false);
+  const [policyExpiryDate, setPolicyExpiryDate] = useState<string | null>(
+    null
+  );
   // NAME FORMAT
 
   const handleFullNameChange = (e: any) => {
@@ -418,6 +431,64 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
       alert(data.message || "Wrong Email OTP");
     }
   };
+
+  // Runs after both the policy-expiry and claim-detail questions are answered
+  const proceedToQuote = async (
+    expiryDate: string | null,
+    claim: ClaimAnswer
+  ) => {
+    try {
+      console.log("RC DETAILS >>>", rcDetails);
+
+      if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
+        alert("Vehicle data not found — please search your car number again");
+        return;
+      }
+
+      const quoteInput = await buildCarQuoteInput(rcDetails);
+      console.log("QUOTE INPUT >>>", quoteInput);
+
+      if ((quoteInput as any).error) {
+        console.log("CHAIN FALLBACK:", quoteInput);
+        alert("Could not auto-match vehicle: " + (quoteInput as any).error);
+        return;
+      }
+
+      const enrichedInput = {
+        ...quoteInput,
+        previousPolicyExpiryDate: expiryDate || "",
+        claimDeclaration:
+          claim === "Yes" ? "Yes" : claim === "No" ? "No" : "",
+        breakinInsurance: computeBreakinStatus(expiryDate),
+      };
+
+      const res = await fetch("/api/zuno/4w/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(enrichedInput),
+      });
+
+      const data = await res.json();
+      console.log("ZUNO QUOTE RESPONSE >>>", data);
+
+      if (data.success) {
+        const plan = parseQuoteResponse(data);
+        console.log("PLAN >>>", plan);
+
+        localStorage.setItem("selectedQuote", JSON.stringify(plan));
+        localStorage.setItem("carQuoteInput", JSON.stringify(enrichedInput));
+        localStorage.setItem("carRcDetails", JSON.stringify(rcDetails)); // ← the missing save
+
+        router.push("/carinsurance/carinsurance3");
+      } else {
+        alert(data.message || "ZUNO Quote Failed");
+      }
+    } catch (err: any) {
+      console.log("VIEW PRICES ERROR >>>", err);
+      alert("Something went wrong: " + err?.message);
+    }
+  };
+
   return (
     <div className={styles.overlay}>
       <div className={styles.dialog}>
@@ -619,50 +690,15 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           {emailVerified && (
             <button
               className={styles.viewBtn}
-            onClick={async () => {
-  try {
-    console.log("RC DETAILS >>>", rcDetails);
-
-    if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
-      alert("Vehicle data not found — please search your car number again");
-      return;
-    }
-
-    const quoteInput = await buildCarQuoteInput(rcDetails);
-    console.log("QUOTE INPUT >>>", quoteInput);
-
-    if ((quoteInput as any).error) {
-      console.log("CHAIN FALLBACK:", quoteInput);
-      alert("Could not auto-match vehicle: " + (quoteInput as any).error);
-      return;
-    }
-
-    const res = await fetch("/api/zuno/4w/quote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(quoteInput),
-    });
-
-    const data = await res.json();
-    console.log("ZUNO QUOTE RESPONSE >>>", data);
-
-    if (data.success) {
-      const plan = parseQuoteResponse(data);
-      console.log("PLAN >>>", plan);
-
-      localStorage.setItem("selectedQuote", JSON.stringify(plan));
-      localStorage.setItem("carQuoteInput", JSON.stringify(quoteInput));
-      localStorage.setItem("carRcDetails", JSON.stringify(rcDetails)); // ← the missing save
-
-      router.push("/carinsurance/carinsurance3");
-    } else {
-      alert(data.message || "ZUNO Quote Failed");
-    }
-  } catch (err: any) {
-    console.log("VIEW PRICES ERROR >>>", err);
-    alert("Something went wrong: " + err?.message);
-  }
-}}
+              onClick={() => {
+                if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
+                  alert(
+                    "Vehicle data not found — please search your car number again"
+                  );
+                  return;
+                }
+                setShowExpiryDialog(true);
+              }}
             >
               View prices
             </button>
@@ -674,6 +710,25 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           </p>
         </div>
       </div>
+
+      <PolicyExpiryDialog
+        open={showExpiryDialog}
+        onClose={() => setShowExpiryDialog(false)}
+        onSelect={(date) => {
+          setPolicyExpiryDate(date);
+          setShowExpiryDialog(false);
+          setShowClaimDialog(true);
+        }}
+      />
+
+      <ClaimDetailDialog
+        open={showClaimDialog}
+        onClose={() => setShowClaimDialog(false)}
+        onSelect={(answer) => {
+          setShowClaimDialog(false);
+          proceedToQuote(policyExpiryDate, answer);
+        }}
+      />
     </div>
   );
 };

@@ -31,6 +31,9 @@
   font-weight: 700;
   color: #222;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .vehicleDetails {
@@ -73,67 +76,282 @@
   margin: 5px 0;
 }
 
-.selectIdv {
-  color: #007bff;
-  font-weight: bold;
-}
-
 .rightArrow {
   color: #007bff;
   font-size: 12px;
 }
 
-.circle {
-  color: red;
-  font-size: 10px;
-}
-
-.filters h4 {
-  font-size: 16px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #333;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
-  margin-bottom: 12px;
-}
-
-.filterSection1 {
+/* IDV card (Recommended vs Selected) */
+.idvCard {
   margin-bottom: 15px;
 }
 
-.filterSection1 label {
-  display: block;
+.idvCardTitle {
   font-size: 13px;
-  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.idvOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.idvOption:hover {
+  border-color: #90c0ff;
+}
+
+.idvOptionSelected {
+  border-color: #007bff;
+  background-color: #f0f7ff;
+}
+
+.idvRadio {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #b7c0cc;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.idvRadio[data-checked="true"] {
+  border-color: #007bff;
+}
+
+.idvRadio[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #007bff;
+}
+
+.idvOptionLabel {
+  flex: 1;
+  font-size: 13px;
   color: #333;
 }
 
-.filterSection {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
+.idvOptionValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
-.plusIcon {
-  font-size: 12px;
+.idvPencil {
   color: #007bff;
+  font-size: 12px;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+.idvHint {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0 0;
 }
 
 .seeAll {
   color: #007bff;
   font-size: 12px;
   cursor: pointer;
+  margin-top: 4px;
 }
 
 .icon {
-  margin-right: 8px;
   color: #007bff;
   vertical-align: middle;
+}
+
+/* Addon chip cards */
+.addonGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.addonCard {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.addonCard:hover {
+  border-color: #90c0ff;
+}
+
+.addonCardSelected {
+  border-color: #007bff;
+  background-color: #f0f7ff;
+  box-shadow: 0 1px 4px rgba(0, 123, 255, 0.15);
+}
+
+.addonCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addonIcon {
+  color: #007bff;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.addonLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  flex: 1;
+}
+
+.addonCheck {
+  color: #28b463;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.addonDescription {
+  font-size: 12px;
+  color: #777;
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+.addonError {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.updateQuoteBtn {
+  width: 100%;
+  margin-top: 12px;
+  background-color: #ff5722;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.updateQuoteBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Premium breakdown + addon tags on the plan card */
+.premiumBreakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: #5a5959;
+  font-size: 0.85em;
+}
+
+.addonTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.addonTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #1f7a3f;
+  background-color: #eaf9ee;
+  border-radius: 12px;
+  padding: 2px 8px;
+}
+
+/* Coverage / subcoverage breakdown */
+.coverageToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.coverageDetails {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.coverageRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #444;
+}
+
+/* Loading skeleton */
+.skeletonCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.skeletonLine,
+.skeletonBlock {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeletonLine {
+  height: 16px;
+  width: 60%;
+  margin-bottom: 16px;
+}
+
+.skeletonLineShort {
+  width: 30%;
+}
+
+.skeletonBlock {
+  height: 90px;
+  width: 100%;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .mainContent {
@@ -237,10 +455,9 @@
   text-decoration-style: dotted;
 }
 
-.coverage a {
+.coverage {
   font-size: 16px;
   color: #5a5959;
-  text-decoration-style: dotted;
 }
 
 /* Responsive */
@@ -335,48 +552,5 @@
   .cashless {
     flex-direction: column;
     align-items: flex-start;
-  }
-}
-.backBtn {
-  position: absolute;
-  left: 90rem;
-  top: 27%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgb(230, 230, 229);
-  z-index: 10;
-}
-
-.arrowBack {
-  color: #000;
-  font-size: 20px;
-  margin: 4px 3px 0px 0px;
-  justify-items: center;
-}
-
-/* Tablet */
-@media screen and (max-width: 1024px) {
-  .backBtn {
-    left: 5rem;
-    top: 18%;
-  }
-}
-
-/* Mobile */
-@media screen and (max-width: 768px) {
-  .backBtn {
-    left: 1rem;
-    top: 16%;
-    width: 36px;
-    height: 36px;
-  }
-
-  .arrowBack {
-    font-size: 18px;
   }
 }

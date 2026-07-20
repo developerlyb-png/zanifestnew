@@ -1,0 +1,158 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  padding: 16px;
+}
+
+.box {
+  width: 100%;
+  max-width: 620px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f5fafa;
+  padding: 20px 24px;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #777;
+  margin: 4px 0 0;
+}
+
+.closeBtn {
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.calendarWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px 16px;
+  flex-wrap: wrap;
+}
+
+.navArrow {
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  padding: 6px;
+  user-select: none;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+.monthYear {
+  color: #3366cc;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.daysRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dayLabel {
+  font-weight: bold;
+  color: #888;
+  text-align: center;
+  font-size: 11px;
+}
+
+.date {
+  text-align: center;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #999;
+  border-radius: 6px;
+}
+
+.clickable {
+  color: #222;
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background-color: #eaf2ff;
+}
+
+.today {
+  color: #007bff;
+  font-weight: 700;
+}
+
+.helpLinkContainer {
+  text-align: center;
+  padding: 4px 16px 20px;
+}
+
+.helpLink {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .calendarWrapper {
+    gap: 8px;
+  }
+  .calendar {
+    min-width: 200px;
+  }
+}
