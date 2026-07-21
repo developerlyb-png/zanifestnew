@@ -28,7 +28,7 @@
 
 .icons {
   display: flex;
-  padding: 0px 100px;
+  padding: 0px 0px;
   padding-top: 40px;
   color: white;
   gap: 2rem;

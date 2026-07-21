@@ -20,12 +20,14 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaPencilAlt,
+  FaMinus,
+  FaPlus,
 } from "react-icons/fa";
 import { RiArrowRightWideLine } from "react-icons/ri";
 import UserDetails from "@/components/ui/UserDetails";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import zunoLogo from "@/assets/images.jpeg"; // TODO: replace with a Zuno logo asset
+import zunoLogo from "@/assets/insurance/zuno.png";
 import IdvEditDialog from "./IdvEditDialog";
 import { requoteWithAddons, requoteWithIdv } from "@/lib/zuno4w";
 
@@ -110,6 +112,13 @@ const CarInsurance3 = () => {
   const [addonLoading, setAddonLoading] = useState(false);
   const [addonError, setAddonError] = useState<string | null>(null);
   const [showCoverageDetails, setShowCoverageDetails] = useState(false);
+
+  // Sort by (UI + state wired now; with only one insurer live, ordering has
+  // nothing to reorder yet, but is ready as soon as multiple plans exist)
+  const [sortBy, setSortBy] = useState<
+    "premiumLowHigh" | "premiumHighLow" | "idvHighLow" | "idvLowHigh"
+  >("premiumLowHigh");
+  const [showSortSection, setShowSortSection] = useState(true);
 
   const router = useRouter();
 
@@ -412,6 +421,39 @@ const CarInsurance3 = () => {
               </button>
             )}
           </div>
+
+          {/* Sidebar 3 - Sort by */}
+          <div className={styles.sidebar1}>
+            <div
+              className={styles.sortHeader}
+              onClick={() => setShowSortSection((prev) => !prev)}
+            >
+              <h3 className={styles.sidebarTitle}>Sort by</h3>
+              {showSortSection ? <FaMinus /> : <FaPlus />}
+            </div>
+
+            {showSortSection && (
+              <div className={styles.sortOptions}>
+                {[
+                  { key: "premiumLowHigh", label: "Premium low to high" },
+                  { key: "premiumHighLow", label: "Premium high to low" },
+                  { key: "idvHighLow", label: "IDV high to low" },
+                  { key: "idvLowHigh", label: "IDV low to high" },
+                ].map((opt) => (
+                  <label key={opt.key} className={styles.sortOption}>
+                    <span
+                      className={styles.sortRadio}
+                      data-checked={sortBy === opt.key}
+                      onClick={() => setSortBy(opt.key as typeof sortBy)}
+                    />
+                    <span onClick={() => setSortBy(opt.key as typeof sortBy)}>
+                      {opt.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main Content — REAL ZUNO PLAN */}
@@ -432,11 +474,13 @@ const CarInsurance3 = () => {
                   Zuno General Insurance
                 </div>
                 <div className={styles.planDetails}>
-                  <Image
-                    src={zunoLogo}
-                    alt="Zuno General Insurance"
-                    className={styles.logo}
-                  />
+                  <div className={styles.logoWrap}>
+                    <Image
+                      src={zunoLogo}
+                      alt="Zuno General Insurance"
+                      className={styles.logo}
+                    />
+                  </div>
                   <div>
                     <div style={{ color: "#5a5959" }}>
                       IDV Cover <strong>{inr(plan.idv)}</strong>
@@ -476,7 +520,6 @@ const CarInsurance3 = () => {
                   may be required
                 </div>
                 <div className={styles.cashless}>
-                  <div className={styles.garages}>Zuno Cashless Garages</div>
                   <div className={styles.coverage}>
                     <span
                       className={styles.coverageToggle}

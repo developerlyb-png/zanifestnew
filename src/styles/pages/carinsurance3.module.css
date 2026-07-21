@@ -371,10 +371,17 @@
 
 .planCard {
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 15px;
-  padding: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border: 1px solid #eef1f6;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.planCard:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .planHeader {
@@ -397,9 +404,23 @@
   gap: 15px;
 }
 
+.logoWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f5fafa;
+  border: 1px solid #e6eef0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 8px;
+}
+
 .logo {
-  width: 41px;
+  width: 100%;
   height: auto;
+  object-fit: contain;
 }
 
 .actions {
@@ -411,12 +432,18 @@
   font-size: 16px;
   color: #fff;
   background-color: #ff5722;
-  padding: 6px 12px;
-  border-radius: 5px;
+  padding: 8px 14px;
+  border-radius: 6px;
   font-weight: bold;
   display: inline-block;
   margin-bottom: 5px;
-  cursor:pointer;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.price:hover {
+  background-color: #e64a19;
+  transform: translateY(-1px);
 }
 
 .inspectionNote {
@@ -449,15 +476,59 @@
   gap: 20px;
 }
 
-.garages {
-  font-size: 16px;
-  color: #5a5959;
-  text-decoration-style: dotted;
-}
-
 .coverage {
   font-size: 16px;
   color: #5a5959;
+}
+
+/* Sort by */
+.sortHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  color: #333;
+}
+
+.sortOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.sortOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.sortRadio {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #b7c0cc;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.sortRadio[data-checked="true"] {
+  border-color: #007bff;
+}
+
+.sortRadio[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #007bff;
 }
 
 /* Responsive */

@@ -5,7 +5,7 @@ import { FaTimes } from "react-icons/fa";
 
 interface PolicyExpiryDialogProps {
   open: boolean;
-  onSelect: (isoDate: string | null) => void;
+  onSelect: (isoDate: string) => void;
   onClose: () => void;
 }
 
@@ -126,12 +126,6 @@ const PolicyExpiryDialog = ({
             onClick={() => setMonthOffset((prev) => prev + 1)}
           >
             ▶
-          </span>
-        </div>
-
-        <div className={styles.helpLinkContainer}>
-          <span className={styles.helpLink} onClick={() => onSelect(null)}>
-            Don&apos;t know policy expiry date?
           </span>
         </div>
       </div>

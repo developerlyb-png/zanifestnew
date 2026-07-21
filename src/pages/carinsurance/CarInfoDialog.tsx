@@ -15,6 +15,7 @@ import { GiGearStickPattern } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import PolicyExpiryDialog from "./PolicyExpiryDialog";
 import ClaimDetailDialog, { ClaimAnswer } from "./ClaimDetailDialog";
+import loadingStyles from "@/styles/pages/quoteLoading.module.css";
 
 interface VehicleInfoDialogProps {
   onClose: () => void;
@@ -102,6 +103,7 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   const [policyExpiryDate, setPolicyExpiryDate] = useState<string | null>(
     null
   );
+  const [quoteLoading, setQuoteLoading] = useState(false);
   // NAME FORMAT
 
   const handleFullNameChange = (e: any) => {
@@ -418,6 +420,8 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
             email: loginData.user.email,
 
             mobile: loginData.user.mobile,
+
+            loginTime: Date.now(),
           }),
         );
 
@@ -437,11 +441,13 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
     expiryDate: string | null,
     claim: ClaimAnswer
   ) => {
+    setQuoteLoading(true);
     try {
       console.log("RC DETAILS >>>", rcDetails);
 
       if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
         alert("Vehicle data not found — please search your car number again");
+        setQuoteLoading(false);
         return;
       }
 
@@ -451,6 +457,7 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
       if ((quoteInput as any).error) {
         console.log("CHAIN FALLBACK:", quoteInput);
         alert("Could not auto-match vehicle: " + (quoteInput as any).error);
+        setQuoteLoading(false);
         return;
       }
 
@@ -479,13 +486,18 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         localStorage.setItem("carQuoteInput", JSON.stringify(enrichedInput));
         localStorage.setItem("carRcDetails", JSON.stringify(rcDetails)); // ← the missing save
 
+        // Keep the loader up through navigation — it unmounts with this
+        // dialog once carinsurance3 has actually taken over the screen,
+        // instead of dropping early and flashing the page behind it.
         router.push("/carinsurance/carinsurance3");
       } else {
         alert(data.message || "ZUNO Quote Failed");
+        setQuoteLoading(false);
       }
     } catch (err: any) {
       console.log("VIEW PRICES ERROR >>>", err);
       alert("Something went wrong: " + err?.message);
+      setQuoteLoading(false);
     }
   };
 
@@ -729,6 +741,16 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           proceedToQuote(policyExpiryDate, answer);
         }}
       />
+
+      {quoteLoading && (
+        <div className={loadingStyles.overlay}>
+          <div className={loadingStyles.box}>
+            <div className={loadingStyles.spinner} />
+            <p className={loadingStyles.text}>Finding your best price...</p>
+            <p className={loadingStyles.subtext}>This won&apos;t take long</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -136,18 +136,6 @@
   font-weight: 700;
 }
 
-.helpLinkContainer {
-  text-align: center;
-  padding: 4px 16px 20px;
-}
-
-.helpLink {
-  font-size: 13px;
-  color: #007bff;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 @media (max-width: 480px) {
   .calendarWrapper {
     gap: 8px;

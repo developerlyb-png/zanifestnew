@@ -98,6 +98,45 @@ return;
 }
 
 
+// The OTP flows (car/health/bike/CV purchase dialogs) also set a real
+// userToken cookie at login time — confirm it's still valid server-side
+// before trusting this localStorage entry. Without this, the Navbar can
+// keep showing "logged in" (and a working Dashboard link) long after the
+// cookie backing it has expired or was never stored, and clicking through
+// bounces the user straight back to /login.
+try{
+
+const meRes =
+await fetch(
+"/api/users/me",
+{credentials:"include"}
+);
+
+if(!meRes.ok){
+
+localStorage.removeItem("user");
+
+setUser(null);
+
+setLoading(false);
+
+return;
+
+}
+
+}
+catch(err){
+
+localStorage.removeItem("user");
+
+setUser(null);
+
+setLoading(false);
+
+return;
+
+}
+
 
 setUser({
 
