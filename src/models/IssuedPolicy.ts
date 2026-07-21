@@ -11,15 +11,34 @@ const IssuedPolicySchema =
 
     proposalNumber: String,
 
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    userEmail: String,
+
+    policyType: String,
+
+    insurer: String,
+
     customer: {
 
       fullName: String,
+
+      email: String,
+
+      mobile: String,
 
     },
 
     vehicle: {
 
       number: String,
+
+      make: String,
+
+      model: String,
 
     },
 

@@ -17,11 +17,12 @@
 
 /* ---------------- Header ---------------- */
 .header {
-  background: linear-gradient(90deg, var(--accent), #ff5a23);
+  background: linear-gradient(90deg, #bfdcff73, #239dff);
   color: #fff;
   padding: 28px 36px;
   box-shadow: 0 4px 14px rgba(255, 69, 0, 0.25);
-  margin: 40px 200px;
+  margin: 0;
+  width: 100%;
 }
 
 .headerInner {
@@ -140,7 +141,8 @@
 }
 @media screen and (max-width: 768px) {
   .header {
-    margin: 30px;          /* remove 200px gap */
+    margin: 0;
+    width: 100%;
     padding: 16px 16px;   /* balanced padding */
   }
 

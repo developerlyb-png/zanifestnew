@@ -268,7 +268,7 @@ setEmailVerified(true);
 if(data.user){
 localStorage.setItem(
 "user",
-JSON.stringify(data.user)
+JSON.stringify({...data.user, loginTime: Date.now()})
 );
 window.dispatchEvent(
 new Event("userLogin")

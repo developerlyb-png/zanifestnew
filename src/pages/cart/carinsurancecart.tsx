@@ -254,6 +254,27 @@ const carinsurancecart = () => {
         })
       );
 
+      // Persist the issued policy against the logged-in user so it shows
+      // up in their dashboard — best-effort, never blocks checkout.
+      fetch("/api/users/save-policy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          policyNumber: policyNo,
+          premium: plan?.grossPremium,
+          vehicle: {
+            number: rc?.reg_no,
+            make: quoteInput?.make,
+            model: quoteInput?.model,
+          },
+          customer: {
+            fullName: `${firstName} ${lastName}`.trim(),
+            email,
+            mobile,
+          },
+        }),
+      }).catch((e) => console.log("SAVE POLICY ERROR", e));
+
       // ================= STEP 4: PAYMENT LINK =================
       setLoadingStep("Creating payment link...");
       const payRes = await fetch("/api/sbi/2w/online-payment", {

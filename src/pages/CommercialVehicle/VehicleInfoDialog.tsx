@@ -193,7 +193,10 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         email,
         mobile: mobile.replace(/\D/g, "").replace(/^91/, ""),
       };
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...userData, loginTime: Date.now() })
+      );
       localStorage.setItem("cvCustomer", JSON.stringify(userData));
       window.dispatchEvent(new Event("userLogin"));
 

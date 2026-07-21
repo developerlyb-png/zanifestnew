@@ -255,7 +255,10 @@ const Health = () => {
       }
 
       // save login user
-      localStorage.setItem("user", JSON.stringify(loginData.user));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...loginData.user, loginTime: Date.now() })
+      );
 
       // update navbar instantly
       window.dispatchEvent(new Event("userLogin"));
