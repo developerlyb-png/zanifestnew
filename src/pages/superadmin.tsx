@@ -53,6 +53,7 @@ import Officepackagepolicylist from "@/components/superadminsidebar/Officepackag
 import Directorlist from "@/components/superadminsidebar/Directorlist";
 import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
 import ShowResult from "@/components/superadminsidebar/showresult";
+import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 
 
 
@@ -63,9 +64,27 @@ import {
   FiUsers,
   FiUserPlus,
   FiLock,
-  FiList,
   FiMenu,
   FiX,
+  FiGrid,
+  FiUserCheck,
+  FiShield,
+  FiUser,
+  FiBriefcase,
+  FiKey,
+  FiEdit3,
+  FiSettings,
+  FiClipboard,
+  FiAward,
+  FiFileText,
+  FiAnchor,
+  FiMap,
+  FiShoppingBag,
+  FiHeart,
+  FiHome,
+  FiActivity,
+  FiPackage,
+  FiBookOpen,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -79,6 +98,7 @@ const SuperAdminDashboard = () => {
   const [agentCount, setAgentCount] = useState(0);
   const [stateManagerCount, setStateManagerCount] = useState(0);
   const [districtManagerCount, setDistrictManagerCount] = useState(0);
+  const [policyCount, setPolicyCount] = useState(0);
 
   const router = useRouter();
   const { admin } = useAdmin();
@@ -147,6 +167,21 @@ const SuperAdminDashboard = () => {
     fetchManagerCounts();
   }, []);
 
+  // Policy Count
+  useEffect(() => {
+    const fetchPolicyCount = async () => {
+      try {
+        const res = await fetch("/api/admin/policies", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch policies");
+        const data = await res.json();
+        setPolicyCount((data.policies || []).length);
+      } catch (err) {
+        console.error("Error fetching policy count:", err);
+      }
+    };
+    fetchPolicyCount();
+  }, []);
+
   // ✅ Profile edit fetch
   useEffect(() => {
     if (activeSection === "profileEdit") {
@@ -211,7 +246,7 @@ const SuperAdminDashboard = () => {
               }`}
             >
               <span className={styles.iconLabel}>
-                <FiUsers className={styles.icon} />
+                <FiGrid className={styles.icon} />
                 <span className={styles.label}>Dashboard</span>
               </span>
             </li>
@@ -242,7 +277,7 @@ const SuperAdminDashboard = () => {
               }`}
             >
               <span className={styles.iconLabel}>
-                <FiUserPlus className={styles.icon} />
+                <FiUserCheck className={styles.icon} />
                 <span className={styles.label}>Create Manager</span>
               </span>
             </li>
@@ -273,7 +308,7 @@ const SuperAdminDashboard = () => {
               }}
             >
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiShield className={styles.icon} />
                 <span className={styles.label}>Admin List</span>
               </span>
             </li>
@@ -287,7 +322,7 @@ const SuperAdminDashboard = () => {
               }}
             >
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiUsers className={styles.icon} />
                 <span className={styles.label}>Manager List</span>
               </span>
             </li>
@@ -301,7 +336,7 @@ const SuperAdminDashboard = () => {
               }}
             >
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiBriefcase className={styles.icon} />
                 <span className={styles.label}>Agent List</span>
               </span>
             </li>
@@ -315,7 +350,7 @@ const SuperAdminDashboard = () => {
               }}
             >
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiUser className={styles.icon} />
                 <span className={styles.label}>User List</span>
               </span>
             </li>
@@ -332,7 +367,7 @@ const SuperAdminDashboard = () => {
               }`}
             >
               <span className={styles.iconLabel}>
-                <FiLock className={styles.icon} />
+                <FiKey className={styles.icon} />
                 <span className={styles.label}>Reset Password</span>
               </span>
             </li>
@@ -360,7 +395,7 @@ const SuperAdminDashboard = () => {
               }`}
             >
               <span className={styles.iconLabel}>
-                <FiLock className={styles.icon} />
+                <FiEdit3 className={styles.icon} />
                 <span className={styles.label}>Your Profile Edit</span>
               </span>
             </li>
@@ -379,7 +414,7 @@ const SuperAdminDashboard = () => {
               }`}
             >
               <span className={styles.iconLabel}>
-                <FiLock className={styles.icon} />
+                <FiSettings className={styles.icon} />
                 <span className={styles.label}>Home Section</span>
               </span>
             </li>
@@ -390,7 +425,7 @@ const SuperAdminDashboard = () => {
   }`}
 >
   <span className={styles.iconLabel}>
-    <FiList className={styles.icon} />
+    <FiClipboard className={styles.icon} />
     <span className={styles.label}>Review Application</span>
   </span>
 </li>
@@ -401,7 +436,7 @@ const SuperAdminDashboard = () => {
   }`}
 >
   <span className={styles.iconLabel}>
-    <FiList className={styles.icon} />
+    <FiAward className={styles.icon} />
     <span className={styles.label}>POS Certificate</span>
   </span>
 </li>
@@ -409,12 +444,21 @@ const SuperAdminDashboard = () => {
             {/* Module*/}
             <p className={styles.sectionTitle}>Module</p>
             <li
+              onClick={() => setActiveSection("policyDashboard")}
+              className={`${styles.menuItem} ${
+                activeSection === "policyDashboard" ? styles.activeMenu : ""
+              }`}
+            >
+              <FiFileText className={styles.icon} />
+              <span>Policy data</span>
+            </li>
+            <li
               onClick={() => setActiveSection("marineinsurancelist")}
               className={`${styles.menuItem} ${
                 activeSection === "marineinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiAnchor className={styles.icon} />
               <span>Marine Insurance</span>
             </li>
             <li
@@ -423,7 +467,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "travelinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiMap className={styles.icon} />
               <span>Travel Insurance</span>
             </li>
             <li
@@ -432,7 +476,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "shopinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiShoppingBag className={styles.icon} />
               <span>Shop Insurance</span>
             </li>
              <li
@@ -441,7 +485,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "healthinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiHeart className={styles.icon} />
               <span>Health Insurance</span>
             </li>
             <li
@@ -450,7 +494,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "homeinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiHome className={styles.icon} />
               <span>Home Insurance</span>
             </li>
               <li
@@ -459,7 +503,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "doctorinsurancelist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiActivity className={styles.icon} />
               <span>Doctor Insurance</span>
             </li>
              <li
@@ -468,8 +512,8 @@ const SuperAdminDashboard = () => {
                 activeSection === "officepackagepolicylist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
-              <span>officepackagepolicy</span>  
+              <FiPackage className={styles.icon} />
+              <span>officepackagepolicy</span>
             </li>
               <li
               onClick={() => setActiveSection("directorlist")}
@@ -477,7 +521,7 @@ const SuperAdminDashboard = () => {
                 activeSection === "directorlist" ? styles.activeMenu : ""
               }`}
             >
-              <FiList className={styles.icon} />
+              <FiBookOpen className={styles.icon} />
               <span>Director&OfficerLiability</span>
             </li>
           </ul>
@@ -513,9 +557,15 @@ const SuperAdminDashboard = () => {
                 <p className={styles.cardTitle}>Agents</p>
                 <p className={styles.cardValue}>{agentCount}</p>
               </div>
+              <div className={styles.card}>
+                <FiFileText size={32} className={styles.cardIcon} />
+                <p className={styles.cardTitle}>Policies Issued</p>
+                <p className={styles.cardValue}>{policyCount}</p>
+              </div>
             </div>
           )}
 
+          {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "createAdmin" && <CreateAdmin mode="create" />}
           {activeSection === "createManager" && <CreateManager />}
           {activeSection === "createAgent" && <CreateAgent />}

@@ -40,6 +40,15 @@ const LIST = [
       { name: "Contractor All Risk Insurance", url: "#" },
     ],
   },
+  {
+    head: "Our Policy",
+    links: [
+      { name: "Grievance Redressal Policy", url: "/Grievanceredressalpolicy" },
+      { name: "Fraud Detection Policy", url: "/Frauddetectionpolicy" },
+      { name: "E-Insurance Account (EIA) Information Policy", url: "/Eiainformationpolicy" },
+      { name: "Policy Delivery & Shipping Policy", url: "/Policydeliveryshippingpolicy" },
+    ],
+  },
 ];
 
 function Footer() {

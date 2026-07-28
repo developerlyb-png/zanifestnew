@@ -19,7 +19,8 @@ export default async function handler(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    const { policyNumber, premium, vehicle, customer } = req.body;
+    const { policyNumber, premium, grossPremium, transactionType, vehicle, customer } =
+      req.body;
 
     await dbConnect();
 
@@ -30,6 +31,8 @@ export default async function handler(
     const policy = await IssuedPolicy.create({
       policyNumber,
       premium,
+      grossPremium,
+      transactionType: transactionType || "Rollover",
       vehicle,
       customer,
       userId: decoded.id,

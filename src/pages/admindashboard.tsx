@@ -10,6 +10,7 @@ import UserList from "@/components/superadminsidebar/userList";
 import CreateAgent from "@/components/superadminsidebar/createagent";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import ResetPassword from "@/components/superadminsidebar/resetpassword";
+import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import styles from "@/styles/pages/admindashboard.module.css";
 import { useRouter } from "next/router";
 // import withAuth from "@/lib/withAuth";
@@ -21,9 +22,13 @@ import {
   FiUserPlus,
   FiKey,
   FiLock,
-  FiList,
   FiMenu,
   FiX,
+  FiGrid,
+  FiUserCheck,
+  FiBriefcase,
+  FiUser,
+  FiFileText,
 } from "react-icons/fi";
 import axios from "axios";
 
@@ -34,6 +39,7 @@ const AdminDashboard = () => {
     const [agentCount, setAgentCount] = useState(0);
     const [stateManagerCount, setStateManagerCount] = useState(0);
     const [districtManagerCount, setDistrictManagerCount] = useState(0);
+    const [policyCount, setPolicyCount] = useState(0);
 const router = useRouter();
   
 
@@ -94,6 +100,18 @@ const router = useRouter();
       fetchManagerCounts();
     }, []);
 
+    useEffect(() => {
+      const fetchPolicyCount = async () => {
+        try {
+          const res = await fetch("/api/admin/policies", { credentials: "include" });
+          const data = await res.json();
+          setPolicyCount((data.policies || []).length);
+        } catch (err) {
+          console.error("Error fetching policy count:", err);
+        }
+      };
+      fetchPolicyCount();
+    }, []);
 
   return (
     <div className={styles.wrapper}>
@@ -136,90 +154,102 @@ const router = useRouter();
                 setActiveSection("dashboard");
                 setSidebarOpen(false);
               }}
-              // className={styles.menuItem}
-                className={`${styles.menuItem} ${activeSection === "dashboard" ? styles.activeMenuItem : ""}`}
-
+              className={`${styles.menuItem} ${activeSection === "dashboard" ? styles.activeMenuItem : ""}`}
             >
               <span className={styles.iconLabel}>
-                <FiUsers className={styles.icon} />
+                <FiGrid className={styles.icon} />
                 <span className={styles.label}>Dashboard</span>
               </span>
             </li>
             <p className={styles.sectionTitle}>Create</p>
 
-          
+
             <li
               onClick={() => {
                 setActiveSection("createManager");
                 setSidebarOpen(false);
               }}
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "createManager" ? styles.activeMenuItem : ""}`}
             >
               <span className={styles.iconLabel}>
-                <FiUserPlus className={styles.icon} />
+                <FiUserCheck className={styles.icon} />
                 <span className={styles.label}>Create Manager</span>
               </span>
             </li>
- 
+
 
             <li
               onClick={() => {
                 setActiveSection("createAgent");
                 setSidebarOpen(false);
               }}
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "createAgent" ? styles.activeMenuItem : ""}`}
             >
               <span className={styles.iconLabel}>
-                <FiUserPlus className={styles.icon} />
+                <FiBriefcase className={styles.icon} />
                 <span className={styles.label}>Create Agent</span>
               </span>
             </li>
             <p className={styles.sectionTitle}>List</p>
 
-            
+
             <li
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "managerList" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("managerList");
                 setSidebarOpen(false);
               }}>
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiUsers className={styles.icon} />
                 <span className={styles.label}>Manager List</span>
               </span>
             </li>
-            <li className={styles.menuItem}
+            <li className={`${styles.menuItem} ${activeSection === "agentList" ? styles.activeMenuItem : ""}`}
             onClick={()=>{
               setActiveSection("agentList");
               setSidebarOpen(false);
             }}
             >
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiBriefcase className={styles.icon} />
                 <span className={styles.label}>Agent List</span>
               </span>
             </li>
             <li
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "userList" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("userList");
                 setSidebarOpen(false);
               }}>
               <span className={styles.iconLabel}>
-                <FiList className={styles.icon} />
+                <FiUser className={styles.icon} />
                 <span className={styles.label}>User List</span>
               </span>
             </li>
+            <p className={styles.sectionTitle}>Module</p>
+            <li
+              className={`${styles.menuItem} ${activeSection === "policyDashboard" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("policyDashboard");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiFileText className={styles.icon} />
+                <span className={styles.label}>Policy data</span>
+              </span>
+            </li>
+
             <p className={styles.sectionTitle}>Security</p>
             <li
               onClick={() => {
                 setActiveSection("resetpassword");
                 setSidebarOpen(false);
               }}
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "resetpassword" ? styles.activeMenuItem : ""}`}
             >
               <span className={styles.iconLabel}>
-                <FiLock className={styles.icon} />
+                <FiKey className={styles.icon} />
                 <span className={styles.label}>Reset password</span>
               </span>
             </li>
@@ -229,7 +259,7 @@ const router = useRouter();
                 setActiveSection("changepassword");
                 setSidebarOpen(false);
               }}
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${activeSection === "changepassword" ? styles.activeMenuItem : ""}`}
             >
               <span className={styles.iconLabel}>
                 <FiLock className={styles.icon} />
@@ -270,6 +300,11 @@ const router = useRouter();
                 <p className={styles.cardTitle}>Agents</p>
                 <p className={styles.cardValue}>{agentCount}</p>
               </div>
+              <div className={styles.card}>
+                <FiFileText size={32} className={styles.cardIcon} />
+                <p className={styles.cardTitle}>Policies Issued</p>
+                <p className={styles.cardValue}>{policyCount}</p>
+              </div>
             </div>
           )}
           {activeSection === "createAdmin" && <CreateAdmin />}
@@ -280,6 +315,7 @@ const router = useRouter();
           {activeSection === "userList" && <UserList />}
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}
+          {activeSection === "policyDashboard" && <PolicyDashboard />}
         </main>
       </div>
     </div>

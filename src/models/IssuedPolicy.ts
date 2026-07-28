@@ -44,7 +44,53 @@ const IssuedPolicySchema =
 
     premium: Number,
 
+    grossPremium: Number,
+
     status: String,
+
+    subInsured: String,
+
+    endorsementNo: {
+      type: String,
+      default: "-",
+    },
+
+    transactionType: String,
+
+    pospPartner: {
+      type: String,
+      default: "Direct Business",
+    },
+
+    commissionAmount: {
+      type: Number,
+      default: null,
+    },
+
+    payoutAmount: {
+      type: Number,
+      default: null,
+    },
+
+    payoutStatus: {
+      type: String,
+      default: "PENDING",
+    },
+
+    policyDocumentStatus: {
+      type: String,
+      default: "Pending",
+    },
+
+    policyRemark: {
+      type: String,
+      default: "",
+    },
+
+    reconcile: {
+      type: String,
+      default: "No",
+    },
 
     // ADD THESE
 

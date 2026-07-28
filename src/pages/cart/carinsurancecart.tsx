@@ -261,7 +261,9 @@ const carinsurancecart = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           policyNumber: policyNo,
-          premium: plan?.grossPremium,
+          premium: plan?.netPremium ?? plan?.grossPremium,
+          grossPremium: plan?.grossPremium,
+          transactionType: quoteInput?.isNew ? "New" : "Rollover",
           vehicle: {
             number: rc?.reg_no,
             make: quoteInput?.make,

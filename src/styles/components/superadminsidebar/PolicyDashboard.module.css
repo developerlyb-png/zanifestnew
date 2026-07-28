@@ -1,0 +1,263 @@
+.cont {
+  padding: 20px;
+  background-color: #f8f9fb;
+  font-family: Arial, sans-serif;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f9d78;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #007bff;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exportBtn:hover {
+  background: #f0f7ff;
+}
+
+/* Summary card */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #eef1f6;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.cardValue {
+  font-size: 34px;
+  font-weight: 700;
+  color: #007bff;
+}
+
+.cardBreakdown {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px 20px;
+  font-size: 12px;
+  color: #777;
+  text-align: right;
+}
+
+/* Filters */
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.presetBtn {
+  background: #fff;
+  border: 1px solid #d6dde6;
+  color: #333;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.presetBtnActive {
+  background: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.dateInput {
+  border: 1px solid #d6dde6;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.rangeText {
+  color: #777;
+  font-size: 13px;
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #eef1f6;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1900px;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  background: #f5f8fc;
+  color: #555;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 12px 14px;
+  white-space: nowrap;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f2f5;
+  white-space: normal;
+  vertical-align: top;
+  color: #222;
+  max-width: 220px;
+}
+
+.linkCell {
+  color: #1c75bb;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Per-column filter row (in thead) */
+.filterHeaderRow td {
+  background: #fafbfc;
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.dashCell {
+  color: #aaa;
+  text-align: center;
+}
+
+.selectInput {
+  width: 100%;
+  min-width: 120px;
+  border: 1px solid #d6dde6;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #333;
+  background: #fff;
+}
+
+.searchInput {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d6dde6;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #fff;
+  color: #999;
+  min-width: 130px;
+}
+
+.searchInput input {
+  border: none;
+  outline: none;
+  font-size: 12px;
+  width: 100%;
+  color: #333;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+  white-space: normal;
+}
+
+.badgeTeal {
+  display: inline-block;
+  background: #0f9d78;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.badgeAmber {
+  display: inline-block;
+  background: #f5a623;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+@media screen and (max-width: 600px) {
+  .card {
+    max-width: 100%;
+  }
+}
