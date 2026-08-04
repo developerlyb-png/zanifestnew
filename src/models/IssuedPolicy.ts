@@ -49,7 +49,7 @@ const IssuedPolicySchema =
 
       model: String,
 
-      type: String,
+      vehicleType: String,
 
       fuelType: String,
 

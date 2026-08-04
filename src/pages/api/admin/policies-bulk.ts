@@ -86,7 +86,7 @@ function mapRow(row: Record<string, any>, managersByName: Map<string, any>) {
           number: str(row.registrationNumber),
           make: str(row.motorMake),
           model: str(row.product),
-          type: str(row.vehicleType),
+          vehicleType: str(row.vehicleType),
           fuelType: str(row.fuelType),
           modelYear: str(row.modelYear),
           itemsCovered: str(row.itemsCovered),
@@ -142,6 +142,17 @@ export default async function handler(
       ])
     );
 
+    const policyNumbersInFile = rows
+      .map((row) => str(row.policyNumber))
+      .filter((v): v is string => !!v);
+
+    const existingPolicies = await IssuedPolicy.find(
+      { policyNumber: { $in: policyNumbersInFile } },
+      { policyNumber: 1 }
+    );
+    const existingPolicyNumbers = new Set(existingPolicies.map((p: any) => p.policyNumber));
+    const seenInFile = new Set<string>();
+
     const docs: any[] = [];
     const skipped: { row: number; reason: string }[] = [];
 
@@ -157,6 +168,17 @@ export default async function handler(
         skipped.push({ row: rowNumber, reason: `Missing required field(s): ${missing.join(", ")}` });
         return;
       }
+
+      const policyNumber = str(row.policyNumber) as string;
+      if (existingPolicyNumbers.has(policyNumber)) {
+        skipped.push({ row: rowNumber, reason: `Policy Number "${policyNumber}" already exists` });
+        return;
+      }
+      if (seenInFile.has(policyNumber)) {
+        skipped.push({ row: rowNumber, reason: `Duplicate Policy Number "${policyNumber}" within this file` });
+        return;
+      }
+      seenInFile.add(policyNumber);
 
       docs.push({ ...mapRow(row, managersByName), createdBy: adminName });
     });

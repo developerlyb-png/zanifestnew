@@ -241,7 +241,7 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
       {isMotor && (
         <Section icon={<FiFileText />} title="Motor Details" subtitle="Motor insurance specific details">
           <div className={styles.fieldGrid}>
-            <Field icon={<FiTruck />} label="Vehicle Type" value={dashIfEmpty(policy.vehicle?.type)} />
+            <Field icon={<FiTruck />} label="Vehicle Type" value={dashIfEmpty(policy.vehicle?.vehicleType)} />
             <Field icon={<FiTruck />} label="Fuel Type" value={dashIfEmpty(policy.vehicle?.fuelType)} />
             <Field icon={<FiCalendar />} label="Model Year" value={dashIfEmpty(policy.vehicle?.modelYear)} />
             <Field icon={<FiCalendar />} label="TP Risk Start Date" value={formatDate(policy.startDate)} />

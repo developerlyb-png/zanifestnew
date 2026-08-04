@@ -417,7 +417,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
             number: formData.registrationNumber,
             make: formData.motorMake,
             model: formData.product,
-            type: formData.vehicleType,
+            vehicleType: formData.vehicleType,
             fuelType: formData.fuelType,
             modelYear: formData.modelYear,
             itemsCovered: formData.itemsCovered,

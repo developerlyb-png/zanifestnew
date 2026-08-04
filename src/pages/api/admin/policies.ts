@@ -78,6 +78,14 @@ export default async function handler(
 
       await dbConnect();
 
+      const existing = await IssuedPolicy.findOne({ policyNumber: body.policyNumber });
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          message: `Policy Number "${body.policyNumber}" already exists`,
+        });
+      }
+
       const adminName =
         `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
         (admin as any).email;
