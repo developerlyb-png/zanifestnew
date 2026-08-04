@@ -17,6 +17,16 @@ export interface IUser extends Document {
     verified: boolean;
     verifiedAt: Date;
   };
+
+  // Fields for admin-managed insured/client directory (manual policy entry)
+  address?: string;
+  kycDocumentType?: string;
+  kycFiles?: { data: string; fileName: string }[];
+  notifyWhatsapp?: boolean;
+  notifyEmail?: boolean;
+  isGlobal?: boolean;
+  subClients?: { name: string; phone: string; email: string }[];
+  source?: string;
 }
 
 
@@ -34,6 +44,15 @@ const AadhaarSchema = new Schema(
   {
     _id:false
   }
+);
+
+const SubClientSchema = new Schema(
+  {
+    name: String,
+    phone: String,
+    email: String,
+  },
+  { _id: true }
 );
 
 
@@ -86,7 +105,21 @@ const UserSchema = new Schema<IUser>(
   aadhaarKyc:{
     type:AadhaarSchema,
     default:null
-  }
+  },
+
+  address: String,
+  kycDocumentType: String,
+  kycFiles: [
+    {
+      data: String,
+      fileName: String,
+    },
+  ],
+  notifyWhatsapp: { type: Boolean, default: false },
+  notifyEmail: { type: Boolean, default: false },
+  isGlobal: { type: Boolean, default: false },
+  subClients: [SubClientSchema],
+  source: { type: String, default: "online" },
 
 },
 {

@@ -58,44 +58,134 @@
   background: #f0f7ff;
 }
 
-/* Summary card */
+/* Summary cards */
+.summaryRow {
+  display: flex;
+  /* flex-wrap: wrap; */
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
 .card {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #eef1f6;
-  padding: 20px 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  max-width: 420px;
-  margin-bottom: 20px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05);
+  flex: 1 1 260px;
+  max-width: 340px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.09);
+  transform: translateY(-3px);
+}
+
+.iconBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .cardTitle {
-  font-size: 14px;
-  color: #555;
-  font-weight: 600;
-  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1a1a2e;
+  font-weight: 700;
+  margin: 0 0 18px;
 }
 
 .cardBody {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .cardValue {
-  font-size: 34px;
-  font-weight: 700;
-  color: #007bff;
+  font-size: 30px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .cardBreakdown {
   display: grid;
   grid-template-columns: repeat(2, auto);
-  gap: 6px 20px;
+  gap: 12px 22px;
   font-size: 12px;
-  color: #777;
   text-align: right;
+}
+
+.breakdownItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.breakdownLabel {
+  font-weight: 600;
+  color: #777;
+}
+
+/* Tones */
+.toneBlue .iconBadge {
+  background: #e7f0ff;
+  color: #007bff;
+}
+.toneBlue .cardValue {
+  color: #007bff;
+}
+.toneBlue:hover {
+  border-color: #cfe0ff;
+}
+
+.toneOrange .iconBadge {
+  background: #fff2e0;
+  color: #f5a623;
+}
+.toneOrange .cardValue {
+  color: #f5a623;
+}
+.toneOrange:hover {
+  border-color: #ffe3b8;
+}
+
+.toneGreen .iconBadge {
+  background: #e5f7ee;
+  color: #16a34a;
+}
+.toneGreen .cardValue {
+  color: #16a34a;
+}
+.toneGreen:hover {
+  border-color: #bfe9d3;
+}
+
+.tonePurple .iconBadge {
+  background: #eee9fe;
+  color: #6d5bd0;
+}
+.tonePurple .cardValue {
+  color: #6d5bd0;
+}
+.tonePurple:hover {
+  border-color: #d9d0fb;
+}
+
+.breakdownValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
 /* Filters */
@@ -181,9 +271,15 @@
 }
 
 .linkCell {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
   color: #1c75bb;
   font-weight: 600;
   text-decoration: underline;
+  cursor: pointer;
+  text-align: left;
 }
 
 /* Per-column filter row (in thead) */
@@ -258,6 +354,7 @@
 
 @media screen and (max-width: 600px) {
   .card {
+    flex-basis: 100%;
     max-width: 100%;
   }
 }

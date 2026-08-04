@@ -1,0 +1,273 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #f5f8fc;
+  color: #1a1a2e;
+}
+
+.tabs {
+  display: flex;
+  gap: 22px;
+  padding: 0 24px;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  padding: 10px 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tabBtnActive {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.section {
+  background: #f8fafc;
+  border: 1px solid #eef1f6;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.sectionHint {
+  font-size: 12px;
+  color: #777;
+  margin: 0 0 14px;
+}
+
+.templateRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.formatSelect {
+  border: 1px solid #d6dde6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  background: #fff;
+  min-width: 140px;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f9d78;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.downloadBtn:hover {
+  background: #0c8767;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed #d6dde6;
+  border-radius: 10px;
+  padding: 34px 18px;
+  cursor: pointer;
+  text-align: center;
+  background: #fff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzoneActive {
+  border-color: #007bff;
+  background: #f7faff;
+}
+
+.dropzoneIcon {
+  color: #9aa7b8;
+  margin-bottom: 4px;
+}
+
+.dropzoneTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dropzoneHint {
+  font-size: 12px;
+  color: #888;
+}
+
+.formErrorBanner {
+  background: #fdeceb;
+  border: 1px solid #f3b9b3;
+  color: #b3261e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.resultBanner {
+  background: #eafaf3;
+  border: 1px solid #b9e8d3;
+  color: #0f6b4d;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.resultBanner p {
+  margin: 0;
+}
+
+.skippedList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #7a5b12;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historyItem {
+  border: 1px solid #eef1f6;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.historyFileName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.historyMeta {
+  font-size: 12px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.emptyHistory {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  padding: 24px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #eef1f6;
+}
+
+.cancelBtn {
+  background: #fff;
+  color: #555;
+  border: 1px solid #d6dde6;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.uploadBtn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.uploadBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

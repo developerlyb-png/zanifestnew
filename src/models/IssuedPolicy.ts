@@ -30,6 +30,15 @@ const IssuedPolicySchema =
 
       mobile: String,
 
+      address: String,
+
+      clientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+
+      subClientName: String,
+
     },
 
     vehicle: {
@@ -40,6 +49,101 @@ const IssuedPolicySchema =
 
       model: String,
 
+      type: String,
+
+      fuelType: String,
+
+      modelYear: String,
+
+      itemsCovered: String,
+
+      ncbApplicable: String,
+
+    },
+
+    businessSegment: String,
+
+    lineOfBusiness: String,
+
+    product: String,
+
+    paymentReceivedDate: Date,
+
+    paymentMode: String,
+
+    policyTypeStructure: String,
+
+    mediumOfIssuance: String,
+
+    assignment: {
+
+      branchName: String,
+
+      reportingManager: {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Manager",
+        },
+        name: String,
+      },
+
+      pospPartner: String,
+
+      pospAgent: {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Agent",
+        },
+        name: String,
+      },
+
+    },
+
+    premiumBreakdown: [
+      {
+        label: String,
+        sumInsured: Number,
+        premiumAmount: Number,
+        commissionPercent: Number,
+        commissionAmount: Number,
+      },
+    ],
+
+    rewardAmount: Number,
+
+    gstAmount: Number,
+
+    paymentDetails: {
+
+      mode: String,
+
+      transactionId: String,
+
+      transactionDate: Date,
+
+      transactionAmount: Number,
+
+      transactionProof: {
+        data: String,
+        fileName: String,
+      },
+
+    },
+
+    rewardStatus: String,
+
+    commissionRemark: String,
+
+    policyDocuments: [
+      {
+        data: String,
+        fileName: String,
+      },
+    ],
+
+    source: {
+      type: String,
+      default: "online",
     },
 
     premium: Number,
@@ -111,6 +215,16 @@ const IssuedPolicySchema =
       type: Date,
 
       default: Date.now,
+
+    },
+
+    createdBy: String,
+
+    updatedBy: String,
+
+    updatedAt: {
+
+      type: Date,
 
     },
 
