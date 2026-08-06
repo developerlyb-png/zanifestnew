@@ -14,7 +14,7 @@ import FeedBackSection from "@/components/home/FeedBackSection";
 import FAQSection from "@/components/home/FAQSection";
 import Footer from "@/components/ui/Footer";
 import Partners from "@/components/home/Partners";
-import Loader from "@/components/ui/loader";
+// import Loader from "@/components/ui/loader"; // commented out for now — homepage load spinner disabled
 import axios from "axios";
 
 export default function Home() {
@@ -64,9 +64,9 @@ export default function Home() {
         <meta name="Insurance" content="Get best value insurances" />
       </Head>
 
-      {loading ? (
+      {/* {loading ? (
         <Loader />
-      ) : (
+      ) : ( */}
         <div className={styles.cont}>
           <UserDetails />
           <Navbar />
@@ -81,7 +81,7 @@ export default function Home() {
           <FAQSection />
           <Footer />
         </div>
-      )}
+      {/* )} */}
     </>
   );
 }
