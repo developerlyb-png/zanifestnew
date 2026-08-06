@@ -21,9 +21,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ message: "Email and password are required" });
   }
 
+  const normalizedEmail = String(email).trim().toLowerCase();
+
   try {
     await dbConnect();
-    const admin = await Admin.findOne({ email }).select("userFirstName userLastName email role password accountStatus");
+    const admin = await Admin.findOne({ email: normalizedEmail }).select("userFirstName userLastName email role password accountStatus");
     console.log("Admin found:", admin);
 
     if (!admin) {
