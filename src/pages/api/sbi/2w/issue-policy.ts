@@ -76,27 +76,34 @@ export default async function handler(
     const kycField =
       req.body.kycField === "IC_KYC_No" ? "IC_KYC_No" : "VISoF_KYC_Req_No";
 
+    // The 2W e-KYC step's response always carries a "zuno-" prefix
+    // (our own tracking prefix layered on Zuno's raw numeric reference).
+    // Zuno's core service almost certainly expects the raw reference,
+    // not this prefixed string — strip it by default (unlike 4W, whose
+    // KYC values don't normally carry this prefix, so 4W leaves it opt-in).
+    // Pass stripKycPrefix: false explicitly to send the raw kycNo unmodified.
+    const kycValue =
+      req.body.stripKycPrefix === false
+        ? String(kycNo)
+        : String(kycNo).replace(/^zuno-/i, "");
+
     // =====================
     // ZUNO 2W ISSUE PAYLOAD
-    // NOTE: the 2W collection uses "policyList" —
-    // NOT the 4W's policyRequest.issuePolicyList wrapper.
+    // Mirrors the 4W payload shape exactly (src/pages/api/zuno/4w/issue-policy.ts),
+    // which is confirmed working. Earlier iterations here kept stacking extra
+    // top-level "policyList"/"issuePolicyList" wrappers and a policyNumber/policyNo
+    // field to satisfy Zuno's input *validator* one error at a time — but that bloated,
+    // redundant shape is what the core service then rejects with a generic E1205.
+    // Passing a pre-allocated policy number isn't part of the working 4W shape either,
+    // so it's dropped from the outgoing request (fqPolicyNumber is still used below
+    // purely as a fallback when saving our own IssuedPolicy record).
     // =====================
     const item: any = {
       quoteNo: String(quoteNo),
       quoteOptionNo: String(quoteOptionNo),
-      [kycField]: String(kycNo),
+      [kycField]: kycValue,
     };
-    if (fqPolicyNumber) {
-      // key-name variants for the pre-allocated policy number
-      item.policyNumber = String(fqPolicyNumber);
-      item.policyNo = String(fqPolicyNumber);
-    }
 
-    // The 2W validator accepted the policyRequest.issuePolicyList
-    // structure (it reached the core with it), and rejected a bare
-    // "policyList" with "Missing or empty policy list" — so
-    // issuePolicyList is the recognized key. We include policyList
-    // too for safety.
     const issuePayload = {
       ...item,
 
@@ -104,9 +111,6 @@ export default async function handler(
         name: "EGICProductWebServicesV1",
         version: "1",
       },
-
-      policyList: [item],
-      issuePolicyList: [item],
 
       policyRequest: {
         ...item,

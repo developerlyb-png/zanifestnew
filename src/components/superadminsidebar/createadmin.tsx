@@ -6,9 +6,11 @@ import axios from "axios";
 interface CreateAdminProps {
   initialData?: any;
   mode?: "create" | "edit"; // Optional mode prop
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-const CreateAdmin: React.FC<CreateAdminProps> = ({ initialData, mode }) => {
+const CreateAdmin: React.FC<CreateAdminProps> = ({ initialData, mode = "create", onSuccess, onCancel }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
@@ -74,17 +76,19 @@ const CreateAdmin: React.FC<CreateAdminProps> = ({ initialData, mode }) => {
         setPassword("");
         setIsSuperAdmin(false);
         setShowPassword(false);
+        onSuccess?.();
       } else {
         alert(result.message || "Failed to create admin.");
       }
     } else if (mode === "edit") {
-      const res = await axios.patch("/api/admin/updateadmin", data, {
+      await axios.patch("/api/admin/updateadmin", data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("managerToken")}`,
         },
       });
       alert("Profile updated successfully!");
+      onSuccess?.();
     }
   } catch (error) {
     console.error("Error creating/updating admin:", error);
@@ -176,9 +180,21 @@ const CreateAdmin: React.FC<CreateAdminProps> = ({ initialData, mode }) => {
     Make Super Admin
   </label>
 
-  <button type="submit" className={styles.submitButton}>
-    {mode === "edit" ? "Update" : "Create"}
-  </button>
+  <div style={{ display: "flex", gap: 10 }}>
+    {onCancel && (
+      <button
+        type="button"
+        className={styles.submitButton}
+        style={{ background: "#fff", color: "#5b6577", border: "1.5px solid #e5e9f0", boxShadow: "none" }}
+        onClick={onCancel}
+      >
+        Cancel
+      </button>
+    )}
+    <button type="submit" className={styles.submitButton}>
+      {mode === "edit" ? "Update" : "Create"}
+    </button>
+  </div>
 </div>
 
       </form>

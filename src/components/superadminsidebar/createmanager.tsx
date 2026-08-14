@@ -8,6 +8,8 @@ import axios from "axios";
 interface CreateManagerProps {
   mode?: "create" | "edit";
   initialData?: any;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 interface ButtonProps {
@@ -141,7 +143,7 @@ const Button: React.FC<ButtonProps> = ({ label, name, accept, onChange }) => {
 import { useRef } from "react";
 
 
-const CreateManager: React.FC<CreateManagerProps> = ({ mode = "create", initialData }) => {
+const CreateManager: React.FC<CreateManagerProps> = ({ mode = "create", initialData, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -345,19 +347,20 @@ const CreateManager: React.FC<CreateManagerProps> = ({ mode = "create", initialD
 
         if (res.status === 200 || res.status === 201) {
           alert('Manager created successfully!');
-          
+          onSuccess?.();
         } else {
           alert('Error creating manager.');
         }
       }
       else {
-        const res = await axios.patch('/api/manager/updatemanager', payload, {
+        await axios.patch('/api/manager/updatemanager', payload, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('managerToken')}`, // if not using httpOnly cookie
           },
         });
         alert('Profile updated successfully!');
+        onSuccess?.();
       }
   } 
   catch (err)
@@ -800,10 +803,21 @@ onChange={handlePincodeChange}
         )}
 
         {/* Submit Button */}
-        <button type="submit" className={styles.submitButton}>
-                {mode === "edit" ? "Update" : "Create"}
-
-        </button>
+        <div className={styles.actionRow}>
+          {onCancel && (
+            <button
+              type="button"
+              className={styles.submitButton}
+              style={{ background: "#fff", color: "#5b6577", border: "1.5px solid #e5e9f0", boxShadow: "none" }}
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          )}
+          <button type="submit" className={styles.submitButton}>
+            {mode === "edit" ? "Update" : "Create"}
+          </button>
+        </div>
       </form>
     </div>
   );

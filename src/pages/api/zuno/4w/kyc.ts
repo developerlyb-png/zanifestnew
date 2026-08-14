@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     dobDoi: toDdMmYyyy(c.dateOfBirth).replace(/-/g, "/"), // dd/mm/yyyy
   },
   additional: {
-    redirectUrl: "",
+    redirectUrl: req.body.redirectUrl || "",
   },
 };
 console.log(kycPayload);
