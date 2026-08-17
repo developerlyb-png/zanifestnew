@@ -1,6 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/PolicyDashboard.module.css";
-import { FiDownload, FiSearch, FiPlus, FiUploadCloud, FiCopy } from "react-icons/fi";
+import {
+  FiDownload,
+  FiSearch,
+  FiPlus,
+  FiUploadCloud,
+  FiCopy,
+  FiFile,
+  FiColumns,
+} from "react-icons/fi";
 import AddPolicyForm from "./AddPolicyForm";
 import BulkUploadModal from "./BulkUploadModal";
 import PolicyDetailView from "./PolicyDetailView";
@@ -29,7 +37,8 @@ interface Policy {
   customer?: { fullName?: string };
 }
 
-type Preset = "thisMonth" | "thisYear" | "custom";
+type Preset = "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
+type DateBasis = "startDate" | "createdAt";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -47,12 +56,27 @@ function financialYearRange() {
 function presetRange(preset: Preset): { from: Date; to: Date } {
   const now = new Date();
   const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
   switch (preset) {
+    case "today":
+      return { from: startOfToday, to: endOfToday };
     case "thisMonth":
       return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfToday };
+    case "lastMonth":
+      return {
+        from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+        to: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59),
+      };
     case "thisYear":
       return financialYearRange();
+    case "lastYear": {
+      const { from } = financialYearRange();
+      return {
+        from: new Date(from.getFullYear() - 1, 3, 1),
+        to: new Date(from.getFullYear(), 2, 31, 23, 59, 59),
+      };
+    }
     default:
       return financialYearRange();
   }
@@ -81,8 +105,11 @@ const formatInrAbbrev = (n?: number | null) => {
 };
 
 const PRESETS: { key: Preset; label: string }[] = [
+  { key: "today", label: "Today" },
   { key: "thisMonth", label: "This Month" },
+  { key: "lastMonth", label: "Last Month" },
   { key: "thisYear", label: "This Year" },
+  { key: "lastYear", label: "Last Year" },
   { key: "custom", label: "Custom Range" },
 ];
 
@@ -151,10 +178,76 @@ const EMPTY_FILTERS: ColumnFilters = {
   endorsementSearch: "",
 };
 
+type ColumnKey =
+  | "insuredName"
+  | "subInsured"
+  | "policyNo"
+  | "endorsementNo"
+  | "productName"
+  | "transactionType"
+  | "insurer"
+  | "pospPartner"
+  | "status"
+  | "startDate"
+  | "endDate"
+  | "policyMonth"
+  | "premiumAmount"
+  | "grossPremium"
+  | "commissionAmount"
+  | "payoutAmount"
+  | "payoutStatus"
+  | "policyDocStatus"
+  | "policyRemark"
+  | "reconcile";
+
+const COLUMNS: { key: ColumnKey; label: string }[] = [
+  { key: "insuredName", label: "Insured Name" },
+  { key: "subInsured", label: "Sub-Insured" },
+  { key: "policyNo", label: "Policy No." },
+  { key: "endorsementNo", label: "Endorsement No." },
+  { key: "productName", label: "Product Name" },
+  { key: "transactionType", label: "Transaction Type" },
+  { key: "insurer", label: "Insurer" },
+  { key: "pospPartner", label: "POSP Partner" },
+  { key: "status", label: "Status" },
+  { key: "startDate", label: "Start Date" },
+  { key: "endDate", label: "End Date" },
+  { key: "policyMonth", label: "Policy Month" },
+  { key: "premiumAmount", label: "Premium Amount" },
+  { key: "grossPremium", label: "Gross Premium" },
+  { key: "commissionAmount", label: "Commission Amount" },
+  { key: "payoutAmount", label: "Payout Amount" },
+  { key: "payoutStatus", label: "Payout Status" },
+  { key: "policyDocStatus", label: "Policy Document Status" },
+  { key: "policyRemark", label: "Policy Remark" },
+  { key: "reconcile", label: "Reconcile" },
+];
+
+const FILLER_KEYS: ColumnKey[] = [
+  "status",
+  "startDate",
+  "endDate",
+  "policyMonth",
+  "premiumAmount",
+  "grossPremium",
+  "commissionAmount",
+  "payoutAmount",
+  "payoutStatus",
+  "policyDocStatus",
+  "policyRemark",
+  "reconcile",
+];
+
+const ALL_COLUMNS_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) => {
+  acc[c.key] = true;
+  return acc;
+}, {} as Record<ColumnKey, boolean>);
+
 function PolicyDashboard() {
   const [preset, setPreset] = useState<Preset>("thisYear");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
+  const [dateBasis, setDateBasis] = useState<DateBasis>("startDate");
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ColumnFilters>(EMPTY_FILTERS);
@@ -162,9 +255,25 @@ function PolicyDashboard() {
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
+  const [showColumnPicker, setShowColumnPicker] = useState(false);
+  const columnPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (columnPickerRef.current && !columnPickerRef.current.contains(e.target as Node)) {
+        setShowColumnPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const setFilter = (key: keyof ColumnFilters, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
+
+  const toggleColumn = (key: ColumnKey) =>
+    setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const uniqueValues = (key: "policyType" | "transactionType" | "insurer" | "pospPartner") =>
     Array.from(new Set(policies.map((p) => p[key]).filter(Boolean))) as string[];
@@ -205,13 +314,14 @@ function PolicyDashboard() {
     const params = new URLSearchParams({
       from: range.from.toISOString(),
       to: range.to.toISOString(),
+      dateField: dateBasis,
     });
     fetch(`/api/admin/policies?${params.toString()}`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setPolicies(data.policies || []))
       .catch(() => setPolicies([]))
       .finally(() => setLoading(false));
-  }, [range, refreshKey]);
+  }, [range, dateBasis, refreshKey]);
 
   const summary = useMemo(() => {
     const buckets = ["Motor", "Health", "Life", "Other"] as const;
@@ -237,33 +347,35 @@ function PolicyDashboard() {
   const payoutSummary = useMemo(() => sumByBucket(policies, "payoutAmount"), [policies]);
 
   const exportCsv = () => {
-    const headers = [
-      "Insured Name", "Sub-Insured", "Policy No.", "Endorsement No.", "Product Name",
-      "Transaction Type", "Insurer", "POSP Partner", "Status", "Start Date", "End Date",
-      "Premium Amount", "Gross Premium", "Commission Amount", "Payout Amount",
-      "Payout Status", "Policy Document Status", "Policy Remark", "Reconcile",
-    ];
-    const rows = filteredPolicies.map((p) => [
-      p.customer?.fullName || "",
-      p.subInsured || "",
-      p.policyNumber || "",
-      p.endorsementNo || "",
-      p.policyType || "",
-      p.transactionType || "",
-      p.insurer || "",
-      p.pospPartner || "",
-      p.status || "",
-      formatDate(p.startDate),
-      formatDate(p.endDate),
-      p.premium ?? "",
-      p.grossPremium ?? "",
-      p.commissionAmount ?? "",
-      p.payoutAmount ?? "",
-      p.payoutStatus || "",
-      p.policyDocumentStatus || "",
-      p.policyRemark || "",
-      p.reconcile || "",
-    ]);
+    const visible = COLUMNS.filter((c) => visibleColumns[c.key]);
+    const headers = visible.map((c) => c.label);
+    const rows = filteredPolicies.map((p) => {
+      const cellFor: Record<ColumnKey, string | number> = {
+        insuredName: p.customer?.fullName || "",
+        subInsured: p.subInsured || "",
+        policyNo: p.policyNumber || "",
+        endorsementNo: p.endorsementNo || "",
+        productName: p.policyType || "",
+        transactionType: p.transactionType || "",
+        insurer: p.insurer || "",
+        pospPartner: p.pospPartner || "",
+        status: p.status || "",
+        startDate: formatDate(p.startDate),
+        endDate: formatDate(p.endDate),
+        policyMonth: p.startDate
+          ? new Date(p.startDate).toLocaleDateString("en-US", { month: "long" })
+          : "",
+        premiumAmount: p.premium ?? "",
+        grossPremium: p.grossPremium ?? "",
+        commissionAmount: p.commissionAmount ?? "",
+        payoutAmount: p.payoutAmount ?? "",
+        payoutStatus: p.payoutStatus || "",
+        policyDocStatus: p.policyDocumentStatus || "",
+        policyRemark: p.policyRemark || "",
+        reconcile: p.reconcile || "",
+      };
+      return visible.map((c) => cellFor[c.key]);
+    });
     const csv = [headers, ...rows]
       .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
       .join("\n");
@@ -275,6 +387,9 @@ function PolicyDashboard() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const visibleFillerCount = FILLER_KEYS.filter((k) => visibleColumns[k]).length;
+  const visibleColumnCount = COLUMNS.filter((c) => visibleColumns[c.key]).length;
 
   if (selectedPolicyId) {
     return (
@@ -294,16 +409,19 @@ function PolicyDashboard() {
   return (
     <div className={styles.cont}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Policy data</h2>
+        <h2 className={styles.heading}>Policy Dashboard</h2>
         <div className={styles.headerActions}>
-          <button className={styles.primaryBtn} onClick={() => setShowAddForm((v) => !v)}>
-            <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
-          </button>
-          <button className={styles.exportBtn} onClick={() => setShowBulkUpload(true)}>
+          <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
             <FiUploadCloud /> Bulk Upload
           </button>
-          <button className={styles.exportBtn} onClick={exportCsv}>
-            <FiDownload /> Export
+          <button
+            className={styles.outlineBtn}
+            onClick={() => alert("Import from policy document is coming soon.")}
+          >
+            <FiFile /> Import from policy document
+          </button>
+          <button className={styles.primaryBtn} onClick={() => setShowAddForm((v) => !v)}>
+            <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
           </button>
         </div>
       </div>
@@ -393,6 +511,48 @@ function PolicyDashboard() {
                 </>
               )}
             </div>
+            <div className={styles.filterRowRight}>
+              <button className={styles.exportSolidBtn} onClick={exportCsv}>
+                <FiDownload /> Export
+              </button>
+              <div className={styles.columnPickerWrapper} ref={columnPickerRef}>
+                <button className={styles.outlineBtn} onClick={() => setShowColumnPicker((v) => !v)}>
+                  <FiColumns /> Filter Columns
+                </button>
+                {showColumnPicker && (
+                  <div className={styles.columnPickerDropdown}>
+                    {COLUMNS.map((c) => (
+                      <label key={c.key} className={styles.columnPickerItem}>
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns[c.key]}
+                          onChange={() => toggleColumn(c.key)}
+                        />
+                        {c.label}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.viewByRow}>
+            <span className={styles.viewByLabel}>View Data By</span>
+            <div className={styles.viewByToggle}>
+              <button
+                className={`${styles.viewByBtn} ${dateBasis === "startDate" ? styles.viewByBtnActive : ""}`}
+                onClick={() => setDateBasis("startDate")}
+              >
+                Policy Effective Date
+              </button>
+              <button
+                className={`${styles.viewByBtn} ${dateBasis === "createdAt" ? styles.viewByBtnActive : ""}`}
+                onClick={() => setDateBasis("createdAt")}
+              >
+                System Entry Date
+              </button>
+            </div>
             <span className={styles.rangeText}>
               Showing data from {formatDate(toIso(range.from))} to {formatDate(toIso(range.to))}
             </span>
@@ -402,169 +562,187 @@ function PolicyDashboard() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Insured Name</th>
-                  <th>Sub-Insured</th>
-                  <th>Policy No.</th>
-                  <th>Endorsement No.</th>
-                  <th>Product Name</th>
-                  <th>Transaction Type</th>
-                  <th>Insurer</th>
-                  <th>POSP Partner</th>
-                  <th>Status</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Policy Month</th>
-                  <th>Premium Amount</th>
-                  <th>Gross Premium</th>
-                  <th>Commission Amount</th>
-                  <th>Payout Amount</th>
-                  <th>Payout Status</th>
-                  <th>Policy Document Status</th>
-                  <th>Policy Remark</th>
-                  <th>Reconcile</th>
+                  {COLUMNS.filter((c) => visibleColumns[c.key]).map((c) => (
+                    <th key={c.key}>{c.label}</th>
+                  ))}
                 </tr>
                 <tr className={styles.filterHeaderRow}>
-                  <td>
-                    <select
-                      className={styles.selectInput}
-                      value={filters.insuredName}
-                      onChange={(e) => setFilter("insuredName", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {uniqueNames().map((n) => (
-                        <option key={n} value={n}>
-                          {n}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className={styles.dashCell}>—</td>
-                  <td>
-                    <div className={styles.searchInput}>
-                      <FiSearch size={12} />
-                      <input
-                        placeholder="Search"
-                        value={filters.policyNoSearch}
-                        onChange={(e) => setFilter("policyNoSearch", e.target.value)}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <div className={styles.searchInput}>
-                      <FiSearch size={12} />
-                      <input
-                        placeholder="Search"
-                        value={filters.endorsementSearch}
-                        onChange={(e) => setFilter("endorsementSearch", e.target.value)}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <select
-                      className={styles.selectInput}
-                      value={filters.productName}
-                      onChange={(e) => setFilter("productName", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {uniqueValues("policyType").map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      className={styles.selectInput}
-                      value={filters.transactionType}
-                      onChange={(e) => setFilter("transactionType", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {uniqueValues("transactionType").map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      className={styles.selectInput}
-                      value={filters.insurer}
-                      onChange={(e) => setFilter("insurer", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {uniqueValues("insurer").map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      className={styles.selectInput}
-                      value={filters.pospPartner}
-                      onChange={(e) => setFilter("pospPartner", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {uniqueValues("pospPartner").map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td colSpan={12}></td>
+                  {visibleColumns.insuredName && (
+                    <td>
+                      <select
+                        className={styles.selectInput}
+                        value={filters.insuredName}
+                        onChange={(e) => setFilter("insuredName", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {uniqueNames().map((n) => (
+                          <option key={n} value={n}>
+                            {n}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
+                  {visibleColumns.subInsured && <td className={styles.dashCell}>—</td>}
+                  {visibleColumns.policyNo && (
+                    <td>
+                      <div className={styles.searchInput}>
+                        <FiSearch size={12} />
+                        <input
+                          placeholder="Search"
+                          value={filters.policyNoSearch}
+                          onChange={(e) => setFilter("policyNoSearch", e.target.value)}
+                        />
+                      </div>
+                    </td>
+                  )}
+                  {visibleColumns.endorsementNo && (
+                    <td>
+                      <div className={styles.searchInput}>
+                        <FiSearch size={12} />
+                        <input
+                          placeholder="Search"
+                          value={filters.endorsementSearch}
+                          onChange={(e) => setFilter("endorsementSearch", e.target.value)}
+                        />
+                      </div>
+                    </td>
+                  )}
+                  {visibleColumns.productName && (
+                    <td>
+                      <select
+                        className={styles.selectInput}
+                        value={filters.productName}
+                        onChange={(e) => setFilter("productName", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {uniqueValues("policyType").map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
+                  {visibleColumns.transactionType && (
+                    <td>
+                      <select
+                        className={styles.selectInput}
+                        value={filters.transactionType}
+                        onChange={(e) => setFilter("transactionType", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {uniqueValues("transactionType").map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
+                  {visibleColumns.insurer && (
+                    <td>
+                      <select
+                        className={styles.selectInput}
+                        value={filters.insurer}
+                        onChange={(e) => setFilter("insurer", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {uniqueValues("insurer").map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
+                  {visibleColumns.pospPartner && (
+                    <td>
+                      <select
+                        className={styles.selectInput}
+                        value={filters.pospPartner}
+                        onChange={(e) => setFilter("pospPartner", e.target.value)}
+                      >
+                        <option value="">Select</option>
+                        {uniqueValues("pospPartner").map((v) => (
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
+                  {visibleFillerCount > 0 && <td colSpan={visibleFillerCount}></td>}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={20} className={styles.emptyCell}>
+                    <td colSpan={visibleColumnCount} className={styles.emptyCell}>
                       Loading policies...
                     </td>
                   </tr>
                 ) : filteredPolicies.length === 0 ? (
                   <tr>
-                    <td colSpan={20} className={styles.emptyCell}>
+                    <td colSpan={visibleColumnCount} className={styles.emptyCell}>
                       No policies match this date range/filters.
                     </td>
                   </tr>
                 ) : (
                   filteredPolicies.map((p) => (
                     <tr key={p._id}>
-                      {/* TODO: re-attach onClick={() => setSelectedPolicyId(p._id)} here to open PolicyDetailView */}
-                      <td>{p.customer?.fullName || "--"}</td>
-                      <td>{p.subInsured || "--"}</td>
-                      <td>{p.policyNumber || "--"}</td>
-                      <td>{p.endorsementNo || "-"}</td>
-                      <td>{p.policyType || "--"}</td>
-                      <td>{p.transactionType || "--"}</td>
-                      <td>{p.insurer || "--"}</td>
-                      <td>{p.pospPartner || "--"}</td>
-                      <td>{p.status || "--"}</td>
-                      <td>{formatDisplayDate(p.startDate)}</td>
-                      <td>{formatDisplayDate(p.endDate)}</td>
-                      <td>
-                        {p.startDate
-                          ? new Date(p.startDate).toLocaleDateString("en-US", { month: "long" })
-                          : "--"}
-                      </td>
-                      <td>{formatInr(p.premium)}</td>
-                      <td>{formatInr(p.grossPremium)}</td>
-                      <td>{formatInr(p.commissionAmount)}</td>
-                      <td>{formatInr(p.payoutAmount)}</td>
-                      <td>
-                        <span className={styles.badgeTeal}>{p.payoutStatus || "PENDING"}</span>
-                      </td>
-                      <td>
-                        <span className={styles.badgeTeal}>{p.policyDocumentStatus || "Pending"}</span>
-                      </td>
-                      <td>{p.policyRemark || "-"}</td>
-                      <td>
-                        <span className={styles.badgeAmber}>{p.reconcile || "No"}</span>
-                      </td>
+                      {visibleColumns.insuredName && (
+                        <td>
+                          {/* Link disabled for now — plain name only. Restore by uncommenting below.
+                          <button
+                            className={styles.linkCell}
+                            onClick={() => setSelectedPolicyId(p._id)}
+                          >
+                            {p.customer?.fullName || "--"}
+                          </button>
+                          */}
+                          {p.customer?.fullName || "--"}
+                        </td>
+                      )}
+                      {visibleColumns.subInsured && <td>{p.subInsured || "--"}</td>}
+                      {visibleColumns.policyNo && <td>{p.policyNumber || "--"}</td>}
+                      {visibleColumns.endorsementNo && <td>{p.endorsementNo || "-"}</td>}
+                      {visibleColumns.productName && <td>{p.policyType || "--"}</td>}
+                      {visibleColumns.transactionType && <td>{p.transactionType || "--"}</td>}
+                      {visibleColumns.insurer && <td>{p.insurer || "--"}</td>}
+                      {visibleColumns.pospPartner && <td>{p.pospPartner || "--"}</td>}
+                      {visibleColumns.status && <td>{p.status || "--"}</td>}
+                      {visibleColumns.startDate && <td>{formatDisplayDate(p.startDate)}</td>}
+                      {visibleColumns.endDate && <td>{formatDisplayDate(p.endDate)}</td>}
+                      {visibleColumns.policyMonth && (
+                        <td>
+                          {p.startDate
+                            ? new Date(p.startDate).toLocaleDateString("en-US", { month: "long" })
+                            : "--"}
+                        </td>
+                      )}
+                      {visibleColumns.premiumAmount && <td>{formatInr(p.premium)}</td>}
+                      {visibleColumns.grossPremium && <td>{formatInr(p.grossPremium)}</td>}
+                      {visibleColumns.commissionAmount && <td>{formatInr(p.commissionAmount)}</td>}
+                      {visibleColumns.payoutAmount && <td>{formatInr(p.payoutAmount)}</td>}
+                      {visibleColumns.payoutStatus && (
+                        <td>
+                          <span className={styles.badgeTeal}>{p.payoutStatus || "PENDING"}</span>
+                        </td>
+                      )}
+                      {visibleColumns.policyDocStatus && (
+                        <td>
+                          <span className={styles.badgeTeal}>
+                            {p.policyDocumentStatus || "Pending"}
+                          </span>
+                        </td>
+                      )}
+                      {visibleColumns.policyRemark && <td>{p.policyRemark || "-"}</td>}
+                      {visibleColumns.reconcile && (
+                        <td>
+                          <span className={styles.badgeAmber}>{p.reconcile || "No"}</span>
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}

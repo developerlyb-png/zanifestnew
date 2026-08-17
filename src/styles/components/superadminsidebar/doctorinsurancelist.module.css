@@ -12,11 +12,115 @@
   box-sizing: border-box;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
 .title {
   font-size: 26px;
   font-weight: 700;
   color: #f97316;
-  margin-bottom: 18px;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  color: #f97316;
+  border: 1.5px solid #fed7aa;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.exportBtn:hover {
+  background: #fff7ed;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+}
+
+/* ================= TOOLBAR: filter pills + search ================= */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pillGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pill:hover {
+  background: #e2e8f0;
+}
+
+.pillActive {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  min-width: 240px;
+  color: #94a3b8;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.searchBox:focus-within {
+  background: #fff;
+  border-color: #fed7aa;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: #0f172a;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    min-width: 0;
+  }
 }
 
 /* ================= TABLE ================= */

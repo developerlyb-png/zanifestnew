@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/doctorinsurancelist.module.css";
+import { FiDownload, FiSearch } from "react-icons/fi";
 
 interface DoctorData {
   _id: string;
@@ -38,6 +39,9 @@ const Doctorinsurancelist = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [assignFilter, setAssignFilter] = useState<"all" | "assigned" | "unassigned">("all");
+
   const fetchDoctors = async () => {
     setLoading(true);
     const res = await axios.get("/api/doctorinsurance");
@@ -72,11 +76,77 @@ const Doctorinsurancelist = () => {
     fetchDoctors();
   };
 
+  const filteredDoctors = doctors
+    .filter((doc) =>
+      assignFilter === "all"
+        ? true
+        : assignFilter === "assigned"
+        ? !!doc.assignedTo
+        : !doc.assignedTo
+    )
+    .filter((doc) =>
+      `${doc.name || ""} ${doc.email || ""} ${doc.mobile || ""} ${doc.assignedTo || ""}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+
+  const exportCsv = () => {
+    const headers = ["S.No", "Name", "Email", "Mobile", "Assigned To"];
+    const rows = filteredDoctors.map((doc, index) => [
+      index + 1,
+      doc.name || "-",
+      doc.email || "Unregistered",
+      doc.mobile || "-",
+      doc.assignedTo || "Not Assigned",
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "doctor-insurance-leads.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.title}>Doctor Insurance List</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Doctor Insurance List</h2>
+        <button className={styles.exportBtn} onClick={exportCsv}>
+          <FiDownload size={15} /> Export CSV
+        </button>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.pillGroup}>
+          {[
+            { key: "all", label: "All" },
+            { key: "assigned", label: "Assigned" },
+            { key: "unassigned", label: "Not Assigned" },
+          ].map((f) => (
+            <button
+              key={f.key}
+              className={`${styles.pill} ${assignFilter === f.key ? styles.pillActive : ""}`}
+              onClick={() => setAssignFilter(f.key as "all" | "assigned" | "unassigned")}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className={styles.searchBox}>
+          <FiSearch size={14} />
+          <input
+            placeholder="Search by name, email, mobile, or agent"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
 
       {/* ================= TABLE ================= */}
       <div className={styles.tableWrapper}>
@@ -93,7 +163,7 @@ const Doctorinsurancelist = () => {
           </thead>
 
           <tbody>
-            {doctors.map((doc, index) => (
+            {filteredDoctors.map((doc, index) => (
               <tr
                 key={doc._id}
                 onClick={() => setSelectedRecord(doc)}

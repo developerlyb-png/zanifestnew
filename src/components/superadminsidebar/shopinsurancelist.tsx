@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/shopinsurancelist.module.css";
+import { FiDownload, FiSearch } from "react-icons/fi";
 
 interface ShopRecord {
   _id: string;
@@ -27,6 +28,9 @@ const ShopInsuranceList = () => {
   const [selectedShop, setSelectedShop] = useState<ShopRecord | null>(null);
   const [agents, setAgents] = useState<AgentRecord[]>([]);
   const [selectedAgent, setSelectedAgent] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [assignFilter, setAssignFilter] = useState<"all" | "assigned" | "unassigned">("all");
 
   const fetchShopData = async () => {
     setLoading(true);
@@ -62,11 +66,76 @@ const ShopInsuranceList = () => {
     fetchShopData();
   };
 
+  const filteredShopData = shopData
+    .filter((shop) =>
+      assignFilter === "all"
+        ? true
+        : assignFilter === "assigned"
+        ? !!shop.assignedTo
+        : !shop.assignedTo
+    )
+    .filter((shop) =>
+      `${shop.email || ""} ${shop.phone || ""} ${shop.assignedTo || ""}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+
+  const exportCsv = () => {
+    const headers = ["S.No", "Email", "Phone", "Assigned To"];
+    const rows = filteredShopData.map((shop, index) => [
+      index + 1,
+      shop.email || "-",
+      shop.phone || "-",
+      shop.assignedTo || "Not Assigned",
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "shop-insurance-leads.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.title}>Shop Insurance List</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Shop Insurance List</h2>
+        <button className={styles.exportBtn} onClick={exportCsv}>
+          <FiDownload size={15} /> Export CSV
+        </button>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.pillGroup}>
+          {[
+            { key: "all", label: "All" },
+            { key: "assigned", label: "Assigned" },
+            { key: "unassigned", label: "Not Assigned" },
+          ].map((f) => (
+            <button
+              key={f.key}
+              className={`${styles.pill} ${assignFilter === f.key ? styles.pillActive : ""}`}
+              onClick={() => setAssignFilter(f.key as "all" | "assigned" | "unassigned")}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className={styles.searchBox}>
+          <FiSearch size={14} />
+          <input
+            placeholder="Search by email, phone, or agent"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
 
       {/* ================= TABLE ================= */}
       <div className={styles.tableWrapper}>
@@ -82,7 +151,7 @@ const ShopInsuranceList = () => {
           </thead>
 
           <tbody>
-            {shopData.map((shop, index) => (
+            {filteredShopData.map((shop, index) => (
               <tr
                 key={shop._id}
                 onClick={() => setSelectedShop(shop)}

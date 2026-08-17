@@ -3,12 +3,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/directorlist.module.css";
+import { FiDownload, FiSearch } from "react-icons/fi";
 
 export default function DirectorList() {
   const [records, setRecords] = useState<any[]>([]);
   const [agents, setAgents] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
   const [assignedAgent, setAssignedAgent] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [assignFilter, setAssignFilter] = useState<"all" | "assigned" | "unassigned">("all");
 
   useEffect(() => {
     fetchList();
@@ -49,9 +53,75 @@ export default function DirectorList() {
     fetchList();
   };
 
+  const filteredRecords = records
+    .filter((r) =>
+      assignFilter === "all"
+        ? true
+        : assignFilter === "assigned"
+        ? !!r.assignedAgentName
+        : !r.assignedAgentName
+    )
+    .filter((r) =>
+      `${r.email || ""} ${r.mobileNumber || ""} ${r.companyName || ""} ${r.assignedAgentName || ""}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+
+  const exportCsv = () => {
+    const headers = ["S.No", "Mobile", "Company", "Email", "Assigned To"];
+    const rows = filteredRecords.map((r, i) => [
+      i + 1,
+      r.mobileNumber || "-",
+      r.companyName || "-",
+      r.email || "Guest",
+      r.assignedAgentName || "Not Assigned",
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "director-officer-liability-leads.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.title}>Director Insurance List</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Director Insurance List</h2>
+        <button className={styles.exportBtn} onClick={exportCsv}>
+          <FiDownload size={15} /> Export CSV
+        </button>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.pillGroup}>
+          {[
+            { key: "all", label: "All" },
+            { key: "assigned", label: "Assigned" },
+            { key: "unassigned", label: "Not Assigned" },
+          ].map((f) => (
+            <button
+              key={f.key}
+              className={`${styles.pill} ${assignFilter === f.key ? styles.pillActive : ""}`}
+              onClick={() => setAssignFilter(f.key as "all" | "assigned" | "unassigned")}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className={styles.searchBox}>
+          <FiSearch size={14} />
+          <input
+            placeholder="Search by mobile, company, email, or agent"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
 
       {/* ================= TABLE ================= */}
       <div className={styles.tableWrapper}>
@@ -68,8 +138,8 @@ export default function DirectorList() {
           </thead>
 
           <tbody>
-            {records.length ? (
-              records.map((r, i) => (
+            {filteredRecords.length ? (
+              filteredRecords.map((r, i) => (
  <tr key={r._id} onClick={() => setSelected(r)} style={{ cursor: "pointer" }}>
   <td>{i + 1}</td>
   <td>{r.mobileNumber}</td>
