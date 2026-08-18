@@ -59,6 +59,8 @@ const IssuedPolicySchema =
 
       ncbApplicable: String,
 
+      caseType: String,
+
     },
 
     businessSegment: String,
@@ -87,6 +89,8 @@ const IssuedPolicySchema =
         name: String,
       },
 
+      agentType: String,
+
       pospPartner: String,
 
       pospAgent: {
@@ -113,6 +117,8 @@ const IssuedPolicySchema =
 
     gstAmount: Number,
 
+    taxRate: Number,
+
     paymentDetails: {
 
       mode: String,
@@ -127,6 +133,12 @@ const IssuedPolicySchema =
         data: String,
         fileName: String,
       },
+
+      partiallyPaid: Boolean,
+
+      amountPaid: Number,
+
+      partialPaymentRemarks: String,
 
     },
 

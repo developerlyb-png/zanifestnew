@@ -14,7 +14,9 @@ import {
   VEHICLE_TYPES,
   FUEL_TYPES,
   NCB_OPTIONS,
-  POLICY_TYPES,
+  MOTOR_MAKES,
+  CASE_TYPES,
+  POLICY_TYPES_BY_LOB,
   INSURANCE_COMPANIES,
   POLICY_REMARKS,
   MEDIUM_OF_ISSUANCE,
@@ -26,7 +28,7 @@ import {
 
 const STEP_LABELS = ["Basic Information", "Policy Details & Assignment", "Premium, Payment & Documents"];
 const TOTAL_STEPS = 3;
-const GST_RATE = 0.18;
+const TAX_RATES = ["0", "5", "18"];
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -79,6 +81,7 @@ interface FormDataType {
   ncbApplicable: string;
 
   policyTypeStructure: string;
+  caseType: string;
   policyNumber: string;
   previousPolicyNo: string;
   insurer: string;
@@ -88,16 +91,22 @@ interface FormDataType {
 
   branchName: string;
   reportingManagerId: string;
+  agentType: string;
   pospPartner: string;
+  directAgentName: string;
 
   mediumOfIssuance: string;
   additionalRemarks: string;
 
+  taxRate: string;
   gstAmount: string;
   paymentMode: string;
   transactionId: string;
   transactionDate: string;
   transactionAmount: string;
+  partiallyPaid: string;
+  amountPaid: string;
+  partialPaymentRemarks: string;
 
   rewardStatus: string;
   commissionRemark: string;
@@ -122,6 +131,7 @@ const EMPTY_FORM: FormDataType = {
   ncbApplicable: "",
 
   policyTypeStructure: "",
+  caseType: "",
   policyNumber: "",
   previousPolicyNo: "",
   insurer: "",
@@ -131,16 +141,22 @@ const EMPTY_FORM: FormDataType = {
 
   branchName: "",
   reportingManagerId: "",
-  pospPartner: "Direct Policy (No POSP Partner)",
+  agentType: "",
+  pospPartner: "",
+  directAgentName: "",
 
   mediumOfIssuance: "",
   additionalRemarks: "",
 
+  taxRate: "18",
   gstAmount: "",
   paymentMode: "",
   transactionId: "",
   transactionDate: "",
   transactionAmount: "",
+  partiallyPaid: "",
+  amountPaid: "",
+  partialPaymentRemarks: "",
 
   rewardStatus: "",
   commissionRemark: "",
@@ -180,6 +196,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
   const [formError, setFormError] = useState("");
   const [customBranches, setCustomBranches] = useState<string[]>([]);
   const [newBranchName, setNewBranchName] = useState("");
+  const [customMotorMakes, setCustomMotorMakes] = useState<string[]>([]);
+  const [newMotorMakeName, setNewMotorMakeName] = useState("");
+  const [customInsurers, setCustomInsurers] = useState<string[]>([]);
+  const [newInsurerName, setNewInsurerName] = useState("");
+  const [agentSearchTerm, setAgentSearchTerm] = useState("");
 
   useEffect(() => {
     fetch("/api/getallmanagers")
@@ -196,6 +217,16 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
       .then((r) => r.json())
       .then((d) => setCustomBranches(d.branches || []))
       .catch(() => setCustomBranches([]));
+
+    fetch("/api/admin/motormakes", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setCustomMotorMakes(d.makes || []))
+      .catch(() => setCustomMotorMakes([]));
+
+    fetch("/api/admin/insurers", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setCustomInsurers(d.insurers || []))
+      .catch(() => setCustomInsurers([]));
   }, []);
 
   const selectedManager = managers.find((m) => m._id === formData.reportingManagerId);
@@ -203,6 +234,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
     ? agents.filter((a) => a.assignedTo === selectedManager.managerId)
     : [];
   const selectedAgent = agentsUnderManager.find((a) => a._id === formData.pospPartner);
+  const filteredAgentsUnderManager = agentSearchTerm
+    ? agentsUnderManager.filter((a) =>
+        `${a.firstName ?? ""} ${a.lastName ?? ""} ${a.email ?? ""}`
+          .toLowerCase()
+          .includes(agentSearchTerm.toLowerCase())
+      )
+    : agentsUnderManager;
 
   const setField = (key: keyof FormDataType, value: string) =>
     setFormData((p) => ({ ...p, [key]: value }));
@@ -238,9 +276,9 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
 
   useEffect(() => {
     if (gstManuallyEdited) return;
-    const computed = (totals.premiumAmount * GST_RATE).toFixed(2);
+    const computed = (totals.premiumAmount * (Number(formData.taxRate) / 100)).toFixed(2);
     setFormData((p) => ({ ...p, gstAmount: computed }));
-  }, [totals.premiumAmount, gstManuallyEdited]);
+  }, [totals.premiumAmount, formData.taxRate, gstManuallyEdited]);
 
   const grossPremium = (totals.premiumAmount + (Number(formData.gstAmount) || 0)).toFixed(2);
 
@@ -318,12 +356,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
       if (!formData.policyTypeStructure) e.policyTypeStructure = "Required";
       if (!formData.policyNumber) e.policyNumber = "Required";
       if (!formData.insurer) e.insurer = "Required";
-      if (!formData.policyRemark) e.policyRemark = "Required";
       if (!formData.startDate) e.startDate = "Required";
       if (!formData.endDate) e.endDate = "Required";
       if (!formData.branchName) e.branchName = "Required";
       if (!formData.reportingManagerId) e.reportingManagerId = "Required";
-      if (!formData.pospPartner) e.pospPartner = "Required";
+      if (!formData.agentType) e.agentType = "Required";
+      if (formData.agentType === "posp" && !formData.pospPartner) e.pospPartner = "Required";
+      if (formData.agentType === "direct" && !formData.directAgentName) e.directAgentName = "Required";
       if (!formData.mediumOfIssuance) e.mediumOfIssuance = "Required";
     }
 
@@ -375,13 +414,70 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
     }
   };
 
+  const addCustomMotorMake = async () => {
+    const name = newMotorMakeName.trim();
+    if (!name) return;
+    setField("motorMake", name);
+    setNewMotorMakeName("");
+
+    if ([...MOTOR_MAKES, ...customMotorMakes].some((m) => m.toLowerCase() === name.toLowerCase())) {
+      return;
+    }
+    setCustomMotorMakes((prev) => [...prev, name]);
+
+    try {
+      const res = await fetch("/api/admin/motormakes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (data.success && data.make && data.make !== name) {
+        setCustomMotorMakes((prev) => prev.map((m) => (m === name ? data.make : m)));
+        setField("motorMake", data.make);
+      }
+    } catch {
+      // Make still usable for this session even if persistence failed.
+    }
+  };
+
+  const addCustomInsurer = async () => {
+    const name = newInsurerName.trim();
+    if (!name) return;
+    setField("insurer", name);
+    setNewInsurerName("");
+
+    if ([...INSURANCE_COMPANIES, ...customInsurers].some((i) => i.toLowerCase() === name.toLowerCase())) {
+      return;
+    }
+    setCustomInsurers((prev) => [...prev, name]);
+
+    try {
+      const res = await fetch("/api/admin/insurers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (data.success && data.insurer && data.insurer !== name) {
+        setCustomInsurers((prev) => prev.map((i) => (i === name ? data.insurer : i)));
+        setField("insurer", data.insurer);
+      }
+    } catch {
+      // Insurer still usable for this session even if persistence failed.
+    }
+  };
+
   const buildPayload = (status?: string) => {
     const manager = managers.find((m) => m._id === formData.reportingManagerId);
     const managerName = manager ? `${manager.firstName ?? ""} ${manager.lastName ?? ""}`.trim() : undefined;
     const agentName = selectedAgent
       ? `${selectedAgent.firstName ?? ""} ${selectedAgent.lastName ?? ""}`.trim() || selectedAgent.email
       : undefined;
-    const pospPartnerLabel = selectedAgent ? agentName : formData.pospPartner;
+    const pospPartnerLabel =
+      formData.agentType === "direct" ? formData.directAgentName : agentName || "";
 
     return {
       policyNumber: formData.policyNumber,
@@ -422,6 +518,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
             modelYear: formData.modelYear,
             itemsCovered: formData.itemsCovered,
             ncbApplicable: formData.ncbApplicable,
+            caseType: formData.caseType,
           }
         : undefined,
       assignment: {
@@ -429,8 +526,12 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
         reportingManager: formData.reportingManagerId
           ? { id: formData.reportingManagerId, name: managerName }
           : undefined,
+        agentType: formData.agentType,
         pospPartner: pospPartnerLabel,
-        pospAgent: selectedAgent ? { id: selectedAgent._id, name: agentName } : undefined,
+        pospAgent:
+          formData.agentType === "posp" && selectedAgent
+            ? { id: selectedAgent._id, name: agentName }
+            : undefined,
       },
       premiumBreakdown: premiumRows.map((r) => ({
         label: r.label,
@@ -441,6 +542,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
       })),
       rewardAmount: Number(rewardAmount) || 0,
       gstAmount: Number(formData.gstAmount) || 0,
+      taxRate: Number(formData.taxRate) || 0,
       premium: totals.premiumAmount,
       grossPremium: Number(grossPremium),
       commissionAmount: totals.commissionAmount,
@@ -451,6 +553,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
         transactionDate: formData.transactionDate || undefined,
         transactionAmount: Number(formData.transactionAmount) || undefined,
         transactionProof: transactionProof || undefined,
+        partiallyPaid: formData.partiallyPaid === "yes",
+        amountPaid:
+          formData.partiallyPaid === "yes" ? Number(formData.amountPaid) || undefined : undefined,
+        partialPaymentRemarks:
+          formData.partiallyPaid === "yes" ? formData.partialPaymentRemarks : undefined,
       },
       rewardStatus: formData.rewardStatus,
       commissionRemark: formData.commissionRemark,
@@ -547,7 +654,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
               <h3 className={styles.sectionTitle}>Business &amp; Insured Details</h3>
               <div className={styles.grid3}>
                 <div className={styles.field}>
-                  <Label text="Transaction Type" required />
+                  <Label text="Business Type" required />
                   <select
                     className={`${styles.select} ${errors.transactionType ? styles.errorInput : ""}`}
                     value={formData.transactionType}
@@ -570,9 +677,10 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                     onChange={(e) => {
                       setField("lineOfBusiness", e.target.value);
                       setField("product", "");
+                      setField("policyTypeStructure", "");
                     }}
                   >
-                    <option value="">{formData.transactionType ? "Select" : "Select Transaction Type first"}</option>
+                    <option value="">{formData.transactionType ? "Select" : "Select Business Type first"}</option>
                     {LINES_OF_BUSINESS.map((v) => (
                       <option key={v} value={v}>{v}</option>
                     ))}
@@ -602,7 +710,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                 </div>
 
                 <div className={styles.field}>
-                  <Label text="Payment Received Date" required />
+                  <Label text="Policy Insurance Date" required />
                   <input
                     type="date"
                     className={`${styles.input} ${errors.paymentReceivedDate ? styles.errorInput : ""}`}
@@ -727,16 +835,38 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
 
                   <div className={styles.field}>
                     <Label text="Motor Make" required />
-                    <input
-                      className={`${styles.input} ${errors.motorMake ? styles.errorInput : ""}`}
+                    <div className={styles.addRow}>
+                      <input
+                        className={styles.input}
+                        value={newMotorMakeName}
+                        onChange={(e) => setNewMotorMakeName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addCustomMotorMake();
+                          }
+                        }}
+                        placeholder="Add a new manufacturer..."
+                      />
+                      <button type="button" className={styles.addRowBtn} onClick={addCustomMotorMake}>
+                        <FiPlus size={14} /> Add
+                      </button>
+                    </div>
+                    <select
+                      className={`${styles.select} ${errors.motorMake ? styles.errorInput : ""}`}
                       value={formData.motorMake}
                       onChange={(e) => setField("motorMake", e.target.value)}
-                    />
+                    >
+                      <option value="">Select</option>
+                      {[...MOTOR_MAKES, ...customMotorMakes].map((v) => (
+                        <option key={v} value={v}>{v}</option>
+                      ))}
+                    </select>
                     {errors.motorMake && <span className={styles.errorText}>{errors.motorMake}</span>}
                   </div>
 
                   <div className={styles.field}>
-                    <Label text="Model Items Covered" required />
+                    <Label text="Model Name" required />
                     <input
                       className={`${styles.input} ${errors.itemsCovered ? styles.errorInput : ""}`}
                       value={formData.itemsCovered}
@@ -785,15 +915,32 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                   <select
                     className={`${styles.select} ${errors.policyTypeStructure ? styles.errorInput : ""}`}
                     value={formData.policyTypeStructure}
+                    disabled={!formData.lineOfBusiness}
                     onChange={(e) => setField("policyTypeStructure", e.target.value)}
                   >
-                    <option value="">Select</option>
-                    {POLICY_TYPES.map((v) => (
+                    <option value="">{formData.lineOfBusiness ? "Select" : "Select LOB first"}</option>
+                    {(POLICY_TYPES_BY_LOB[formData.lineOfBusiness] || []).map((v) => (
                       <option key={v} value={v}>{v}</option>
                     ))}
                   </select>
                   {errors.policyTypeStructure && <span className={styles.errorText}>{errors.policyTypeStructure}</span>}
                 </div>
+
+                {isMotor && (
+                  <div className={styles.field}>
+                    <Label text="Case Type" />
+                    <select
+                      className={styles.select}
+                      value={formData.caseType}
+                      onChange={(e) => setField("caseType", e.target.value)}
+                    >
+                      <option value="">Select</option>
+                      {CASE_TYPES.map((v) => (
+                        <option key={v} value={v}>{v}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className={styles.field}>
                   <Label text="Policy No." required />
@@ -816,13 +963,30 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
 
                 <div className={styles.field}>
                   <Label text="Insurance Company" required />
+                  <div className={styles.addRow}>
+                    <input
+                      className={styles.input}
+                      value={newInsurerName}
+                      onChange={(e) => setNewInsurerName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomInsurer();
+                        }
+                      }}
+                      placeholder="Add a new insurance company..."
+                    />
+                    <button type="button" className={styles.addRowBtn} onClick={addCustomInsurer}>
+                      <FiPlus size={14} /> Add
+                    </button>
+                  </div>
                   <select
                     className={`${styles.select} ${errors.insurer ? styles.errorInput : ""}`}
                     value={formData.insurer}
                     onChange={(e) => setField("insurer", e.target.value)}
                   >
                     <option value="">Select</option>
-                    {INSURANCE_COMPANIES.map((v) => (
+                    {[...INSURANCE_COMPANIES, ...customInsurers].map((v) => (
                       <option key={v} value={v}>{v}</option>
                     ))}
                   </select>
@@ -830,7 +994,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                 </div>
 
                 <div className={styles.field}>
-                  <Label text="Policy Remark" required />
+                  <Label text="Policy Remark" />
                   <select
                     className={`${styles.select} ${errors.policyRemark ? styles.errorInput : ""}`}
                     value={formData.policyRemark}
@@ -910,7 +1074,10 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                     value={formData.reportingManagerId}
                     onChange={(e) => {
                       setField("reportingManagerId", e.target.value);
-                      setField("pospPartner", "Direct Policy (No POSP Partner)");
+                      setField("agentType", "");
+                      setField("pospPartner", "");
+                      setField("directAgentName", "");
+                      setAgentSearchTerm("");
                     }}
                   >
                     <option value="">Select</option>
@@ -924,27 +1091,73 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                 </div>
 
                 <div className={styles.field}>
-                  <Label text="POSP Partner" required />
+                  <Label text="Agent Type" required />
                   <select
-                    className={`${styles.select} ${errors.pospPartner ? styles.errorInput : ""}`}
-                    value={formData.pospPartner}
+                    className={`${styles.select} ${errors.agentType ? styles.errorInput : ""}`}
+                    value={formData.agentType}
                     disabled={!formData.reportingManagerId}
-                    onChange={(e) => setField("pospPartner", e.target.value)}
+                    onChange={(e) => {
+                      setField("agentType", e.target.value);
+                      setField("pospPartner", "");
+                      setField("directAgentName", "");
+                      setAgentSearchTerm("");
+                    }}
                   >
                     <option value="">
                       {formData.reportingManagerId ? "Select" : "Select Reporting Manager first"}
                     </option>
-                    <option value="Direct Policy (No POSP Partner)">Direct Policy (No POSP Partner)</option>
-                    {agentsUnderManager.map((a) => (
-                      <option key={a._id} value={a._id}>
-                        {`${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email}
-                      </option>
-                    ))}
+                    <option value="posp">POSP</option>
+                    <option value="direct">Direct</option>
                   </select>
-                  {formData.reportingManagerId && agentsUnderManager.length === 0 && (
-                    <span className={styles.errorText}>No agents found under this manager.</span>
+                  {errors.agentType && <span className={styles.errorText}>{errors.agentType}</span>}
+                </div>
+
+                <div className={styles.field}>
+                  <Label text="POSP Partner" required={formData.agentType === "posp"} />
+                  {formData.agentType === "direct" ? (
+                    <>
+                      <input
+                        className={`${styles.input} ${errors.directAgentName ? styles.errorInput : ""}`}
+                        value={formData.directAgentName}
+                        onChange={(e) => setField("directAgentName", e.target.value)}
+                        placeholder="Enter agent name"
+                      />
+                      {errors.directAgentName && <span className={styles.errorText}>{errors.directAgentName}</span>}
+                    </>
+                  ) : (
+                    <>
+                      {formData.agentType === "posp" && (
+                        <input
+                          className={styles.input}
+                          value={agentSearchTerm}
+                          onChange={(e) => setAgentSearchTerm(e.target.value)}
+                          placeholder="Search agent by name or email..."
+                          style={{ marginBottom: 8 }}
+                        />
+                      )}
+                      <select
+                        className={`${styles.select} ${errors.pospPartner ? styles.errorInput : ""}`}
+                        value={formData.pospPartner}
+                        disabled={formData.agentType !== "posp"}
+                        onChange={(e) => setField("pospPartner", e.target.value)}
+                      >
+                        <option value="">
+                          {formData.agentType === "posp" ? "Select" : "Select Agent Type first"}
+                        </option>
+                        {filteredAgentsUnderManager.map((a) => (
+                          <option key={a._id} value={a._id}>
+                            {`${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email}
+                          </option>
+                        ))}
+                      </select>
+                      {formData.agentType === "posp" && filteredAgentsUnderManager.length === 0 && (
+                        <span className={styles.errorText}>
+                          {agentSearchTerm ? "No agents match your search." : "No agents found under this manager."}
+                        </span>
+                      )}
+                      {errors.pospPartner && <span className={styles.errorText}>{errors.pospPartner}</span>}
+                    </>
                   )}
-                  {errors.pospPartner && <span className={styles.errorText}>{errors.pospPartner}</span>}
                 </div>
               </div>
             </div>
@@ -1065,7 +1278,22 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
               <h3 className={styles.sectionTitle}>Tax &amp; Final Premium</h3>
               <div className={styles.grid3}>
                 <div className={styles.field}>
-                  <Label text="Service Tax/GST (18%) (₹)" required />
+                  <Label text="Tax Rate" required />
+                  <select
+                    className={styles.select}
+                    value={formData.taxRate}
+                    onChange={(e) => {
+                      setField("taxRate", e.target.value);
+                      setGstManuallyEdited(false);
+                    }}
+                  >
+                    {TAX_RATES.map((v) => (
+                      <option key={v} value={v}>{v}%</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.field}>
+                  <Label text={`Service Tax/GST (${formData.taxRate}%) (₹)`} required />
                   <input
                     type="number"
                     className={styles.input}
@@ -1129,6 +1357,48 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                     onChange={(e) => setField("transactionAmount", e.target.value)}
                   />
                 </div>
+
+                <div className={styles.field}>
+                  <Label text="If Partially Paid" />
+                  <select
+                    className={styles.select}
+                    value={formData.partiallyPaid}
+                    onChange={(e) => {
+                      setField("partiallyPaid", e.target.value);
+                      if (e.target.value !== "yes") {
+                        setField("amountPaid", "");
+                        setField("partialPaymentRemarks", "");
+                      }
+                    }}
+                  >
+                    <option value="">Select an option...</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                {formData.partiallyPaid === "yes" && (
+                  <>
+                    <div className={styles.field}>
+                      <Label text="Amount Paid (₹)" />
+                      <input
+                        type="number"
+                        className={styles.input}
+                        value={formData.amountPaid}
+                        onChange={(e) => setField("amountPaid", e.target.value)}
+                      />
+                    </div>
+
+                    <div className={styles.field}>
+                      <Label text="Remarks" />
+                      <input
+                        className={styles.input}
+                        value={formData.partialPaymentRemarks}
+                        onChange={(e) => setField("partialPaymentRemarks", e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className={`${styles.field} ${styles.colSpan2}`}>
                   <Label text="Transaction Proof Document" />

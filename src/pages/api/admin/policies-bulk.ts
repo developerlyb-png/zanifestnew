@@ -58,6 +58,10 @@ function mapRow(row: Record<string, any>, managersByName: Map<string, any>) {
     ? managersByName.get(String(row.reportingManagerName).trim().toLowerCase())
     : undefined;
 
+  const agentType = str(row.agentType)?.toLowerCase();
+  const pospPartnerValue =
+    agentType === "direct" ? str(row.directAgentName) : str(row.pospPartner);
+
   return {
     policyNumber: str(row.policyNumber),
     insurer: str(row.insurer),
@@ -70,7 +74,7 @@ function mapRow(row: Record<string, any>, managersByName: Map<string, any>) {
     mediumOfIssuance: str(row.mediumOfIssuance),
     subInsured: str(row.subInsuredName),
     endorsementNo: "-",
-    pospPartner: str(row.pospPartner) || "Direct Business",
+    pospPartner: pospPartnerValue || "Direct Business",
     policyRemark: str(row.policyRemark) || "",
     status: str(row.status) || "Active",
     startDate: date(row.startDate),
@@ -91,13 +95,17 @@ function mapRow(row: Record<string, any>, managersByName: Map<string, any>) {
           modelYear: str(row.modelYear),
           itemsCovered: str(row.itemsCovered),
           ncbApplicable: str(row.ncbApplicable),
+          caseType: str(row.caseType),
         }
       : undefined,
     assignment: {
       branchName: str(row.branchName),
       reportingManager: manager ? { id: manager._id, name: manager.name } : undefined,
-      pospPartner: str(row.pospPartner),
+      agentType,
+      pospPartner: pospPartnerValue,
     },
+    gstAmount: num(row.gstAmount),
+    taxRate: num(row.taxRate),
     premium: num(row.premium),
     grossPremium: num(row.grossPremium),
     commissionAmount: num(row.commissionAmount) ?? null,

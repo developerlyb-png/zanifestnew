@@ -693,15 +693,12 @@ function PolicyDashboard() {
                     <tr key={p._id}>
                       {visibleColumns.insuredName && (
                         <td>
-                          {/* Link disabled for now — plain name only. Restore by uncommenting below.
                           <button
                             className={styles.linkCell}
                             onClick={() => setSelectedPolicyId(p._id)}
                           >
                             {p.customer?.fullName || "--"}
                           </button>
-                          */}
-                          {p.customer?.fullName || "--"}
                         </td>
                       )}
                       {visibleColumns.subInsured && <td>{p.subInsured || "--"}</td>}

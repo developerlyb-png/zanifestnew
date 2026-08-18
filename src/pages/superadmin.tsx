@@ -86,7 +86,6 @@ import {
   FiLogOut,
   FiChevronDown,
   FiTarget,
-  FiFolder,
   FiLayers,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
@@ -101,12 +100,9 @@ const SIDEBAR_GROUP_OF: Record<string, string> = {
   doctorinsurancelist: "leads",
   officepackagepolicylist: "leads",
   directorlist: "leads",
-  policyDashboard: "policy",
-  userList: "customer",
   agentlist: "posp",
   reviewApplication: "posp",
   showResult: "posp",
-  homeSection: "homepage",
   adminlist: "admin",
   managerlist: "admin",
 };
@@ -446,7 +442,7 @@ const SuperAdminDashboard = () => {
             {openSections.leads && (
               <>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "marineinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("marineinsurancelist")}
@@ -457,7 +453,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "travelinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("travelinsurancelist")}
@@ -468,7 +464,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "shopinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("shopinsurancelist")}
@@ -479,7 +475,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "healthinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("healthinsurancelist")}
@@ -490,7 +486,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "homeinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("homeinsurancelist")}
@@ -501,7 +497,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "doctorinsurancelist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("doctorinsurancelist")}
@@ -512,7 +508,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "officepackagepolicylist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("officepackagepolicylist")}
@@ -523,7 +519,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "directorlist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("directorlist")}
@@ -536,64 +532,37 @@ const SuperAdminDashboard = () => {
               </>
             )}
 
-            {/* Policy */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.policy ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("policy")}
+            {/* Policy (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "policyDashboard" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("policyDashboard");
+                setSidebarOpen(false);
+              }}
             >
               <span className={styles.iconLabel}>
-                <FiFolder className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Policy</span>
+                <FiFileText className={styles.icon} />
+                <span className={styles.label}>Policy Data</span>
               </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.policy ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.policy && (
-              <li
-                className={`${styles.menuItem} ${
-                  activeSection === "policyDashboard" ? styles.activeMenu : ""
-                }`}
-                onClick={() => setActiveSection("policyDashboard")}
-              >
-                <span className={styles.iconLabel}>
-                  <FiFileText className={styles.icon} />
-                  <span className={styles.label}>Policy Data</span>
-                </span>
-              </li>
-            )}
+            </li>
 
-            {/* Customer */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.customer ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("customer")}
+            {/* Customer (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "userList" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("userList");
+                setSidebarOpen(false);
+              }}
             >
               <span className={styles.iconLabel}>
-                <FiUsers className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Customer</span>
+                <FiUser className={styles.icon} />
+                <span className={styles.label}>User List</span>
               </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.customer ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.customer && (
-              <li
-                className={`${styles.menuItem} ${
-                  activeSection === "userList" ? styles.activeMenu : ""
-                }`}
-                onClick={() => {
-                  setActiveSection("userList");
-                  setSidebarOpen(false);
-                }}
-              >
-                <span className={styles.iconLabel}>
-                  <FiUser className={styles.icon} />
-                  <span className={styles.label}>User List</span>
-                </span>
-              </li>
-            )}
+            </li>
 
             {/* POSP */}
             <button
@@ -612,7 +581,7 @@ const SuperAdminDashboard = () => {
             {openSections.posp && (
               <>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "agentlist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => {
@@ -626,7 +595,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "reviewApplication" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("reviewApplication")}
@@ -637,7 +606,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "showResult" ? styles.activeMenu : ""
                   }`}
                   onClick={() => setActiveSection("showResult")}
@@ -650,38 +619,21 @@ const SuperAdminDashboard = () => {
               </>
             )}
 
-            {/* Home Page */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.homepage ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("homepage")}
+            {/* Home Page (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "homeSection" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("homeSection");
+                setSidebarOpen(false);
+              }}
             >
               <span className={styles.iconLabel}>
                 <FiSettings className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Home Page</span>
+                <span className={styles.label}>Home Page</span>
               </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.homepage ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.homepage && (
-              <li
-                className={`${styles.menuItem} ${
-                  activeSection === "homeSection" ? styles.activeMenu : ""
-                }`}
-                onClick={() => {
-                  setActiveSection("homeSection");
-                  if (window.innerWidth <= 768) {
-                    setSidebarOpen(false);
-                  }
-                }}
-              >
-                <span className={styles.iconLabel}>
-                  <FiSettings className={styles.icon} />
-                  <span className={styles.label}>Home Page</span>
-                </span>
-              </li>
-            )}
+            </li>
 
             {/* Admin */}
             <button
@@ -700,7 +652,7 @@ const SuperAdminDashboard = () => {
             {openSections.admin && (
               <>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "adminlist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => {
@@ -714,7 +666,7 @@ const SuperAdminDashboard = () => {
                   </span>
                 </li>
                 <li
-                  className={`${styles.menuItem} ${
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "managerlist" ? styles.activeMenu : ""
                   }`}
                   onClick={() => {

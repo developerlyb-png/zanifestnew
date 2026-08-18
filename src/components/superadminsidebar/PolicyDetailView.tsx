@@ -202,6 +202,15 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
         <Section icon={<FiUser />} title="Assignment" subtitle="Policy assignment and sales">
           <div className={styles.fieldGrid}>
             <Field icon={<FiUser />} label="Branch Name" value={dashIfEmpty(policy.assignment?.branchName)} />
+            <Field
+              icon={<FiUser />}
+              label="Agent Type"
+              value={dashIfEmpty(
+                policy.assignment?.agentType
+                  ? policy.assignment.agentType.charAt(0).toUpperCase() + policy.assignment.agentType.slice(1)
+                  : undefined
+              )}
+            />
             <Field icon={<FiUser />} label="POSP Partner" value={dashIfEmpty(policy.assignment?.pospPartner || policy.pospPartner)} />
             <Field icon={<FiUser />} label="Reporting Manager" value={dashIfEmpty(policy.assignment?.reportingManager?.name)} />
             <Field icon={<FiUser />} label="Assigned Agent" value={dashIfEmpty(policy.assignment?.pospAgent?.name)} />
@@ -218,7 +227,7 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
             <Field icon={<FiUser />} label="Product" value={dashIfEmpty(policy.product)} />
             <Field icon={<FiUser />} label="Insurance Company" value={dashIfEmpty(policy.insurer)} />
             <Field icon={<FiFileText />} label="Policy Type" value={dashIfEmpty(policy.policyTypeStructure)} />
-            <Field icon={<FiFileText />} label="Transaction Type" value={dashIfEmpty(policy.transactionType)} />
+            <Field icon={<FiFileText />} label="Business Type" value={dashIfEmpty(policy.transactionType)} />
             <Field icon={<FiFileText />} label="Remark" value={dashIfEmpty(policy.policyRemark)} />
             <Field icon={<FiCalendar />} label="Start Date" value={formatDate(policy.startDate)} />
             <Field icon={<FiCalendar />} label="End Date" value={formatDate(policy.endDate)} />
@@ -234,6 +243,17 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
             <Field icon={<FiDollarSign />} label="Transaction ID" value={dashIfEmpty(policy.paymentDetails?.transactionId)} />
             <Field icon={<FiDollarSign />} label="Transaction Amount" value={formatInr(policy.paymentDetails?.transactionAmount)} />
             <Field icon={<FiCalendar />} label="Transaction Date" value={formatDate(policy.paymentDetails?.transactionDate)} />
+            <Field
+              icon={<FiDollarSign />}
+              label="Partially Paid"
+              value={policy.paymentDetails?.partiallyPaid ? "Yes" : "No"}
+            />
+            {policy.paymentDetails?.partiallyPaid && (
+              <>
+                <Field icon={<FiDollarSign />} label="Amount Paid" value={formatInr(policy.paymentDetails?.amountPaid)} />
+                <Field icon={<FiFileText />} label="Remarks" value={dashIfEmpty(policy.paymentDetails?.partialPaymentRemarks)} />
+              </>
+            )}
           </div>
         </Section>
       </div>
@@ -246,10 +266,11 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
             <Field icon={<FiCalendar />} label="Model Year" value={dashIfEmpty(policy.vehicle?.modelYear)} />
             <Field icon={<FiCalendar />} label="TP Risk Start Date" value={formatDate(policy.startDate)} />
             <Field icon={<FiCalendar />} label="TP Risk End Date" value={formatDate(policy.endDate)} />
-            <Field icon={<FiTruck />} label="Model/Items Covered" value={dashIfEmpty(policy.vehicle?.itemsCovered)} />
+            <Field icon={<FiTruck />} label="Model Name" value={dashIfEmpty(policy.vehicle?.itemsCovered)} />
             <Field icon={<FiTruck />} label="Motor Make" value={dashIfEmpty(policy.vehicle?.make)} />
             <Field icon={<FiFileText />} label="Registration Number" value={dashIfEmpty(policy.vehicle?.number)} />
             <Field icon={<FiPercent />} label="NCB Applicable" value={dashIfEmpty(policy.vehicle?.ncbApplicable)} />
+            <Field icon={<FiTruck />} label="Case Type" value={dashIfEmpty(policy.vehicle?.caseType)} />
           </div>
         </Section>
       )}
@@ -295,7 +316,11 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
         </div>
 
         <div className={styles.fieldGrid} style={{ marginTop: 16 }}>
-          <Field icon={<FiDollarSign />} label="Service Tax/GST (18%)" value={formatInr(policy.gstAmount)} />
+          <Field
+            icon={<FiDollarSign />}
+            label={`Service Tax/GST (${policy.taxRate ?? 18}%)`}
+            value={formatInr(policy.gstAmount)}
+          />
           <Field icon={<FiDollarSign />} label="Gross Premium" value={formatInr(policy.grossPremium)} />
           <Field icon={<FiDollarSign />} label="Reward Status" value={dashIfEmpty(policy.rewardStatus)} />
           <Field icon={<FiDollarSign />} label="Commission Received Remarks" value={dashIfEmpty(policy.commissionRemark)} />
