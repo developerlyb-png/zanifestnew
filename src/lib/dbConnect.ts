@@ -1,17 +1,39 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI ="mongodb+srv://zanifest:admin12345@cluster0.xncvdh7.mongodb.net/?appName=Cluster0";
-;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI is not defined in environment variables.");
 }
 
-const dbConnect = async () => {
-  console.log("connecting to db");
-  if (mongoose.connections[0].readyState) return;
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
 
-  await mongoose.connect(MONGODB_URI);
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongooseCache: MongooseCache | undefined;
+}
+
+const cached: MongooseCache = global._mongooseCache ?? { conn: null, promise: null };
+global._mongooseCache = cached;
+
+const dbConnect = async () => {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI);
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    cached.promise = null;
+    throw err;
+  }
+
+  return cached.conn;
 };
 
 export default dbConnect;

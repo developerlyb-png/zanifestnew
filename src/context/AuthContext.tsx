@@ -201,7 +201,7 @@ else{
 
 const adminRes =
 await fetch(
-"/api/admin/me",
+"/api/admin/getadmindetails",
 {
 credentials:"include"
 }
@@ -218,7 +218,7 @@ await adminRes.json();
 
 setUser({
 
-name:d.name || "Admin",
+name:(d.userFirstName ? `${d.userFirstName} ${d.userLastName || ""}`.trim() : d.name) || "Admin",
 
 email:d.email,
 
