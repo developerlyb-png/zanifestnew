@@ -1,17 +1,22 @@
+"use client";
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import styles from "@/styles/components/superadminsidebar/PolicyDashboard.module.css";
+import styles from "@/styles/components/agentpage/AgentPolicyDashboard.module.css";
 import {
   FiDownload,
   FiSearch,
   FiPlus,
   FiUploadCloud,
   FiCopy,
-  FiFile,
   FiColumns,
 } from "react-icons/fi";
-import AddPolicyForm from "./AddPolicyForm";
-import BulkUploadModal from "./BulkUploadModal";
-import PolicyDetailView from "./PolicyDetailView";
+import AddPolicyForm from "@/components/superadminsidebar/AddPolicyForm";
+import BulkUploadModal from "@/components/superadminsidebar/BulkUploadModal";
+
+// Agent-scoped port of superadminsidebar/PolicyDashboard.tsx — same columns,
+// filters, presets, column picker and CSV export, backed by the
+// agentToken-only /api/agent/policies[-bulk] endpoints instead of the admin
+// ones, and without the admin-only click-through detail view.
 
 interface Policy {
   _id: string;
@@ -122,11 +127,11 @@ const bucketFor = (p: Policy) => {
   return "Other";
 };
 
-type SummaryTone = "blue" | "orange" | "green" | "purple";
+type SummaryTone = "blue" | "teal" | "green" | "purple";
 
 const TONE_CLASS: Record<SummaryTone, string> = {
   blue: styles.toneBlue,
-  orange: styles.toneOrange,
+  teal: styles.toneTeal,
   green: styles.toneGreen,
   purple: styles.tonePurple,
 };
@@ -243,7 +248,7 @@ const ALL_COLUMNS_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) 
   return acc;
 }, {} as Record<ColumnKey, boolean>);
 
-function PolicyDashboard() {
+function AgentPolicyDashboard() {
   const [preset, setPreset] = useState<Preset>("thisYear");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -254,10 +259,10 @@ function PolicyDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
   const columnPickerRef = useRef<HTMLDivElement>(null);
+  const [fixedAgent, setFixedAgent] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -267,6 +272,19 @@ function PolicyDashboard() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/agent/me", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        const a = data?.agent;
+        if (a) {
+          const name = `${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email;
+          setFixedAgent({ id: a._id, name });
+        }
+      })
+      .catch(() => setFixedAgent(null));
   }, []);
 
   const setFilter = (key: keyof ColumnFilters, value: string) =>
@@ -316,7 +334,7 @@ function PolicyDashboard() {
       to: range.to.toISOString(),
       dateField: dateBasis,
     });
-    fetch(`/api/admin/policies?${params.toString()}`, { credentials: "include" })
+    fetch(`/api/agent/policies?${params.toString()}`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setPolicies(data.policies || []))
       .catch(() => setPolicies([]))
@@ -383,7 +401,7 @@ function PolicyDashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `policies_${toIso(range.from)}_to_${toIso(range.to)}.csv`;
+    a.download = `my_policies_${toIso(range.from)}_to_${toIso(range.to)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -391,34 +409,13 @@ function PolicyDashboard() {
   const visibleFillerCount = FILLER_KEYS.filter((k) => visibleColumns[k]).length;
   const visibleColumnCount = COLUMNS.filter((c) => visibleColumns[c.key]).length;
 
-  if (selectedPolicyId) {
-    return (
-      <div className={styles.cont}>
-        <PolicyDetailView
-          policyId={selectedPolicyId}
-          onBack={() => setSelectedPolicyId(null)}
-          onDeleted={() => {
-            setSelectedPolicyId(null);
-            setRefreshKey((k) => k + 1);
-          }}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className={styles.cont}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Policy Dashboard</h2>
+        <h2 className={styles.heading}>My Policies</h2>
         <div className={styles.headerActions}>
           <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
             <FiUploadCloud /> Bulk Upload
-          </button>
-          <button
-            className={styles.outlineBtn}
-            onClick={() => alert("Import from policy document is coming soon.")}
-          >
-            <FiFile /> Import from policy document
           </button>
           <button className={styles.primaryBtn} onClick={() => setShowAddForm((v) => !v)}>
             <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
@@ -428,6 +425,7 @@ function PolicyDashboard() {
 
       {showBulkUpload && (
         <BulkUploadModal
+          submitEndpoint="/api/agent/policies-bulk"
           onClose={() => setShowBulkUpload(false)}
           onSuccess={() => setRefreshKey((k) => k + 1)}
         />
@@ -435,6 +433,8 @@ function PolicyDashboard() {
 
       {showAddForm ? (
         <AddPolicyForm
+          submitEndpoint="/api/agent/policies"
+          fixedAgent={fixedAgent ?? undefined}
           onCancel={() => setShowAddForm(false)}
           onSuccess={() => {
             setShowAddForm(false);
@@ -455,7 +455,7 @@ function PolicyDashboard() {
               icon="₹"
               title="Total Gross Premium"
               value={formatInrAbbrev(premiumSummary.total)}
-              tone="orange"
+              tone="teal"
               breakdown={premiumSummary.buckets.map((b) => ({
                 label: b,
                 value: formatInrAbbrev(premiumSummary.sums[b]),
@@ -691,16 +691,7 @@ function PolicyDashboard() {
                 ) : (
                   filteredPolicies.map((p) => (
                     <tr key={p._id}>
-                      {visibleColumns.insuredName && (
-                        <td>
-                          <button
-                            className={styles.linkCell}
-                            onClick={() => setSelectedPolicyId(p._id)}
-                          >
-                            {p.customer?.fullName || "--"}
-                          </button>
-                        </td>
-                      )}
+                      {visibleColumns.insuredName && <td>{p.customer?.fullName || "--"}</td>}
                       {visibleColumns.subInsured && <td>{p.subInsured || "--"}</td>}
                       {visibleColumns.policyNo && <td>{p.policyNumber || "--"}</td>}
                       {visibleColumns.endorsementNo && <td>{p.endorsementNo || "-"}</td>}
@@ -752,4 +743,4 @@ function PolicyDashboard() {
   );
 }
 
-export default PolicyDashboard;
+export default AgentPolicyDashboard;

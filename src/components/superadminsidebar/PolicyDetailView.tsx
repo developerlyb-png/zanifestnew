@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/PolicyDetailView.module.css";
 import {
   FiArrowLeft, FiEdit2, FiTrash2, FiChevronUp, FiChevronDown, FiUser, FiFileText,
-  FiDollarSign, FiEye, FiDownload, FiCalendar, FiTruck, FiPercent,
+  FiEye, FiDownload, FiCalendar, FiTruck, FiPercent,
 } from "react-icons/fi";
 
 interface PolicyDetailViewProps {
@@ -211,7 +211,7 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
                   : undefined
               )}
             />
-            <Field icon={<FiUser />} label="POSP Partner" value={dashIfEmpty(policy.assignment?.pospPartner || policy.pospPartner)} />
+            <Field icon={<FiUser />} label="Agent Name" value={dashIfEmpty(policy.assignment?.pospPartner || policy.pospPartner)} />
             <Field icon={<FiUser />} label="Reporting Manager" value={dashIfEmpty(policy.assignment?.reportingManager?.name)} />
             <Field icon={<FiUser />} label="Assigned Agent" value={dashIfEmpty(policy.assignment?.pospAgent?.name)} />
             <Field icon={<FiUser />} label="Created By" value={dashIfEmpty(policy.createdBy)} />
@@ -236,21 +236,21 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
           </div>
         </Section>
 
-        <Section icon={<FiDollarSign />} title="Payment Details" subtitle="Payment method and transaction details">
+        <Section icon="₹" title="Payment Details" subtitle="Payment method and transaction details">
           <div className={styles.fieldGrid}>
-            <Field icon={<FiDollarSign />} label="Payment Mode" value={dashIfEmpty(policy.paymentDetails?.mode || policy.paymentMode)} />
+            <Field icon="₹" label="Payment Mode" value={dashIfEmpty(policy.paymentDetails?.mode || policy.paymentMode)} />
             <Field icon={<FiCalendar />} label="Payment Received Date" value={formatDate(policy.paymentReceivedDate)} />
-            <Field icon={<FiDollarSign />} label="Transaction ID" value={dashIfEmpty(policy.paymentDetails?.transactionId)} />
-            <Field icon={<FiDollarSign />} label="Transaction Amount" value={formatInr(policy.paymentDetails?.transactionAmount)} />
+            <Field icon="₹" label="Transaction ID" value={dashIfEmpty(policy.paymentDetails?.transactionId)} />
+            <Field icon="₹" label="Transaction Amount" value={formatInr(policy.paymentDetails?.transactionAmount)} />
             <Field icon={<FiCalendar />} label="Transaction Date" value={formatDate(policy.paymentDetails?.transactionDate)} />
             <Field
-              icon={<FiDollarSign />}
+              icon="₹"
               label="Partially Paid"
               value={policy.paymentDetails?.partiallyPaid ? "Yes" : "No"}
             />
             {policy.paymentDetails?.partiallyPaid && (
               <>
-                <Field icon={<FiDollarSign />} label="Amount Paid" value={formatInr(policy.paymentDetails?.amountPaid)} />
+                <Field icon="₹" label="Amount Paid" value={formatInr(policy.paymentDetails?.amountPaid)} />
                 <Field icon={<FiFileText />} label="Remarks" value={dashIfEmpty(policy.paymentDetails?.partialPaymentRemarks)} />
               </>
             )}
@@ -275,7 +275,7 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
         </Section>
       )}
 
-      <Section icon={<FiDollarSign />} title="Premium Breakdown & Commission" subtitle="Detailed premium and commission structure" defaultOpen>
+      <Section icon="₹" title="Premium Breakdown & Commission" subtitle="Detailed premium and commission structure" defaultOpen>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
@@ -317,13 +317,13 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
 
         <div className={styles.fieldGrid} style={{ marginTop: 16 }}>
           <Field
-            icon={<FiDollarSign />}
+            icon="₹"
             label={`Service Tax/GST (${policy.taxRate ?? 18}%)`}
             value={formatInr(policy.gstAmount)}
           />
-          <Field icon={<FiDollarSign />} label="Gross Premium" value={formatInr(policy.grossPremium)} />
-          <Field icon={<FiDollarSign />} label="Reward Status" value={dashIfEmpty(policy.rewardStatus)} />
-          <Field icon={<FiDollarSign />} label="Commission Received Remarks" value={dashIfEmpty(policy.commissionRemark)} />
+          <Field icon="₹" label="Gross Premium" value={formatInr(policy.grossPremium)} />
+          <Field icon="₹" label="Reward Status" value={dashIfEmpty(policy.rewardStatus)} />
+          <Field icon="₹" label="Commission Received Remarks" value={dashIfEmpty(policy.commissionRemark)} />
         </div>
       </Section>
 

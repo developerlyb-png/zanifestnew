@@ -5,7 +5,7 @@ export const LINES_OF_BUSINESS = ["Motor", "Non Motor"];
 
 // Product options, cascaded from the selected Line of Business.
 export const PRODUCTS_BY_LOB: Record<string, string[]> = {
-  Motor: ["4 Wheeler", "2W", "GCV", "PCV", "3W", "Misc D", "Others"],
+  Motor: ["Pvt Car", "2W", "GCV", "PCV", "3W", "Misc D", "Others"],
   "Non Motor": [
     "Health",
     "Travel",
@@ -61,6 +61,7 @@ export const CASE_TYPES = [
   "1+5 Cover",
   "5+5 Cover",
   "Short Term",
+  "Others",
 ];
 
 // Policy Type options, cascaded from the selected Line of Business.

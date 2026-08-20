@@ -13,19 +13,14 @@ export const config = {
   },
 };
 
-async function requireAdmin(req: NextApiRequest) {
-  const token = req.cookies["adminToken"];
+async function requireAgent(req: NextApiRequest) {
+  const token = req.cookies["agentToken"];
   const data = token ? await verifyToken(token) : null;
 
-  if (
-    !data ||
-    typeof data !== "object" ||
-    !("role" in data) ||
-    !["superadmin", "admin"].includes((data as any).role)
-  ) {
+  if (!data || typeof data !== "object" || (data as any).role !== "agent") {
     return null;
   }
-  return data;
+  return data as any;
 }
 
 export default async function handler(
@@ -36,14 +31,14 @@ export default async function handler(
     return res.status(405).json({ success: false, message: "Method not allowed" });
   }
 
-  const admin = await requireAdmin(req);
-  if (!admin) {
+  // agentToken only — never falls back to adminToken — same reasoning as
+  // /api/agent/policies.
+  const agent = await requireAgent(req);
+  if (!agent) {
     return res.status(401).json({ success: false, message: "Not authorized" });
   }
 
-  const adminName =
-    `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
-    (admin as any).email;
+  const agentName = agent.fullName || agent.email;
 
   try {
     const rows: Record<string, any>[] = Array.isArray(req.body?.rows) ? req.body.rows : [];
@@ -99,7 +94,16 @@ export default async function handler(
       }
       seenInFile.add(policyNumber);
 
-      docs.push({ ...mapRow(row, managersByName), createdBy: adminName });
+      const mapped = mapRow(row, managersByName);
+      // An agent can only ever attribute a policy to themselves — never to a
+      // different POSP agent — regardless of what the row said.
+      docs.push({
+        ...mapped,
+        pospPartner: agentName,
+        assignment: { ...mapped.assignment, pospAgent: { id: agent.id, name: agentName }, pospPartner: agentName },
+        createdBy: agentName,
+        createdByAgentId: agent.id,
+      });
     });
 
     let inserted = 0;
@@ -110,7 +114,7 @@ export default async function handler(
 
     return res.status(201).json({ success: true, inserted, skipped });
   } catch (err: any) {
-    console.log("ADMIN POLICIES BULK ERROR", err);
+    console.log("AGENT POLICIES BULK ERROR", err);
     return res.status(500).json({ success: false, message: err.message });
   }
 }

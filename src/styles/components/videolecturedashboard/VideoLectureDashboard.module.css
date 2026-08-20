@@ -1,3 +1,69 @@
+/* ================= MODULE TIMER BAR ================= */
+.timerBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #173a98, #0a2d82);
+  color: #fff;
+  padding: 10px 24px;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.timerBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timerBarLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.timerBarTrack {
+  width: 140px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.timerBarFill {
+  height: 100%;
+  background: #ffc83d;
+  transition: width 0.3s ease;
+}
+
+.timerBarClock {
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.timerBarDone {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7dffb0;
+}
+
+@media (max-width: 640px) {
+  .timerBar {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 /* ================= PAGE CENTER ================= */
 .pageCenter {
   width: 100%;

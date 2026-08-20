@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import m1 from "@/styles/components/videolecturedashboard/Module1Training.module.css";
 import styles from "@/styles/components/videolecturedashboard/Testpage.module.css";
 import image1 from "@/assets/testdashboard/image1.png";
 import image2 from "@/assets/testdashboard/image2.png";
@@ -2598,6 +2600,7 @@ export default function TestPage({
   onResultVisible: (v: boolean) => void;
 }) {
 
+  const router = useRouter();
   const [currentSet, setCurrentSet] = useState<any>(null);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -2607,6 +2610,20 @@ export default function TestPage({
   const testProgress = currentSet
   ? Math.round(((index + 1) / currentSet.questions.length) * 100)
   : 0;
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/agent/logout", { method: "POST", credentials: "include" });
+      localStorage.removeItem("agentName");
+      localStorage.removeItem("agentTestPassed");
+      localStorage.removeItem("training_currentVideo");
+      localStorage.removeItem("training_completed");
+      localStorage.removeItem("training_testStarted");
+      router.replace("/agentlogin");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
 useEffect(() => {
   if (currentSet) {
@@ -2670,96 +2687,133 @@ useEffect(() => {
   }
 
   return (
-    <div className={styles.testWrap}>
-      {!showResult ? (
-        <div className={styles.testCenterColumn}>
-          {/* ===== HEADER ===== */}
-          <div className={styles.testPageHeaderRow}>
-            <div className={styles.leftInfo}>
-              Passing Marks: <b>25</b>
-            </div>
+    <div className={m1.root}>
+      <header className={m1.topbar}>
+        <div className={m1.brand}>
+          <span className={m1.brandKicker}>Zanifest</span>
+          <strong>POSP Onboarding Journey</strong>
+        </div>
+        <button type="button" className={m1.logout} onClick={handleLogout}>
+          Log out
+        </button>
+      </header>
 
-            <div className={styles.testPageTitleWrap}>
-              <div className={styles.testPageTitle}>
-                Agent Certification Test
-              </div>
-              <div className={styles.testPageSub}>
-                Question {index + 1} of 50 · Mandatory
-              </div>
-            </div>
-
-            <div className={styles.timerBox}>⏱ {formatTime(timeLeft)}</div>
-          </div>
-
-          {/* ===== CARD ===== */}
-          <div className={styles.card}>
-            <div className={styles.setInfo}>
-              Test Set : <span>Set {currentSet.set}</span>
-            </div>
-
-            <div className={styles.questionBox}>
-              Q{index + 1}. {questions[index].q}
-            </div>
-
-            <div className={styles.answersGrid}>
-              {questions[index].choices.map((c: string, i: number) => (
-                <button
-                  key={i}
-                  className={`${styles.choiceBtn} ${
-                    answers[questions[index].id] === i ? styles.selected : ""
-                  }`}
-                  onClick={() => selectChoice(questions[index].id, i)}
-                >
-                  <span className={styles.optionLabel}>{optionLabels[i]}</span>
-                  <span className={styles.optionText}>{c}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className={styles.navRow}>
-              <button
-                disabled={index === 0}
-                onClick={() => setIndex(index - 1)}
-                className={styles.navBtn}
-              >
-                Previous
-              </button>
-
-              {index < questions.length - 1 ? (
-                <button
-                  onClick={() => setIndex(index + 1)}
-                  className={styles.navBtn}
-                >
-                  Next
-                </button>
-              ) : (
-                <button onClick={submitTest} className={styles.submitBtn}>
-                  Submit Test
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* ===== PROGRESS ===== */}
-          <div className={styles.progressWrap}>
-            <div className={styles.progressBar}>
-              <div
-                className={styles.progressFill}
-                style={{
-                  width: `${((index + 1) / questions.length) * 100}%`,
-                }}
-              />
-            </div>
+      <section className={m1.journey} aria-label="Onboarding progress">
+        <div className={`${m1.journeyItem} ${m1.complete}`}>
+          <span className={m1.journeyDot}>✓</span>
+          <div>
+            <b>Profile &amp; KYC</b>
+            <small>Step completed</small>
           </div>
         </div>
-      ) : (
-<Result
-  score={score}
-  total={questions.length}
-  onClose={onClose}
-  onResultVisible={onResultVisible} // ✅ ADD
-/>
-      )}
+        <span className={`${m1.journeyLine} ${m1.complete}`} />
+        <div className={`${m1.journeyItem} ${m1.complete}`}>
+          <span className={m1.journeyDot}>✓</span>
+          <div>
+            <b>Training</b>
+            <small>3 modules completed</small>
+          </div>
+        </div>
+        <span className={`${m1.journeyLine} ${m1.complete}`} />
+        <div className={`${m1.journeyItem} ${m1.active}`}>
+          <span className={m1.journeyDot}>3</span>
+          <div>
+            <b>Assessment</b>
+            <small>Final evaluation</small>
+          </div>
+        </div>
+        <span className={m1.journeyLine} />
+        <div className={m1.journeyItem}>
+          <span className={m1.journeyDot}>4</span>
+          <div>
+            <b>Certificate</b>
+            <small>Get certified</small>
+          </div>
+        </div>
+      </section>
+
+      <main className={m1.pageShell}>
+        {!showResult ? (
+          <>
+            <section className={m1.trainingHead}>
+              <div>
+                <p className={m1.stepLabel}>Step 3: Assessment</p>
+                <p className={m1.muted}>
+                  Passing Marks: 25 · Question {index + 1} of {questions.length} · Mandatory
+                </p>
+              </div>
+              <span className={m1.statusPill}>⏱ {formatTime(timeLeft)}</span>
+            </section>
+
+            <div className={m1.progressRow}>
+              <span>Test in Progress</span>
+              <span>
+                Question {index + 1} of {questions.length}
+              </span>
+            </div>
+            <div className={m1.progressTrack}>
+              <div style={{ width: `${((index + 1) / questions.length) * 100}%` }} />
+            </div>
+
+            <section className={m1.heroCard}>
+              <h1>Agent Certification Test</h1>
+              <p>Test Set : Set {currentSet.set}</p>
+              <small>50 Questions · Time limit: 60 minutes · Passing marks: 25</small>
+            </section>
+
+            <section className={m1.card}>
+              <div className={m1.cardTitle}>
+                <h2>
+                  Q{index + 1}. {questions[index].q}
+                </h2>
+              </div>
+              <div className={m1.cardBody}>
+                <div className={styles.answersGrid}>
+                  {questions[index].choices.map((c: string, i: number) => (
+                    <button
+                      key={i}
+                      className={`${styles.choiceBtn} ${
+                        answers[questions[index].id] === i ? styles.selected : ""
+                      }`}
+                      onClick={() => selectChoice(questions[index].id, i)}
+                    >
+                      <span className={styles.optionLabel}>{optionLabels[i]}</span>
+                      <span className={styles.optionText}>{c}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className={styles.navRow}>
+                  <button
+                    disabled={index === 0}
+                    onClick={() => setIndex(index - 1)}
+                    className={m1.secondary}
+                  >
+                    Previous
+                  </button>
+
+                  {index < questions.length - 1 ? (
+                    <button onClick={() => setIndex(index + 1)} className={m1.primary}>
+                      Next
+                    </button>
+                  ) : (
+                    <button onClick={submitTest} className={m1.primary}>
+                      Submit Test
+                    </button>
+                  )}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          <Result
+            score={score}
+            total={questions.length}
+            onClose={onClose}
+            onResultVisible={onResultVisible} // ✅ ADD
+          />
+        )}
+      </main>
     </div>
   );
 }

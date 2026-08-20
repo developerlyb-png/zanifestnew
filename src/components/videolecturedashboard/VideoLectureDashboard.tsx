@@ -1,79 +1,42 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import Sidebar from "./sidebar";
-import VideoPlayer from "./VideoPlayer";
+import React, { useEffect, useRef, useState } from "react";
+import Module1Training from "./Module1Training";
+import Module2Training from "./Module2Training";
+import Module3Training from "./Module3Training";
 import TestPage from "./TestPage";
 import styles from "@/styles/components/videolecturedashboard/VideoLectureDashboard.module.css";
+import { MODULE_SECONDS } from "@/constants/moduleTraining";
 
-const VIDEO_LIST = [
-  { id: 1, title: "Video Lecture 1", src: "/video/videolecture1.mp4" },
-  { id: 2, title: "Video Lecture 2", src: "/video/videolecture1.mp4" },
-  { id: 3, title: "Video Lecture 3", src: "/video/videolecture3.mp4" },
-];
+const HEARTBEAT_SECONDS = 20; // how often we persist elapsed time to the server
 
-interface TrainingProgress {
-  currentVideo: number;
-  videoTime: number;
-  completedVideos: number[];
-  testStarted: boolean;
-  testCompleted: boolean;
+interface ModuleProgress {
+  secondsSpent: number;
+  completed: boolean;
+  completedAt: string | null;
 }
 
-export default function vVideoLectureDashboard() {
-  const [current, setCurrent] = useState(1);
-  const [completed, setCompleted] = useState<Record<number, boolean>>({});
-  const [showTest, setShowTest] = useState(false);
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+export default function VideoLectureDashboard() {
   const [checking, setChecking] = useState(true);
-  const [progress, setProgress] = useState<TrainingProgress | null>(null);
-const [testProgress, setTestProgress] = useState(0);
-const [hideSidebar, setHideSidebar] = useState(false);
-
-
-  const searchParams = useSearchParams();
-  const forceTest = searchParams.get("mode") === "test";
+  const [loadingProgress, setLoadingProgress] = useState(true);
+  const [modules, setModules] = useState<ModuleProgress[]>([]);
+  const [currentModule, setCurrentModule] = useState(1);
+  const [allModulesComplete, setAllModulesComplete] = useState(false);
+  const pendingDeltaRef = useRef(0);
 
   /* ===============================
-     LOAD AGENT + TRAINING PROGRESS
+     GATE: redirect away if training already fully done
   =============================== */
   useEffect(() => {
     async function load() {
       try {
-        const meRes = await fetch("/api/agent/me", {
-          credentials: "include",
-        });
+        const meRes = await fetch("/api/agent/me", { credentials: "include" });
         const meData = await meRes.json();
-
         if (meData?.agent?.trainingCompleted) {
           window.location.replace("/agentpage");
           return;
-        }
-
-        const progRes = await fetch("/api/agent/training-progress", {
-          credentials: "include",
-        });
-        const progData: TrainingProgress = await progRes.json();
-
-        setProgress(progData);
-
-  /*  SAFE CURRENT VIDEO */
-        const safeCurrent = Math.min(
-          Math.max(progData.currentVideo || 1, 1),
-          VIDEO_LIST.length
-        );
-        setCurrent(safeCurrent);
-
-        const map: Record<number, boolean> = {};
-        progData.completedVideos?.forEach((v) => (map[v] = true));
-        setCompleted(map);
-
-        if (
-          forceTest ||
-          progData.completedVideos?.length === VIDEO_LIST.length ||
-          progData.testStarted
-        ) {
-          setShowTest(true);
         }
       } catch (e) {
         console.error(e);
@@ -81,103 +44,131 @@ const [hideSidebar, setHideSidebar] = useState(false);
         setChecking(false);
       }
     }
-
     load();
-  }, [forceTest]);
+  }, []);
 
   /* ===============================
-     SAVE VIDEO COMPLETION
+     LOAD MODULE PROGRESS
   =============================== */
-  async function handleVideoEnd(id: number) {
-    const updated = {
-      ...completed,
-      [id]: true,
+  useEffect(() => {
+    if (checking) return;
+    async function loadProgress() {
+      try {
+        const res = await fetch("/api/agent/module-progress", { credentials: "include" });
+        const data = await res.json();
+        if (data.success) {
+          setModules(data.modules);
+          setCurrentModule(data.currentModule);
+          setAllModulesComplete(data.allModulesComplete);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingProgress(false);
+      }
+    }
+    loadProgress();
+  }, [checking]);
+
+  /* ===============================
+     TICK (only while tab is visible) + PERIODIC HEARTBEAT PERSIST
+  =============================== */
+  useEffect(() => {
+    if (checking || loadingProgress || allModulesComplete) return;
+
+    const persist = async (delta: number) => {
+      if (delta <= 0) return;
+      try {
+        const res = await fetch("/api/agent/module-progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ deltaSeconds: delta }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setModules(data.modules);
+          setCurrentModule(data.currentModule);
+          setAllModulesComplete(data.allModulesComplete);
+        }
+      } catch {
+        pendingDeltaRef.current += delta; // retry on next heartbeat
+      }
     };
-    setCompleted(updated);
 
-    await fetch("/api/agent/save-training-progress", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        completedVideos: Object.keys(updated).map(Number),
-        currentVideo: id + 1,
-        videoTime: 0,
-      }),
-    });
+    const tick = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      pendingDeltaRef.current += 1;
+      setModules((prev) => {
+        const idx = currentModule - 1;
+        if (!prev[idx] || prev[idx].completed) return prev;
+        const next = [...prev];
+        next[idx] = { ...next[idx], secondsSpent: Math.min(next[idx].secondsSpent + 1, MODULE_SECONDS) };
+        return next;
+      });
+    }, 1000);
 
-    if (id < VIDEO_LIST.length) {
-      setCurrent(id + 1);
-    }
+    const heartbeat = setInterval(() => {
+      const delta = pendingDeltaRef.current;
+      pendingDeltaRef.current = 0;
+      persist(delta);
+    }, HEARTBEAT_SECONDS * 1000);
 
-    if (id === VIDEO_LIST.length) {
-      setShowTest(true);
-    }
+    const flushOnHide = () => {
+      if (document.visibilityState !== "hidden") return;
+      const delta = pendingDeltaRef.current;
+      pendingDeltaRef.current = 0;
+      if (delta > 0 && navigator.sendBeacon) {
+        navigator.sendBeacon(
+          "/api/agent/module-progress",
+          new Blob([JSON.stringify({ deltaSeconds: delta })], { type: "application/json" })
+        );
+      }
+    };
+    document.addEventListener("visibilitychange", flushOnHide);
+    window.addEventListener("beforeunload", flushOnHide);
+
+    return () => {
+      clearInterval(tick);
+      clearInterval(heartbeat);
+      document.removeEventListener("visibilitychange", flushOnHide);
+      window.removeEventListener("beforeunload", flushOnHide);
+    };
+  }, [checking, loadingProgress, allModulesComplete, currentModule]);
+
+  if (checking || loadingProgress) return null;
+
+  if (allModulesComplete) {
+    return <TestPage onClose={() => {}} onProgressChange={() => {}} onResultVisible={() => {}} />;
   }
 
-  if (checking) return null;
-const currentVideo = VIDEO_LIST[current - 1];
+  const activeSeconds = modules[currentModule - 1]?.secondsSpent ?? 0;
+  const remaining = Math.max(0, MODULE_SECONDS - activeSeconds);
+  const pct = Math.min(100, Math.round((activeSeconds / MODULE_SECONDS) * 100));
+  const hrs = Math.floor(remaining / 3600);
+  const mins = Math.floor((remaining % 3600) / 60);
+  const secs = remaining % 60;
 
   return (
-   <div className={styles.pageCenter}>
-  <div className={styles.dashboardCard}>
- {!hideSidebar && (
-  <Sidebar
-    videos={VIDEO_LIST}
-    current={current}
-    completed={completed}
-    onSelect={setCurrent}
-    testProgress={testProgress}
-  />
-)}
-
-
-
-    <main className={styles.main}>
-      {!showTest ? (
-        <>
-         <div className={styles.videoHeaderRow}>
- <h2 className={styles.heading}>
-  {currentVideo?.title || ""}
-</h2>
-
-
-  <div className={styles.certWarning}>
-    <span className={styles.warnIcon}>⚠️</span>
-    <div>
-      <div className={styles.warnTitle}>
-        Certification incomplete.
+    <>
+      <div className={styles.timerBar}>
+        <div className={styles.timerBarLeft}>
+          <span className={styles.timerBarLabel}>Module {currentModule} of 3 — time tracker</span>
+          <div className={styles.timerBarTrack}>
+            <div className={styles.timerBarFill} style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+        {remaining <= 0 ? (
+          <span className={styles.timerBarDone}>Module complete — moving to the next module…</span>
+        ) : (
+          <span className={styles.timerBarClock}>
+            {pad2(hrs)}:{pad2(mins)}:{pad2(secs)} remaining
+          </span>
+        )}
       </div>
-      <div className={styles.warnSub}>
-        You cannot activate agent account
-      </div>
-    </div>
-  </div>
-</div>
-
-
-        {currentVideo && (
-  <VideoPlayer
-    key={current}
-    src={currentVideo.src}
-    videoId={current}
-    progress={progress || undefined}
-    onEnded={() => handleVideoEnd(current)}
-  />
-)}
-
-        </>
-      ) : (
-<TestPage
-  onClose={() => setShowTest(false)}
-  onProgressChange={setTestProgress}
-  onResultVisible={setHideSidebar} // ✅ ADD
-/>
-
-      )}  
-    </main>
-  </div>
-</div>
-
+      {currentModule === 1 && <Module1Training />}
+      {currentModule === 2 && <Module2Training />}
+      {currentModule === 3 && <Module3Training />}
+    </>
   );
 }

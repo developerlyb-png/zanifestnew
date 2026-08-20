@@ -29,7 +29,7 @@ export const BULK_UPLOAD_COLUMNS: BulkUploadColumn[] = [
   { header: "Branch Name", key: "branchName", example: "Zirakpur" },
   { header: "Reporting Manager", key: "reportingManagerName", example: "" },
   { header: "Agent Type", key: "agentType", example: "Direct" },
-  { header: "POSP Partner (if Agent Type = POSP)", key: "pospPartner", example: "" },
+  { header: "Agent Name (if Agent Type = POSP)", key: "pospPartner", example: "" },
   { header: "Direct Agent Name (if Agent Type = Direct)", key: "directAgentName", example: "" },
   { header: "Medium of Issuance", key: "mediumOfIssuance", example: "Offline" },
   { header: "Remarks", key: "additionalRemarks", example: "" },

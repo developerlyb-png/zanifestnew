@@ -202,6 +202,46 @@
   display: inline-block;
 }
 
+.sectionHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.sectionHeaderRow .sectionTitle {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.caseBookedField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.caseBookedLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.caseBookedSelect {
+  border: 1px solid #d6dde6;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  background: #fff;
+  color: #1a1a2e;
+  min-width: 90px;
+}
+
 .grid3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

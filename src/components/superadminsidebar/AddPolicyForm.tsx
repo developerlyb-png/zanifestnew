@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/AddPolicyForm.module.css";
 import { FiCheck, FiPlus, FiX } from "react-icons/fi";
 import DatePicker from "react-datepicker";
@@ -92,8 +92,11 @@ interface FormDataType {
   branchName: string;
   reportingManagerId: string;
   agentType: string;
+  posAgentInList: string;
   pospPartner: string;
   directAgentName: string;
+  manualPospAgentName: string;
+  caseBookedUnderPosp: string;
 
   mediumOfIssuance: string;
   additionalRemarks: string;
@@ -142,8 +145,11 @@ const EMPTY_FORM: FormDataType = {
   branchName: "",
   reportingManagerId: "",
   agentType: "",
+  posAgentInList: "",
   pospPartner: "",
   directAgentName: "",
+  manualPospAgentName: "",
+  caseBookedUnderPosp: "",
 
   mediumOfIssuance: "",
   additionalRemarks: "",
@@ -178,10 +184,26 @@ const Label: React.FC<{ text: string; required?: boolean }> = ({ text, required 
 interface AddPolicyFormProps {
   onCancel: () => void;
   onSuccess: () => void;
+  submitEndpoint?: string;
+  // When set, the policy is always attributed to this agent (the logged-in
+  // agent adding a policy for themselves) — the Agent Type / Is Agent In
+  // List / agent-search sub-flow is replaced with a fixed, read-only value
+  // instead of asking them to pick themselves out of a list.
+  fixedAgent?: { id: string; name: string };
 }
 
-const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) => {
+const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
+  onCancel,
+  onSuccess,
+  submitEndpoint = "/api/admin/policies",
+  fixedAgent,
+}) => {
   const [step, setStep] = useState(1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    wrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [step]);
   const [formData, setFormData] = useState<FormDataType>(EMPTY_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedClient, setSelectedClient] = useState<ClientRecord | null>(null);
@@ -360,9 +382,18 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
       if (!formData.endDate) e.endDate = "Required";
       if (!formData.branchName) e.branchName = "Required";
       if (!formData.reportingManagerId) e.reportingManagerId = "Required";
-      if (!formData.agentType) e.agentType = "Required";
-      if (formData.agentType === "posp" && !formData.pospPartner) e.pospPartner = "Required";
-      if (formData.agentType === "direct" && !formData.directAgentName) e.directAgentName = "Required";
+      if (!fixedAgent) {
+        if (!formData.agentType) e.agentType = "Required";
+        if (formData.agentType === "posp") {
+          if (!formData.posAgentInList) e.posAgentInList = "Required";
+          if (formData.posAgentInList === "yes" && !formData.pospPartner) e.pospPartner = "Required";
+          if (formData.posAgentInList === "no" && !formData.manualPospAgentName) e.manualPospAgentName = "Required";
+        }
+        if (formData.agentType === "direct" && !formData.directAgentName) e.directAgentName = "Required";
+      }
+      if ((fixedAgent || formData.agentType === "posp") && !formData.caseBookedUnderPosp) {
+        e.caseBookedUnderPosp = "Required";
+      }
       if (!formData.mediumOfIssuance) e.mediumOfIssuance = "Required";
     }
 
@@ -389,12 +420,19 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
   const addCustomBranch = async () => {
     const name = newBranchName.trim();
     if (!name) return;
-    setField("branchName", name);
-    setNewBranchName("");
 
-    if ([...BRANCH_NAMES, ...customBranches].some((b) => b.toLowerCase() === name.toLowerCase())) {
+    const existing = [...BRANCH_NAMES, ...customBranches].find(
+      (b) => b.toLowerCase() === name.toLowerCase()
+    );
+    if (existing) {
+      alert(`"${existing}" already exists in Branch Name.`);
+      setField("branchName", existing);
+      setNewBranchName("");
       return;
     }
+
+    setField("branchName", name);
+    setNewBranchName("");
     setCustomBranches((prev) => [...prev, name]);
 
     try {
@@ -417,12 +455,19 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
   const addCustomMotorMake = async () => {
     const name = newMotorMakeName.trim();
     if (!name) return;
-    setField("motorMake", name);
-    setNewMotorMakeName("");
 
-    if ([...MOTOR_MAKES, ...customMotorMakes].some((m) => m.toLowerCase() === name.toLowerCase())) {
+    const existing = [...MOTOR_MAKES, ...customMotorMakes].find(
+      (m) => m.toLowerCase() === name.toLowerCase()
+    );
+    if (existing) {
+      alert(`"${existing}" already exists in Motor Make.`);
+      setField("motorMake", existing);
+      setNewMotorMakeName("");
       return;
     }
+
+    setField("motorMake", name);
+    setNewMotorMakeName("");
     setCustomMotorMakes((prev) => [...prev, name]);
 
     try {
@@ -445,12 +490,19 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
   const addCustomInsurer = async () => {
     const name = newInsurerName.trim();
     if (!name) return;
-    setField("insurer", name);
-    setNewInsurerName("");
 
-    if ([...INSURANCE_COMPANIES, ...customInsurers].some((i) => i.toLowerCase() === name.toLowerCase())) {
+    const existing = [...INSURANCE_COMPANIES, ...customInsurers].find(
+      (i) => i.toLowerCase() === name.toLowerCase()
+    );
+    if (existing) {
+      alert(`"${existing}" already exists in Insurance Company.`);
+      setField("insurer", existing);
+      setNewInsurerName("");
       return;
     }
+
+    setField("insurer", name);
+    setNewInsurerName("");
     setCustomInsurers((prev) => [...prev, name]);
 
     try {
@@ -476,8 +528,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
     const agentName = selectedAgent
       ? `${selectedAgent.firstName ?? ""} ${selectedAgent.lastName ?? ""}`.trim() || selectedAgent.email
       : undefined;
-    const pospPartnerLabel =
-      formData.agentType === "direct" ? formData.directAgentName : agentName || "";
+    const pospPartnerLabel = fixedAgent
+      ? fixedAgent.name
+      : formData.agentType === "direct"
+      ? formData.directAgentName
+      : formData.agentType === "posp" && formData.posAgentInList === "no"
+      ? formData.manualPospAgentName
+      : agentName || "";
 
     return {
       policyNumber: formData.policyNumber,
@@ -526,12 +583,16 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
         reportingManager: formData.reportingManagerId
           ? { id: formData.reportingManagerId, name: managerName }
           : undefined,
-        agentType: formData.agentType,
+        agentType: fixedAgent ? "posp" : formData.agentType,
+        posAgentInList: fixedAgent ? "yes" : formData.agentType === "posp" ? formData.posAgentInList : undefined,
         pospPartner: pospPartnerLabel,
-        pospAgent:
-          formData.agentType === "posp" && selectedAgent
-            ? { id: selectedAgent._id, name: agentName }
-            : undefined,
+        pospAgent: fixedAgent
+          ? { id: fixedAgent.id, name: fixedAgent.name }
+          : formData.agentType === "posp" && formData.posAgentInList === "yes" && selectedAgent
+          ? { id: selectedAgent._id, name: agentName }
+          : undefined,
+        caseBookedUnderPosp:
+          fixedAgent || formData.agentType === "posp" ? formData.caseBookedUnderPosp : undefined,
       },
       premiumBreakdown: premiumRows.map((r) => ({
         label: r.label,
@@ -569,7 +630,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
     setSubmitting(true);
     setFormError("");
     try {
-      const res = await fetch("/api/admin/policies", {
+      const res = await fetch(submitEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -603,7 +664,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={wrapperRef}>
       <div className={styles.header}>
         <h2 className={styles.title}>Add New Policy</h2>
         <div className={styles.headerRight}>
@@ -1033,7 +1094,30 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
             </div>
 
             <div className={styles.card}>
-              <h3 className={styles.sectionTitle}>Assignment</h3>
+              <div className={styles.sectionHeaderRow}>
+                <h3 className={styles.sectionTitle}>Assignment</h3>
+                {(fixedAgent || formData.agentType === "posp") && (
+                  <div className={styles.caseBookedField}>
+                    <label className={styles.caseBookedLabel}>
+                      Case Booked under POSP? <span className={styles.required}>*</span>
+                    </label>
+                    <select
+                      className={`${styles.caseBookedSelect} ${
+                        errors.caseBookedUnderPosp ? styles.errorInput : ""
+                      }`}
+                      value={formData.caseBookedUnderPosp}
+                      onChange={(e) => setField("caseBookedUnderPosp", e.target.value)}
+                    >
+                      <option value="">Select</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+              {errors.caseBookedUnderPosp && (
+                <span className={styles.errorText}>{errors.caseBookedUnderPosp}</span>
+              )}
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Branch Name" required />
@@ -1075,8 +1159,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                     onChange={(e) => {
                       setField("reportingManagerId", e.target.value);
                       setField("agentType", "");
+                      setField("posAgentInList", "");
                       setField("pospPartner", "");
                       setField("directAgentName", "");
+                      setField("manualPospAgentName", "");
+                      setField("caseBookedUnderPosp", "");
                       setAgentSearchTerm("");
                     }}
                   >
@@ -1090,75 +1177,132 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({ onCancel, onSuccess }) =>
                   {errors.reportingManagerId && <span className={styles.errorText}>{errors.reportingManagerId}</span>}
                 </div>
 
-                <div className={styles.field}>
-                  <Label text="Agent Type" required />
-                  <select
-                    className={`${styles.select} ${errors.agentType ? styles.errorInput : ""}`}
-                    value={formData.agentType}
-                    disabled={!formData.reportingManagerId}
-                    onChange={(e) => {
-                      setField("agentType", e.target.value);
-                      setField("pospPartner", "");
-                      setField("directAgentName", "");
-                      setAgentSearchTerm("");
-                    }}
-                  >
-                    <option value="">
-                      {formData.reportingManagerId ? "Select" : "Select Reporting Manager first"}
-                    </option>
-                    <option value="posp">POSP</option>
-                    <option value="direct">Direct</option>
-                  </select>
-                  {errors.agentType && <span className={styles.errorText}>{errors.agentType}</span>}
-                </div>
-
-                <div className={styles.field}>
-                  <Label text="POSP Partner" required={formData.agentType === "posp"} />
-                  {formData.agentType === "direct" ? (
-                    <>
-                      <input
-                        className={`${styles.input} ${errors.directAgentName ? styles.errorInput : ""}`}
-                        value={formData.directAgentName}
-                        onChange={(e) => setField("directAgentName", e.target.value)}
-                        placeholder="Enter agent name"
-                      />
-                      {errors.directAgentName && <span className={styles.errorText}>{errors.directAgentName}</span>}
-                    </>
-                  ) : (
-                    <>
-                      {formData.agentType === "posp" && (
-                        <input
-                          className={styles.input}
-                          value={agentSearchTerm}
-                          onChange={(e) => setAgentSearchTerm(e.target.value)}
-                          placeholder="Search agent by name or email..."
-                          style={{ marginBottom: 8 }}
-                        />
-                      )}
+                {fixedAgent ? (
+                  <div className={styles.field}>
+                    <Label text="Agent Name" required />
+                    <input className={styles.input} value={fixedAgent.name} disabled readOnly />
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.field}>
+                      <Label text="Agent Type" required />
                       <select
-                        className={`${styles.select} ${errors.pospPartner ? styles.errorInput : ""}`}
-                        value={formData.pospPartner}
-                        disabled={formData.agentType !== "posp"}
-                        onChange={(e) => setField("pospPartner", e.target.value)}
+                        className={`${styles.select} ${errors.agentType ? styles.errorInput : ""}`}
+                        value={formData.agentType}
+                        disabled={!formData.reportingManagerId}
+                        onChange={(e) => {
+                          setField("agentType", e.target.value);
+                          setField("posAgentInList", "");
+                          setField("pospPartner", "");
+                          setField("directAgentName", "");
+                          setField("manualPospAgentName", "");
+                          setField("caseBookedUnderPosp", "");
+                          setAgentSearchTerm("");
+                        }}
                       >
                         <option value="">
-                          {formData.agentType === "posp" ? "Select" : "Select Agent Type first"}
+                          {formData.reportingManagerId ? "Select" : "Select Reporting Manager first"}
                         </option>
-                        {filteredAgentsUnderManager.map((a) => (
-                          <option key={a._id} value={a._id}>
-                            {`${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email}
-                          </option>
-                        ))}
+                        <option value="posp">POSP</option>
+                        <option value="direct">Direct</option>
                       </select>
-                      {formData.agentType === "posp" && filteredAgentsUnderManager.length === 0 && (
-                        <span className={styles.errorText}>
-                          {agentSearchTerm ? "No agents match your search." : "No agents found under this manager."}
-                        </span>
+                      {errors.agentType && <span className={styles.errorText}>{errors.agentType}</span>}
+                    </div>
+
+                    {formData.agentType === "posp" && (
+                      <div className={styles.field}>
+                        <Label text="Is Agent In List?" required />
+                        <select
+                          className={`${styles.select} ${errors.posAgentInList ? styles.errorInput : ""}`}
+                          value={formData.posAgentInList}
+                          onChange={(e) => {
+                            setField("posAgentInList", e.target.value);
+                            setField("pospPartner", "");
+                            setField("manualPospAgentName", "");
+                            setAgentSearchTerm("");
+                          }}
+                        >
+                          <option value="">Select</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                        {errors.posAgentInList && <span className={styles.errorText}>{errors.posAgentInList}</span>}
+                      </div>
+                    )}
+
+                    <div className={styles.field}>
+                      <Label
+                        text="Agent Name"
+                        required={
+                          formData.agentType === "direct" ||
+                          (formData.agentType === "posp" && !!formData.posAgentInList)
+                        }
+                      />
+                      {formData.agentType === "direct" ? (
+                        <>
+                          <input
+                            className={`${styles.input} ${errors.directAgentName ? styles.errorInput : ""}`}
+                            value={formData.directAgentName}
+                            onChange={(e) => setField("directAgentName", e.target.value)}
+                            placeholder="Enter agent name"
+                          />
+                          {errors.directAgentName && <span className={styles.errorText}>{errors.directAgentName}</span>}
+                        </>
+                      ) : formData.agentType === "posp" && formData.posAgentInList === "no" ? (
+                        <>
+                          <input
+                            className={`${styles.input} ${errors.manualPospAgentName ? styles.errorInput : ""}`}
+                            value={formData.manualPospAgentName}
+                            onChange={(e) => setField("manualPospAgentName", e.target.value)}
+                            placeholder="Enter agent name"
+                          />
+                          {errors.manualPospAgentName && (
+                            <span className={styles.errorText}>{errors.manualPospAgentName}</span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {formData.agentType === "posp" && formData.posAgentInList === "yes" && (
+                            <input
+                              className={styles.input}
+                              value={agentSearchTerm}
+                              onChange={(e) => setAgentSearchTerm(e.target.value)}
+                              placeholder="Search agent by name or email..."
+                              style={{ marginBottom: 8 }}
+                            />
+                          )}
+                          <select
+                            className={`${styles.select} ${errors.pospPartner ? styles.errorInput : ""}`}
+                            value={formData.pospPartner}
+                            disabled={!(formData.agentType === "posp" && formData.posAgentInList === "yes")}
+                            onChange={(e) => setField("pospPartner", e.target.value)}
+                          >
+                            <option value="">
+                              {formData.agentType === "posp" && formData.posAgentInList === "yes"
+                                ? "Select"
+                                : formData.agentType === "posp"
+                                ? "Select Yes/No first"
+                                : "Select Agent Type first"}
+                            </option>
+                            {filteredAgentsUnderManager.map((a) => (
+                              <option key={a._id} value={a._id}>
+                                {`${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email}
+                              </option>
+                            ))}
+                          </select>
+                          {formData.agentType === "posp" &&
+                            formData.posAgentInList === "yes" &&
+                            filteredAgentsUnderManager.length === 0 && (
+                              <span className={styles.errorText}>
+                                {agentSearchTerm ? "No agents match your search." : "No agents found under this manager."}
+                              </span>
+                            )}
+                          {errors.pospPartner && <span className={styles.errorText}>{errors.pospPartner}</span>}
+                        </>
                       )}
-                      {errors.pospPartner && <span className={styles.errorText}>{errors.pospPartner}</span>}
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

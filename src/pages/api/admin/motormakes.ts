@@ -1,29 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { verifyToken } from "@/utils/verifyToken";
+import { requireAdminOrAgent } from "@/utils/requireAdminOrAgent";
 import dbConnect from "@/lib/dbConnect";
 import MotorMake from "@/models/MotorMake";
-
-async function requireAdmin(req: NextApiRequest) {
-  const token = req.cookies["adminToken"];
-  const data = token ? await verifyToken(token) : null;
-
-  if (
-    !data ||
-    typeof data !== "object" ||
-    !("role" in data) ||
-    !["superadmin", "admin"].includes((data as any).role)
-  ) {
-    return null;
-  }
-  return data;
-}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const admin = await requireAdmin(req);
-  if (!admin) {
+  const staff = await requireAdminOrAgent(req);
+  if (!staff) {
     return res.status(401).json({ success: false, message: "Not authorized" });
   }
 

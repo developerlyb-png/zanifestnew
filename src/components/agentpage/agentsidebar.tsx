@@ -9,6 +9,7 @@ import {
   FiLock,
   FiChevronRight,
 } from "react-icons/fi";
+import ProfileMenu from "./ProfileMenu";
 
 
 interface AgentSidebarProps {
@@ -17,19 +18,30 @@ interface AgentSidebarProps {
   setActiveSection: React.Dispatch<React.SetStateAction<string>>;
   activeSection: string; // ✅ ADD THIS
   handleLogout: () => void;
+  agentName?: string;
+  agentProfile?: { firstName?: string; lastName?: string; email?: string } | null;
 }
 
 const AgentSidebar: React.FC<AgentSidebarProps> = ({
   sidebarOpen,
   setSidebarOpen,
   setActiveSection,
-  activeSection, 
+  activeSection,
   handleLogout,
+  agentName,
+  agentProfile,
 }) => {
   const handleClick = (section: string) => {
     setActiveSection(section);
     setSidebarOpen(false);
   };
+
+  const todayLabel = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <aside
@@ -38,6 +50,11 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
       }`}
     >
       <div className={styles.sidebarContent}>
+        <div className={styles.sidebarGreeting}>
+          <span className={styles.sidebarGreetingName}>Welcome, {agentName || "Agent"}</span>
+          <span className={styles.sidebarGreetingDate}>{todayLabel}</span>
+        </div>
+
         {/* MENU */}
         <p className={styles.sectionTitle}>MENU</p>
         <ul className={styles.menu}>
@@ -78,22 +95,6 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
             <div className={styles.iconLabel}>
               <FiUsers className={styles.icon} />
               <span>User List</span>
-            </div>
-          </li>
-        </ul>
-
-        {/* SECURITY */}
-        <p className={styles.sectionTitle}>SECURITY</p>
-        <ul className={styles.menu}>
-          <li
-            className={`${styles.menuItem} ${
-              activeSection === "resetpassword" ? styles.active : ""
-            }`}
-            onClick={() => handleClick("resetpassword")}
-          >
-            <div className={styles.iconLabel}>
-              <FiLock className={styles.icon} />
-              <span>Reset Password</span>
             </div>
           </li>
         </ul>
@@ -141,7 +142,7 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
 </ul>
 
       </div>
- 
+
 
 
       {/* PROFILE BUTTON */}
@@ -157,9 +158,14 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
 
       {/* MOBILE LOGOUT */}
       <div className={styles.mobileOnlyLogout}>
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          Logout
-        </button>
+        <ProfileMenu
+          agent={agentProfile ?? null}
+          onNavigate={(section) => {
+            setActiveSection(section);
+            setSidebarOpen(false);
+          }}
+          onLogout={handleLogout}
+        />
       </div>
     </aside>
   );

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import agentbackground from "@/assets/dashboard_bg.webp";
 import styles from "@/styles/pages/agent.module.css";
 
 import AgentHeader from "@/components/agentpage/agentheader";
@@ -29,6 +28,11 @@ const AgentDashboard = () => {
 
   const [loading, setLoading] = useState(false);
   const [agent, setAgent] = useState<any>(null);
+  const [agentProfile, setAgentProfile] = useState<{
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  } | null>(null);
 
   /* ---------------------------------------
      LOAD AGENT NAME (UI PURPOSE ONLY)
@@ -37,6 +41,25 @@ const AgentDashboard = () => {
     const storedName = localStorage.getItem("agentName");
     if (storedName) setAgentName(storedName);
   }, []);
+
+  /* ---------------------------------------
+     FORCE UNTRAINED AGENTS INTO TRAINING FIRST
+  --------------------------------------- */
+  useEffect(() => {
+    axios
+      .get("/api/agent/me", { withCredentials: true })
+      .then((res) => {
+        if (res.data?.agent) {
+          setAgentProfile(res.data.agent);
+        }
+        if (!res.data?.agent?.trainingCompleted) {
+          router.replace("/videolectures");
+        }
+      })
+      .catch(() => {
+        // If this check fails, let the rest of the page's own auth handling take over.
+      });
+  }, [router]);
 
   /* ---------------------------------------
      FETCH AGENT PROFILE (COOKIE AUTH)
@@ -85,6 +108,8 @@ const AgentDashboard = () => {
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
         handleLogout={handleLogout}
+        agentProfile={agentProfile}
+        setActiveSection={setActiveSection}
       />
 
       <div className={styles.mainArea}>
@@ -95,36 +120,30 @@ const AgentDashboard = () => {
           setActiveSection={setActiveSection}
           activeSection={activeSection}
           handleLogout={handleLogout}
+          agentName={agentName}
+          agentProfile={agentProfile}
         />
 
         {/* CONTENT */}
-       <main className={styles.content}>
-  {/* BACKGROUND IMAGE */}
-  <div
-    className={styles.contentBackground}
-    style={{ backgroundImage: `url(${agentbackground.src})` }}
-  />
+        <main className={styles.content}>
+          <div className={styles.contentInner}>
+            {activeSection === "dashboard" && (
+              <AgentContent
+                agentName={agentName}
+                agentSales={agentSales}
+                agentId={agent?._id || ""}
+              />
+            )}
 
-  {/* ACTUAL CONTENT */}
-  <div className={styles.contentInner}>
-    {activeSection === "dashboard" && (
-      <AgentContent
-        agentName={agentName}
-        agentSales={agentSales}
-        agentId={agent?._id || ""}
-      />
-    )}
-
-    {activeSection === "leadsection" && <LeadSection />}
-    {activeSection === "listofpolicy" && <ListOfPolicy />}
-    {activeSection === "resetpassword" && <ResetPassword />}
-    {activeSection === "createuser" && <CreateUser />}
-    {activeSection === "addsale" && <AgentSale />}
-    {activeSection === "profileEdit" && <CreateAgent />}
-    {activeSection === "downloadCertificate" && <DownloadCertificate />}
-
-  </div>
-</main>
+            {activeSection === "leadsection" && <LeadSection />}
+            {activeSection === "listofpolicy" && <ListOfPolicy />}
+            {activeSection === "resetpassword" && <ResetPassword />}
+            {activeSection === "createuser" && <CreateUser />}
+            {activeSection === "addsale" && <AgentSale />}
+            {activeSection === "profileEdit" && <CreateAgent />}
+            {activeSection === "downloadCertificate" && <DownloadCertificate />}
+          </div>
+        </main>
 
       </div>
     </div>

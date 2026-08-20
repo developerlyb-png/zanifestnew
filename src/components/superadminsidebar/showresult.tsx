@@ -201,7 +201,11 @@ const filteredAgents = useMemo(() => {
 
 /* ---------------- PAGINATION ---------------- */
 
-const totalPages = Math.ceil(filteredAgents.length / rowsPerPage);
+const totalPages = Math.max(1, Math.ceil(filteredAgents.length / rowsPerPage));
+
+useEffect(() => {
+  if (currentPage > totalPages) setCurrentPage(totalPages);
+}, [totalPages, currentPage]);
 
 const paginatedAgents = filteredAgents.slice(
   (currentPage - 1) * rowsPerPage,
@@ -423,6 +427,108 @@ onClick={()=>failAgent(agent)}
 
 </tbody>
 </table>
+
+{showModal && selectedAgent && (() => {
+  const liveAgent = agents.find((a) => a._id === selectedAgent._id) || selectedAgent;
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalBox} role="dialog" aria-modal="true">
+        <h2 className={styles.modalTitle}>Review &amp; Certify Agent</h2>
+
+        <div className={styles.modalContent}>
+          <p><strong>Name:</strong> {liveAgent.firstName} {liveAgent.lastName}</p>
+          <p><strong>Email:</strong> {liveAgent.email}</p>
+          <p><strong>Agent Code:</strong> {liveAgent.agentCode || "Not yet assigned"}</p>
+
+          {successMsg && (
+            <p style={{ color: "#21cc5a", fontWeight: 600 }}>{successMsg}</p>
+          )}
+
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 600, marginBottom: 6 }}>Certificate</p>
+
+            {liveAgent.certificate2 ? (
+              <p style={{ color: "#21cc5a" }}>&#10003; Certificate generated</p>
+            ) : (
+              <button className={styles.reviewBtn} onClick={generatePDF}>
+                Generate Certificate (PDF)
+              </button>
+            )}
+
+            <div style={{ marginTop: 10 }}>
+              <label style={{ display: "block", marginBottom: 6 }}>Or upload a certificate file:</label>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) uploadCertificate(file);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.modalActions}>
+          <button
+            className={styles.reviewBtn}
+            style={{ background: "#21cc5a", color: "#fff" }}
+            onClick={approveAgent}
+          >
+            Approve Agent
+          </button>
+          <button
+            className={styles.reviewBtn}
+            onClick={() => {
+              setShowModal(false);
+              setSelectedAgent(null);
+              setSuccessMsg("");
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+})()}
+
+{filteredAgents.length > 0 && (
+<div className={styles.pagination}>
+
+<span>
+Page {currentPage} of {totalPages} &middot; {filteredAgents.length} total
+</span>
+
+<div className={styles.pageButtons}>
+
+<button
+disabled={currentPage === 1}
+onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+>
+Prev
+</button>
+
+{Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+<button
+key={n}
+className={n === currentPage ? styles.activePage : ""}
+onClick={() => setCurrentPage(n)}
+>
+{n}
+</button>
+))}
+
+<button
+disabled={currentPage === totalPages}
+onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+>
+Next
+</button>
+
+</div>
+</div>
+)}
 
 </div>
 );

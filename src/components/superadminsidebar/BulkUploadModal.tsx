@@ -22,11 +22,16 @@ interface SkippedRow {
 interface BulkUploadModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  submitEndpoint?: string;
 }
 
 const HEADER_TO_KEY = new Map(BULK_UPLOAD_COLUMNS.map((c) => [c.header, c.key]));
 
-const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ onClose, onSuccess }) => {
+const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
+  onClose,
+  onSuccess,
+  submitEndpoint = "/api/admin/policies-bulk",
+}) => {
   const [tab, setTab] = useState<"upload" | "history">("upload");
   const [templateFormat, setTemplateFormat] = useState<"xlsx" | "csv">("xlsx");
   const [file, setFile] = useState<File | null>(null);
@@ -97,7 +102,7 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({ onClose, onSuccess })
         return mapped;
       });
 
-      const res = await fetch("/api/admin/policies-bulk", {
+      const res = await fetch(submitEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

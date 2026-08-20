@@ -91,6 +91,8 @@ const IssuedPolicySchema =
 
       agentType: String,
 
+      posAgentInList: String,
+
       pospPartner: String,
 
       pospAgent: {
@@ -100,6 +102,11 @@ const IssuedPolicySchema =
         },
         name: String,
       },
+
+      // Some high-value cases are sourced/issued via a POSP but legally
+      // cannot be booked under the POSP's own code (ticket-size limits) —
+      // this flag captures that distinction independent of agentType.
+      caseBookedUnderPosp: String,
 
     },
 
@@ -231,6 +238,11 @@ const IssuedPolicySchema =
     },
 
     createdBy: String,
+
+    createdByAgentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Agent",
+    },
 
     updatedBy: String,
 

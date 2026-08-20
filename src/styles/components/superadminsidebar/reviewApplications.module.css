@@ -411,6 +411,12 @@
 .pageButtons {
   display:flex;
   gap:6px;
+  flex-wrap:wrap;
+}
+
+.pageButtons button:disabled {
+  opacity:0.45;
+  cursor:not-allowed;
 }
 
 .pageButtons button {

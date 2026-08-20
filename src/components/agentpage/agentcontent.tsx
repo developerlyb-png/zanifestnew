@@ -4,6 +4,7 @@ import styles from "@/styles/pages/agent.module.css";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Label } from "recharts";
+import { FiRepeat, FiTrendingUp, FiUsers } from "react-icons/fi";
 
 
 import {
@@ -221,7 +222,7 @@ const updateChart = (sales: SaleRecord[]) => {
 
 
   return (
-    <main className={styles.content}>
+    <div>
       <h2 className={styles.dashboardTitle}>
         Hello, {agentName || agentNameState}
       </h2>
@@ -232,25 +233,49 @@ const updateChart = (sales: SaleRecord[]) => {
       <div className={styles.cardGrid}>
         {dmHistory.length > 0 && (
           <div className={styles.infoCard}>
-            <h3>DM History</h3>
-            <h4>Total Transferred Sale: ₹{combinedDmSales}</h4>
-            <button
-              className={styles.breakdownBtn}
-              onClick={() => setShowBreakdownModal(true)}
-            >
-              Breakdown
-            </button>
+            <div className={styles.cardTopRow}>
+              <span className={styles.cardIconBadge}>
+                <FiRepeat size={16} />
+              </span>
+              <span className={styles.cardLabel}>DM History</span>
+            </div>
+            <p className={styles.cardValue}>₹{combinedDmSales}</p>
+            <div className={styles.cardBottomRow}>
+              <button
+                type="button"
+                className={styles.breakdownBtn}
+                onClick={() => setShowBreakdownModal(true)}
+              >
+                Breakdown
+              </button>
+            </div>
           </div>
         )}
 
         <div className={styles.infoCard}>
-          <h3>Sales This Month</h3>
-          <p className={styles.amount}>₹{monthlySales}</p>
+          <div className={styles.cardTopRow}>
+            <span className={styles.cardIconBadge}>
+              <FiTrendingUp size={16} />
+            </span>
+            <span className={styles.cardLabel}>Sales This Month</span>
+          </div>
+          <p className={styles.cardValue}>₹{monthlySales}</p>
+          <div className={styles.cardBottomRow}>
+            <span className={styles.cardSubLabel}>Current month total</span>
+          </div>
         </div>
 
         <div className={styles.infoCard}>
-          <h3>Number of Clients</h3>
-          <p className={styles.amount}>{totalClients}</p>
+          <div className={styles.cardTopRow}>
+            <span className={styles.cardIconBadge}>
+              <FiUsers size={16} />
+            </span>
+            <span className={styles.cardLabel}>Number of Clients</span>
+          </div>
+          <p className={styles.cardValue}>{totalClients}</p>
+          <div className={styles.cardBottomRow}>
+            <span className={styles.cardSubLabel}>All time total</span>
+          </div>
         </div>
       </div>
 
@@ -387,7 +412,7 @@ const updateChart = (sales: SaleRecord[]) => {
 
 
 
-    </main>
+    </div>
   );
 };
 
