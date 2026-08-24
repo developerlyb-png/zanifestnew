@@ -60,6 +60,7 @@ export const CASE_TYPES = [
   "3+3 Cover",
   "1+5 Cover",
   "5+5 Cover",
+  "Standalone",
   "Short Term",
   "Others",
 ];

@@ -91,8 +91,6 @@ const IssuedPolicySchema =
 
       agentType: String,
 
-      posAgentInList: String,
-
       pospPartner: String,
 
       pospAgent: {
@@ -102,6 +100,10 @@ const IssuedPolicySchema =
         },
         name: String,
       },
+
+      // Set when agentType is "direct" — the BQP (business quality
+      // partner) overseeing the direct-booked case.
+      bqp: String,
 
       // Some high-value cases are sourced/issued via a POSP but legally
       // cannot be booked under the POSP's own code (ticket-size limits) —

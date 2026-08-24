@@ -469,16 +469,21 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         breakinInsurance: computeBreakinStatus(expiryDate),
       };
 
-      const res = await fetch("/api/zuno/4w/quote", {
+      const res = await fetch("/api/car/4w/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(enrichedInput),
       });
 
-      const data = await res.json();
-      console.log("ZUNO QUOTE RESPONSE >>>", data);
+      const combined = await res.json();
+      console.log("COMBINED QUOTE RESPONSE >>>", combined);
 
-      if (data.success) {
+      const zunoEntry = combined?.quotes?.find((q: any) => q.insurer === "ZUNO");
+      const sbiEntry = combined?.quotes?.find((q: any) => q.insurer === "SBI");
+
+      const data = zunoEntry?.response;
+
+      if (data?.success) {
         const plan = parseQuoteResponse(data);
         console.log("PLAN >>>", plan);
 
@@ -486,12 +491,16 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         localStorage.setItem("carQuoteInput", JSON.stringify(enrichedInput));
         localStorage.setItem("carRcDetails", JSON.stringify(rcDetails)); // ← the missing save
 
+        // SBI is stored as-is (success or failure) so carinsurance3 can show
+        // it alongside Zuno's plan, or a friendly "unavailable" state.
+        localStorage.setItem("selectedQuoteSbi", JSON.stringify(sbiEntry || null));
+
         // Keep the loader up through navigation — it unmounts with this
         // dialog once carinsurance3 has actually taken over the screen,
         // instead of dropping early and flashing the page behind it.
         router.push("/carinsurance/carinsurance3");
       } else {
-        alert(data.message || "ZUNO Quote Failed");
+        alert(data?.message || "ZUNO Quote Failed");
         setQuoteLoading(false);
       }
     } catch (err: any) {

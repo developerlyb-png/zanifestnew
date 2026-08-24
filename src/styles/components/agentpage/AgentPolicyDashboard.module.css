@@ -356,6 +356,16 @@
 }
 
 /* Table */
+
+/* Mirrors the table's horizontal scrollbar at the top too (kept in sync via
+   JS), so wide tables can be scrolled without hunting for the bottom bar. */
+.topScroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 16px;
+  margin-bottom: 2px;
+}
+
 .tableWrapper {
   overflow-x: auto;
   background: #fff;
@@ -380,16 +390,37 @@
   letter-spacing: 0.04em;
   padding: 13px 14px;
   white-space: nowrap;
-  border-bottom: 1px solid #eef1f6;
+  border: 1px solid #e3e7ed;
 }
 
 .table td {
   padding: 13px 14px;
-  border-bottom: 1px solid #f0f2f5;
+  border: 1px solid #e3e7ed;
   white-space: normal;
   vertical-align: top;
   color: #262b3d;
   max-width: 220px;
+}
+
+/* Frozen first column (Insured Name) — stays put while the rest of the
+   table scrolls horizontally underneath it. Needs its own opaque
+   background (plain .table td has none) or scrolled cells behind it show
+   through; the two overrides below match this column back to whichever
+   row's background it actually sits in (header vs. filter row vs. body). */
+.stickyCol {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 1px 0 0 #e3e7ed;
+}
+
+.table th.stickyCol {
+  background: #f5f8fc;
+}
+
+.filterHeaderRow .stickyCol {
+  background: #fafbfc;
 }
 
 /* Per-column filter row (in thead) */

@@ -28,6 +28,7 @@ import UserDetails from "@/components/ui/UserDetails";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import zunoLogo from "@/assets/insurance/zuno.png";
+import sbiLogo from "@/assets/insurance/sbi.png";
 import IdvEditDialog from "./IdvEditDialog";
 import { requoteWithAddons, requoteWithIdv } from "@/lib/zuno4w";
 
@@ -96,6 +97,11 @@ const CarInsurance3 = () => {
   const [plan, setPlan] = useState<any>(null);
   const [quoteInput, setQuoteInput] = useState<any>(null);
 
+  // SBI quote — bound in parallel with Zuno's; may be a failure entry
+  // ({ insurer: "SBI", success: false, response }) when the master-data
+  // matching for SBI isn't resolvable yet for this vehicle.
+  const [sbiQuote, setSbiQuote] = useState<any>(null);
+
   // Original Zuno-quoted IDV, fixed as the baseline for the edit range
   const [defaultIdv, setDefaultIdv] = useState<number | null>(null);
   const [showIdvDialog, setShowIdvDialog] = useState(false);
@@ -141,12 +147,14 @@ const CarInsurance3 = () => {
       const p = localStorage.getItem("selectedQuote");
       const q = localStorage.getItem("carQuoteInput");
       const a = localStorage.getItem("carSelectedAddons");
+      const s = localStorage.getItem("selectedQuoteSbi");
       if (p && p !== "undefined") {
         const parsedPlan = JSON.parse(p);
         setPlan(parsedPlan);
         setDefaultIdv(Number(parsedPlan.idv));
       }
       if (q && q !== "undefined") setQuoteInput(JSON.parse(q));
+      if (s && s !== "undefined") setSbiQuote(JSON.parse(s));
       if (a && a !== "undefined") {
         const parsedAddons = JSON.parse(a);
         if (Array.isArray(parsedAddons)) {
@@ -465,7 +473,7 @@ const CarInsurance3 = () => {
             </div>
           ) : plan ? (
             <>
-              <h2>1 plan available</h2>
+              <h2>{sbiQuote?.success ? "2 plans available" : "1 plan available"}</h2>
               <p>Covers damages to your car. Premium includes GST.</p>
 
               <div className={styles.planCard}>
@@ -552,6 +560,42 @@ const CarInsurance3 = () => {
                   </div>
                 )}
               </div>
+
+              {sbiQuote && (
+                <div className={styles.planCard}>
+                  <div className={styles.planHeader}>
+                    <FaTrophy className={styles.trophy} />
+                    SBI General Insurance
+                  </div>
+                  <div className={styles.planDetails}>
+                    <div className={styles.logoWrap}>
+                      <Image
+                        src={sbiLogo}
+                        alt="SBI General Insurance"
+                        className={styles.logo}
+                      />
+                    </div>
+                    {sbiQuote.success ? (
+                      <>
+                        <div>
+                          <div style={{ color: "#5a5959" }}>
+                            Estimated Premium
+                          </div>
+                        </div>
+                        <div className={styles.actions}>
+                          <div className={styles.price}>
+                            {inr(sbiQuote.response?.premium)}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ color: "#5a5959" }}>
+                        SBI quote isn&apos;t available for this vehicle right now.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>

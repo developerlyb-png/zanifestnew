@@ -258,6 +258,11 @@ function PolicyDashboard() {
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
   const columnPickerRef = useRef<HTMLDivElement>(null);
+  const topScrollRef = useRef<HTMLDivElement>(null);
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [tableScrollWidth, setTableScrollWidth] = useState(0);
+  const syncingScrollRef = useRef<"top" | "table" | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -268,6 +273,20 @@ function PolicyDashboard() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleTopScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (syncingScrollRef.current === "table") return;
+    syncingScrollRef.current = "top";
+    if (tableWrapperRef.current) tableWrapperRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    syncingScrollRef.current = null;
+  };
+
+  const handleTableScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (syncingScrollRef.current === "top") return;
+    syncingScrollRef.current = "table";
+    if (topScrollRef.current) topScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    syncingScrollRef.current = null;
+  };
 
   const setFilter = (key: keyof ColumnFilters, value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -301,6 +320,22 @@ function PolicyDashboard() {
       return true;
     });
   }, [policies, filters]);
+
+  // Keeps the top scrollbar's width matched to the table's actual scrollable
+  // width. Reads scrollWidth off the wrapper (the element that actually
+  // scrolls) rather than the <table>'s ResizeObserver contentRect, which can
+  // under-report on a border-collapse table — this is what really has to
+  // match for the two scrollbars to represent the same scroll range.
+  useEffect(() => {
+    const tableEl = tableRef.current;
+    const wrapperEl = tableWrapperRef.current;
+    if (!tableEl || !wrapperEl) return;
+    const update = () => setTableScrollWidth(wrapperEl.scrollWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(tableEl);
+    return () => ro.disconnect();
+  }, [visibleColumns, filteredPolicies]);
 
   const range = useMemo(() => {
     if (preset === "custom" && customFrom && customTo) {
@@ -558,17 +593,23 @@ function PolicyDashboard() {
             </span>
           </div>
 
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
+          <div className={styles.topScroll} ref={topScrollRef} onScroll={handleTopScroll}>
+            <div style={{ width: tableScrollWidth, height: 1 }} />
+          </div>
+
+          <div className={styles.tableWrapper} ref={tableWrapperRef} onScroll={handleTableScroll}>
+            <table className={styles.table} ref={tableRef}>
               <thead>
                 <tr>
                   {COLUMNS.filter((c) => visibleColumns[c.key]).map((c) => (
-                    <th key={c.key}>{c.label}</th>
+                    <th key={c.key} className={c.key === "insuredName" ? styles.stickyCol : undefined}>
+                      {c.label}
+                    </th>
                   ))}
                 </tr>
                 <tr className={styles.filterHeaderRow}>
                   {visibleColumns.insuredName && (
-                    <td>
+                    <td className={styles.stickyCol}>
                       <select
                         className={styles.selectInput}
                         value={filters.insuredName}
@@ -692,7 +733,7 @@ function PolicyDashboard() {
                   filteredPolicies.map((p) => (
                     <tr key={p._id}>
                       {visibleColumns.insuredName && (
-                        <td>
+                        <td className={styles.stickyCol}>
                           <button
                             className={styles.linkCell}
                             onClick={() => setSelectedPolicyId(p._id)}

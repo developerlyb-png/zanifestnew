@@ -6,6 +6,7 @@ import { FiCheck, FiPlus, FiX } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import InsuredNameSelect from "./InsuredNameSelect";
+import SearchableSelect from "./SearchableSelect";
 import { ClientRecord } from "./AddClientModal";
 import {
   TRANSACTION_TYPES,
@@ -92,10 +93,9 @@ interface FormDataType {
   branchName: string;
   reportingManagerId: string;
   agentType: string;
-  posAgentInList: string;
   pospPartner: string;
   directAgentName: string;
-  manualPospAgentName: string;
+  bqp: string;
   caseBookedUnderPosp: string;
 
   mediumOfIssuance: string;
@@ -145,10 +145,9 @@ const EMPTY_FORM: FormDataType = {
   branchName: "",
   reportingManagerId: "",
   agentType: "",
-  posAgentInList: "",
   pospPartner: "",
   directAgentName: "",
-  manualPospAgentName: "",
+  bqp: "",
   caseBookedUnderPosp: "",
 
   mediumOfIssuance: "",
@@ -222,7 +221,6 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   const [newMotorMakeName, setNewMotorMakeName] = useState("");
   const [customInsurers, setCustomInsurers] = useState<string[]>([]);
   const [newInsurerName, setNewInsurerName] = useState("");
-  const [agentSearchTerm, setAgentSearchTerm] = useState("");
 
   useEffect(() => {
     fetch("/api/getallmanagers")
@@ -256,13 +254,6 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     ? agents.filter((a) => a.assignedTo === selectedManager.managerId)
     : [];
   const selectedAgent = agentsUnderManager.find((a) => a._id === formData.pospPartner);
-  const filteredAgentsUnderManager = agentSearchTerm
-    ? agentsUnderManager.filter((a) =>
-        `${a.firstName ?? ""} ${a.lastName ?? ""} ${a.email ?? ""}`
-          .toLowerCase()
-          .includes(agentSearchTerm.toLowerCase())
-      )
-    : agentsUnderManager;
 
   const setField = (key: keyof FormDataType, value: string) =>
     setFormData((p) => ({ ...p, [key]: value }));
@@ -384,12 +375,11 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
       if (!formData.reportingManagerId) e.reportingManagerId = "Required";
       if (!fixedAgent) {
         if (!formData.agentType) e.agentType = "Required";
-        if (formData.agentType === "posp") {
-          if (!formData.posAgentInList) e.posAgentInList = "Required";
-          if (formData.posAgentInList === "yes" && !formData.pospPartner) e.pospPartner = "Required";
-          if (formData.posAgentInList === "no" && !formData.manualPospAgentName) e.manualPospAgentName = "Required";
+        if (formData.agentType === "posp" && !formData.pospPartner) e.pospPartner = "Required";
+        if (formData.agentType === "direct") {
+          if (!formData.directAgentName) e.directAgentName = "Required";
+          if (!formData.bqp) e.bqp = "Required";
         }
-        if (formData.agentType === "direct" && !formData.directAgentName) e.directAgentName = "Required";
       }
       if ((fixedAgent || formData.agentType === "posp") && !formData.caseBookedUnderPosp) {
         e.caseBookedUnderPosp = "Required";
@@ -532,8 +522,6 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
       ? fixedAgent.name
       : formData.agentType === "direct"
       ? formData.directAgentName
-      : formData.agentType === "posp" && formData.posAgentInList === "no"
-      ? formData.manualPospAgentName
       : agentName || "";
 
     return {
@@ -584,13 +572,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
           ? { id: formData.reportingManagerId, name: managerName }
           : undefined,
         agentType: fixedAgent ? "posp" : formData.agentType,
-        posAgentInList: fixedAgent ? "yes" : formData.agentType === "posp" ? formData.posAgentInList : undefined,
         pospPartner: pospPartnerLabel,
         pospAgent: fixedAgent
           ? { id: fixedAgent.id, name: fixedAgent.name }
-          : formData.agentType === "posp" && formData.posAgentInList === "yes" && selectedAgent
+          : formData.agentType === "posp" && selectedAgent
           ? { id: selectedAgent._id, name: agentName }
           : undefined,
+        bqp: formData.agentType === "direct" ? formData.bqp : undefined,
         caseBookedUnderPosp:
           fixedAgent || formData.agentType === "posp" ? formData.caseBookedUnderPosp : undefined,
       },
@@ -716,52 +704,42 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Business Type" required />
-                  <select
-                    className={`${styles.select} ${errors.transactionType ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.transactionType ? styles.errorInput : ""}
                     value={formData.transactionType}
-                    onChange={(e) => setField("transactionType", e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {TRANSACTION_TYPES.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("transactionType", v)}
+                    options={TRANSACTION_TYPES.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.transactionType && <span className={styles.errorText}>{errors.transactionType}</span>}
                 </div>
 
                 <div className={styles.field}>
                   <Label text="Line of Business (LOB)" required />
-                  <select
-                    className={`${styles.select} ${errors.lineOfBusiness ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.lineOfBusiness ? styles.errorInput : ""}
                     value={formData.lineOfBusiness}
                     disabled={!formData.transactionType}
-                    onChange={(e) => {
-                      setField("lineOfBusiness", e.target.value);
+                    placeholder={formData.transactionType ? "Select" : "Select Business Type first"}
+                    onChange={(v) => {
+                      setField("lineOfBusiness", v);
                       setField("product", "");
                       setField("policyTypeStructure", "");
                     }}
-                  >
-                    <option value="">{formData.transactionType ? "Select" : "Select Business Type first"}</option>
-                    {LINES_OF_BUSINESS.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    options={LINES_OF_BUSINESS.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.lineOfBusiness && <span className={styles.errorText}>{errors.lineOfBusiness}</span>}
                 </div>
 
                 <div className={styles.field}>
                   <Label text="Product" required />
-                  <select
-                    className={`${styles.select} ${errors.product ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.product ? styles.errorInput : ""}
                     value={formData.product}
                     disabled={!formData.lineOfBusiness}
-                    onChange={(e) => setField("product", e.target.value)}
-                  >
-                    <option value="">{formData.lineOfBusiness ? "Select" : "Select LOB first"}</option>
-                    {(PRODUCTS_BY_LOB[formData.lineOfBusiness] || []).map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    placeholder={formData.lineOfBusiness ? "Select" : "Select LOB first"}
+                    onChange={(v) => setField("product", v)}
+                    options={(PRODUCTS_BY_LOB[formData.lineOfBusiness] || []).map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.product && <span className={styles.errorText}>{errors.product}</span>}
                 </div>
 
@@ -799,16 +777,12 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
 
                 <div className={styles.field}>
                   <Label text="Sub Insured Name" />
-                  <select
-                    className={styles.select}
+                  <SearchableSelect
                     value={formData.subInsuredName}
-                    onChange={(e) => setField("subInsuredName", e.target.value)}
-                  >
-                    <option value="">No Sub Insured</option>
-                    {(selectedClient?.subClients || []).map((sc, i) => (
-                      <option key={i} value={sc.name}>{sc.name}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("subInsuredName", v)}
+                    placeholder="No Sub Insured"
+                    options={(selectedClient?.subClients || []).map((sc) => ({ value: sc.name, label: sc.name }))}
+                  />
                 </div>
 
                 <div className={styles.field}>
@@ -848,31 +822,25 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                 <div className={styles.grid3}>
                   <div className={styles.field}>
                     <Label text="Vehicle Type" required />
-                    <select
-                      className={`${styles.select} ${errors.vehicleType ? styles.errorInput : ""}`}
+                    <SearchableSelect
+                      className={errors.vehicleType ? styles.errorInput : ""}
                       value={formData.vehicleType}
-                      onChange={(e) => setField("vehicleType", e.target.value)}
-                    >
-                      <option value="">Select an option...</option>
-                      {VEHICLE_TYPES.map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setField("vehicleType", v)}
+                      placeholder="Select an option..."
+                      options={VEHICLE_TYPES.map((v) => ({ value: v, label: v }))}
+                    />
                     {errors.vehicleType && <span className={styles.errorText}>{errors.vehicleType}</span>}
                   </div>
 
                   <div className={styles.field}>
                     <Label text="Fuel Type" required />
-                    <select
-                      className={`${styles.select} ${errors.fuelType ? styles.errorInput : ""}`}
+                    <SearchableSelect
+                      className={errors.fuelType ? styles.errorInput : ""}
                       value={formData.fuelType}
-                      onChange={(e) => setField("fuelType", e.target.value)}
-                    >
-                      <option value="">Select an option...</option>
-                      {FUEL_TYPES.map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setField("fuelType", v)}
+                      placeholder="Select an option..."
+                      options={FUEL_TYPES.map((v) => ({ value: v, label: v }))}
+                    />
                     {errors.fuelType && <span className={styles.errorText}>{errors.fuelType}</span>}
                   </div>
 
@@ -913,16 +881,12 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                         <FiPlus size={14} /> Add
                       </button>
                     </div>
-                    <select
-                      className={`${styles.select} ${errors.motorMake ? styles.errorInput : ""}`}
+                    <SearchableSelect
+                      className={errors.motorMake ? styles.errorInput : ""}
                       value={formData.motorMake}
-                      onChange={(e) => setField("motorMake", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {[...MOTOR_MAKES, ...customMotorMakes].map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setField("motorMake", v)}
+                      options={[...MOTOR_MAKES, ...customMotorMakes].map((v) => ({ value: v, label: v }))}
+                    />
                     {errors.motorMake && <span className={styles.errorText}>{errors.motorMake}</span>}
                   </div>
 
@@ -948,16 +912,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
 
                   <div className={styles.field}>
                     <Label text="NCB Applicable" required />
-                    <select
-                      className={`${styles.select} ${errors.ncbApplicable ? styles.errorInput : ""}`}
+                    <SearchableSelect
+                      className={errors.ncbApplicable ? styles.errorInput : ""}
                       value={formData.ncbApplicable}
-                      onChange={(e) => setField("ncbApplicable", e.target.value)}
-                    >
-                      <option value="">Select an option...</option>
-                      {NCB_OPTIONS.map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setField("ncbApplicable", v)}
+                      placeholder="Select an option..."
+                      options={NCB_OPTIONS.map((v) => ({ value: v, label: v }))}
+                    />
                     {errors.ncbApplicable && <span className={styles.errorText}>{errors.ncbApplicable}</span>}
                   </div>
                 </div>
@@ -973,33 +934,25 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Policy Type" required />
-                  <select
-                    className={`${styles.select} ${errors.policyTypeStructure ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.policyTypeStructure ? styles.errorInput : ""}
                     value={formData.policyTypeStructure}
                     disabled={!formData.lineOfBusiness}
-                    onChange={(e) => setField("policyTypeStructure", e.target.value)}
-                  >
-                    <option value="">{formData.lineOfBusiness ? "Select" : "Select LOB first"}</option>
-                    {(POLICY_TYPES_BY_LOB[formData.lineOfBusiness] || []).map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    placeholder={formData.lineOfBusiness ? "Select" : "Select LOB first"}
+                    onChange={(v) => setField("policyTypeStructure", v)}
+                    options={(POLICY_TYPES_BY_LOB[formData.lineOfBusiness] || []).map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.policyTypeStructure && <span className={styles.errorText}>{errors.policyTypeStructure}</span>}
                 </div>
 
                 {isMotor && (
                   <div className={styles.field}>
                     <Label text="Case Type" />
-                    <select
-                      className={styles.select}
+                    <SearchableSelect
                       value={formData.caseType}
-                      onChange={(e) => setField("caseType", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      {CASE_TYPES.map((v) => (
-                        <option key={v} value={v}>{v}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setField("caseType", v)}
+                      options={CASE_TYPES.map((v) => ({ value: v, label: v }))}
+                    />
                   </div>
                 )}
 
@@ -1041,31 +994,23 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                       <FiPlus size={14} /> Add
                     </button>
                   </div>
-                  <select
-                    className={`${styles.select} ${errors.insurer ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.insurer ? styles.errorInput : ""}
                     value={formData.insurer}
-                    onChange={(e) => setField("insurer", e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {[...INSURANCE_COMPANIES, ...customInsurers].map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("insurer", v)}
+                    options={[...INSURANCE_COMPANIES, ...customInsurers].map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.insurer && <span className={styles.errorText}>{errors.insurer}</span>}
                 </div>
 
                 <div className={styles.field}>
                   <Label text="Policy Remark" />
-                  <select
-                    className={`${styles.select} ${errors.policyRemark ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.policyRemark ? styles.errorInput : ""}
                     value={formData.policyRemark}
-                    onChange={(e) => setField("policyRemark", e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {POLICY_REMARKS.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("policyRemark", v)}
+                    options={POLICY_REMARKS.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.policyRemark && <span className={styles.errorText}>{errors.policyRemark}</span>}
                 </div>
 
@@ -1101,17 +1046,17 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                     <label className={styles.caseBookedLabel}>
                       Case Booked under POSP? <span className={styles.required}>*</span>
                     </label>
-                    <select
-                      className={`${styles.caseBookedSelect} ${
-                        errors.caseBookedUnderPosp ? styles.errorInput : ""
-                      }`}
-                      value={formData.caseBookedUnderPosp}
-                      onChange={(e) => setField("caseBookedUnderPosp", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      <option value="yes">Yes</option>
-                      <option value="no">No</option>
-                    </select>
+                    <div className={styles.caseBookedSelect}>
+                      <SearchableSelect
+                        className={errors.caseBookedUnderPosp ? styles.errorInput : ""}
+                        value={formData.caseBookedUnderPosp}
+                        onChange={(v) => setField("caseBookedUnderPosp", v)}
+                        options={[
+                          { value: "yes", label: "Yes" },
+                          { value: "no", label: "No" },
+                        ]}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -1138,42 +1083,33 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                       <FiPlus size={14} /> Add
                     </button>
                   </div>
-                  <select
-                    className={`${styles.select} ${errors.branchName ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.branchName ? styles.errorInput : ""}
                     value={formData.branchName}
-                    onChange={(e) => setField("branchName", e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {[...BRANCH_NAMES, ...customBranches].map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("branchName", v)}
+                    options={[...BRANCH_NAMES, ...customBranches].map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.branchName && <span className={styles.errorText}>{errors.branchName}</span>}
                 </div>
 
                 <div className={styles.field}>
                   <Label text="Reporting Manager" required />
-                  <select
-                    className={`${styles.select} ${errors.reportingManagerId ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.reportingManagerId ? styles.errorInput : ""}
                     value={formData.reportingManagerId}
-                    onChange={(e) => {
-                      setField("reportingManagerId", e.target.value);
+                    onChange={(v) => {
+                      setField("reportingManagerId", v);
                       setField("agentType", "");
-                      setField("posAgentInList", "");
                       setField("pospPartner", "");
                       setField("directAgentName", "");
-                      setField("manualPospAgentName", "");
+                      setField("bqp", "");
                       setField("caseBookedUnderPosp", "");
-                      setAgentSearchTerm("");
                     }}
-                  >
-                    <option value="">Select</option>
-                    {managers.map((m) => (
-                      <option key={m._id} value={m._id}>
-                        {`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim() || m.managerId}
-                      </option>
-                    ))}
-                  </select>
+                    options={managers.map((m) => ({
+                      value: m._id,
+                      label: `${m.firstName ?? ""} ${m.lastName ?? ""}`.trim() || m.managerId || "",
+                    }))}
+                  />
                   {errors.reportingManagerId && <span className={styles.errorText}>{errors.reportingManagerId}</span>}
                 </div>
 
@@ -1186,57 +1122,30 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                   <>
                     <div className={styles.field}>
                       <Label text="Agent Type" required />
-                      <select
-                        className={`${styles.select} ${errors.agentType ? styles.errorInput : ""}`}
+                      <SearchableSelect
+                        className={errors.agentType ? styles.errorInput : ""}
                         value={formData.agentType}
                         disabled={!formData.reportingManagerId}
-                        onChange={(e) => {
-                          setField("agentType", e.target.value);
-                          setField("posAgentInList", "");
+                        placeholder={formData.reportingManagerId ? "Select" : "Select Reporting Manager first"}
+                        onChange={(v) => {
+                          setField("agentType", v);
                           setField("pospPartner", "");
                           setField("directAgentName", "");
-                          setField("manualPospAgentName", "");
+                          setField("bqp", "");
                           setField("caseBookedUnderPosp", "");
-                          setAgentSearchTerm("");
                         }}
-                      >
-                        <option value="">
-                          {formData.reportingManagerId ? "Select" : "Select Reporting Manager first"}
-                        </option>
-                        <option value="posp">POSP</option>
-                        <option value="direct">Direct</option>
-                      </select>
+                        options={[
+                          { value: "posp", label: "POSP" },
+                          { value: "direct", label: "Direct" },
+                        ]}
+                      />
                       {errors.agentType && <span className={styles.errorText}>{errors.agentType}</span>}
                     </div>
 
-                    {formData.agentType === "posp" && (
-                      <div className={styles.field}>
-                        <Label text="Is Agent In List?" required />
-                        <select
-                          className={`${styles.select} ${errors.posAgentInList ? styles.errorInput : ""}`}
-                          value={formData.posAgentInList}
-                          onChange={(e) => {
-                            setField("posAgentInList", e.target.value);
-                            setField("pospPartner", "");
-                            setField("manualPospAgentName", "");
-                            setAgentSearchTerm("");
-                          }}
-                        >
-                          <option value="">Select</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                        {errors.posAgentInList && <span className={styles.errorText}>{errors.posAgentInList}</span>}
-                      </div>
-                    )}
-
                     <div className={styles.field}>
                       <Label
-                        text="Agent Name"
-                        required={
-                          formData.agentType === "direct" ||
-                          (formData.agentType === "posp" && !!formData.posAgentInList)
-                        }
+                        text={formData.agentType === "direct" ? "POSP Partner/Agent" : "Agent Name"}
+                        required={formData.agentType === "direct" || formData.agentType === "posp"}
                       />
                       {formData.agentType === "direct" ? (
                         <>
@@ -1248,59 +1157,41 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                           />
                           {errors.directAgentName && <span className={styles.errorText}>{errors.directAgentName}</span>}
                         </>
-                      ) : formData.agentType === "posp" && formData.posAgentInList === "no" ? (
-                        <>
-                          <input
-                            className={`${styles.input} ${errors.manualPospAgentName ? styles.errorInput : ""}`}
-                            value={formData.manualPospAgentName}
-                            onChange={(e) => setField("manualPospAgentName", e.target.value)}
-                            placeholder="Enter agent name"
-                          />
-                          {errors.manualPospAgentName && (
-                            <span className={styles.errorText}>{errors.manualPospAgentName}</span>
-                          )}
-                        </>
                       ) : (
                         <>
-                          {formData.agentType === "posp" && formData.posAgentInList === "yes" && (
-                            <input
-                              className={styles.input}
-                              value={agentSearchTerm}
-                              onChange={(e) => setAgentSearchTerm(e.target.value)}
-                              placeholder="Search agent by name or email..."
-                              style={{ marginBottom: 8 }}
-                            />
-                          )}
-                          <select
-                            className={`${styles.select} ${errors.pospPartner ? styles.errorInput : ""}`}
+                          <SearchableSelect
+                            className={errors.pospPartner ? styles.errorInput : ""}
                             value={formData.pospPartner}
-                            disabled={!(formData.agentType === "posp" && formData.posAgentInList === "yes")}
-                            onChange={(e) => setField("pospPartner", e.target.value)}
-                          >
-                            <option value="">
-                              {formData.agentType === "posp" && formData.posAgentInList === "yes"
-                                ? "Select"
-                                : formData.agentType === "posp"
-                                ? "Select Yes/No first"
-                                : "Select Agent Type first"}
-                            </option>
-                            {filteredAgentsUnderManager.map((a) => (
-                              <option key={a._id} value={a._id}>
-                                {`${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email}
-                              </option>
-                            ))}
-                          </select>
-                          {formData.agentType === "posp" &&
-                            formData.posAgentInList === "yes" &&
-                            filteredAgentsUnderManager.length === 0 && (
-                              <span className={styles.errorText}>
-                                {agentSearchTerm ? "No agents match your search." : "No agents found under this manager."}
-                              </span>
-                            )}
+                            disabled={formData.agentType !== "posp"}
+                            placeholder={formData.agentType === "posp" ? "Select" : "Select Agent Type first"}
+                            searchPlaceholder="Search agent by name or email..."
+                            emptyMessage="No agents found under this manager."
+                            onChange={(v) => setField("pospPartner", v)}
+                            options={agentsUnderManager.map((a) => ({
+                              value: a._id,
+                              label: `${a.firstName ?? ""} ${a.lastName ?? ""}`.trim() || a.email || "",
+                            }))}
+                          />
                           {errors.pospPartner && <span className={styles.errorText}>{errors.pospPartner}</span>}
                         </>
                       )}
                     </div>
+
+                    {formData.agentType === "direct" && (
+                      <div className={styles.field}>
+                        <Label text="BQP" required />
+                        <SearchableSelect
+                          className={errors.bqp ? styles.errorInput : ""}
+                          value={formData.bqp}
+                          onChange={(v) => setField("bqp", v)}
+                          options={["Mandeep Rathee", "Naresh Dhiman", "Mayank Thakur"].map((v) => ({
+                            value: v,
+                            label: v,
+                          }))}
+                        />
+                        {errors.bqp && <span className={styles.errorText}>{errors.bqp}</span>}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -1311,16 +1202,12 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Medium of Issuance" required />
-                  <select
-                    className={`${styles.select} ${errors.mediumOfIssuance ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.mediumOfIssuance ? styles.errorInput : ""}
                     value={formData.mediumOfIssuance}
-                    onChange={(e) => setField("mediumOfIssuance", e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {MEDIUM_OF_ISSUANCE.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("mediumOfIssuance", v)}
+                    options={MEDIUM_OF_ISSUANCE.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.mediumOfIssuance && <span className={styles.errorText}>{errors.mediumOfIssuance}</span>}
                 </div>
 
@@ -1423,18 +1310,15 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Tax Rate" required />
-                  <select
-                    className={styles.select}
+                  <SearchableSelect
+                    allowClear={false}
                     value={formData.taxRate}
-                    onChange={(e) => {
-                      setField("taxRate", e.target.value);
+                    onChange={(v) => {
+                      setField("taxRate", v);
                       setGstManuallyEdited(false);
                     }}
-                  >
-                    {TAX_RATES.map((v) => (
-                      <option key={v} value={v}>{v}%</option>
-                    ))}
-                  </select>
+                    options={TAX_RATES.map((v) => ({ value: v, label: `${v}%` }))}
+                  />
                 </div>
                 <div className={styles.field}>
                   <Label text={`Service Tax/GST (${formData.taxRate}%) (₹)`} required />
@@ -1460,16 +1344,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Mode of Payment" required />
-                  <select
-                    className={`${styles.select} ${errors.paymentMode ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.paymentMode ? styles.errorInput : ""}
                     value={formData.paymentMode}
-                    onChange={(e) => setField("paymentMode", e.target.value)}
-                  >
-                    <option value="">Select an option...</option>
-                    {MODE_OF_PAYMENT.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("paymentMode", v)}
+                    placeholder="Select an option..."
+                    options={MODE_OF_PAYMENT.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.paymentMode && <span className={styles.errorText}>{errors.paymentMode}</span>}
                 </div>
 
@@ -1504,21 +1385,21 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
 
                 <div className={styles.field}>
                   <Label text="If Partially Paid" />
-                  <select
-                    className={styles.select}
+                  <SearchableSelect
                     value={formData.partiallyPaid}
-                    onChange={(e) => {
-                      setField("partiallyPaid", e.target.value);
-                      if (e.target.value !== "yes") {
+                    placeholder="Select an option..."
+                    onChange={(v) => {
+                      setField("partiallyPaid", v);
+                      if (v !== "yes") {
                         setField("amountPaid", "");
                         setField("partialPaymentRemarks", "");
                       }
                     }}
-                  >
-                    <option value="">Select an option...</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                  </select>
+                    options={[
+                      { value: "yes", label: "Yes" },
+                      { value: "no", label: "No" },
+                    ]}
+                  />
                 </div>
 
                 {formData.partiallyPaid === "yes" && (
@@ -1561,16 +1442,13 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
               <div className={styles.grid3}>
                 <div className={styles.field}>
                   <Label text="Reward Status" required />
-                  <select
-                    className={`${styles.select} ${errors.rewardStatus ? styles.errorInput : ""}`}
+                  <SearchableSelect
+                    className={errors.rewardStatus ? styles.errorInput : ""}
                     value={formData.rewardStatus}
-                    onChange={(e) => setField("rewardStatus", e.target.value)}
-                  >
-                    <option value="">Select an option...</option>
-                    {REWARD_STATUS.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setField("rewardStatus", v)}
+                    placeholder="Select an option..."
+                    options={REWARD_STATUS.map((v) => ({ value: v, label: v }))}
+                  />
                   {errors.rewardStatus && <span className={styles.errorText}>{errors.rewardStatus}</span>}
                 </div>
 
