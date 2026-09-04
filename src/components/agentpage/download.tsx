@@ -62,12 +62,7 @@ export default function DownloadCertificate() {
 
         <div style={{ display:"flex", gap:10, marginTop:12 }}>
 
-          <button
-            style={{ padding:"8px 12px", background:"#2563eb", color:"#fff", borderRadius:6 }}
-            onClick={()=> window.open(fileUrl,"_blank")}
-          >
-            View Certificate
-          </button>
+          {/* "View Certificate" hidden for now — kept in code, not deleted, per request */}
 
           <button
             style={{ padding:"8px 12px", background:"#10b981", color:"#fff", borderRadius:6 }}
