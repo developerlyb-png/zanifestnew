@@ -5,8 +5,8 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import styles from "@/styles/components/Auth/Login.module.css";
 
-import loginBanner from "@/assets/loginbanner.png";
-import logo from "@/assets/logo.png";
+import loginBanner from "@/assets/loginagent.png";
+import logo from "@/assets/logo-trans.png";
 import { showGlobalAlert } from "../GlobalAlert";
 
 export default function AgentsignUp() {

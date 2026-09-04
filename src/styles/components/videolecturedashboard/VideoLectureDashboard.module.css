@@ -25,14 +25,15 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  opacity: 0.85;
+  color: #ffffff;
+  opacity: 1;
 }
 
 .timerBarTrack {
   width: 140px;
   height: 5px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.4);
   overflow: hidden;
 }
 
@@ -46,7 +47,8 @@
   font-size: 13px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
   padding: 4px 12px;
   border-radius: 999px;
 }

@@ -415,66 +415,111 @@ if (!quoteNo || !quoteOptionNo) {
   return;
 }
 // ======================
-// STEP 3 : KYC — REDIRECT TO ZUNO'S HOSTED KYC PORTAL (SIGNZY)
+// STEP 3 : KYC — SKIPPED (TESTING MODE)
+// Zuno's hosted Signzy e-KYC redirect (zuno-kyc.ts) isn't confirmed working
+// yet — same situation 4W was in. Zuno gave a fixed CKYC-equivalent test
+// reference that they confirmed works for BOTH 4W and 2W issue-policy calls,
+// so — exactly like src/pages/cart/carinsurancecart.tsx's handlePay — we
+// use that stored reference directly instead of the live redirect flow.
 // ======================
-if (!pan || !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+const kycNo = localStorage.getItem("bikeApprovedKycNo") || "";
+const kycField =
+  localStorage.getItem("bikeKycField") || "VISoF_KYC_Req_No";
+console.log("KYC (stored) >>>", kycField, "=", kycNo || "(none)");
+
+if (!kycNo) {
   setLoading(false);
-  alert("Please enter a valid PAN number");
-  return;
-}
-if (!dob) {
-  setLoading(false);
-  alert("Please enter date of birth");
+  alert("Set localStorage bikeApprovedKycNo first (zuno-... number)");
   return;
 }
 
-// Persist everything needed to finish the job once the browser
-// comes back from Zuno's KYC portal (see /TwoWheeler/kyc-callback)
-localStorage.setItem(
-  "bikePendingIssue",
-  JSON.stringify({
-    quoteNo,
-    quoteOptionNo,
-    policyNumber: quoteData.data?.policyLevelDetails?.policyNumber || "",
-    premium: selectedPlan?.premium,
-    customer: { fullName, mobile, email },
-  })
-);
-
-const kycRes = await fetch("/api/sbi/2w/zuno-kyc", {
+// ======================
+// STEP 4 : ISSUE POLICY (no KYC redirect)
+// ======================
+const issueRes = await fetch("/api/sbi/2w/issue-policy", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    customer: { pan, dateOfBirth: dob, fullName, mobile, email },
-    redirectUrl: `${window.location.origin}/TwoWheeler/kyc-callback`,
+    quoteNo,
+    quoteOptionNo,
+    kycNo,
+    kycField,
+    policyNumber: quoteData.data?.policyLevelDetails?.policyNumber || "",
+    customer: { fullName, mobile, email },
+    vehicle: selectedPlan?.bikeData,
+    premium: selectedPlan?.premium,
   }),
 });
-const kycData = await kycRes.json();
+const issueData = await issueRes.json();
 console.log(
-  "2W KYC INITIATE RESPONSE >>>",
-  JSON.stringify(kycData, null, 2)
+  "2W ISSUE POLICY RESPONSE >>>",
+  JSON.stringify(issueData, null, 2)
 );
 
-// Exact field name for Zuno/Signzy's hosted KYC link isn't confirmed yet —
-// checking the most likely candidates; log the raw response either way.
-const kycUrl =
-  kycData?.data?.url ||
-  kycData?.data?.redirectUrl ||
-  kycData?.data?.kycUrl ||
-  kycData?.data?.link ||
-  kycData?.data?.data?.url ||
-  kycData?.data?.result?.url ||
+if (!issueRes.ok || !issueData.success) {
+  setLoading(false);
+  alert("Issue Policy failed — check console for the raw response");
+  return;
+}
+
+// Same real Zuno shape as 4W: issuePolicyObject.issuepolicy.policynrTt
+const issued = issueData.data || {};
+const ip = issued.issuePolicyObject?.issuepolicy || {};
+const policyNo = ip.policynrTt || issued.policyNo || issued.policyNumber || "";
+console.log("2W POLICY NO >>>", policyNo);
+
+localStorage.setItem(
+  "bikePolicyResult",
+  JSON.stringify({
+    policyNo,
+    quoteNo,
+    quoteOptionNo,
+    amount: selectedPlan?.premium,
+    raw: issued,
+  })
+);
+
+// ======================
+// STEP 5 : PAYMENT LINK
+// Same generic Zuno payment-link endpoint 4W already uses successfully.
+// ======================
+const payRes = await fetch("/api/sbi/2w/online-payment", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    transactionId: policyNo || `TXN${Date.now()}`,
+    amount: selectedPlan?.premium,
+    customer: { fullName, email, mobile },
+  }),
+});
+const payData = await payRes.json();
+console.log("2W PAYMENT RESPONSE >>>", JSON.stringify(payData, null, 2));
+
+const pd = payData.data?.data || payData.data || {};
+const payLink =
+  pd.paymentLink ||
+  pd.payment_url ||
+  pd.paymentUrl ||
+  pd.link ||
+  pd.url ||
+  pd.shortUrl ||
+  pd.redirectUrl ||
   "";
+console.log("2W PAYMENT LINK >>>", payLink);
+
+localStorage.setItem(
+  "bikePaymentResult",
+  JSON.stringify({ payLink, raw: payData })
+);
 
 setLoading(false);
 
-if (kycData.success && kycUrl) {
-  window.location.href = kycUrl;
-} else {
-  alert(
-    "Could not get the KYC portal link — check console for the raw response"
-  );
+if (payRes.ok && payData.success && payLink) {
+  window.location.href = payLink;
+  return;
 }
+
+alert("Payment link failed — check console (policy IS issued)");
 }
 catch(error){
 console.log(error);

@@ -1,12 +1,19 @@
 import nodemailer from "nodemailer";
 
+interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  cid: string; // referenced in html as <img src="cid:THIS_VALUE">
+}
+
 interface EmailProps {
   to: string;
   subject: string;
   html: string;
+  attachments?: EmailAttachment[];
 }
 
-export const sendEmail = async ({ to, subject, html }: EmailProps): Promise<boolean> => {
+export const sendEmail = async ({ to, subject, html, attachments }: EmailProps): Promise<boolean> => {
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -23,6 +30,7 @@ export const sendEmail = async ({ to, subject, html }: EmailProps): Promise<bool
       to,
       subject,
       html,
+      attachments,
     });
 
     return true;

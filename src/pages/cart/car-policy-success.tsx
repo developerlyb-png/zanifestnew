@@ -8,6 +8,8 @@ const CarPolicySuccess = () => {
   const [policy, setPolicy] = useState<any>(null);
   const [payment, setPayment] = useState<any>(null);
   const [quote, setQuote] = useState<any>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,6 +29,43 @@ const CarPolicySuccess = () => {
 
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
+
+  // Real SBI policy document via their own getPDF API — no locally-drawn
+  // placeholder PDF. Only wired for SBI right now; Zuno's PDF API
+  // (src/pages/api/zuno/4w/policy-pdf.ts) is a separate integration.
+  const downloadSbiPolicyPdf = async () => {
+    if (!policy?.policyNo) return;
+    setPdfLoading(true);
+    setPdfError(null);
+    try {
+      const res = await fetch("/api/sbi/4w/policy-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ policyNumber: policy.policyNo }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setPdfError(data.message || "Could not download the policy PDF");
+        return;
+      }
+      const byteChars = atob(data.docBase64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+      const blob = new Blob([new Uint8Array(byteNumbers)], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${policy.policyNo}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      setPdfError(e.message || "Something went wrong downloading the PDF");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -58,7 +97,7 @@ const CarPolicySuccess = () => {
 
         <h2 style={{ margin: "0 0 8px" }}>Your Car Insurance Policy</h2>
         <p style={{ color: "#666", marginBottom: 24 }}>
-          Zuno General Insurance
+          {policy?.insurer === "SBI" ? "SBI General Insurance" : "Zuno General Insurance"}
         </p>
 
         <div
@@ -88,7 +127,7 @@ const CarPolicySuccess = () => {
             }}
           >
             <span style={{ color: "#666" }}>Quote No</span>
-            <span>{policy?.quoteNo || "--"}</span>
+            <span>{policy?.quoteNo || policy?.quotationNo || "--"}</span>
           </div>
           <div
             style={{
@@ -99,9 +138,10 @@ const CarPolicySuccess = () => {
           >
             <span style={{ color: "#666" }}>Insured Name</span>
             <span>
-              {quote?.customer
-                ? `${quote.customer.firstName} ${quote.customer.lastName}`
-                : "--"}
+              {policy?.customerName ||
+                (quote?.customer
+                  ? `${quote.customer.firstName} ${quote.customer.lastName}`
+                  : "--")}
             </span>
           </div>
           <div
@@ -132,6 +172,30 @@ const CarPolicySuccess = () => {
           >
             Complete Payment →
           </a>
+        )}
+
+        {policy?.insurer === "SBI" && policy?.policyNo && (
+          <div style={{ marginBottom: 16 }}>
+            <button
+              onClick={downloadSbiPolicyPdf}
+              disabled={pdfLoading}
+              style={{
+                background: "#0f9d78",
+                color: "#fff",
+                padding: "10px 24px",
+                borderRadius: 8,
+                border: "none",
+                fontWeight: 600,
+                cursor: pdfLoading ? "not-allowed" : "pointer",
+                opacity: pdfLoading ? 0.7 : 1,
+              }}
+            >
+              {pdfLoading ? "Fetching PDF..." : "Download Policy PDF"}
+            </button>
+            {pdfError && (
+              <p style={{ color: "#e74c3c", fontSize: 13, marginTop: 8 }}>{pdfError}</p>
+            )}
+          </div>
         )}
 
         <p style={{ color: "#666", fontSize: 14 }}>

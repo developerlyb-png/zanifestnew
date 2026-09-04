@@ -10,6 +10,11 @@ interface IdvEditDialogProps {
   currentIdv: number;
   quoteInput: any;
   addons?: string[];
+  // SBI's own IDV band — this same slider drives SBI's quote too, so its
+  // range must stretch to cover whichever insurer's bound is wider, not
+  // just Zuno's own +/-15%.
+  sbiMinIdv?: number | null;
+  sbiMaxIdv?: number | null;
   onApply: (newIdv: number, updatedPlan: any) => void;
   onClose: () => void;
 }
@@ -24,6 +29,8 @@ const IdvEditDialog = ({
   currentIdv,
   quoteInput,
   addons = [],
+  sbiMinIdv = null,
+  sbiMaxIdv = null,
   onApply,
   onClose,
 }: IdvEditDialogProps) => {
@@ -43,8 +50,10 @@ const IdvEditDialog = ({
 
   if (!open) return null;
 
-  const min = roundTo100(defaultIdv * 0.85);
-  const max = roundTo100(defaultIdv * 1.15);
+  const zunoMin = roundTo100(defaultIdv * 0.85);
+  const zunoMax = roundTo100(defaultIdv * 1.15);
+  const min = sbiMinIdv != null ? Math.min(zunoMin, sbiMinIdv) : zunoMin;
+  const max = sbiMaxIdv != null ? Math.max(zunoMax, sbiMaxIdv) : zunoMax;
   const finalIdv = mode === "recommended" ? defaultIdv : draftIdv;
 
   const handleApply = async () => {

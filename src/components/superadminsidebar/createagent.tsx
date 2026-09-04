@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import styles from "@/styles/components/superadminsidebar/createagent.module.css";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiCheckCircle, FiX } from "react-icons/fi";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +14,7 @@ type FormDataType = {
   password: string;
   phone: string;
   profileImage?: string;
+  profileImageFileName?: string;
   city: string;
   district: string;
   state: string;
@@ -78,17 +79,41 @@ const FileInput: React.FC<FileInputProps> = ({ label, name, fileName, error, onC
   );
 };
 
+// Human-readable names for the Agent-model field keys stored in
+// agent.rejectedFields — shown to the agent in the rejection banner so
+// "adhaarBackAttachment" reads as "Aadhaar Card (Back)", etc.
+const REJECTED_FIELD_LABELS: Record<string, string> = {
+  panNumber: "PAN Card",
+  panAttachment: "PAN Card",
+  adhaarNumber: "Aadhaar Card (Front)",
+  adhaarAttachment: "Aadhaar Card (Front)",
+  adhaarBackAttachment: "Aadhaar Card (Back)",
+  // Legacy keys kept for old rejectedFields data recorded before the 10th/12th
+  // marksheet split was consolidated into a single Educational Certificate.
+  yearofpassing10th: "Educational Certificate",
+  tenthMarksheetAttachment: "Educational Certificate",
+  yearofpassing12th: "Educational Certificate",
+  twelfthMarksheetAttachment: "Educational Certificate",
+  accountNumber: "Bank Details / Cancelled Cheque",
+  cancelledChequeAttachment: "Bank Details / Cancelled Cheque",
+};
+
 /* ================= MAIN ================= */
 const CreateAgent = () => {
   const searchParams = useSearchParams();
   const urlLoginId = searchParams.get("loginId");
-  const isEditMode = searchParams.get("mode") === "edit";
   const router = useRouter();
 
   const [loginId, setLoginId] = useState<string | null>(urlLoginId);
+  // Captured once at mount — the effect below does router.replace("/createagent"),
+  // which strips ?mode=edit from the URL. Deriving this live from searchParams
+  // would flip it back to false right after that redirect, so we snapshot it
+  // the same way loginId is snapshotted.
+  const [isEditMode] = useState<boolean>(searchParams.get("mode") === "edit");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const [rejectedFields, setRejectedFields] = useState<(keyof FormDataType)[]>([]);
+  const [rejectedFields, setRejectedFields] = useState<string[]>([]);
+  const [rejectionRemark, setRejectionRemark] = useState("");
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const [showPassword, setShowPassword] = useState(false);
@@ -129,7 +154,7 @@ const CreateAgent = () => {
     twelfthMarksheetAttachment: null,
   });
 
-  const isLocked = (field: keyof FormDataType) => {
+  const isLocked = (field: string) => {
     if (!isEditMode) return false;
     if (rejectedFields.length === 0) return true;
     return !rejectedFields.includes(field);
@@ -155,11 +180,7 @@ const CreateAgent = () => {
     }
 
     if (step === 3) {
-      if (!formData.yearofpassing10th) newErrors.yearofpassing10th = "Required";
       if (!attachments.tenthMarksheetAttachment) newErrors.tenthMarksheetAttachment = "Upload required";
-      if (formData.yearofpassing12th && !attachments.twelfthMarksheetAttachment) {
-        newErrors.twelfthMarksheetAttachment = "Upload required";
-      }
     }
 
     if (step === 4) {
@@ -212,21 +233,25 @@ const CreateAgent = () => {
         setFormData((p) => ({ ...p, ...d.agent }));
         const rejected = d.agent.rejectedFields || [];
         setRejectedFields(rejected);
+        setRejectionRemark(d.agent.rejectionRemark || "");
         setAttachments({
           panAttachment: rejected.includes("panNumber") ? null : d.agent.panAttachment,
           panFileName: rejected.includes("panNumber") ? undefined : "PAN.pdf",
           adhaarAttachment: rejected.includes("adhaarNumber") ? null : d.agent.adhaarAttachment,
           adhaarFileName: rejected.includes("adhaarNumber") ? undefined : "Aadhaar.pdf",
-          adhaarBackAttachment: rejected.includes("adhaarNumber") ? null : d.agent.adhaarBackAttachment,
-          adhaarBackFileName: rejected.includes("adhaarNumber") ? undefined : "AadhaarBack.pdf",
+          adhaarBackAttachment: rejected.includes("adhaarBackAttachment") ? null : d.agent.adhaarBackAttachment,
+          adhaarBackFileName: rejected.includes("adhaarBackAttachment") ? undefined : "AadhaarBack.pdf",
           nomineePanAttachment: rejected.includes("nomineePanNumber") ? null : d.agent.nomineePanAttachment,
           nomineePanFileName: rejected.includes("nomineePanNumber") ? undefined : "NomineePAN.pdf",
           nomineeAadhaarAttachment: rejected.includes("nomineeAadharNumber") ? null : d.agent.nomineeAadhaarAttachment,
           nomineeAadhaarFileName: rejected.includes("nomineeAadharNumber") ? undefined : "NomineeAadhaar.pdf",
           cancelledChequeAttachment: rejected.includes("accountNumber") ? null : d.agent.cancelledChequeAttachment,
           cancelledChequeFileName: rejected.includes("accountNumber") ? undefined : "Cheque.pdf",
-          tenthMarksheetAttachment: rejected.includes("yearofpassing10th") ? null : d.agent.tenthMarksheetAttachment ?? null,
-          twelfthMarksheetAttachment: rejected.includes("yearofpassing12th") ? null : d.agent.twelfthMarksheetAttachment ?? null,
+          tenthMarksheetAttachment: rejected.includes("tenthMarksheetAttachment") ? null : d.agent.tenthMarksheetAttachment ?? null,
+          tenthMarksheetFileName: rejected.includes("tenthMarksheetAttachment") ? undefined : (d.agent.tenthMarksheetAttachment ? "Certificate.pdf" : undefined),
+          // Legacy field — no longer collected (10th/12th marksheets were
+          // consolidated into the single tenthMarksheetAttachment above).
+          twelfthMarksheetAttachment: null,
         });
       });
   }, [loginId, isEditMode]);
@@ -305,7 +330,29 @@ const CreateAgent = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const base64 = await fileToBase64(file);
-    setFormData((prev) => ({ ...prev, profileImage: base64 }));
+    setFormData((prev) => ({
+      ...prev,
+      profileImage: base64,
+      profileImageFileName: shortFileName(file.name),
+    }));
+  };
+
+  // Lets the customer clear a wrongly-picked file and go back to "no file
+  // chosen" instead of only being able to overwrite it by picking another.
+  const clearProfileImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFormData((prev) => ({ ...prev, profileImage: undefined, profileImageFileName: undefined }));
+  };
+
+  const clearAttachment = (key: keyof AttachmentType) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAttachments((p) => ({
+      ...p,
+      [key]: null,
+      [`${String(key).replace("Attachment", "")}FileName`]: undefined,
+    }));
   };
 
   const onlyDigits = (value: string, max: number) => value.replace(/\D/g, "").slice(0, max);
@@ -338,8 +385,19 @@ const CreateAgent = () => {
         payload.adhaarNumber = formData.adhaarNumber;
         if (attachments.adhaarAttachment) payload.adhaarAttachment = attachments.adhaarAttachment;
       }
-      if (attachments.adhaarBackAttachment) {
+      if (rejectedFields.includes("adhaarBackAttachment") && attachments.adhaarBackAttachment) {
         payload.adhaarBackAttachment = attachments.adhaarBackAttachment;
+      }
+      if (rejectedFields.includes("tenthMarksheetAttachment")) {
+        if (attachments.tenthMarksheetAttachment) payload.tenthMarksheetAttachment = attachments.tenthMarksheetAttachment;
+      }
+      if (rejectedFields.includes("accountNumber")) {
+        payload.accountHolderName = formData.accountHolderName;
+        payload.bankName = formData.bankName;
+        payload.accountNumber = formData.accountNumber;
+        payload.ifscCode = formData.ifscCode;
+        payload.branchLocation = formData.branchLocation;
+        if (attachments.cancelledChequeAttachment) payload.cancelledChequeAttachment = attachments.cancelledChequeAttachment;
       }
     } else {
       payload = { ...formData, ...attachments, loginId };
@@ -354,9 +412,447 @@ const CreateAgent = () => {
     if (res.ok) setShowSuccess(true);
   };
 
-  /* ================= UI ================= */
+  const validateEditFields = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (rejectedFields.includes("panNumber")) {
+      if (!formData.panNumber) newErrors.panNumber = "Required";
+      if (!attachments.panAttachment) newErrors.panAttachment = "Upload required";
+    }
+    if (rejectedFields.includes("adhaarNumber")) {
+      if (!formData.adhaarNumber) newErrors.adhaarNumber = "Required";
+      if (!attachments.adhaarAttachment) newErrors.adhaarAttachment = "Upload required";
+    }
+    if (rejectedFields.includes("adhaarBackAttachment")) {
+      if (!attachments.adhaarBackAttachment) newErrors.adhaarBackAttachment = "Upload required";
+    }
+    if (rejectedFields.includes("tenthMarksheetAttachment")) {
+      if (!attachments.tenthMarksheetAttachment) newErrors.tenthMarksheetAttachment = "Upload required";
+    }
+    if (rejectedFields.includes("accountNumber")) {
+      if (!formData.accountHolderName) newErrors.accountHolderName = "Required";
+      if (!formData.bankName) newErrors.bankName = "Required";
+      if (!formData.accountNumber) newErrors.accountNumber = "Required";
+      if (!formData.ifscCode) newErrors.ifscCode = "Required";
+      if (!formData.branchLocation) newErrors.branchLocation = "Required";
+      if (!attachments.cancelledChequeAttachment) newErrors.cancelledChequeAttachment = "Upload required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateEditFields()) return;
+
+    const payload: any = { loginId };
+
+    if (rejectedFields.includes("panNumber")) {
+      payload.panNumber = formData.panNumber;
+      if (attachments.panAttachment) payload.panAttachment = attachments.panAttachment;
+    }
+    if (rejectedFields.includes("adhaarNumber")) {
+      payload.adhaarNumber = formData.adhaarNumber;
+      if (attachments.adhaarAttachment) payload.adhaarAttachment = attachments.adhaarAttachment;
+    }
+    if (rejectedFields.includes("adhaarBackAttachment") && attachments.adhaarBackAttachment) {
+      payload.adhaarBackAttachment = attachments.adhaarBackAttachment;
+    }
+    if (rejectedFields.includes("tenthMarksheetAttachment")) {
+      if (attachments.tenthMarksheetAttachment) payload.tenthMarksheetAttachment = attachments.tenthMarksheetAttachment;
+    }
+    if (rejectedFields.includes("accountNumber")) {
+      payload.accountHolderName = formData.accountHolderName;
+      payload.bankName = formData.bankName;
+      payload.accountNumber = formData.accountNumber;
+      payload.ifscCode = formData.ifscCode;
+      payload.branchLocation = formData.branchLocation;
+      if (attachments.cancelledChequeAttachment) payload.cancelledChequeAttachment = attachments.cancelledChequeAttachment;
+    }
+
+    const res = await fetch("/api/createagent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) setShowSuccess(true);
+  };
+
+  const brandHeader = (
+    <div className={styles.brandHeader}>
+      <div className={styles.brandHeaderLeft}>
+        <div className={styles.brandLogoBox}>
+          <img src="/logo.png" alt="Zanifest" className={styles.brandLogo} />
+        </div>
+        <div className={styles.brandTextGroup}>
+          <span className={styles.brandTitle}>Zanifest</span>
+          <span className={styles.brandSubtitle}>Insurance Broking &amp; Agent Onboarding</span>
+        </div>
+      </div>
+      <span className={styles.brandBadge}>
+        {isEditMode ? "📋 Document Resubmission" : "🔒 Secure KYC Verification"}
+      </span>
+    </div>
+  );
+
+  const successModal = showSuccess && (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.4)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          padding: 24,
+          borderRadius: 12,
+          width: 320,
+          textAlign: "center",
+        }}
+      >
+        <p style={{ marginBottom: 20 }}>
+          {isEditMode
+            ? "Application resubmitted successfully. It will be reviewed again shortly."
+            : "Agent application submitted successfully. Status will be updated after verification."}
+        </p>
+        <button
+          onClick={() => {
+            setShowSuccess(false);
+            router.push("/agentlogin");
+          }}
+          style={{
+            background: "#ff8a1f",
+            color: "#fff",
+            border: "none",
+            padding: "10px 24px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          Go to login page
+        </button>
+      </div>
+    </div>
+  );
+
+  /* ================= EDIT MODE: REJECTED-FIELDS-ONLY VIEW ================= */
+  if (isEditMode && rejectedFields.length > 0) {
+    const rejectedLabel = Array.from(
+      new Set(rejectedFields.map((f) => REJECTED_FIELD_LABELS[f as string] || f))
+    ).join(", ");
+
+    return (
+      <div className={styles.container}>
+        {brandHeader}
+
+        <div className={styles.header}>
+          <h2>Update Your Application</h2>
+        </div>
+
+        <div className={styles.rejectionBanner}>
+          <strong>Your application was rejected.</strong>
+          <p>
+            Please reupload these documents and resubmit for review: <b>{rejectedLabel}</b>
+          </p>
+          {rejectionRemark && (
+            <p>
+              <b>Reason given by admin:</b> {rejectionRemark}
+            </p>
+          )}
+        </div>
+
+        <form onSubmit={handleEditSubmit} className={styles.form}>
+          <div className={styles.step2Grid}>
+            {rejectedFields.includes("panNumber") && (
+              <>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="panNumber">PAN Number</label>
+                  <input
+                    id="panNumber"
+                    placeholder="PAN Number"
+                    value={formData.panNumber}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, panNumber: formatPAN(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.panNumber ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>PAN Card</label>
+                  <div className={`${styles.fileUpload} ${errors.panAttachment ? styles.errorInput : ""}`}>
+                    <label className={styles.fileBox}>
+                      <span className={styles.fileBtn}>Choose File</span>
+                      {attachments.panFileName ? (
+                        <>
+                          <span className={styles.fileTextChosen} title={attachments.panFileName}>
+                            <FiCheckCircle /> {attachments.panFileName}
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.fileRemoveBtn}
+                            onClick={clearAttachment("panAttachment")}
+                            aria-label="Remove file"
+                          >
+                            <FiX />
+                          </button>
+                        </>
+                      ) : (
+                        <span className={styles.fileText}>Upload PAN</span>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        name="panAttachment"
+                        hidden
+                      />
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {rejectedFields.includes("adhaarNumber") && (
+              <>
+                <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                  <label className={styles.fieldLabel} htmlFor="adhaarNumber">Aadhaar Number</label>
+                  <input
+                    id="adhaarNumber"
+                    placeholder="Aadhaar Number"
+                    value={formData.adhaarNumber}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, adhaarNumber: formatAadhaar(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.adhaarNumber ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>Aadhaar Front</label>
+                  <div className={`${styles.fileUpload} ${errors.adhaarAttachment ? styles.errorInput : ""}`}>
+                    <label className={styles.fileBox}>
+                      <span className={styles.fileBtn}>Choose File</span>
+                      {attachments.adhaarFileName ? (
+                        <>
+                          <span className={styles.fileTextChosen} title={attachments.adhaarFileName}>
+                            <FiCheckCircle /> {attachments.adhaarFileName}
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.fileRemoveBtn}
+                            onClick={clearAttachment("adhaarAttachment")}
+                            aria-label="Remove file"
+                          >
+                            <FiX />
+                          </button>
+                        </>
+                      ) : (
+                        <span className={styles.fileText}>Upload Aadhaar Front</span>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        name="adhaarAttachment"
+                        hidden
+                      />
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {rejectedFields.includes("adhaarBackAttachment") && (
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Aadhaar Back</label>
+                <div className={`${styles.fileUpload} ${errors.adhaarBackAttachment ? styles.errorInput : ""}`}>
+                  <label className={styles.fileBox}>
+                    <span className={styles.fileBtn}>Choose File</span>
+                    {attachments.adhaarBackFileName ? (
+                      <>
+                        <span className={styles.fileTextChosen} title={attachments.adhaarBackFileName}>
+                          <FiCheckCircle /> {attachments.adhaarBackFileName}
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.fileRemoveBtn}
+                          onClick={clearAttachment("adhaarBackAttachment")}
+                          aria-label="Remove file"
+                        >
+                          <FiX />
+                        </button>
+                      </>
+                    ) : (
+                      <span className={styles.fileText}>Upload Aadhaar Backside</span>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      name="adhaarBackAttachment"
+                      hidden
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {rejectedFields.includes("tenthMarksheetAttachment") && (
+              <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                <label className={styles.fieldLabel}>Educational Certificate</label>
+                <div className={`${styles.fileUpload} ${errors.tenthMarksheetAttachment ? styles.errorInput : ""}`}>
+                  <label className={styles.fileBox}>
+                    <span className={styles.fileBtn}>Choose File</span>
+                    {attachments.tenthMarksheetFileName ? (
+                      <>
+                        <span className={styles.fileTextChosen} title={attachments.tenthMarksheetFileName}>
+                          <FiCheckCircle /> {attachments.tenthMarksheetFileName}
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.fileRemoveBtn}
+                          onClick={clearAttachment("tenthMarksheetAttachment")}
+                          aria-label="Remove file"
+                        >
+                          <FiX />
+                        </button>
+                      </>
+                    ) : (
+                      <span className={styles.fileText}>Upload Educational Certificate</span>
+                    )}
+                    <input
+                      type="file"
+                      name="tenthMarksheetAttachment"
+                      onChange={handleFileChange}
+                      hidden
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {rejectedFields.includes("accountNumber") && (
+              <>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="accountHolderName">Account Holder Name</label>
+                  <input
+                    id="accountHolderName"
+                    placeholder="Account Holder Name"
+                    value={formData.accountHolderName}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, accountHolderName: onlyLetters(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.accountHolderName ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="bankName">Bank Name</label>
+                  <input
+                    id="bankName"
+                    placeholder="Bank Name"
+                    value={formData.bankName}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, bankName: onlyLetters(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.bankName ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="accountNumber">Account Number</label>
+                  <input
+                    id="accountNumber"
+                    placeholder="Account Number"
+                    value={formData.accountNumber}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, accountNumber: onlyDigits(e.target.value, 18) }))
+                    }
+                    className={`${styles.input} ${errors.accountNumber ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="ifscCode">IFSC Code</label>
+                  <input
+                    id="ifscCode"
+                    placeholder="IFSC Code"
+                    value={formData.ifscCode}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, ifscCode: formatIFSC(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.ifscCode ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                  <label className={styles.fieldLabel} htmlFor="branchLocation">Branch Location</label>
+                  <input
+                    id="branchLocation"
+                    placeholder="Branch Location"
+                    value={formData.branchLocation}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, branchLocation: onlyLettersWithHyphen(e.target.value) }))
+                    }
+                    className={`${styles.input} ${errors.branchLocation ? styles.errorInput : ""}`}
+                  />
+                </div>
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}>Cancelled Cheque</label>
+                  <div className={`${styles.fileUpload} ${errors.cancelledChequeAttachment ? styles.errorInput : ""}`}>
+                    <label className={styles.fileBox}>
+                      <span className={styles.fileBtn}>Choose File</span>
+                      {attachments.cancelledChequeFileName ? (
+                        <>
+                          <span className={styles.fileTextChosen} title={attachments.cancelledChequeFileName}>
+                            <FiCheckCircle /> {attachments.cancelledChequeFileName}
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.fileRemoveBtn}
+                            onClick={clearAttachment("cancelledChequeAttachment")}
+                            aria-label="Remove file"
+                          >
+                            <FiX />
+                          </button>
+                        </>
+                      ) : (
+                        <span className={styles.fileText}>Upload Cancelled Cheque</span>
+                      )}
+                      <input
+                        type="file"
+                        name="cancelledChequeAttachment"
+                        accept="image/*,application/pdf"
+                        onChange={handleFileChange}
+                        hidden
+                      />
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className={styles.actions} style={{ justifyContent: "flex-end" }}>
+            <button type="submit" className={styles.btnNext}>
+              Reupload &amp; Resubmit for Review
+            </button>
+          </div>
+        </form>
+
+        {successModal}
+      </div>
+    );
+  }
+
+  /* ================= UI: FULL SIGNUP WIZARD ================= */
   return (
     <div className={styles.container}>
+      {brandHeader}
+
       <div className={styles.header}>
         <h2>Create Agent</h2>
 
@@ -383,65 +879,97 @@ const CreateAgent = () => {
             <h3 className={styles.sectionTitle}>Basic Details</h3>
 
             {/* Col 1 */}
-            <input
-              id="firstName"
-              placeholder="First Name"
-              disabled
-              value={formData.firstName}
-              onChange={handleChange}
-              className={`${styles.input} ${styles.colLeft}`}
-            />
+            <div className={`${styles.fieldGroup} ${styles.colLeft}`}>
+              <label className={styles.fieldLabel} htmlFor="firstName">First Name</label>
+              <input
+                id="firstName"
+                placeholder="First Name"
+                disabled
+                value={formData.firstName}
+                onChange={handleChange}
+                className={styles.input}
+              />
+            </div>
 
             {/* Col 2 */}
-            <input
-              id="lastName"
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={handleChange}
-              className={`${styles.input} ${styles.colRight} ${errors.lastName ? styles.errorInput : ""}`}
-            />
+            <div className={`${styles.fieldGroup} ${styles.colRight}`}>
+              <label className={styles.fieldLabel} htmlFor="lastName">Last Name</label>
+              <input
+                id="lastName"
+                placeholder="Last Name"
+                disabled={isLocked("lastName")}
+                value={formData.lastName}
+                onChange={handleChange}
+                className={`${styles.input} ${errors.lastName ? styles.errorInput : ""}`}
+              />
+            </div>
 
             {/* Full row */}
-            <input
-              id="email"
-              value={formData.email}
-              disabled
-              className={`${styles.input} ${styles.colFull}`}
-            />
+            <div className={`${styles.fieldGroup} ${styles.colFull}`}>
+              <label className={styles.fieldLabel} htmlFor="email">Email</label>
+              <input
+                id="email"
+                value={formData.email}
+                disabled
+                className={styles.input}
+              />
+            </div>
 
             {/* Col 1 */}
-            <input
-              id="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, phone: onlyDigits(e.target.value, 10) }))
-              }
-              className={`${styles.input} ${styles.colLeft} ${errors.phone ? styles.errorInput : ""}`}
-            />
+            <div className={`${styles.fieldGroup} ${styles.colLeft}`}>
+              <label className={styles.fieldLabel} htmlFor="phone">Phone Number</label>
+              <input
+                id="phone"
+                placeholder="Phone"
+                disabled={isLocked("phone")}
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, phone: onlyDigits(e.target.value, 10) }))
+                }
+                className={`${styles.input} ${errors.phone ? styles.errorInput : ""}`}
+              />
+            </div>
 
             {/* Col 2 – Password */}
-            <div className={styles.passwordWrapper}>
-              <input
-                id="password"
-                disabled
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-              />
-              <span onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <FiEyeOff /> : <FiEye />}
-              </span>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel} htmlFor="password">Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  id="password"
+                  disabled
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                />
+                <span onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </span>
+              </div>
             </div>
 
             {/* Profile image – full row */}
-            <div className={`${styles.fileUpload} ${styles.colFull}`}>
-              <label className={styles.fileBox}>
+            <div className={`${styles.fieldGroup} ${styles.colFull}`}>
+              <label className={styles.fieldLabel}>Profile Picture</label>
+              <label className={`${styles.fileUpload} ${styles.fileBox}`}>
                 <span className={styles.fileBtn}>Choose File</span>
-                <span className={styles.fileText}>
-                  {formData.profileImage ? "File selected" : "Upload your profile picture"}
-                </span>
+                {formData.profileImageFileName ? (
+                  <>
+                    <span className={styles.fileTextChosen} title={formData.profileImageFileName}>
+                      <FiCheckCircle /> {formData.profileImageFileName}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.fileRemoveBtn}
+                      onClick={clearProfileImage}
+                      aria-label="Remove file"
+                    >
+                      <FiX />
+                    </button>
+                  </>
+                ) : (
+                  <span className={styles.fileText}>Upload your profile picture</span>
+                )}
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/gif"
@@ -458,76 +986,164 @@ const CreateAgent = () => {
             <h3 className={styles.sectionTitle}>Address & KYC</h3>
 
             <div className={styles.step2Grid}>
-              <input
-                placeholder="Pin Code"
-                value={formData.pinCode}
-                onChange={handlePincodeChange}
-                className={`${styles.input} ${errors.pinCode ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Pin Code</label>
+                <input
+                  placeholder="Pin Code"
+                  value={formData.pinCode}
+                  onChange={handlePincodeChange}
+                  className={`${styles.input} ${errors.pinCode ? styles.errorInput : ""}`}
+                />
+              </div>
 
-              <input
-                placeholder="City"
-                value={formData.city}
-                disabled
-                className={styles.input}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>City</label>
+                <input
+                  placeholder="City"
+                  value={formData.city}
+                  disabled
+                  className={styles.input}
+                />
+              </div>
 
-              <input
-                placeholder="State"
-                value={formData.state}
-                disabled
-                className={`${styles.input} ${styles.fullWidth}`}
-              />
+              <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                <label className={styles.fieldLabel}>State</label>
+                <input
+                  placeholder="State"
+                  value={formData.state}
+                  disabled
+                  className={styles.input}
+                />
+              </div>
 
-              <input
-                id="panNumber"
-                placeholder="PAN Number"
-                value={formData.panNumber}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, panNumber: formatPAN(e.target.value) }))
-                }
-                className={`${styles.input} ${errors.panNumber ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="panNumber">PAN Number</label>
+                <input
+                  id="panNumber"
+                  placeholder="PAN Number"
+                  disabled={isLocked("panNumber")}
+                  value={formData.panNumber}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, panNumber: formatPAN(e.target.value) }))
+                  }
+                  className={`${styles.input} ${errors.panNumber ? styles.errorInput : ""}`}
+                />
+              </div>
 
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>PAN Card</label>
               <div className={`${styles.fileUpload} ${errors.panAttachment ? styles.errorInput : ""}`}>
                 <label className={styles.fileBox}>
                   <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.panAttachment ? "File selected" : "Upload PAN"}
-                  </span>
-                  <input type="file" accept="image/*" onChange={handleFileChange} name="panAttachment" hidden />
+                  {attachments.panFileName ? (
+                    <>
+                      <span className={styles.fileTextChosen} title={attachments.panFileName}>
+                        <FiCheckCircle /> {attachments.panFileName}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.fileRemoveBtn}
+                        onClick={clearAttachment("panAttachment")}
+                        aria-label="Remove file"
+                      >
+                        <FiX />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={styles.fileText}>Upload PAN</span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="panAttachment"
+                    disabled={isLocked("panNumber")}
+                    hidden
+                  />
                 </label>
               </div>
+              </div>
 
-              <input
-                id="adhaarNumber"
-                placeholder="Aadhaar Number"
-                disabled={isLocked("adhaarNumber")}
-                value={formData.adhaarNumber}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, adhaarNumber: formatAadhaar(e.target.value) }))
-                }
-                className={`${styles.input} ${styles.fullWidth} ${errors.adhaarNumber ? styles.errorInput : ""}`}
-              />
+              <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                <label className={styles.fieldLabel} htmlFor="adhaarNumber">Aadhaar Number</label>
+                <input
+                  id="adhaarNumber"
+                  placeholder="Aadhaar Number"
+                  disabled={isLocked("adhaarNumber")}
+                  value={formData.adhaarNumber}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, adhaarNumber: formatAadhaar(e.target.value) }))
+                  }
+                  className={`${styles.input} ${errors.adhaarNumber ? styles.errorInput : ""}`}
+                />
+              </div>
 
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Aadhaar Front</label>
               <div className={`${styles.fileUpload} ${errors.adhaarAttachment ? styles.errorInput : ""}`}>
                 <label className={styles.fileBox}>
                   <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.adhaarAttachment ? "File selected" : "Upload Aadhaar Front"}
-                  </span>
-                  <input type="file" accept="image/*" onChange={handleFileChange} name="adhaarAttachment" hidden />
+                  {attachments.adhaarFileName ? (
+                    <>
+                      <span className={styles.fileTextChosen} title={attachments.adhaarFileName}>
+                        <FiCheckCircle /> {attachments.adhaarFileName}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.fileRemoveBtn}
+                        onClick={clearAttachment("adhaarAttachment")}
+                        aria-label="Remove file"
+                      >
+                        <FiX />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={styles.fileText}>Upload Aadhaar Front</span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="adhaarAttachment"
+                    disabled={isLocked("adhaarNumber")}
+                    hidden
+                  />
                 </label>
               </div>
+              </div>
 
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Aadhaar Back</label>
               <div className={`${styles.fileUpload} ${errors.adhaarBackAttachment ? styles.errorInput : ""}`}>
                 <label className={styles.fileBox}>
                   <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.adhaarBackAttachment ? "File selected" : "Upload Aadhaar Backside"}
-                  </span>
-                  <input type="file" accept="image/*" onChange={handleFileChange} name="adhaarBackAttachment" hidden />
+                  {attachments.adhaarBackFileName ? (
+                    <>
+                      <span className={styles.fileTextChosen} title={attachments.adhaarBackFileName}>
+                        <FiCheckCircle /> {attachments.adhaarBackFileName}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.fileRemoveBtn}
+                        onClick={clearAttachment("adhaarBackAttachment")}
+                        aria-label="Remove file"
+                      >
+                        <FiX />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={styles.fileText}>Upload Aadhaar Backside</span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="adhaarBackAttachment"
+                    disabled={isLocked("adhaarBackAttachment")}
+                    hidden
+                  />
                 </label>
+              </div>
               </div>
             </div>
           </>
@@ -538,58 +1154,37 @@ const CreateAgent = () => {
             <h3 className={styles.sectionTitle}>Education Details</h3>
 
             <div className={styles.step2Grid}>
-              <select
-                id="yearofpassing10th"
-                value={formData.yearofpassing10th || ""}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, yearofpassing10th: e.target.value, yearofpassing12th: "" }))
-                }
-                className={`${styles.select} ${errors.yearofpassing10th ? styles.errorInput : ""}`}
-              >
-                <option value="">Select 10th Passing Year</option>
-                {Array.from({ length: 2025 - 1970 + 1 }, (_, i) => {
-                  const year = 1970 + i;
-                  return <option key={year} value={year}>{year}</option>;
-                })}
-              </select>
-
+              <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                <label className={styles.fieldLabel}>Educational Certificate</label>
               <div className={`${styles.fileUpload} ${errors.tenthMarksheetAttachment ? styles.errorInput : ""}`}>
                 <label className={styles.fileBox}>
                   <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.tenthMarksheetAttachment ? "File selected" : "Upload 10th Marksheet"}
-                  </span>
-                  <input type="file" name="tenthMarksheetAttachment" onChange={handleFileChange} hidden />
+                  {attachments.tenthMarksheetFileName ? (
+                    <>
+                      <span className={styles.fileTextChosen} title={attachments.tenthMarksheetFileName}>
+                        <FiCheckCircle /> {attachments.tenthMarksheetFileName}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.fileRemoveBtn}
+                        onClick={clearAttachment("tenthMarksheetAttachment")}
+                        aria-label="Remove file"
+                      >
+                        <FiX />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={styles.fileText}>Upload Educational Certificate</span>
+                  )}
+                  <input
+                    type="file"
+                    name="tenthMarksheetAttachment"
+                    onChange={handleFileChange}
+                    disabled={isLocked("tenthMarksheetAttachment")}
+                    hidden
+                  />
                 </label>
               </div>
-
-              <select
-                id="yearofpassing12th"
-                value={formData.yearofpassing12th || ""}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, yearofpassing12th: e.target.value }))
-                }
-                className={`${styles.select} ${errors.yearofpassing12th ? styles.errorInput : ""}`}
-              >
-                <option value="">Select 12th Passing Year</option>
-                {formData.yearofpassing10th &&
-                  Array.from(
-                    { length: 2025 - (Number(formData.yearofpassing10th) + 2) + 1 },
-                    (_, i) => {
-                      const year = Number(formData.yearofpassing10th) + 2 + i;
-                      return <option key={year} value={year}>{year}</option>;
-                    }
-                  )}
-              </select>
-
-              <div className={`${styles.fileUpload} ${errors.twelfthMarksheetAttachment ? styles.errorInput : ""}`}>
-                <label className={styles.fileBox}>
-                  <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.twelfthMarksheetAttachment ? "File selected" : "Upload 12th Marksheet"}
-                  </span>
-                  <input type="file" name="twelfthMarksheetAttachment" onChange={handleFileChange} hidden />
-                </label>
               </div>
             </div>
           </>
@@ -600,21 +1195,27 @@ const CreateAgent = () => {
             <h3 className={styles.sectionTitle}>Nominee Details</h3>
 
             <div className={styles.step2Grid}>
-              <input
-                id="nomineeName"
-                placeholder="Nominee Name"
-                value={formData.nomineeName}
-                onChange={handleChange}
-                className={`${styles.input} ${errors.nomineeName ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="nomineeName">Nominee Name</label>
+                <input
+                  id="nomineeName"
+                  placeholder="Nominee Name"
+                  value={formData.nomineeName}
+                  onChange={handleChange}
+                  className={`${styles.input} ${errors.nomineeName ? styles.errorInput : ""}`}
+                />
+              </div>
 
-              <input
-                id="nomineeRelation"
-                placeholder="Relation"
-                value={formData.nomineeRelation}
-                onChange={handleChange}
-                className={`${styles.input} ${errors.nomineeRelation ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="nomineeRelation">Relation</label>
+                <input
+                  id="nomineeRelation"
+                  placeholder="Relation"
+                  value={formData.nomineeRelation}
+                  onChange={handleChange}
+                  className={`${styles.input} ${errors.nomineeRelation ? styles.errorInput : ""}`}
+                />
+              </div>
             </div>
           </>
         )}
@@ -624,70 +1225,108 @@ const CreateAgent = () => {
             <h3 className={styles.sectionTitle}>Bank Details</h3>
 
             <div className={styles.step2Grid}>
-              <input
-                id="accountHolderName"
-                placeholder="Account Holder Name"
-                value={formData.accountHolderName}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, accountHolderName: onlyLetters(e.target.value) }))
-                }
-                className={`${styles.input} ${submittedStep === 4 && errors.accountHolderName ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="accountHolderName">Account Holder Name</label>
+                <input
+                  id="accountHolderName"
+                  placeholder="Account Holder Name"
+                  value={formData.accountHolderName}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, accountHolderName: onlyLetters(e.target.value) }))
+                  }
+                  className={`${styles.input} ${submittedStep === 4 && errors.accountHolderName ? styles.errorInput : ""}`}
+                  disabled={isLocked("accountNumber")}
+                />
+              </div>
 
-              <input
-                id="bankName"
-                placeholder="Bank Name"
-                value={formData.bankName}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, bankName: onlyLetters(e.target.value) }))
-                }
-                className={`${styles.input} ${submittedStep === 4 && errors.bankName ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="bankName">Bank Name</label>
+                <input
+                  id="bankName"
+                  placeholder="Bank Name"
+                  value={formData.bankName}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, bankName: onlyLetters(e.target.value) }))
+                  }
+                  className={`${styles.input} ${submittedStep === 4 && errors.bankName ? styles.errorInput : ""}`}
+                  disabled={isLocked("accountNumber")}
+                />
+              </div>
 
-              <input
-                id="accountNumber"
-                placeholder="Account Number"
-                value={formData.accountNumber}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, accountNumber: onlyDigits(e.target.value, 18) }))
-                }
-                className={`${styles.input} ${submittedStep === 4 && errors.accountNumber ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="accountNumber">Account Number</label>
+                <input
+                  id="accountNumber"
+                  placeholder="Account Number"
+                  value={formData.accountNumber}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, accountNumber: onlyDigits(e.target.value, 18) }))
+                  }
+                  className={`${styles.input} ${submittedStep === 4 && errors.accountNumber ? styles.errorInput : ""}`}
+                  disabled={isLocked("accountNumber")}
+                />
+              </div>
 
-              <input
-                id="ifscCode"
-                placeholder="IFSC Code"
-                value={formData.ifscCode}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, ifscCode: formatIFSC(e.target.value) }))
-                }
-                className={`${styles.input} ${submittedStep === 4 && errors.ifscCode ? styles.errorInput : ""}`}
-              />
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="ifscCode">IFSC Code</label>
+                <input
+                  id="ifscCode"
+                  placeholder="IFSC Code"
+                  value={formData.ifscCode}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, ifscCode: formatIFSC(e.target.value) }))
+                  }
+                  className={`${styles.input} ${submittedStep === 4 && errors.ifscCode ? styles.errorInput : ""}`}
+                  disabled={isLocked("accountNumber")}
+                />
+              </div>
 
-              <input
-                id="branchLocation"
-                placeholder="Branch Location"
-                value={formData.branchLocation}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, branchLocation: onlyLettersWithHyphen(e.target.value) }))
-                }
-                className={`${styles.input} ${styles.fullWidth} ${submittedStep === 4 && errors.branchLocation ? styles.errorInput : ""}`}
-              />
+              <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+                <label className={styles.fieldLabel} htmlFor="branchLocation">Branch Location</label>
+                <input
+                  id="branchLocation"
+                  placeholder="Branch Location"
+                  value={formData.branchLocation}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, branchLocation: onlyLettersWithHyphen(e.target.value) }))
+                  }
+                  className={`${styles.input} ${submittedStep === 4 && errors.branchLocation ? styles.errorInput : ""}`}
+                  disabled={isLocked("accountNumber")}
+                />
+              </div>
 
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Cancelled Cheque</label>
               <div className={`${styles.fileUpload} ${errors.cancelledChequeAttachment ? styles.errorInput : ""}`}>
                 <label className={styles.fileBox}>
                   <span className={styles.fileBtn}>Choose File</span>
-                  <span className={styles.fileText}>
-                    {attachments.cancelledChequeAttachment ? "File selected" : "Upload Cancelled Cheque"}
-                  </span>
+                  {attachments.cancelledChequeFileName ? (
+                    <>
+                      <span className={styles.fileTextChosen} title={attachments.cancelledChequeFileName}>
+                        <FiCheckCircle /> {attachments.cancelledChequeFileName}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.fileRemoveBtn}
+                        onClick={clearAttachment("cancelledChequeAttachment")}
+                        aria-label="Remove file"
+                      >
+                        <FiX />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={styles.fileText}>Upload Cancelled Cheque</span>
+                  )}
                   <input
                     type="file"
                     name="cancelledChequeAttachment"
                     accept="image/*,application/pdf"
                     onChange={handleFileChange}
+                    disabled={isLocked("accountNumber")}
                     hidden
                   />
                 </label>
+              </div>
               </div>
             </div>
           </>
@@ -729,49 +1368,7 @@ const CreateAgent = () => {
         </div>
       </form>
 
-      {showSuccess && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              padding: 24,
-              borderRadius: 12,
-              width: 320,
-              textAlign: "center",
-            }}
-          >
-            <p style={{ marginBottom: 20 }}>
-              Agent application submitted successfully. Status will be updated after verification.
-            </p>
-            <button
-              onClick={() => {
-                setShowSuccess(false);
-                router.push("/");
-              }}
-              style={{
-                background: "#ff8a1f",
-                color: "#fff",
-                border: "none",
-                padding: "10px 24px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Go to home page
-            </button>
-          </div>
-        </div>
-      )}
+      {successModal}
 
       <div className={styles.bottomSteps}>
         <div className={`${styles.stepItem} ${step === 1 ? styles.activeStep : ""}`}>

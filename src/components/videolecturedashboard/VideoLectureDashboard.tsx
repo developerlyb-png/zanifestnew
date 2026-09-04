@@ -96,14 +96,24 @@ export default function VideoLectureDashboard() {
       }
     };
 
+    // Wall-clock based, not a 1-per-tick counter — the timer must never
+    // pause on tab switch/blur, and backgrounded tabs get their setInterval
+    // throttled by the browser (sometimes to far less than 1/sec), so
+    // counting "1 tick = 1 second" would under-count time spent away from
+    // the tab. Measuring real elapsed time between ticks stays correct
+    // regardless of how infrequently the interval actually fires.
+    let lastTick = Date.now();
     const tick = setInterval(() => {
-      if (document.visibilityState !== "visible") return;
-      pendingDeltaRef.current += 1;
+      const now = Date.now();
+      const elapsed = Math.round((now - lastTick) / 1000);
+      lastTick = now;
+      if (elapsed <= 0) return;
+      pendingDeltaRef.current += elapsed;
       setModules((prev) => {
         const idx = currentModule - 1;
         if (!prev[idx] || prev[idx].completed) return prev;
         const next = [...prev];
-        next[idx] = { ...next[idx], secondsSpent: Math.min(next[idx].secondsSpent + 1, MODULE_SECONDS) };
+        next[idx] = { ...next[idx], secondsSpent: Math.min(next[idx].secondsSpent + elapsed, MODULE_SECONDS) };
         return next;
       });
     }, 1000);

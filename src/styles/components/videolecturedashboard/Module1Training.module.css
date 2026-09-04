@@ -35,6 +35,16 @@
   z-index: 10;
 }
 
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brandLogo {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+}
 .brand {
   display: flex;
   flex-direction: column;
@@ -49,12 +59,19 @@
   font-size: 14px;
 }
 .logout {
-  border: 1px solid #dbe2ec;
+  border: 1px solid #e05260;
   background: white;
   border-radius: 7px;
   padding: 7px 14px;
-  color: #496078;
+  color: #d92c3f;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.logout:hover {
+  background: #d92c3f;
+  border-color: #d92c3f;
+  color: #ffffff;
 }
 
 .journey {

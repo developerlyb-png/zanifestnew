@@ -19,7 +19,7 @@ export default async function handler(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    const { policyNumber, premium, grossPremium, transactionType, vehicle, customer } =
+    const { policyNumber, premium, grossPremium, transactionType, vehicle, customer, insurer } =
       req.body;
 
     await dbConnect();
@@ -38,7 +38,7 @@ export default async function handler(
       userId: decoded.id,
       userEmail: decoded.email,
       policyType: "Car Insurance",
-      insurer: "Zuno General Insurance",
+      insurer: insurer || "Zuno General Insurance",
       status: "Active",
       startDate,
       endDate,

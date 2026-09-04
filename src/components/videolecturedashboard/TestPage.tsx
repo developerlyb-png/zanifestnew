@@ -2689,9 +2689,12 @@ useEffect(() => {
   return (
     <div className={m1.root}>
       <header className={m1.topbar}>
-        <div className={m1.brand}>
-          <span className={m1.brandKicker}>Zanifest</span>
-          <strong>POSP Onboarding Journey</strong>
+        <div className={m1.brandRow}>
+          <img src="/logo.png" alt="Zanifest" className={m1.brandLogo} />
+          <div className={m1.brand}>
+            <span className={m1.brandKicker}>Zanifest</span>
+            <strong>POSP Onboarding Journey</strong>
+          </div>
         </div>
         <button type="button" className={m1.logout} onClick={handleLogout}>
           Log out
@@ -2739,7 +2742,7 @@ useEffect(() => {
               <div>
                 <p className={m1.stepLabel}>Step 3: Assessment</p>
                 <p className={m1.muted}>
-                  Passing Marks: 25 · Question {index + 1} of {questions.length} · Mandatory
+                  Passing Marks: {Math.ceil(questions.length * 0.4)} · Question {index + 1} of {questions.length} · Mandatory
                 </p>
               </div>
               <span className={m1.statusPill}>⏱ {formatTime(timeLeft)}</span>
@@ -2758,11 +2761,14 @@ useEffect(() => {
             <section className={m1.heroCard}>
               <h1>Agent Certification Test</h1>
               <p>Test Set : Set {currentSet.set}</p>
-              <small>50 Questions · Time limit: 60 minutes · Passing marks: 25</small>
+              <small>
+                {questions.length} Questions · Time limit: 60 minutes · Passing marks:{" "}
+                {Math.ceil(questions.length * 0.4)}
+              </small>
             </section>
 
             <section className={m1.card}>
-              <div className={m1.cardTitle}>
+              <div className={styles.questionCardTitle}>
                 <h2>
                   Q{index + 1}. {questions[index].q}
                 </h2>
@@ -2833,7 +2839,7 @@ function Result({
   onResultVisible: (v: boolean) => void;
 }) {
 
-  const pass = score >= total / 2;
+  const pass = score >= total * 0.4; // 40% passing threshold (e.g. 20/50)
 
   async function handlePass() {
     await fetch("/api/agent/complete-training", {

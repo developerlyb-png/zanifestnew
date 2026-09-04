@@ -1,7 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import { getSbiToken } from "@/lib/sbiToken";
-import { buildSbiQuickQuoteBody } from "@/lib/sbi4wRequestBuilder";
+import {
+  buildSbiQuickQuoteBody,
+  BASE_COVERAGE_CODES,
+  ADDON_COVERAGE_CODES,
+} from "@/lib/sbi4wRequestBuilder";
 
 // SBI QuickQuote v1 — per SBI's integration kit (Token tab confirms
 // GET /cld/v1/token; QuickQuote tab confirms POST /cld/v1/quickquote with
@@ -37,7 +41,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // We don't have that master-data mapping yet, so the builder fills those
     // fields with literal "PLACEHOLDER_..." markers — detected below so the
     // caller never treats a quote priced against fake codes as real.
-    const sbiRequestBody = buildSbiQuickQuoteBody(req.body);
+    // overrideIdv / excludeAddonCodes are optional — sent once the customer
+    // opts into an addon or edits IDV. When the caller doesn't specify
+    // excludeAddonCodes at all (the very first quote), default to excluding
+    // every optional addon — the initial quote is base cover only (OD/TP/PA),
+    // never pre-selected addons the customer never chose.
+    const { overrideIdv, excludeAddonCodes, ...quoteInput } = req.body || {};
+    const sbiRequestBody = buildSbiQuickQuoteBody(quoteInput, {
+      idvOverride: overrideIdv,
+      excludeAddonCodes: excludeAddonCodes ?? ADDON_COVERAGE_CODES,
+    });
     const usesPlaceholderData = JSON.stringify(sbiRequestBody).includes("PLACEHOLDER_");
 
     const payload = {
@@ -88,6 +101,73 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
+    // Deep-search rather than assume a fixed nesting path — SBI's response
+    // shape here didn't match what the FullQuote sample implied, so pick
+    // these fields up wherever they actually live in the tree.
+    const findFieldDeep = (obj: any, key: string): any => {
+      if (obj == null || typeof obj !== "object") return undefined;
+      if (key in obj) return obj[key];
+      for (const k of Object.keys(obj)) {
+        const found = findFieldDeep(obj[k], key);
+        if (found !== undefined) return found;
+      }
+      return undefined;
+    };
+    const findArrayDeep = (obj: any, key: string): any[] | undefined => {
+      if (obj == null || typeof obj !== "object") return undefined;
+      if (Array.isArray(obj[key])) return obj[key];
+      for (const k of Object.keys(obj)) {
+        const found = findArrayDeep(obj[k], key);
+        if (found !== undefined) return found;
+      }
+      return undefined;
+    };
+
+    const grossPremium = findFieldDeep(result, "GrossPremium");
+    const beforeVatPremium = findFieldDeep(result, "BeforeVatPremium");
+    const tpPremium = findFieldDeep(result, "TP_TotalPremium");
+    const gst = findFieldDeep(result, "TGST");
+    // QuickQuote's response has no explicit OD_TotalPremium field — derive it
+    // from what SBI's own numbers actually give us (Before-VAT total minus TP).
+    const odTotalField = findFieldDeep(result, "OD_TotalPremium");
+    const odBase = beforeVatPremium ?? grossPremium;
+    const odPremium =
+      odTotalField ?? (odBase != null && tpPremium != null ? odBase - tpPremium : undefined);
+
+    // Real coverage line items SBI actually priced, for an honest "View
+    // Coverage" list — no invented benefit names for codes we can't confirm.
+    // BASE_COVERAGE_CODES (OD/TP/PA) aren't optional add-ons a customer can
+    // deselect — everything else is.
+    const policyCoverageList = findArrayDeep(result, "PolicyCoverageList") || [];
+    const coverages = policyCoverageList.map((c: any) => ({
+      code: c?.ProductElementCode,
+      premium: c?.GrossPremium ?? c?.AnnualPremium ?? c?.BeforeVatPremium ?? 0,
+      isAddon: !BASE_COVERAGE_CODES.includes(c?.ProductElementCode),
+    }));
+
+    // SBI computes its own suggested/min/max IDV band for this vehicle —
+    // don't reuse whatever IDV another insurer (Zuno) quoted.
+    const idv = {
+      user: findFieldDeep(result, "IDV_User"),
+      suggested: findFieldDeep(result, "IDV_Suggested"),
+      min: findFieldDeep(result, "MinIDV_Suggested"),
+      max: findFieldDeep(result, "MaxIDV_Suggested"),
+    };
+
+    const breakdown = {
+      grossPremium,
+      beforeVatPremium,
+      odPremium,
+      tpPremium,
+      gst,
+      coverages,
+      idv,
+      // The full addon catalog, regardless of what's included in this
+      // particular quote — the sidebar needs this to render every available
+      // addon checkbox, not just the ones currently selected.
+      availableAddonCodes: ADDON_COVERAGE_CODES,
+    };
+
     // Never report success while the request still used placeholder codes —
     // SBI computed a real number, but against a fabricated vehicle/location,
     // so it must not be surfaced to customers as a genuine quote.
@@ -103,6 +183,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       success: true,
       premium,
+      ...breakdown,
       data: result,
     });
   } catch (error: any) {

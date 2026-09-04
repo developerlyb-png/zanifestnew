@@ -38,9 +38,12 @@ const Module2Training: React.FC<Module2TrainingProps> = ({ onComplete }) => {
   return (
     <div className={styles.root}>
       <header className={styles.topbar}>
-        <div className={styles.brand}>
-          <span className={styles.brandKicker}>Zanifest</span>
-          <strong>POSP Onboarding Journey</strong>
+        <div className={styles.brandRow}>
+          <img src="/logo.png" alt="Zanifest" className={styles.brandLogo} />
+          <div className={styles.brand}>
+            <span className={styles.brandKicker}>Zanifest</span>
+            <strong>POSP Onboarding Journey</strong>
+          </div>
         </div>
         <button type="button" className={styles.logout} onClick={handleLogout}>
           Log out

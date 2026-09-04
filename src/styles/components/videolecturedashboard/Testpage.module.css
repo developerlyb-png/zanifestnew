@@ -4,6 +4,25 @@
    --muted) so the test screen matches Module 1/2/3's design system. The
    parent element always carries that .root class. */
 
+/* Dedicated to the exam's own question header — deliberately NOT reusing
+   Module1Training.module.css's .cardTitle, since that class is shared by
+   every module's own section headers too (changing it there would recolor
+   those as well, not just the exam question). */
+.questionCardTitle {
+  background: #7e8087;
+  color: #fff;
+  padding: 14px 20px;
+}
+.questionCardTitle h2 {
+  font-size: 17px;
+  margin: 0;
+  color: #fff;
+}
+.questionCardTitle small {
+  font-size: 9px;
+  color: #ffc83d;
+}
+
 .answersGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -60,16 +79,23 @@
   line-height: 1.4;
 }
 
-/* SELECTED */
+/* SELECTED — soft highlight instead of a solid saturated block, which
+   clashed with the dark question header above it and was hard to read. */
 .selected {
-  background: var(--royal, #286eea) !important;
+  background: #eaf1ff !important;
   border-color: var(--royal, #286eea) !important;
-  color: #ffffff !important;
+  border-width: 2px !important;
+  color: #12294d !important;
+  font-weight: 700;
 }
 
 .selected .optionLabel {
-  background: #ffffff;
-  color: var(--royal, #286eea);
+  background: var(--royal, #286eea);
+  color: #ffffff;
+}
+
+.selected .optionText {
+  color: #12294d;
 }
 
 @media (max-width: 1200px) {

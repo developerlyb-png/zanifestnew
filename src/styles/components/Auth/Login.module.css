@@ -1,12 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap');
 
 .cont {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1.25fr 1.5fr;
   background-repeat: no-repeat;
-  background-color: #fa621a;
+  /* background-color: #fa621a; */
 }
 
 .left {
@@ -21,6 +21,7 @@
 .leftImage {
   width: 80%;
   height: auto;
+  margin-left:7rem;
 }
 
 .loginCont {
@@ -41,16 +42,16 @@
   align-items: center;
   cursor: pointer;
   font-size: 30px;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .formDiv {
   display: grid;
   place-items: center;
   gap: 1rem;
-  padding: 4rem 4rem;
-  border-radius: 1rem;
-  background-color: white;
+  padding: 2rem 4rem;
+  border-radius: 1.5rem;
+  background-color: #fff4e2;
   z-index: 2;
   width: 35vw;            /* card width */
 }
@@ -86,7 +87,7 @@
   /* color: var(--primary-color); */
 
   color: #1878bd;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Libre Baskerville", serif;
   text-align: center;
   padding: 0;
   margin: 0;
@@ -94,7 +95,7 @@
 
 .headingp {
   color: #61a8db;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Libre Baskerville", serif;
   text-align: center;
   padding: 0;
   margin: 0;
@@ -111,25 +112,24 @@
   text-align: left;
   color: #00233d;
   font-size: 1.3rem;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .input {
   border-style: solid;
   border-color: rgb(221, 221, 221);
-
   width: 100%;
-  background-color: inherit;
+  background-color: white;
   border-radius: 10px;
   padding: 1rem;
   color: var(--Heading-color);
   transition: all 0.5s;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .input::placeholder {
   color: grey;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .input:focus {
@@ -139,13 +139,13 @@
 
 .error {
   color: red;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .showPasswordDiv {
   display: flex;
   gap: 0.2rem;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .passCheck {
@@ -182,7 +182,7 @@
   transition: all 0.5s ease;
   border-radius: 10px;
   background-color: #1878bd;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
 
   border: none;
 }
@@ -195,6 +195,44 @@
 
 .loginButton:active {
   transform: scale(0.9);
+}
+.passwordWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.passwordWrapper .input {
+  padding-right: 2.8rem;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a8f98;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.eyeIcon:hover {
+  color: #1878bd;
+}
+
+.forgotPassword {
+  width: 100%;
+  text-align: right;
+  margin: -0.6rem 0 0;
+  font-size: 0.85rem;
+  color: #1878bd;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
 }
 
 .signupLink{
@@ -248,7 +286,7 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Manrope", sans-serif;
   color: #1878bd;
   font-size: 1.2rem;
   font-weight: 600;

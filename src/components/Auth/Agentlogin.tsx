@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 import styles from "@/styles/components/Auth/Login.module.css";
 import Image from "next/image";
 
@@ -43,6 +43,15 @@ export default function Agentlogin() {
         return;
       }
 
+      // Rejected applications get sent straight to the edit wizard instead
+      // of a real session (no token is issued for this case) — this was
+      // being silently ignored before, always falling through to
+      // /agentpage with a broken "agentToken=undefined" cookie.
+      if (data.redirect) {
+        router.replace(data.redirect);
+        return;
+      }
+
       // ✅ SAVE TOKEN COOKIE (VERY IMPORTANT FOR 401 FIX)
       document.cookie = `agentToken=${data.token}; path=/; max-age=86400`;
 
@@ -74,7 +83,7 @@ export default function Agentlogin() {
         {/* LEFT IMAGE */}
         <div className={styles.left}>
           <Image
-            src={require("@/assets/loginbanner.png")}
+            src={require("@/assets/loginagent.png")}
             alt="image"
             className={styles.leftImage}
           />
@@ -86,7 +95,7 @@ export default function Agentlogin() {
 
             <div className={styles.logo}>
               <Image
-                src={require("@/assets/logo.png")}
+                src={require("@/assets/logo-trans.png")}
                 alt="logo"
                 className={styles.logoImage}
               />
@@ -106,22 +115,26 @@ export default function Agentlogin() {
                 onChange={(e) => setUserName(e.target.value)}
               />
 
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                required
-                className={styles.input}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <label>
+              <div className={styles.passwordWrapper}>
                 <input
-                  type="checkbox"
-                  onChange={() => setShowPassword(!showPassword)}
-                />{" "}
-                Show Password
-              </label>
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  required
+                  className={styles.input}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <span
+                  className={styles.eyeIcon}
+                  onClick={() => setShowPassword(!showPassword)}
+                  role="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+
+              <p className={styles.forgotPassword}>Forgot Password?</p>
 
               <button
                 className={styles.loginButton}

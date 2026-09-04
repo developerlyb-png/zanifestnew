@@ -4,6 +4,10 @@ export interface IModuleProgress {
   secondsSpent: number;
   completed: boolean;
   completedAt: Date | null;
+  // Wall-clock start of this module — lets progress advance from real
+  // elapsed time even if the agent closes the tab or logs out mid-module,
+  // instead of only counting time the page was open and sending heartbeats.
+  startedAt: Date | null;
 }
 
 export interface ITrainingProgress extends Document {
@@ -24,6 +28,7 @@ const ModuleProgressSchema = new Schema<IModuleProgress>(
     secondsSpent: { type: Number, default: 0 },
     completed: { type: Boolean, default: false },
     completedAt: { type: Date, default: null },
+    startedAt: { type: Date, default: null },
   },
   { _id: false }
 );
@@ -40,9 +45,9 @@ const TrainingProgressSchema = new Schema<ITrainingProgress>(
     modules: {
       type: [ModuleProgressSchema],
       default: () => [
-        { secondsSpent: 0, completed: false, completedAt: null },
-        { secondsSpent: 0, completed: false, completedAt: null },
-        { secondsSpent: 0, completed: false, completedAt: null },
+        { secondsSpent: 0, completed: false, completedAt: null, startedAt: null },
+        { secondsSpent: 0, completed: false, completedAt: null, startedAt: null },
+        { secondsSpent: 0, completed: false, completedAt: null, startedAt: null },
       ],
     },
     currentModule: { type: Number, default: 1 },

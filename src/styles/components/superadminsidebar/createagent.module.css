@@ -1,11 +1,86 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;900&display=swap");
-
 /* ================= PAGE ================= */
 .container {
   min-height: 100vh;
   background: #fafafa;
   padding: 40px 0;
-  font-family: "Roboto", sans-serif;
+  font-family: "Manrope", sans-serif;
+}
+
+/* ================= BRAND HEADER ================= */
+.brandHeader {
+  width: 100%;
+  margin: -40px 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f0 100%);
+  padding: 20px 48px;
+  border-radius: 0;
+  border-bottom: 1px solid #f3e4d0;
+  box-shadow: 0 10px 30px rgba(43, 47, 56, 0.08);
+  box-sizing: border-box;
+}
+
+.brandHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brandLogoBox {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.brandLogo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brandTextGroup {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.brandTitle {
+  font-family: "Libre Baskerville", serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #2b2f38;
+}
+
+.brandSubtitle {
+  font-family: "Manrope", sans-serif;
+  font-size: 12px;
+  color: #8b8f98;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brandBadge {
+  flex-shrink: 0;
+  font-family: "Manrope", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fff1e0;
+  border: 1px solid #fed7aa;
+  padding: 7px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
 }
 
 /* ================= HEADER ================= */
@@ -15,6 +90,7 @@
 }
 
 .header h2 {
+  font-family: "Libre Baskerville", serif;
   font-size: 28px;
   font-weight: 900;
   color: #2b2f38;
@@ -25,6 +101,32 @@
   font-size: 14px;
   font-weight: 400;
   color: #8b8f98;
+}
+
+/* ================= REJECTION BANNER ================= */
+.rejectionBanner {
+  width: 600px;
+  margin: 0 auto 20px;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #9b1c1c;
+}
+
+.rejectionBanner strong {
+  font-size: 16px;
+}
+
+.rejectionBanner p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rejectionHint {
+  color: #7c2d2d;
+  font-style: italic;
 }
 
 /* ================= FORM ================= */
@@ -54,6 +156,19 @@
   color: #2b2f38;
   margin-bottom: 16px;
   grid-column: 1 / -1;
+}
+
+/* ================= FIELD LABEL ================= */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 6px;
 }
 
 /* ================= INPUT ================= */
@@ -120,7 +235,7 @@
 .step2Grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 5px;
 }
 
 .fullWidth {
@@ -235,6 +350,44 @@
   text-overflow: ellipsis;
 }
 
+.fileTextChosen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f9d58;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.fileTextChosen svg {
+  flex-shrink: 0;
+}
+
+.fileRemoveBtn {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fileRemoveBtn:hover {
+  background: #fecaca;
+}
+
 /* ================= ACTIONS ================= */
 .actions {
   display: flex;
@@ -284,7 +437,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: "Roboto", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .stepItem {
@@ -388,6 +541,10 @@
     width: 90%;
     padding: 28px;
   }
+
+  .brandHeader {
+    padding: 18px 28px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -399,6 +556,14 @@
   .formGrid {
     width: 92%;
     padding: 24px;
+  }
+
+  .brandHeader {
+    padding: 16px 20px;
+  }
+
+  .brandSubtitle {
+    display: none;
   }
 
   .sectionTitle {
@@ -441,6 +606,19 @@
     width: 94%;
     padding: 20px;
     border-radius: 12px;
+  }
+
+  .brandHeader {
+    margin: -20px 0 24px;
+    padding: 14px 16px;
+  }
+
+  .brandBadge {
+    display: none;
+  }
+
+  .brandTitle {
+    font-size: 17px;
   }
 
   .step2Grid {

@@ -72,7 +72,7 @@ export default function AdminLogin() {
 
       <div className={styles.left}>
         <Image
-          src={require("@/assets/loginbanner.png")}
+          src={require("@/assets/adminlogin.png")}
           alt="image"
           className={styles.leftImage}
         />
@@ -82,13 +82,13 @@ export default function AdminLogin() {
         <div className={styles.formDiv}>
           <div className={styles.logo}>
             <Image
-              src={require("@/assets/logo.png")}
+              src={require("@/assets/logo-trans.png")}
               alt="logo"
               className={styles.logoImage}
             />
           </div>
 
-          <h1 className={styles.heading}>Admin Login to continue</h1>
+          <h1 className={styles.heading}>Admin Login</h1>
          
 
           <form className={styles.loginForm} onSubmit={handleSubmit}>

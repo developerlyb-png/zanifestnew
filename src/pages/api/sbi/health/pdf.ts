@@ -65,8 +65,9 @@ payload
 
 
 
-const encryptedPayload =
-encryptSBI(payload);
+const encryptedPayload = {
+  ciphertext: encryptSBI(payload),
+};
 
 
 

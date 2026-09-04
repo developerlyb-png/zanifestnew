@@ -43,19 +43,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 🚫 Reviewed (waiting for certificate)
-    if (agent.status === "reviewed") {
-      return res.status(403).json({
-        message: "Your certificate is not generated yet",
-      });
-    }
+    // "reviewed" is what admin/reviewAgent.ts's "accept" action actually sets
+    // when an admin approves an application (its own email says "You can now
+    // login") — a further "approved" status only exists later, once a
+    // certificate already exists (see updateStatus.ts). So "reviewed" must
+    // be allowed to log in and go straight to training, not blocked here.
 
-    // 🚫 Approved but certificate missing
-    if (agent.status === "approved" && !agent.certificate2) {
-      return res.status(403).json({
-        message: "Certificate not generated yet. Please contact admin.",
-      });
-    }
+    // Note: an approved agent with no certificate yet is the NORMAL case for
+    // a first login — the certificate is only generated after training/exam
+    // completion (see complete-training.ts). Login must succeed here so
+    // agentpage.tsx's trainingCompleted check can route them to
+    // /videolectures instead of being blocked before ever reaching it.
 
     // 🔁 Rejected → redirect to edit form
     if (agent.status === "rejected") {

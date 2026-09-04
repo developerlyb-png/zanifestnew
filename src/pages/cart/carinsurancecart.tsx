@@ -18,6 +18,14 @@ const carinsurancecart = () => {
   const [quoteInput, setQuoteInput] = useState<any>(null);
   const [rc, setRc] = useState<any>(null);
 
+  // Which insurer's card the customer clicked "Buy" on — set by
+  // carinsurance3.tsx right before navigating here. Zuno and SBI have
+  // completely different checkout backends (FullQuote/Razorpay/Issuance for
+  // SBI vs Zuno's own full-quote/issue-policy/payment-link APIs).
+  const [insurer, setInsurer] = useState<"ZUNO" | "SBI">("ZUNO");
+  const [sbiQuote, setSbiQuote] = useState<any>(null);
+  const [sbiCkyc, setSbiCkyc] = useState<any>(null);
+
   // Customer form
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -44,14 +52,43 @@ const carinsurancecart = () => {
       if (q && q !== "undefined") setQuoteInput(JSON.parse(q));
       if (r && r !== "undefined") setRc(JSON.parse(r));
 
-      const u = localStorage.getItem("user");
-      if (u && u !== "undefined") {
-        const user = JSON.parse(u);
-        const parts = String(user.name || "").split(" ");
+      const sel = localStorage.getItem("selectedInsurer");
+      let sbiCkycParsed: any = null;
+      if (sel === "SBI") {
+        setInsurer("SBI");
+        const sq = localStorage.getItem("selectedQuoteSbi");
+        if (sq && sq !== "undefined") setSbiQuote(JSON.parse(sq));
+        const ck = localStorage.getItem("sbiCkycResult");
+        if (ck && ck !== "undefined") {
+          sbiCkycParsed = JSON.parse(ck);
+          setSbiCkyc(sbiCkycParsed);
+        }
+      }
+
+      // SBI already verified identity via CKYC (OTP or manual OVD) — use
+      // that record instead of asking the customer to type it all again.
+      const ckycRecord = sbiCkycParsed?.record;
+      if (sel === "SBI" && ckycRecord?.fullName) {
+        const parts = String(ckycRecord.fullName).trim().split(/\s+/);
         setFirstName(parts[0] || "");
         setLastName(parts.slice(1).join(" ") || "");
-        setMobile(user.mobile || "");
-        setEmail(user.email || "");
+        setGender(ckycRecord.gender === "F" ? "Female" : "Male");
+        if (ckycRecord.dob) setDob(ckycRecord.dob.length === 10 && ckycRecord.dob.includes("-") ? ckycRecord.dob : "");
+        setMobile(ckycRecord.mobile || "");
+        setEmail(ckycRecord.email || "");
+        setAddress1(ckycRecord.correspondenceAddress?.line1 || "");
+        setCity(ckycRecord.correspondenceAddress?.city || "");
+        setPincode(ckycRecord.correspondenceAddress?.pincode || "");
+      } else {
+        const u = localStorage.getItem("user");
+        if (u && u !== "undefined") {
+          const user = JSON.parse(u);
+          const parts = String(user.name || "").split(" ");
+          setFirstName(parts[0] || "");
+          setLastName(parts.slice(1).join(" ") || "");
+          setMobile(user.mobile || "");
+          setEmail(user.email || "");
+        }
       }
     } catch (e) {
       console.log("CART LOAD ERROR", e);
@@ -250,6 +287,8 @@ const carinsurancecart = () => {
           quoteNo,
           quoteOptionNo,
           amount: plan?.grossPremium,
+          insurer: "ZUNO",
+          customerName: `${firstName} ${lastName}`.trim(),
           raw: issued,
         })
       );
@@ -264,6 +303,7 @@ const carinsurancecart = () => {
           premium: plan?.netPremium ?? plan?.grossPremium,
           grossPremium: plan?.grossPremium,
           transactionType: quoteInput?.isNew ? "New" : "Rollover",
+          insurer: "Zuno General Insurance",
           vehicle: {
             number: rc?.reg_no,
             make: quoteInput?.make,
@@ -330,6 +370,223 @@ const carinsurancecart = () => {
     } catch (e: any) {
       setLoading(false);
       console.log("PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  const loadRazorpayScript = (): Promise<boolean> =>
+    new Promise((resolve) => {
+      if ((window as any).Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+
+  // SBI's checkout chain: FullQuote (real proposer + CKYC tags) -> Razorpay
+  // order -> Razorpay Checkout -> signature verify -> Issuance. Completely
+  // separate from Zuno's handlePay above since SBI has its own APIs end to end.
+  const handlePaySbi = async () => {
+    try {
+      if (!isChecked) {
+        alert("Please accept terms & conditions");
+        return;
+      }
+      if (!firstName || !lastName || !dob || !mobile || !email || !address1 || !pincode || !city) {
+        alert("Please fill all personal details");
+        return;
+      }
+      if (!quoteInput || !rc) {
+        alert("Quote data missing — please get a quote again");
+        return;
+      }
+      if (!sbiCkyc?.ckycTagsForFullQuote) {
+        alert("KYC verification is required before purchasing SBI's policy — please go back and complete it");
+        return;
+      }
+      if (!nomineeName || !nomineeDob) {
+        alert("Please fill nominee details");
+        return;
+      }
+
+      setLoading(true);
+
+      setLoadingStep("Creating quote...");
+      const customer = {
+        firstName,
+        lastName,
+        gender: gender.toUpperCase().startsWith("F") ? "F" : "M",
+        dob,
+        mobile,
+        email,
+        addressLine1: address1,
+        city,
+        pincode,
+      };
+
+      const includedCodes = (sbiQuote?.response?.coverages || []).map((c: any) => c.code);
+      const excludeAddonCodes = (sbiQuote?.response?.availableAddonCodes || []).filter(
+        (c: string) => !includedCodes.includes(c)
+      );
+
+      const nomineeAge = String(
+        new Date().getFullYear() - new Date(nomineeDob).getFullYear()
+      );
+
+      const fqRes = await fetch("/api/sbi/4w/full-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...quoteInput,
+          customer,
+          ckycTags: sbiCkyc.ckycTagsForFullQuote,
+          ckycRecord: sbiCkyc.record,
+          overrideIdv: sbiQuote?.response?.idv?.user,
+          excludeAddonCodes,
+          nominee: { name: nomineeName, dob: nomineeDob, age: nomineeAge },
+        }),
+      });
+      const fqData = await fqRes.json();
+      console.log("SBI FULLQUOTE RESULT >>>", JSON.stringify(fqData, null, 2));
+
+      if (!fqRes.ok || !fqData.success) {
+        setLoading(false);
+        alert(fqData.message || "SBI Full Quote failed — check console");
+        return;
+      }
+
+      const quotationNo = fqData.quotationNo;
+      const amount = fqData.premium;
+      localStorage.setItem("sbiFullQuote", JSON.stringify(fqData));
+
+      setLoadingStep("Creating payment order...");
+      const orderRes = await fetch("/api/sbi/4w/razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountInRupees: amount, quotationNo }),
+      });
+      const orderData = await orderRes.json();
+      console.log("RAZORPAY ORDER RESULT >>>", orderData);
+
+      if (!orderRes.ok || !orderData.success) {
+        setLoading(false);
+        alert(orderData.message || "Could not create payment order — check console");
+        return;
+      }
+
+      setLoadingStep("Opening payment...");
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setLoading(false);
+        alert("Could not load the payment gateway — check your connection");
+        return;
+      }
+
+      const fullName = `${firstName} ${lastName}`.trim();
+      const rzp = new (window as any).Razorpay({
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        order_id: orderData.orderId,
+        name: "Zanifest Insurance",
+        description: "SBI General Car Insurance Premium",
+        prefill: { name: fullName, email, contact: mobile },
+        handler: async (response: any) => {
+          await finishSbiPurchase(response, quotationNo, amount, fullName);
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            setLoadingStep("");
+          },
+        },
+      });
+      rzp.open();
+    } catch (e: any) {
+      setLoading(false);
+      console.log("SBI PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  const finishSbiPurchase = async (
+    razorpayResponse: any,
+    quotationNo: string,
+    amount: number,
+    payerName: string
+  ) => {
+    try {
+      setLoadingStep("Verifying payment...");
+      const verifyRes = await fetch("/api/sbi/4w/razorpay-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          razorpay_order_id: razorpayResponse.razorpay_order_id,
+          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+          razorpay_signature: razorpayResponse.razorpay_signature,
+        }),
+      });
+      const verifyData = await verifyRes.json();
+      console.log("RAZORPAY VERIFY RESULT >>>", verifyData);
+
+      if (!verifyRes.ok || !verifyData.success) {
+        setLoading(false);
+        alert(verifyData.message || "Payment verification failed — check console");
+        return;
+      }
+
+      setLoadingStep("Issuing policy...");
+      const issueRes = await fetch("/api/sbi/4w/issuequote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quotationNo,
+          amount,
+          payerName,
+          paymentReferenceNo: verifyData.paymentId,
+          ckycTags: sbiCkyc?.ckycTagsForFullQuote,
+        }),
+      });
+      const issueData = await issueRes.json();
+      console.log("SBI ISSUANCE RESULT >>>", issueData);
+      setLoading(false);
+
+      if (!issueRes.ok || !issueData.success) {
+        alert(issueData.message || "SBI Issuance failed — payment IS captured, check console");
+        return;
+      }
+
+      localStorage.setItem(
+        "carPolicyResult",
+        JSON.stringify({
+          policyNo: issueData.policyNo,
+          quotationNo,
+          amount,
+          insurer: "SBI",
+          customerName: payerName,
+          raw: issueData,
+        })
+      );
+
+      fetch("/api/users/save-policy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          policyNumber: issueData.policyNo,
+          premium: amount,
+          grossPremium: amount,
+          transactionType: "New",
+          insurer: "SBI General Insurance",
+          vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
+          customer: { fullName: payerName, email, mobile },
+        }),
+      }).catch((e) => console.log("SAVE POLICY ERROR", e));
+
+      router.push("/cart/car-policy-success");
+    } catch (e: any) {
+      setLoading(false);
+      console.log("SBI FINISH PURCHASE ERROR", e);
       alert("Something went wrong: " + e?.message);
     }
   };
@@ -408,83 +665,106 @@ const carinsurancecart = () => {
               </p>
             </div>
 
-            {/* Customer details form */}
+            {/* Customer details — SBI already collected & verified this via
+                CKYC (OTP or manual OVD), so re-asking would be redundant;
+                Zuno has no such step, so it still needs the full form. */}
             <div className={styles.card1}>
-              <h3>Your Details</h3>
-              <input
-                className={styles.input || ""}
-                placeholder="First name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="Last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-              <label style={{ display: "block", marginTop: 8 }}>
-                Gender
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                >
-                  <option>M</option>
-                  <option>F</option>
-                </select>
-              </label>
-              <label style={{ display: "block", marginTop: 8 }}>
-                Date of Birth
-                <input
-                  className={styles.input || ""}
-                  type="date"
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                />
-              </label>
-              <input
-                className={styles.input || ""}
-                placeholder="Mobile"
-                maxLength={10}
-                value={mobile}
-                onChange={(e) =>
-                  setMobile(e.target.value.replace(/\D/g, ""))
-                }
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="Address"
-                value={address1}
-                onChange={(e) => setAddress1(e.target.value)}
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="Pincode"
-                maxLength={6}
-                value={pincode}
-                onChange={(e) =>
-                  setPincode(e.target.value.replace(/\D/g, ""))
-                }
-              />
-              <input
-                className={styles.input || ""}
-                placeholder="PAN Number (e.g. ABCDE1234F)"
-                maxLength={10}
-                value={pan}
-                onChange={(e) => setPan(e.target.value.toUpperCase())}
-              />
+              {insurer === "SBI" ? (
+                <>
+                  <h3>Your Details</h3>
+                  <p style={{ fontSize: 13, color: "#666", marginBottom: 10 }}>
+                    Verified via KYC — no need to re-enter these.
+                  </p>
+                  <div style={{ fontSize: 14, lineHeight: 1.8 }}>
+                    <div>
+                      <strong>{`${firstName} ${lastName}`.trim() || "--"}</strong>
+                    </div>
+                    <div>{dob || "--"} • {gender}</div>
+                    <div>{mobile || "--"} · {email || "--"}</div>
+                    <div>
+                      {[address1, city, pincode].filter(Boolean).join(", ") || "--"}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3>Your Details</h3>
+                  <input
+                    className={styles.input || ""}
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <label style={{ display: "block", marginTop: 8 }}>
+                    Gender
+                    <select
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                    >
+                      <option>M</option>
+                      <option>F</option>
+                    </select>
+                  </label>
+                  <label style={{ display: "block", marginTop: 8 }}>
+                    Date of Birth
+                    <input
+                      className={styles.input || ""}
+                      type="date"
+                      value={dob}
+                      onChange={(e) => setDob(e.target.value)}
+                    />
+                  </label>
+                  <input
+                    className={styles.input || ""}
+                    placeholder="Mobile"
+                    maxLength={10}
+                    value={mobile}
+                    onChange={(e) =>
+                      setMobile(e.target.value.replace(/\D/g, ""))
+                    }
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="Address"
+                    value={address1}
+                    onChange={(e) => setAddress1(e.target.value)}
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="City"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="Pincode"
+                    maxLength={6}
+                    value={pincode}
+                    onChange={(e) =>
+                      setPincode(e.target.value.replace(/\D/g, ""))
+                    }
+                  />
+                  <input
+                    className={styles.input || ""}
+                    placeholder="PAN Number (e.g. ABCDE1234F)"
+                    maxLength={10}
+                    value={pan}
+                    onChange={(e) => setPan(e.target.value.toUpperCase())}
+                  />
+                </>
+              )}
 
               <h3>Nominee</h3>
               <input
@@ -525,29 +805,33 @@ const carinsurancecart = () => {
               <h2 className={styles.heading}>Plan Summary</h2>
               <div className={styles.row}>
                 <span>IDV Cover</span>
-                <span>{inr(plan?.idv)}</span>
+                <span>{inr(insurer === "SBI" ? sbiQuote?.response?.idv?.user : plan?.idv)}</span>
               </div>
               <div className={styles.row}>
                 <span>Insurer</span>
-                <span>Zuno General Insurance</span>
+                <span>{insurer === "SBI" ? "SBI General Insurance" : "Zuno General Insurance"}</span>
               </div>
               <button className={styles.viewBtn}>View Inclusions</button>
               <hr />
               <div className={styles.row}>
                 <span>Premium Amount</span>
-                <span>{inr(plan?.netPremium)}</span>
+                <span>
+                  {inr(insurer === "SBI" ? sbiQuote?.response?.beforeVatPremium : plan?.netPremium)}
+                </span>
               </div>
               <div className={styles.row}>
                 <span>GST @18%</span>
-                <span>+ {inr(plan?.gst)}</span>
+                <span>+ {inr(insurer === "SBI" ? sbiQuote?.response?.gst : plan?.gst)}</span>
               </div>
               <div className={styles.totalBox}>
                 <p className={styles.youPay}>You'll Pay</p>
-                <p className={styles.priceBig}>{inr(plan?.grossPremium)}</p>
+                <p className={styles.priceBig}>
+                  {inr(insurer === "SBI" ? sbiQuote?.response?.premium : plan?.grossPremium)}
+                </p>
               </div>
               <button
                 className={styles.payBtn}
-                onClick={handlePay}
+                onClick={insurer === "SBI" ? handlePaySbi : handlePay}
                 disabled={loading}
               >
                 {loading ? loadingStep || "PROCESSING..." : "PAY SECURELY →"}
