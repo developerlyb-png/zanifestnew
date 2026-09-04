@@ -116,7 +116,11 @@ async function drawCertificatePdf(agent: any): Promise<string> {
 
   const lineY = doc.page.height - 210;
 
-  const signPath = path.join(process.cwd(), "public/Ca.jpeg");
+  // Filename must match the case actually committed to git ("ca.jpeg") —
+  // Windows' filesystem is case-insensitive so "Ca.jpeg" worked locally,
+  // but Linux (the live server) is case-sensitive, so this silently found
+  // nothing there and fs.existsSync's guard below just skipped the image.
+  const signPath = path.join(process.cwd(), "public/ca.jpeg");
   if (fs.existsSync(signPath)) {
     doc.image(signPath, 70, lineY - 130, { width: 140 });
   }
