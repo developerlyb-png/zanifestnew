@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm } from "formidable";
-import path from "path";
 import fs from "fs";
+import os from "os";
 import dbConnect from "@/lib/dbConnect";
 import Agent from "@/models/Agent";
 
@@ -20,12 +20,13 @@ export default async function handler(
 
   await dbConnect();
 
-  const uploadDir = path.join(process.cwd(), "public", "certificates");
-
-  // ensure folder exists
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
+  // formidable needs a scratch directory to stream the upload into while
+  // parsing — os.tmpdir() instead of public/certificates since the file is
+  // only read back into a base64 data URI below and then deleted; nothing
+  // is meant to persist there (a file left under public/ wouldn't survive
+  // a redeploy anyway, which is exactly what made generated certificates
+  // 404 on the live site before).
+  const uploadDir = os.tmpdir();
 
   const form = new IncomingForm({
     uploadDir,
@@ -63,13 +64,19 @@ export default async function handler(
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const filePath = `/certificates/${path.basename(uploadedFile.filepath)}`;
+    // Read the uploaded temp file into a base64 data URI and store that
+    // directly on the agent document, then discard the temp file — the
+    // certificate itself must not live under public/ (see note above).
+    const fileBuffer = fs.readFileSync(uploadedFile.filepath);
+    const mimeType = uploadedFile.mimetype || "application/pdf";
+    const dataUri = `data:${mimeType};base64,${fileBuffer.toString("base64")}`;
+    fs.unlink(uploadedFile.filepath, () => {});
 
-    // Save certificate path
+    // Save certificate data
     await Agent.findByIdAndUpdate(agentId, {
       $set: {
-        certificate1: filePath,
-        certificate: filePath,
+        certificate1: dataUri,
+        certificate: dataUri,
       },
     });
 
@@ -111,7 +118,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      url: filePath,
+      url: dataUri,
     });
 
   });

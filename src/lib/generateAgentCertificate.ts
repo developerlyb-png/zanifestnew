@@ -11,16 +11,17 @@ import sharp from "sharp";
 // automatically the moment an agent passes their exam (see
 // src/pages/api/agent/complete-training.ts), with a real POS Code instead of
 // the permanent "N/A" that resulted from generating before agentCode existed.
+//
+// Rendered straight to an in-memory buffer and stored as a base64 data URI
+// (same convention as PAN/Aadhaar/cheque uploads elsewhere in this app)
+// instead of writing a file under public/certificates — a runtime-written
+// file there doesn't survive a redeploy (that folder isn't in git, so a
+// fresh deploy has nothing to restore it from), which is exactly why
+// previously-generated certificates started 404ing on the live site.
 async function drawCertificatePdf(agent: any): Promise<string> {
-  const dir = path.join(process.cwd(), "public", "certificates");
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-  const fileName = `${agent.agentCode || "certificate"}.pdf`;
-  const filePath = path.join(dir, fileName);
-
   const doc = new PDFDocument({ size: "A4", margin: 30 });
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
+  const chunks: Buffer[] = [];
+  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
 
   const logoPath = path.join(process.cwd(), "public/logo.png");
   if (fs.existsSync(logoPath)) {
@@ -141,9 +142,10 @@ async function drawCertificatePdf(agent: any): Promise<string> {
     );
 
   doc.end();
-  await new Promise<void>((resolve) => stream.on("finish", resolve));
+  await new Promise<void>((resolve) => doc.on("end", resolve));
 
-  return `/certificates/${fileName}`;
+  const pdfBuffer = Buffer.concat(chunks);
+  return `data:application/pdf;base64,${pdfBuffer.toString("base64")}`;
 }
 
 // Ensures a real POS Code exists, renders the PDF with it, and persists the

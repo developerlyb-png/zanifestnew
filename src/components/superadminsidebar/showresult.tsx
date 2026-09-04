@@ -140,7 +140,13 @@ const downloadFile = (url: string) => {
 
   const link = document.createElement("a");
 
-  link.href = `${window.location.origin}${url}`;
+  // Certificates are now stored as base64 data URIs (survive redeploys,
+  // unlike a file path under public/certificates) — used as-is. Legacy
+  // agents may still have the old "/certificates/xxx.pdf" relative path,
+  // which still needs the origin prefixed.
+  link.href = url.startsWith("data:") || url.startsWith("http")
+    ? url
+    : `${window.location.origin}${url}`;
   link.download = "";
 
   link.click();

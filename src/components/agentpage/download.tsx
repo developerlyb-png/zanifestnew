@@ -29,12 +29,19 @@ export default function DownloadCertificate() {
     );
   }
 
-  const fileUrl = `${window.location.origin}${data.certificate}`;
+  // New certificates are stored as base64 data URIs (survive redeploys,
+  // unlike a file path under public/certificates) — used as-is. Older
+  // agents may still have the legacy "/certificates/xxx.pdf" relative path
+  // from before that change, which still needs the origin prefixed.
+  const raw: string = data.certificate;
+  const fileUrl = raw.startsWith("data:") || raw.startsWith("http")
+    ? raw
+    : `${window.location.origin}${raw}`;
 
   const downloadFile = () => {
     const link = document.createElement("a");
     link.href = fileUrl;
-    link.download = "";
+    link.download = `${data.agentCode || "certificate"}.pdf`;
     link.click();
   };
 
