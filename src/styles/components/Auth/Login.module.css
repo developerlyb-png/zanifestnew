@@ -87,7 +87,9 @@
   /* color: var(--primary-color); */
 
   color: #1878bd;
-  font-family: "Libre Baskerville", serif;
+    font-family: "Manrope", sans-serif;
+
+  /* font-family: "Libre Baskerville", serif; */
   text-align: center;
   padding: 0;
   margin: 0;
@@ -95,7 +97,9 @@
 
 .headingp {
   color: #61a8db;
-  font-family: "Libre Baskerville", serif;
+  /* font-family: "Libre Baskerville", serif; */
+    font-family: "Manrope", sans-serif;
+
   text-align: center;
   padding: 0;
   margin: 0;

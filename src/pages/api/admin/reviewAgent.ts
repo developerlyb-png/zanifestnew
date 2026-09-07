@@ -27,10 +27,10 @@ const REJECTABLE_FIELDS: {
 ];
 
 function logoAttachment() {
-  const logoPath = path.join(process.cwd(), "public", "logo.png");
+  const logoPath = path.join(process.cwd(), "public", "logo-trans.png");
   if (!fs.existsSync(logoPath)) return null;
   return {
-    filename: "logo.png",
+    filename: "logo-trans.png",
     content: fs.readFileSync(logoPath),
     cid: "zanifest-logo",
   };
@@ -106,7 +106,12 @@ export default async function handler(
           <b>Admin Remark:</b><br/>${remark || "No remark provided"}
         </div>
         <p>You can now log in using your registered email and password to continue your onboarding
-          (video training modules and certification exam).</p>
+          (training modules and certification exam).</p>
+        <p>
+          <a href="${process.env.BASE_URL || ""}/agentlogin" style="color:${BRAND_BLUE};">
+            ${process.env.BASE_URL || ""}/agentlogin
+          </a>
+        </p>
       `;
 
       const logo = logoAttachment();
@@ -182,6 +187,11 @@ export default async function handler(
 
         <p>Please log in and re-upload the flagged document(s) above, then resubmit your application
           for review.</p>
+        <p>
+          <a href="${process.env.BASE_URL || ""}/agentlogin" style="color:${BRAND_BLUE};">
+            ${process.env.BASE_URL || ""}/agentlogin
+          </a>
+        </p>
       `;
 
       const logo = logoAttachment();

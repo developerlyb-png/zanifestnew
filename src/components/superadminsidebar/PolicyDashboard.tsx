@@ -261,8 +261,20 @@ function PolicyDashboard() {
   const topScrollRef = useRef<HTMLDivElement>(null);
   const tableWrapperRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
-  const [tableScrollWidth, setTableScrollWidth] = useState(0);
-  const syncingScrollRef = useRef<"top" | "table" | null>(null);
+  // Custom drag-driven thumb instead of a second native overflow-scroll
+  // element synced via scroll events — that two-div-sync approach looked
+  // right (a real, styled scrollbar rendered) but dragging it didn't
+  // actually move the table, so this drives tableWrapperRef.scrollLeft
+  // directly from pointer events instead of depending on native scrollbar
+  // drag behavior at all.
+  const [scrollMetrics, setScrollMetrics] = useState({ scrollLeft: 0, clientWidth: 0, scrollWidth: 0 });
+  const dragRef = useRef<{ startX: number; startScrollLeft: number; trackWidth: number } | null>(null);
+
+  const updateScrollMetrics = () => {
+    const el = tableWrapperRef.current;
+    if (!el) return;
+    setScrollMetrics({ scrollLeft: el.scrollLeft, clientWidth: el.clientWidth, scrollWidth: el.scrollWidth });
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -274,18 +286,52 @@ function PolicyDashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleTopScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (syncingScrollRef.current === "table") return;
-    syncingScrollRef.current = "top";
-    if (tableWrapperRef.current) tableWrapperRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    syncingScrollRef.current = null;
+  const handleTableScroll = () => updateScrollMetrics();
+
+  const thumbWidthPct =
+    scrollMetrics.scrollWidth > 0
+      ? Math.min(100, (scrollMetrics.clientWidth / scrollMetrics.scrollWidth) * 100)
+      : 100;
+  const maxScroll = Math.max(0, scrollMetrics.scrollWidth - scrollMetrics.clientWidth);
+  const thumbLeftPct = maxScroll > 0 ? (scrollMetrics.scrollLeft / maxScroll) * (100 - thumbWidthPct) : 0;
+
+  const onThumbPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!tableWrapperRef.current || !topScrollRef.current) return;
+    dragRef.current = {
+      startX: e.clientX,
+      startScrollLeft: tableWrapperRef.current.scrollLeft,
+      trackWidth: topScrollRef.current.clientWidth,
+    };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
-  const handleTableScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (syncingScrollRef.current === "top") return;
-    syncingScrollRef.current = "table";
-    if (topScrollRef.current) topScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    syncingScrollRef.current = null;
+  const onThumbPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current || !tableWrapperRef.current) return;
+    const { startX, startScrollLeft, trackWidth } = dragRef.current;
+    const scrollableWidth = Math.max(0, scrollMetrics.scrollWidth - scrollMetrics.clientWidth);
+    const trackScrollableWidth = trackWidth - (thumbWidthPct / 100) * trackWidth;
+    if (trackScrollableWidth <= 0 || scrollableWidth <= 0) return;
+    const deltaX = e.clientX - startX;
+    const scrollDelta = (deltaX / trackScrollableWidth) * scrollableWidth;
+    const nextScrollLeft = Math.max(0, Math.min(scrollableWidth, startScrollLeft + scrollDelta));
+    tableWrapperRef.current.scrollLeft = nextScrollLeft;
+    setScrollMetrics((prev) => ({ ...prev, scrollLeft: nextScrollLeft }));
+  };
+
+  const onThumbPointerUp = () => {
+    dragRef.current = null;
+  };
+
+  const onTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).dataset.thumb || !tableWrapperRef.current || !topScrollRef.current) return;
+    const rect = topScrollRef.current.getBoundingClientRect();
+    const clickPct = (e.clientX - rect.left) / rect.width;
+    const scrollableWidth = Math.max(0, scrollMetrics.scrollWidth - scrollMetrics.clientWidth);
+    const nextScrollLeft = Math.max(0, Math.min(scrollableWidth, clickPct * scrollableWidth));
+    tableWrapperRef.current.scrollLeft = nextScrollLeft;
+    setScrollMetrics((prev) => ({ ...prev, scrollLeft: nextScrollLeft }));
   };
 
   const setFilter = (key: keyof ColumnFilters, value: string) =>
@@ -321,19 +367,18 @@ function PolicyDashboard() {
     });
   }, [policies, filters]);
 
-  // Keeps the top scrollbar's width matched to the table's actual scrollable
-  // width. Reads scrollWidth off the wrapper (the element that actually
-  // scrolls) rather than the <table>'s ResizeObserver contentRect, which can
-  // under-report on a border-collapse table — this is what really has to
-  // match for the two scrollbars to represent the same scroll range.
+  // Keeps the custom thumb's width/position matched to the table's actual
+  // scrollable width. Reads scrollWidth off the wrapper (the element that
+  // actually scrolls) rather than the <table>'s ResizeObserver contentRect,
+  // which can under-report on a border-collapse table.
   useEffect(() => {
     const tableEl = tableRef.current;
     const wrapperEl = tableWrapperRef.current;
     if (!tableEl || !wrapperEl) return;
-    const update = () => setTableScrollWidth(wrapperEl.scrollWidth);
-    update();
-    const ro = new ResizeObserver(update);
+    updateScrollMetrics();
+    const ro = new ResizeObserver(updateScrollMetrics);
     ro.observe(tableEl);
+    ro.observe(wrapperEl);
     return () => ro.disconnect();
   }, [visibleColumns, filteredPolicies]);
 
@@ -593,8 +638,15 @@ function PolicyDashboard() {
             </span>
           </div>
 
-          <div className={styles.topScroll} ref={topScrollRef} onScroll={handleTopScroll}>
-            <div style={{ width: tableScrollWidth, height: 1 }} />
+          <div className={styles.topScroll} ref={topScrollRef} onClick={onTrackClick}>
+            <div
+              className={styles.topScrollThumb}
+              data-thumb="true"
+              style={{ width: `${thumbWidthPct}%`, left: `${thumbLeftPct}%` }}
+              onPointerDown={onThumbPointerDown}
+              onPointerMove={onThumbPointerMove}
+              onPointerUp={onThumbPointerUp}
+            />
           </div>
 
           <div className={styles.tableWrapper} ref={tableWrapperRef} onScroll={handleTableScroll}>

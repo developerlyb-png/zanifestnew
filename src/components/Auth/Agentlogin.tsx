@@ -58,8 +58,13 @@ export default function Agentlogin() {
       // optional local storage
       localStorage.setItem("agentName", data.agent?.name || "");
 
-      // ✅ DIRECT REDIRECT TO AGENT PAGE
-      router.replace("/agentpage");
+      // Send agents who haven't finished training straight to the video
+      // lectures instead of /agentpage — agentpage.tsx used to be the one
+      // deciding this (after its own async /api/agent/me call), which
+      // meant every untrained/newly-approved agent saw a flash of the
+      // dashboard before being bounced to /videolectures a second later.
+      // The login response already knows trainingCompleted, so decide here.
+      router.replace(data.agent?.trainingCompleted ? "/agentpage" : "/videolectures");
 
     } catch (err) {
       console.error("Login failed:", err);

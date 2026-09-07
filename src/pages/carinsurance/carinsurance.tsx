@@ -390,7 +390,7 @@ setLoading(false);
 
         <div className={styles.bottom}>
           <p className={styles.heading}>
-            Compare &<b className={styles.bold}>save upto 90%</b>
+            Compare & <b className={styles.bold}>save upto 90 % </b>
             on car insurance
           </p>
 

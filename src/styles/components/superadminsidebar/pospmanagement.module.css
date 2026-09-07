@@ -1,0 +1,152 @@
+.container {
+  padding: 8px 4px;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+.summary {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px 4px;
+}
+
+.tableWrapper {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.th {
+  text-align: left;
+  vertical-align: top;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.th:last-child {
+  border-right: none;
+}
+
+.thLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.searchInput,
+.selectInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #ff8a1f;
+}
+
+.selectInput {
+  cursor: pointer;
+}
+
+.row {
+  border-bottom: 1px solid #eef0f3;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: 20px;
+  border-right: 1px solid #eef0f3;
+  vertical-align: top;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.td:last-child {
+  border-right: none;
+}
+
+.phone {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.infoLine {
+  line-height: 1.6;
+  color: #374151;
+}
+
+.infoLine b {
+  color: #111827;
+  font-weight: 700;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.pillGreen {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pillYellow {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.pillRed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pillGray {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.emptyCell {
+  padding: 32px 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .th,
+  .td {
+    padding: 14px;
+  }
+}

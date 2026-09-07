@@ -98,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       agent: {
         name: `${agent.firstName} ${agent.lastName}`,
         email: agent.email,
+        trainingCompleted: agent.trainingCompleted,
       },
     });
 

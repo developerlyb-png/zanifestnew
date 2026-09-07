@@ -52,6 +52,7 @@ import Officepackagepolicylist from "@/components/superadminsidebar/Officepackag
 import Directorlist from "@/components/superadminsidebar/Directorlist";
 import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
 import ShowResult from "@/components/superadminsidebar/showresult";
+import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 
 
@@ -87,6 +88,7 @@ import {
   FiChevronDown,
   FiTarget,
   FiLayers,
+  FiTrendingUp,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -103,6 +105,7 @@ const SIDEBAR_GROUP_OF: Record<string, string> = {
   agentlist: "posp",
   reviewApplication: "posp",
   showResult: "posp",
+  pospManagement: "posp",
   adminlist: "admin",
   managerlist: "admin",
 };
@@ -605,17 +608,39 @@ const SuperAdminDashboard = () => {
                     <span className={styles.label}>Review Application</span>
                   </span>
                 </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${
-                    activeSection === "showResult" ? styles.activeMenu : ""
-                  }`}
-                  onClick={() => setActiveSection("showResult")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiAward className={styles.icon} />
-                    <span className={styles.label}>Certificate</span>
-                  </span>
-                </li>
+                {/* Certificate — hidden from the sidebar for now (per request),
+                    feature kept intact for later re-enabling. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${
+                      activeSection === "showResult" ? styles.activeMenu : ""
+                    }`}
+                    onClick={() => setActiveSection("showResult")}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiAward className={styles.icon} />
+                      <span className={styles.label}>Certificate</span>
+                    </span>
+                  </li>
+                )}
+                {/* POSP Management — hidden from the sidebar for now (per request),
+                    feature kept intact for later re-enabling. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${
+                      activeSection === "pospManagement" ? styles.activeMenu : ""
+                    }`}
+                    onClick={() => {
+                      setActiveSection("pospManagement");
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiTrendingUp className={styles.icon} />
+                      <span className={styles.label}>POSP Management</span>
+                    </span>
+                  </li>
+                )}
               </>
             )}
 
@@ -894,6 +919,7 @@ const SuperAdminDashboard = () => {
 {activeSection === "directorlist" && <Directorlist />}
 {activeSection === "reviewApplication" && <ReviewApplication />}
 {activeSection === "showResult" && <ShowResult />}
+{activeSection === "pospManagement" && <PospManagement />}
 
 
         </main>
