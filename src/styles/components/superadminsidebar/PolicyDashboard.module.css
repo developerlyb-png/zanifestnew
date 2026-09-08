@@ -36,7 +36,7 @@
   border: none;
   border-radius: 8px;
   padding: 9px 18px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(13, 148, 136, 0.25);
@@ -57,7 +57,7 @@
   border: 1.5px solid #cfe0f8;
   border-radius: 8px;
   padding: 8.5px 16px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -108,7 +108,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   color: #1f2937;
   font-weight: 500;
   margin: 0 0 5px;
@@ -122,7 +122,7 @@
 }
 
 .cardValue {
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
   white-space: nowrap;
   letter-spacing: -0.01em;
@@ -226,7 +226,7 @@
   background: #007bff;
   border-color: #007bff;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .presetBtnActive:hover {
@@ -344,7 +344,7 @@
 .rangeText {
   margin-left: auto;
   color: #8a93a6;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 /* Table */
@@ -416,7 +416,7 @@
   border-collapse: collapse;
   width: 100%;
   min-width: 1900px;
-  font-size: 13.5px;
+  font-size: 11.5px;
 }
 
 .table th {
@@ -437,7 +437,7 @@
   border: 1px solid #e3e7ed;
   white-space: normal;
   vertical-align: top;
-  color: #262b3d;
+  color: #606378;
   max-width: 220px;
 }
 
