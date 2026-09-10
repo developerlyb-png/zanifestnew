@@ -17,7 +17,7 @@
 /* ================= HEADER ================= */
 .header {
   background: linear-gradient(180deg, #12172b 0%, #0c0f1d 100%);
-  padding: 1rem 1.75rem;
+  padding: 0.4rem 1.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   display: flex;
@@ -432,7 +432,7 @@
 .content {
   position: relative;
   flex: 1;
-  padding: 2rem;
+  padding: 0.5rem;
   overflow-y: auto;
   background-color: #f4f6fb;
 }
@@ -744,7 +744,7 @@
   }
 
   .content {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .dashboardTitle {
@@ -865,7 +865,7 @@
 
 @media screen and (max-width: 480px) {
   .content {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .dashboardTitle {
