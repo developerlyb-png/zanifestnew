@@ -8,6 +8,7 @@ type ProfileMenuAgent = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  profileImage?: string;
 } | null;
 
 interface ProfileMenuProps {
@@ -34,6 +35,14 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ agent, onNavigate, onLogout }
     agent?.lastName || ""
   ).charAt(0)}`.toUpperCase();
 
+  const avatar = agent?.profileImage ? (
+    <span className={styles.profileAvatar}>
+      <img src={agent.profileImage} alt="" className={styles.profileAvatarImg} />
+    </span>
+  ) : (
+    <span className={styles.profileAvatar}>{initials}</span>
+  );
+
   const go = (section: string) => {
     onNavigate(section);
     setOpen(false);
@@ -46,7 +55,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ agent, onNavigate, onLogout }
         className={styles.profileTrigger}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className={styles.profileAvatar}>{initials}</span>
+        {avatar}
         <FiChevronDown
           size={14}
           className={`${styles.profileChevron} ${open ? styles.profileChevronOpen : ""}`}
@@ -56,7 +65,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ agent, onNavigate, onLogout }
       {open && (
         <div className={styles.profileDropdown}>
           <div className={styles.profileDropdownHeader}>
-            <span className={styles.profileAvatar}>{initials}</span>
+            {avatar}
             <div className={styles.profileDropdownIdentity}>
               <span className={styles.profileDropdownName}>
                 {agent?.firstName ?? "Agent"} {agent?.lastName ?? ""}

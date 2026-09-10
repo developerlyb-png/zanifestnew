@@ -89,6 +89,8 @@ interface FormDataType {
   policyRemark: string;
   startDate: string;
   endDate: string;
+  riskStartDateTP: string;
+  riskEndDateTP: string;
 
   branchName: string;
   reportingManagerId: string;
@@ -141,6 +143,8 @@ const EMPTY_FORM: FormDataType = {
   policyRemark: "",
   startDate: "",
   endDate: "",
+  riskStartDateTP: "",
+  riskEndDateTP: "",
 
   branchName: "",
   reportingManagerId: "",
@@ -259,6 +263,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     setFormData((p) => ({ ...p, [key]: value }));
 
   const isMotor = formData.lineOfBusiness === "Motor";
+  const showTPDates =
+    isMotor && (formData.caseType === "1+3 Cover" || formData.caseType === "1+5 Cover");
 
   const monthLabel = formData.paymentReceivedDate
     ? MONTH_NAMES[new Date(formData.paymentReceivedDate).getMonth()]
@@ -371,6 +377,10 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
       if (!formData.insurer) e.insurer = "Required";
       if (!formData.startDate) e.startDate = "Required";
       if (!formData.endDate) e.endDate = "Required";
+      if (showTPDates) {
+        if (!formData.riskStartDateTP) e.riskStartDateTP = "Required";
+        if (!formData.riskEndDateTP) e.riskEndDateTP = "Required";
+      }
       if (!formData.branchName) e.branchName = "Required";
       if (!formData.reportingManagerId) e.reportingManagerId = "Required";
       if (!fixedAgent) {
@@ -564,6 +574,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
             itemsCovered: formData.itemsCovered,
             ncbApplicable: formData.ncbApplicable,
             caseType: formData.caseType,
+            riskStartDateTP: showTPDates ? formData.riskStartDateTP || undefined : undefined,
+            riskEndDateTP: showTPDates ? formData.riskEndDateTP || undefined : undefined,
           }
         : undefined,
       assignment: {
@@ -1035,6 +1047,36 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                   />
                   {errors.endDate && <span className={styles.errorText}>{errors.endDate}</span>}
                 </div>
+
+                {showTPDates && (
+                  <>
+                    <div className={styles.field}>
+                      <Label text="Risk Start Date TP" required />
+                      <input
+                        type="date"
+                        className={`${styles.input} ${errors.riskStartDateTP ? styles.errorInput : ""}`}
+                        value={formData.riskStartDateTP}
+                        onChange={(e) => setField("riskStartDateTP", e.target.value)}
+                      />
+                      {errors.riskStartDateTP && (
+                        <span className={styles.errorText}>{errors.riskStartDateTP}</span>
+                      )}
+                    </div>
+
+                    <div className={styles.field}>
+                      <Label text="Risk End Date TP" required />
+                      <input
+                        type="date"
+                        className={`${styles.input} ${errors.riskEndDateTP ? styles.errorInput : ""}`}
+                        value={formData.riskEndDateTP}
+                        onChange={(e) => setField("riskEndDateTP", e.target.value)}
+                      />
+                      {errors.riskEndDateTP && (
+                        <span className={styles.errorText}>{errors.riskEndDateTP}</span>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

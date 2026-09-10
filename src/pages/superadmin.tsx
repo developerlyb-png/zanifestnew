@@ -54,6 +54,7 @@ import ReviewApplication from "@/components/superadminsidebar/reviewapplication"
 import ShowResult from "@/components/superadminsidebar/showresult";
 import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
+import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 
 
 
@@ -89,6 +90,7 @@ import {
   FiTarget,
   FiLayers,
   FiTrendingUp,
+  FiSliders,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -547,7 +549,23 @@ const SuperAdminDashboard = () => {
             >
               <span className={styles.iconLabel}>
                 <FiFileText className={styles.icon} />
-                <span className={styles.label}>Policy Data</span>
+                <span className={styles.label}>Customer</span>
+              </span>
+            </li>
+
+            {/* Config Management (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "configManagement" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("configManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiSliders className={styles.icon} />
+                <span className={styles.label}>Configuration</span>
               </span>
             </li>
 
@@ -897,6 +915,7 @@ const SuperAdminDashboard = () => {
           )}
 
           {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
           {activeSection === "resetpassword" && <ResetPassword />}

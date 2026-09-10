@@ -10,7 +10,7 @@ interface AgentHeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleLogout: () => void;
-  agentProfile?: { firstName?: string; lastName?: string; email?: string } | null;
+  agentProfile?: { firstName?: string; lastName?: string; email?: string; profileImage?: string } | null;
   setActiveSection: React.Dispatch<React.SetStateAction<string>>;
 }
 

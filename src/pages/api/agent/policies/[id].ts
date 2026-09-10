@@ -11,27 +11,24 @@ export const config = {
   },
 };
 
-async function requireAdmin(req: NextApiRequest) {
-  const token = req.cookies["adminToken"];
+async function requireAgent(req: NextApiRequest) {
+  const token = req.cookies["agentToken"];
   const data = token ? await verifyToken(token) : null;
 
-  if (
-    !data ||
-    typeof data !== "object" ||
-    !("role" in data) ||
-    !["superadmin", "admin"].includes((data as any).role)
-  ) {
+  if (!data || typeof data !== "object" || (data as any).role !== "agent") {
     return null;
   }
-  return data;
+  return data as any;
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const admin = await requireAdmin(req);
-  if (!admin) {
+  // Deliberately agentToken-only, same as /api/agent/policies — an agent
+  // must never be able to touch another agent's (or the admin's) policies.
+  const agent = await requireAgent(req);
+  if (!agent) {
     return res.status(401).json({ success: false, message: "Not authorized" });
   }
 
@@ -44,13 +41,13 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      const policy = await IssuedPolicy.findById(id);
+      const policy = await IssuedPolicy.findOne({ _id: id, createdByAgentId: agent.id });
       if (!policy) {
         return res.status(404).json({ success: false, message: "Policy not found" });
       }
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
-      console.log("ADMIN POLICY GET ERROR", err);
+      console.log("AGENT POLICY GET ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }
@@ -67,8 +64,8 @@ export default async function handler(
         return res.status(400).json({ success: false, message: "Only PDF files are allowed" });
       }
 
-      const policy = await IssuedPolicy.findByIdAndUpdate(
-        id,
+      const policy = await IssuedPolicy.findOneAndUpdate(
+        { _id: id, createdByAgentId: agent.id },
         {
           $push: { policyDocuments: { data: fileData, fileName } },
           $set: { policyDocumentStatus: "Received" },
@@ -82,20 +79,25 @@ export default async function handler(
 
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
-      console.log("ADMIN POLICY DOCUMENT UPLOAD ERROR", err);
+      console.log("AGENT POLICY DOCUMENT UPLOAD ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }
 
   if (req.method === "PUT") {
     try {
-      const fields = req.body?.fields && typeof req.body.fields === "object" ? req.body.fields : {};
-      const action = req.body?.action; // "approve" | "reject" | undefined
-      const remark = typeof req.body?.remark === "string" ? req.body.remark.trim() : "";
-
-      if (action && action !== "approve" && action !== "reject") {
-        return res.status(400).json({ success: false, message: "Invalid action" });
+      const existing = await IssuedPolicy.findOne({ _id: id, createdByAgentId: agent.id });
+      if (!existing) {
+        return res.status(404).json({ success: false, message: "Policy not found" });
       }
+      if (existing.adminApprovalStatus !== "Rejected") {
+        return res.status(400).json({
+          success: false,
+          message: "Only rejected policies can be edited and resubmitted",
+        });
+      }
+
+      const fields = req.body?.fields && typeof req.body.fields === "object" ? req.body.fields : {};
 
       const EDITABLE_TOP_FIELDS = [
         "policyNumber",
@@ -106,12 +108,10 @@ export default async function handler(
         "transactionType",
         "premium",
         "grossPremium",
-        "commissionAmount",
-        "payoutAmount",
         "subInsured",
         "policyRemark",
       ];
-      const NUMERIC_FIELDS = ["premium", "grossPremium", "commissionAmount", "payoutAmount"];
+      const NUMERIC_FIELDS = ["premium", "grossPremium"];
       const EDITABLE_CUSTOMER_FIELDS = ["fullName", "email", "mobile", "address"];
 
       const update: Record<string, any> = {};
@@ -120,8 +120,6 @@ export default async function handler(
         if (fields[key] === undefined) continue;
         update[key] = NUMERIC_FIELDS.includes(key) ? Number(fields[key]) || 0 : String(fields[key]).trim();
       }
-      // Keep the legacy policyType (Motor/Non Motor) mirror in sync with
-      // lineOfBusiness, same as the create flow does.
       if (update.lineOfBusiness) update.policyType = update.lineOfBusiness;
 
       if (fields.startDate) {
@@ -141,40 +139,44 @@ export default async function handler(
         }
       }
 
-      if (action) {
-        update.adminApprovalStatus = action === "approve" ? "Approved" : "Rejected";
-        update.adminApprovalRemark = remark;
-        update.adminApprovalReviewedBy =
-          `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
-          (admin as any).email;
-        update.adminApprovalReviewedAt = new Date();
-      }
+      // Resubmitting always resets the review cycle — clear the old
+      // rejection so it goes back into the admin's queue as a fresh Pending
+      // item rather than looking like a still-open rejection.
+      update.adminApprovalStatus = "Pending";
+      update.adminApprovalRemark = "";
+      update.adminApprovalReviewedBy = "";
+      update.adminApprovalReviewedAt = null;
 
-      if (Object.keys(update).length === 0) {
-        return res.status(400).json({ success: false, message: "Nothing to update" });
-      }
-
-      const policy = await IssuedPolicy.findByIdAndUpdate(id, { $set: update }, { new: true });
-      if (!policy) {
-        return res.status(404).json({ success: false, message: "Policy not found" });
-      }
+      const policy = await IssuedPolicy.findOneAndUpdate(
+        { _id: id, createdByAgentId: agent.id },
+        { $set: update },
+        { new: true }
+      );
 
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
-      console.log("ADMIN POLICY UPDATE ERROR", err);
+      console.log("AGENT POLICY EDIT/RESUBMIT ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }
 
   if (req.method === "DELETE") {
     try {
-      const policy = await IssuedPolicy.findByIdAndDelete(id);
-      if (!policy) {
+      const existing = await IssuedPolicy.findOne({ _id: id, createdByAgentId: agent.id });
+      if (!existing) {
         return res.status(404).json({ success: false, message: "Policy not found" });
       }
+      if (existing.adminApprovalStatus !== "Rejected") {
+        return res.status(400).json({
+          success: false,
+          message: "Only rejected policies can be deleted from here",
+        });
+      }
+
+      await IssuedPolicy.deleteOne({ _id: id, createdByAgentId: agent.id });
       return res.status(200).json({ success: true });
     } catch (err: any) {
-      console.log("ADMIN POLICY DELETE ERROR", err);
+      console.log("AGENT POLICY DELETE ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }

@@ -1,33 +1,52 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/components/agentpage/AgentPolicyDashboard.module.css";
 import {
   FiDownload,
   FiSearch,
   FiPlus,
   FiUploadCloud,
-  FiCopy,
   FiColumns,
+  FiEye,
+  FiClock,
+  FiCheckCircle,
+  FiXCircle,
+  FiArrowLeft,
+  FiInbox,
+  FiEdit2,
+  FiTrash2,
+  FiFileText,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiPercent,
 } from "react-icons/fi";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import AddPolicyForm from "@/components/superadminsidebar/AddPolicyForm";
 import BulkUploadModal from "@/components/superadminsidebar/BulkUploadModal";
+import PolicyDetailView from "@/components/superadminsidebar/PolicyDetailView";
+import EditRejectedPolicyModal from "./EditRejectedPolicyModal";
 
 // Agent-scoped port of superadminsidebar/PolicyDashboard.tsx — same columns,
 // filters, presets, column picker and CSV export, backed by the
 // agentToken-only /api/agent/policies[-bulk] endpoints instead of the admin
 // ones, and without the admin-only click-through detail view.
 
-interface Policy {
+export interface Policy {
   _id: string;
   policyNumber?: string;
   subInsured?: string;
   endorsementNo?: string;
   policyType?: string;
+  lineOfBusiness?: string;
+  product?: string;
+  policyTypeStructure?: string;
   transactionType?: string;
   insurer?: string;
   pospPartner?: string;
   status?: string;
+  adminApprovalStatus?: string;
+  adminApprovalRemark?: string;
   startDate?: string;
   endDate?: string;
   premium?: number;
@@ -39,7 +58,8 @@ interface Policy {
   policyRemark?: string;
   reconcile?: string;
   createdAt?: string;
-  customer?: { fullName?: string };
+  customer?: { fullName?: string; email?: string; mobile?: string; address?: string };
+  policyDocuments?: { data: string; fileName: string }[];
 }
 
 type Preset = "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
@@ -127,41 +147,234 @@ const bucketFor = (p: Policy) => {
   return "Other";
 };
 
-type SummaryTone = "blue" | "teal" | "green" | "purple";
+type StatTone = "blue" | "teal" | "green" | "purple";
 
-const TONE_CLASS: Record<SummaryTone, string> = {
-  blue: styles.toneBlue,
-  teal: styles.toneTeal,
-  green: styles.toneGreen,
-  purple: styles.tonePurple,
+const STAT_ICON_TONE_CLASS: Record<StatTone, string> = {
+  blue: styles.statIconBlue,
+  teal: styles.statIconTeal,
+  green: styles.statIconGreen,
+  purple: styles.statIconPurple,
 };
 
-interface SummaryCardProps {
+const ChangePill: React.FC<{ current: number; previous: number }> = ({ current, previous }) => {
+  if (previous === 0) {
+    if (current === 0) return null;
+    return (
+      <span className={`${styles.changePill} ${styles.changePillUp}`}>
+        <FiTrendingUp size={11} /> New
+      </span>
+    );
+  }
+  const pct = ((current - previous) / previous) * 100;
+  const up = pct >= 0;
+  return (
+    <span className={`${styles.changePill} ${up ? styles.changePillUp : styles.changePillDown}`}>
+      {up ? <FiTrendingUp size={11} /> : <FiTrendingDown size={11} />} {Math.abs(pct).toFixed(1)}%
+    </span>
+  );
+};
+
+interface StatCardProps {
   icon: React.ReactNode;
-  title: string;
+  tone: StatTone;
+  label: string;
+  subtitle: string;
   value: React.ReactNode;
-  tone: SummaryTone;
-  breakdown: { label: string; value: React.ReactNode }[];
+  current: number;
+  previous: number;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ icon, title, value, tone, breakdown }) => (
-  <div className={`${styles.card} ${TONE_CLASS[tone]}`}>
-    <p className={styles.cardTitle}>
-      <span className={styles.iconBadge}>{icon}</span> {title}
-    </p>
-    <div className={styles.cardBody}>
-      <span className={styles.cardValue}>{value}</span>
-      <div className={styles.cardBreakdown}>
-        {breakdown.map((b) => (
-          <div key={b.label} className={styles.breakdownItem}>
-            <span className={styles.breakdownLabel}>{b.label}</span>
-            <span className={styles.breakdownValue}>{b.value}</span>
-          </div>
-        ))}
-      </div>
+const StatCard: React.FC<StatCardProps> = ({ icon, tone, label, subtitle, value, current, previous }) => (
+  <div className={styles.statCard}>
+    <div className={styles.statCardTop}>
+      <span className={`${styles.statCardIcon} ${STAT_ICON_TONE_CLASS[tone]}`}>{icon}</span>
+      <span className={styles.statCardLabel}>{label}</span>
+    </div>
+    <p className={styles.statCardSubtitle}>{subtitle}</p>
+    <div className={styles.statCardValueRow}>
+      <span className={styles.statCardValue}>{value}</span>
+      <ChangePill current={current} previous={previous} />
     </div>
   </div>
 );
+
+const SalesTooltip: React.FC<any> = ({ active, payload, label }) => {
+  if (!active || !payload || payload.length === 0) return null;
+  return (
+    <div className={styles.chartTooltip}>
+      <div className={styles.chartTooltipDate}>{label}</div>
+      <div className={styles.chartTooltipValue}>{formatInrAbbrev(payload[0].value)}</div>
+    </div>
+  );
+};
+
+const ApprovalBadge: React.FC<{ status?: string }> = ({ status }) => {
+  const value = status || "Pending";
+  if (value === "Approved") {
+    return (
+      <span className={`${styles.approvalBadge} ${styles.approvalApproved}`}>
+        <FiCheckCircle size={12} /> Approved
+      </span>
+    );
+  }
+  if (value === "Rejected") {
+    return (
+      <span className={`${styles.approvalBadge} ${styles.approvalRejected}`}>
+        <FiXCircle size={12} /> Rejected
+      </span>
+    );
+  }
+  return (
+    <span className={`${styles.approvalBadge} ${styles.approvalPending}`}>
+      <FiClock size={12} /> Pending
+    </span>
+  );
+};
+
+const PendingPoliciesPanel: React.FC<{
+  policies: Policy[];
+  loading: boolean;
+  onBack: () => void;
+  onUpdated: (updated: Policy) => void;
+  onDeleted: (id: string) => void;
+}> = ({ policies, loading, onBack, onUpdated, onDeleted }) => {
+  const [editingPolicy, setEditingPolicy] = useState<Policy | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (policy: Policy) => {
+    if (!window.confirm(`Delete rejected policy "${policy.policyNumber || ""}"? This can't be undone.`)) {
+      return;
+    }
+    setDeletingId(policy._id);
+    try {
+      const res = await fetch(`/api/agent/policies/${policy._id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert(data.message || "Failed to delete policy");
+        return;
+      }
+      onDeleted(policy._id);
+    } catch (err) {
+      console.error("Delete policy failed", err);
+      alert("Failed to delete policy");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return (
+    <div className={styles.pendingPanel}>
+      <button type="button" className={styles.backLink} onClick={onBack}>
+        <FiArrowLeft /> Back to My Policies
+      </button>
+
+      <div className={styles.pendingPanelTitleRow}>
+        <div>
+          <h3 className={styles.pendingPanelTitle}>Pending Approval</h3>
+          <p className={styles.pendingPanelHint}>
+            Policies you've submitted stay here until an admin reviews them. Once approved,
+            they'll move automatically into My Policies. Rejected ones can be edited and
+            resubmitted, or deleted.
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.pendingTableWrapper}>
+        <table className={styles.pendingTable}>
+          <thead>
+            <tr>
+              <th>Policy No.</th>
+              <th>Insured Name</th>
+              <th>Line of Business</th>
+              <th>Insurer</th>
+              <th>Premium</th>
+              <th>Submitted On</th>
+              <th>Status</th>
+              <th>Admin Remark</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={9} className={styles.pendingEmptyState}>
+                  Loading...
+                </td>
+              </tr>
+            ) : policies.length === 0 ? (
+              <tr>
+                <td colSpan={9} className={styles.pendingEmptyState}>
+                  <FiInbox size={28} />
+                  <span>No pending or rejected policies right now.</span>
+                </td>
+              </tr>
+            ) : (
+              policies.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.policyNumber || "--"}</td>
+                  <td>{p.customer?.fullName || "--"}</td>
+                  <td>{p.policyType || "--"}</td>
+                  <td>{p.insurer || "--"}</td>
+                  <td>{formatInr(p.premium)}</td>
+                  <td>{formatDisplayDate(p.createdAt)}</td>
+                  <td>
+                    <ApprovalBadge status={p.adminApprovalStatus} />
+                  </td>
+                  <td className={styles.remarkCell}>
+                    {p.adminApprovalStatus && p.adminApprovalStatus !== "Pending"
+                      ? p.adminApprovalRemark || "--"
+                      : "--"}
+                  </td>
+                  <td>
+                    {p.adminApprovalStatus === "Rejected" ? (
+                      <div className={styles.pendingRowActions}>
+                        <button
+                          type="button"
+                          className={styles.pendingActionBtn}
+                          onClick={() => setEditingPolicy(p)}
+                          title="Edit & resubmit"
+                          aria-label="Edit & resubmit"
+                        >
+                          <FiEdit2 size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${styles.pendingActionBtn} ${styles.pendingActionBtnDanger}`}
+                          onClick={() => handleDelete(p)}
+                          disabled={deletingId === p._id}
+                          title="Delete"
+                          aria-label="Delete"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      "--"
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {editingPolicy && (
+        <EditRejectedPolicyModal
+          policy={editingPolicy}
+          onClose={() => setEditingPolicy(null)}
+          onResubmitted={(updated) => {
+            onUpdated(updated);
+            setEditingPolicy(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 interface ColumnFilters {
   insuredName: string;
@@ -203,7 +416,8 @@ type ColumnKey =
   | "payoutStatus"
   | "policyDocStatus"
   | "policyRemark"
-  | "reconcile";
+  | "reconcile"
+  | "uploadPdf";
 
 const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "insuredName", label: "Insured Name" },
@@ -226,6 +440,7 @@ const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "policyDocStatus", label: "Policy Document Status" },
   { key: "policyRemark", label: "Policy Remark" },
   { key: "reconcile", label: "Reconcile" },
+  { key: "uploadPdf", label: "Upload PDF" },
 ];
 
 const FILLER_KEYS: ColumnKey[] = [
@@ -241,6 +456,7 @@ const FILLER_KEYS: ColumnKey[] = [
   "policyDocStatus",
   "policyRemark",
   "reconcile",
+  "uploadPdf",
 ];
 
 const ALL_COLUMNS_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) => {
@@ -257,12 +473,31 @@ function AgentPolicyDashboard() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ColumnFilters>(EMPTY_FILTERS);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showPendingView, setShowPendingView] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
   const columnPickerRef = useRef<HTMLDivElement>(null);
   const [fixedAgent, setFixedAgent] = useState<{ id: string; name: string } | null>(null);
+  const [uploadingPdfId, setUploadingPdfId] = useState<string | null>(null);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const pdfInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [salesChartWidth, setSalesChartWidth] = useState(0);
+  const salesChartRoRef = useRef<ResizeObserver | null>(null);
+  // A callback ref (not a plain useRef + effect) so the ResizeObserver gets
+  // re-attached every time this div mounts — it unmounts/remounts whenever
+  // the view switches away from and back to the main policy list.
+  const salesChartWrapRef = useCallback((node: HTMLDivElement | null) => {
+    salesChartRoRef.current?.disconnect();
+    salesChartRoRef.current = null;
+    if (node) {
+      setSalesChartWidth(node.clientWidth);
+      const ro = new ResizeObserver(() => setSalesChartWidth(node.clientWidth));
+      ro.observe(node);
+      salesChartRoRef.current = ro;
+    }
+  }, []);
   const topScrollRef = useRef<HTMLDivElement>(null);
   const tableWrapperRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -312,14 +547,27 @@ function AgentPolicyDashboard() {
   const toggleColumn = (key: ColumnKey) =>
     setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
 
+  // A policy only shows up in the main "My Policies" table once an admin
+  // has approved it — anything still pending review, or rejected, lives in
+  // the separate Pending Policies panel instead until it's approved and
+  // "moves" over here.
+  const approvedPolicies = useMemo(
+    () => policies.filter((p) => (p.adminApprovalStatus || "Pending") === "Approved"),
+    [policies]
+  );
+  const pendingPolicies = useMemo(
+    () => policies.filter((p) => (p.adminApprovalStatus || "Pending") !== "Approved"),
+    [policies]
+  );
+
   const uniqueValues = (key: "policyType" | "transactionType" | "insurer" | "pospPartner") =>
-    Array.from(new Set(policies.map((p) => p[key]).filter(Boolean))) as string[];
+    Array.from(new Set(approvedPolicies.map((p) => p[key]).filter(Boolean))) as string[];
 
   const uniqueNames = () =>
-    Array.from(new Set(policies.map((p) => p.customer?.fullName).filter(Boolean))) as string[];
+    Array.from(new Set(approvedPolicies.map((p) => p.customer?.fullName).filter(Boolean))) as string[];
 
   const filteredPolicies = useMemo(() => {
-    return policies.filter((p) => {
+    return approvedPolicies.filter((p) => {
       if (filters.insuredName && p.customer?.fullName !== filters.insuredName) return false;
       if (filters.productName && p.policyType !== filters.productName) return false;
       if (filters.transactionType && p.transactionType !== filters.transactionType) return false;
@@ -337,7 +585,7 @@ function AgentPolicyDashboard() {
         return false;
       return true;
     });
-  }, [policies, filters]);
+  }, [approvedPolicies, filters]);
 
   // Keeps the top scrollbar's width matched to the table's actual scrollable
   // width. Reads scrollWidth off the wrapper (the element that actually
@@ -399,6 +647,104 @@ function AgentPolicyDashboard() {
   const commissionSummary = useMemo(() => sumByBucket(policies, "commissionAmount"), [policies]);
   const payoutSummary = useMemo(() => sumByBucket(policies, "payoutAmount"), [policies]);
 
+  // The immediately preceding period of the same length as the selected
+  // range, fetched purely to power the top cards' "vs. last period" pills.
+  const prevRange = useMemo(() => {
+    const durationMs = Math.max(1, range.to.getTime() - range.from.getTime());
+    const prevTo = new Date(range.from.getTime() - 1);
+    const prevFrom = new Date(prevTo.getTime() - durationMs);
+    return { from: prevFrom, to: prevTo };
+  }, [range]);
+
+  const [prevPolicies, setPrevPolicies] = useState<Policy[]>([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams({
+      from: prevRange.from.toISOString(),
+      to: prevRange.to.toISOString(),
+      dateField: dateBasis,
+    });
+    fetch(`/api/agent/policies?${params.toString()}`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => setPrevPolicies(data.policies || []))
+      .catch(() => setPrevPolicies([]));
+  }, [prevRange, dateBasis, refreshKey]);
+
+  const prevPremiumTotal = useMemo(
+    () => prevPolicies.reduce((sum, p) => sum + (p.grossPremium || 0), 0),
+    [prevPolicies]
+  );
+  const prevCommissionTotal = useMemo(
+    () => prevPolicies.reduce((sum, p) => sum + (p.commissionAmount || 0), 0),
+    [prevPolicies]
+  );
+  const prevPayoutTotal = useMemo(
+    () => prevPolicies.reduce((sum, p) => sum + (p.payoutAmount || 0), 0),
+    [prevPolicies]
+  );
+
+  const approvedCount = useMemo(
+    () => policies.filter((p) => p.adminApprovalStatus === "Approved").length,
+    [policies]
+  );
+  const pendingCount = useMemo(
+    () => policies.filter((p) => (p.adminApprovalStatus || "Pending") === "Pending").length,
+    [policies]
+  );
+  const rejectedCount = useMemo(
+    () => policies.filter((p) => p.adminApprovalStatus === "Rejected").length,
+    [policies]
+  );
+
+  // Breakdown by actual product/policy type (e.g. "2W", "Health", "Pvt
+  // Car") rather than the coarser Motor/Health/Life/Other buckets, for the
+  // legend under the sales trend chart.
+  const productBreakdown = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of policies) {
+      const key = p.product || p.policyType || "Other";
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    const colors = ["#2563eb", "#16a34a", "#f59e0b", "#7c3aed", "#0e9488", "#e11d48"];
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([name, count], i) => ({
+        name,
+        count,
+        color: colors[i % colors.length],
+        pct: policies.length > 0 ? Math.round((count / policies.length) * 100) : 0,
+      }));
+  }, [policies]);
+
+  // Gross premium bucketed by day across the selected range, for the sales
+  // trend chart — always the current period only (single line).
+  const trendData = useMemo(() => {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const totalDays = Math.max(1, Math.round((range.to.getTime() - range.from.getTime()) / dayMs));
+    const bucketCount = Math.min(30, Math.max(7, totalDays));
+    const bucketMs = Math.max(1, range.to.getTime() - range.from.getTime()) / bucketCount;
+    const sums = new Array(bucketCount).fill(0);
+    for (const p of policies) {
+      const raw = dateBasis === "createdAt" ? p.createdAt : p.startDate;
+      if (!raw) continue;
+      const d = new Date(raw);
+      if (Number.isNaN(d.getTime())) continue;
+      const idx = Math.min(
+        bucketCount - 1,
+        Math.max(0, Math.floor((d.getTime() - range.from.getTime()) / bucketMs))
+      );
+      sums[idx] += p.grossPremium || 0;
+    }
+    return Array.from({ length: bucketCount }, (_, i) => {
+      const bucketDate = new Date(range.from.getTime() + i * bucketMs);
+      return {
+        label: bucketDate.toLocaleDateString("en-US", { day: "numeric", month: "short" }),
+        amount: Math.round(sums[i]),
+      };
+    });
+  }, [policies, range, dateBasis]);
+
   const exportCsv = () => {
     const visible = COLUMNS.filter((c) => visibleColumns[c.key]);
     const headers = visible.map((c) => c.label);
@@ -426,6 +772,7 @@ function AgentPolicyDashboard() {
         policyDocStatus: p.policyDocumentStatus || "",
         policyRemark: p.policyRemark || "",
         reconcile: p.reconcile || "",
+        uploadPdf: p.policyDocuments && p.policyDocuments.length > 0 ? "Uploaded" : "Not uploaded",
       };
       return visible.map((c) => cellFor[c.key]);
     });
@@ -441,20 +788,116 @@ function AgentPolicyDashboard() {
     URL.revokeObjectURL(url);
   };
 
+  const viewPolicyDocument = (dataUri: string) => {
+    try {
+      const [header, base64] = dataUri.split(",");
+      const mime = header.match(/data:(.*);base64/)?.[1] || "application/pdf";
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+      window.open(blobUrl, "_blank");
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+    } catch (err) {
+      console.error("Failed to open policy document", err);
+      window.open(dataUri, "_blank");
+    }
+  };
+
+  const handleUploadPolicyDocument = async (policyId: string, file?: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      alert("Please upload a PDF file");
+      return;
+    }
+    setUploadingPdfId(policyId);
+    try {
+      const fileData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch(`/api/agent/policies/${policyId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ fileData, fileName: file.name }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert(data.message || "Failed to upload document");
+        return;
+      }
+      setPolicies((prev) =>
+        prev.map((p) =>
+          p._id === policyId
+            ? {
+                ...p,
+                policyDocuments: data.policy.policyDocuments,
+                policyDocumentStatus: data.policy.policyDocumentStatus,
+              }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("Upload policy document failed", err);
+      alert("Failed to upload document");
+    } finally {
+      setUploadingPdfId(null);
+    }
+  };
+
   const visibleFillerCount = FILLER_KEYS.filter((k) => visibleColumns[k]).length;
   const visibleColumnCount = COLUMNS.filter((c) => visibleColumns[c.key]).length;
+
+  if (selectedPolicyId) {
+    return (
+      <div className={styles.cont}>
+        <PolicyDetailView
+          policyId={selectedPolicyId}
+          apiBasePath="/api/agent/policies"
+          canDelete={false}
+          onBack={() => setSelectedPolicyId(null)}
+          onDeleted={() => setSelectedPolicyId(null)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.cont}>
       <div className={styles.headerRow}>
         <h2 className={styles.heading}>My Policies</h2>
         <div className={styles.headerActions}>
-          <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
-            <FiUploadCloud /> Bulk Upload
+          <button
+            className={styles.outlineBtn}
+            onClick={() => {
+              setShowPendingView((v) => !v);
+              setShowAddForm(false);
+            }}
+          >
+            <FiClock /> {showPendingView ? "Close" : "Pending Policies"}
+            {pendingPolicies.length > 0 && (
+              <span className={styles.pendingCountBadge}>{pendingPolicies.length}</span>
+            )}
           </button>
-          <button className={styles.primaryBtn} onClick={() => setShowAddForm((v) => !v)}>
-            <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
-          </button>
+          {!showPendingView && (
+            <>
+              <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
+                <FiUploadCloud /> Bulk Upload
+              </button>
+              <button
+                className={styles.primaryBtn}
+                onClick={() => {
+                  setShowAddForm((v) => !v);
+                  setShowPendingView(false);
+                }}
+              >
+                <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -466,7 +909,17 @@ function AgentPolicyDashboard() {
         />
       )}
 
-      {showAddForm ? (
+      {showPendingView ? (
+        <PendingPoliciesPanel
+          policies={pendingPolicies}
+          loading={loading}
+          onBack={() => setShowPendingView(false)}
+          onUpdated={(updated) =>
+            setPolicies((prev) => prev.map((p) => (p._id === updated._id ? { ...p, ...updated } : p)))
+          }
+          onDeleted={(id) => setPolicies((prev) => prev.filter((p) => p._id !== id))}
+        />
+      ) : showAddForm ? (
         <AddPolicyForm
           submitEndpoint="/api/agent/policies"
           fixedAgent={fixedAgent ?? undefined}
@@ -478,44 +931,150 @@ function AgentPolicyDashboard() {
         />
       ) : (
         <>
-          <div className={styles.summaryRow}>
-            <SummaryCard
-              icon={<FiCopy />}
-              title="Total Policies"
-              value={summary.totalPolicies}
+          <div className={styles.statCardsRow}>
+            <StatCard
+              icon={<FiFileText size={16} />}
               tone="blue"
-              breakdown={summary.buckets.map((b) => ({ label: b, value: summary.counts[b] }))}
+              label="Total Policies"
+              subtitle="This period"
+              value={summary.totalPolicies}
+              current={summary.totalPolicies}
+              previous={prevPolicies.length}
             />
-            <SummaryCard
-              icon="₹"
-              title="Total Gross Premium"
-              value={formatInrAbbrev(premiumSummary.total)}
+            <StatCard
+              icon={<span className={styles.rupeeIcon}>₹</span>}
               tone="teal"
-              breakdown={premiumSummary.buckets.map((b) => ({
-                label: b,
-                value: formatInrAbbrev(premiumSummary.sums[b]),
-              }))}
+              label="Total Premium"
+              subtitle="Gross premium"
+              value={formatInrAbbrev(premiumSummary.total)}
+              current={premiumSummary.total}
+              previous={prevPremiumTotal}
             />
-            <SummaryCard
-              icon="₹"
-              title="Total Commission"
-              value={formatInrAbbrev(commissionSummary.total)}
+            <StatCard
+              icon={<FiPercent size={16} />}
               tone="green"
-              breakdown={commissionSummary.buckets.map((b) => ({
-                label: b,
-                value: formatInrAbbrev(commissionSummary.sums[b]),
-              }))}
+              label="Total Commission"
+              subtitle="Commission earned"
+              value={formatInrAbbrev(commissionSummary.total)}
+              current={commissionSummary.total}
+              previous={prevCommissionTotal}
             />
-            <SummaryCard
-              icon="₹"
-              title="Total Payout"
-              value={formatInrAbbrev(payoutSummary.total)}
+            <StatCard
+              icon={<span className={styles.rupeeIcon}>₹</span>}
               tone="purple"
-              breakdown={payoutSummary.buckets.map((b) => ({
-                label: b,
-                value: formatInrAbbrev(payoutSummary.sums[b]),
-              }))}
+              label="Total Payout"
+              subtitle="Payout amount"
+              value={formatInrAbbrev(payoutSummary.total)}
+              current={payoutSummary.total}
+              previous={prevPayoutTotal}
             />
+          </div>
+
+          <div className={styles.mainGrid}>
+            <div className={styles.salesCard}>
+              <div className={styles.salesCardHeader}>
+                <div>
+                  <h3 className={styles.salesCardTitle}>Premium Sales</h3>
+                  <div className={styles.salesCardValueRow}>
+                    <span className={styles.salesCardValue}>{formatInrAbbrev(premiumSummary.total)}</span>
+                    <ChangePill current={premiumSummary.total} previous={prevPremiumTotal} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.salesChartBox} ref={salesChartWrapRef}>
+                {salesChartWidth > 0 && (
+                  <AreaChart
+                    width={salesChartWidth}
+                    height={240}
+                    data={trendData}
+                    margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#16a34a" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#eef1f6" />
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fontSize: 11, fill: "#9aa2b4" }}
+                      axisLine={false}
+                      tickLine={false}
+                      minTickGap={24}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: "#9aa2b4" }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v) => formatInrAbbrev(v)}
+                      width={48}
+                    />
+                    <Tooltip content={<SalesTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="amount"
+                      stroke="#16a34a"
+                      strokeWidth={2.5}
+                      fill="url(#salesFill)"
+                      activeDot={{ r: 5 }}
+                    />
+                  </AreaChart>
+                )}
+              </div>
+
+              <div className={styles.productLegend}>
+                {productBreakdown.length === 0 ? (
+                  <p className={styles.productLegendEmpty}>No policies in this range yet.</p>
+                ) : (
+                  productBreakdown.map((row) => (
+                    <div key={row.name} className={styles.productLegendItem}>
+                      <span className={styles.productLegendDot} style={{ background: row.color }} />
+                      <span className={styles.productLegendName}>{row.name}</span>
+                      <span className={styles.productLegendCount}>{row.count}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className={styles.approvalCard}>
+              <h3 className={styles.approvalCardTitle}>Approval Status</h3>
+
+              <div className={styles.approvalStatRow}>
+                <span className={`${styles.approvalStatIcon} ${styles.approvalStatIconGreen}`}>
+                  <FiCheckCircle size={15} />
+                </span>
+                <div className={styles.approvalStatText}>
+                  <span className={styles.approvalStatLabel}>Approved</span>
+                  <span className={styles.approvalStatSub}>Live in your policy list</span>
+                </div>
+                <span className={styles.approvalStatValue}>{approvedCount}</span>
+              </div>
+
+              <div className={styles.approvalStatRow}>
+                <span className={`${styles.approvalStatIcon} ${styles.approvalStatIconAmber}`}>
+                  <FiClock size={15} />
+                </span>
+                <div className={styles.approvalStatText}>
+                  <span className={styles.approvalStatLabel}>Pending</span>
+                  <span className={styles.approvalStatSub}>Awaiting admin review</span>
+                </div>
+                <span className={styles.approvalStatValue}>{pendingCount}</span>
+              </div>
+
+              <div className={styles.approvalStatRow}>
+                <span className={`${styles.approvalStatIcon} ${styles.approvalStatIconRed}`}>
+                  <FiXCircle size={15} />
+                </span>
+                <div className={styles.approvalStatText}>
+                  <span className={styles.approvalStatLabel}>Rejected</span>
+                  <span className={styles.approvalStatSub}>Needs edit & resubmit</span>
+                </div>
+                <span className={styles.approvalStatValue}>{rejectedCount}</span>
+              </div>
+            </div>
           </div>
 
           <div className={styles.filterRow}>
@@ -733,7 +1292,15 @@ function AgentPolicyDashboard() {
                   filteredPolicies.map((p) => (
                     <tr key={p._id}>
                       {visibleColumns.insuredName && (
-                        <td className={styles.stickyCol}>{p.customer?.fullName || "--"}</td>
+                        <td className={styles.stickyCol}>
+                          <button
+                            type="button"
+                            className={styles.linkCell}
+                            onClick={() => setSelectedPolicyId(p._id)}
+                          >
+                            {p.customer?.fullName || "--"}
+                          </button>
+                        </td>
                       )}
                       {visibleColumns.subInsured && <td>{p.subInsured || "--"}</td>}
                       {visibleColumns.policyNo && <td>{p.policyNumber || "--"}</td>}
@@ -764,7 +1331,7 @@ function AgentPolicyDashboard() {
                       {visibleColumns.policyDocStatus && (
                         <td>
                           <span className={styles.badgeTeal}>
-                            {p.policyDocumentStatus || "Pending"}
+                            {p.policyDocumentStatus || "PENDING"}
                           </span>
                         </td>
                       )}
@@ -772,6 +1339,46 @@ function AgentPolicyDashboard() {
                       {visibleColumns.reconcile && (
                         <td>
                           <span className={styles.badgeAmber}>{p.reconcile || "No"}</span>
+                        </td>
+                      )}
+                      {visibleColumns.uploadPdf && (
+                        <td>
+                          {p.policyDocuments && p.policyDocuments.length > 0 ? (
+                            <button
+                              type="button"
+                              className={styles.pdfActionBtn}
+                              onClick={() => viewPolicyDocument(p.policyDocuments![0].data)}
+                              title="View PDF"
+                              aria-label="View PDF"
+                            >
+                              <FiEye size={15} />
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                className={styles.pdfActionBtn}
+                                onClick={() => pdfInputRefs.current[p._id]?.click()}
+                                title="Upload PDF"
+                                aria-label="Upload PDF"
+                                disabled={uploadingPdfId === p._id}
+                              >
+                                <FiUploadCloud size={15} />
+                              </button>
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                hidden
+                                ref={(el) => {
+                                  pdfInputRefs.current[p._id] = el;
+                                }}
+                                onChange={(e) => {
+                                  handleUploadPolicyDocument(p._id, e.target.files?.[0]);
+                                  e.target.value = "";
+                                }}
+                              />
+                            </>
+                          )}
                         </td>
                       )}
                     </tr>

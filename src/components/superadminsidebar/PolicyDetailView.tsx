@@ -11,6 +11,12 @@ interface PolicyDetailViewProps {
   policyId: string;
   onBack: () => void;
   onDeleted: () => void;
+  /** Base path for the fetch/delete requests — lets the agent dashboard
+   * point this at its own scoped API instead of the admin one. */
+  apiBasePath?: string;
+  /** Hides the Edit/Delete header actions for contexts (like the agent
+   * dashboard) that shouldn't offer generic delete from this view. */
+  canDelete?: boolean;
 }
 
 const ordinal = (n: number) => {
@@ -82,10 +88,28 @@ const downloadFile = (data: string, fileName: string) => {
 };
 
 const viewFile = (data: string) => {
-  window.open(data, "_blank");
+  try {
+    const [header, base64] = data.split(",");
+    const mime = header.match(/data:(.*);base64/)?.[1] || "application/octet-stream";
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+    window.open(blobUrl, "_blank");
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+  } catch (err) {
+    console.error("Failed to open document", err);
+    window.open(data, "_blank");
+  }
 };
 
-const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, onDeleted }) => {
+const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
+  policyId,
+  onBack,
+  onDeleted,
+  apiBasePath = "/api/admin/policies",
+  canDelete = true,
+}) => {
   const [policy, setPolicy] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -93,7 +117,7 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/admin/policies/${policyId}`, { credentials: "include" })
+    fetch(`${apiBasePath}/${policyId}`, { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
         if (d.success) setPolicy(d.policy);
@@ -101,13 +125,13 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
       })
       .catch(() => setError("Failed to load policy"))
       .finally(() => setLoading(false));
-  }, [policyId]);
+  }, [apiBasePath, policyId]);
 
   const handleDelete = async () => {
     if (!window.confirm("Delete this policy? This action cannot be undone.")) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/policies/${policyId}`, {
+      const res = await fetch(`${apiBasePath}/${policyId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -178,14 +202,16 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({ policyId, onBack, o
             <div className={styles.headerInsured}>Insured: {policy.customer?.fullName || "—"}</div>
           </div>
         </div>
-        <div className={styles.headerActions}>
-          <button type="button" className={styles.editBtn} title="Editing is not available yet">
-            <FiEdit2 /> Edit Policy
-          </button>
-          <button type="button" className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
-            <FiTrash2 /> {deleting ? "Deleting..." : "Delete Policy"}
-          </button>
-        </div>
+        {canDelete && (
+          <div className={styles.headerActions}>
+            <button type="button" className={styles.editBtn} title="Editing is not available yet">
+              <FiEdit2 /> Edit Policy
+            </button>
+            <button type="button" className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
+              <FiTrash2 /> {deleting ? "Deleting..." : "Delete Policy"}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={styles.grid2}>

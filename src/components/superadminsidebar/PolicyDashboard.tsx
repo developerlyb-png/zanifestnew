@@ -8,17 +8,23 @@ import {
   FiCopy,
   FiFile,
   FiColumns,
+  FiEye,
+  FiUsers,
 } from "react-icons/fi";
 import AddPolicyForm from "./AddPolicyForm";
 import BulkUploadModal from "./BulkUploadModal";
 import PolicyDetailView from "./PolicyDetailView";
+import AgentPolicyReview from "./AgentPolicyReview";
 
-interface Policy {
+export interface Policy {
   _id: string;
   policyNumber?: string;
   subInsured?: string;
   endorsementNo?: string;
   policyType?: string;
+  lineOfBusiness?: string;
+  product?: string;
+  policyTypeStructure?: string;
   transactionType?: string;
   insurer?: string;
   pospPartner?: string;
@@ -34,7 +40,14 @@ interface Policy {
   policyRemark?: string;
   reconcile?: string;
   createdAt?: string;
-  customer?: { fullName?: string };
+  createdBy?: string;
+  createdByAgentId?: string;
+  customer?: { fullName?: string; email?: string; mobile?: string; address?: string };
+  policyDocuments?: { data: string; fileName: string }[];
+  adminApprovalStatus?: string;
+  adminApprovalRemark?: string;
+  adminApprovalReviewedBy?: string;
+  adminApprovalReviewedAt?: string;
 }
 
 type Preset = "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
@@ -198,7 +211,8 @@ type ColumnKey =
   | "payoutStatus"
   | "policyDocStatus"
   | "policyRemark"
-  | "reconcile";
+  | "reconcile"
+  | "uploadPdf";
 
 const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "insuredName", label: "Insured Name" },
@@ -221,6 +235,7 @@ const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "policyDocStatus", label: "Policy Document Status" },
   { key: "policyRemark", label: "Policy Remark" },
   { key: "reconcile", label: "Reconcile" },
+  { key: "uploadPdf", label: "Upload PDF" },
 ];
 
 const FILLER_KEYS: ColumnKey[] = [
@@ -236,6 +251,7 @@ const FILLER_KEYS: ColumnKey[] = [
   "policyDocStatus",
   "policyRemark",
   "reconcile",
+  "uploadPdf",
 ];
 
 const ALL_COLUMNS_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) => {
@@ -252,9 +268,12 @@ function PolicyDashboard() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ColumnFilters>(EMPTY_FILTERS);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAgentPolicies, setShowAgentPolicies] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [uploadingPdfId, setUploadingPdfId] = useState<string | null>(null);
+  const pdfInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
   const columnPickerRef = useRef<HTMLDivElement>(null);
@@ -340,14 +359,28 @@ function PolicyDashboard() {
   const toggleColumn = (key: ColumnKey) =>
     setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
 
+  // Admin-created policies (no createdByAgentId) always show here. An
+  // agent-submitted one only joins this list — the "real" Customer Dashboard
+  // — once it's been approved; until then it lives in the Agent Policies
+  // review queue below.
+  const visiblePolicies = useMemo(
+    () => policies.filter((p) => !p.createdByAgentId || p.adminApprovalStatus === "Approved"),
+    [policies]
+  );
+  const agentPolicies = useMemo(() => policies.filter((p) => p.createdByAgentId), [policies]);
+  const pendingAgentPolicyCount = useMemo(
+    () => agentPolicies.filter((p) => (p.adminApprovalStatus || "Pending") === "Pending").length,
+    [agentPolicies]
+  );
+
   const uniqueValues = (key: "policyType" | "transactionType" | "insurer" | "pospPartner") =>
-    Array.from(new Set(policies.map((p) => p[key]).filter(Boolean))) as string[];
+    Array.from(new Set(visiblePolicies.map((p) => p[key]).filter(Boolean))) as string[];
 
   const uniqueNames = () =>
-    Array.from(new Set(policies.map((p) => p.customer?.fullName).filter(Boolean))) as string[];
+    Array.from(new Set(visiblePolicies.map((p) => p.customer?.fullName).filter(Boolean))) as string[];
 
   const filteredPolicies = useMemo(() => {
-    return policies.filter((p) => {
+    return visiblePolicies.filter((p) => {
       if (filters.insuredName && p.customer?.fullName !== filters.insuredName) return false;
       if (filters.productName && p.policyType !== filters.productName) return false;
       if (filters.transactionType && p.transactionType !== filters.transactionType) return false;
@@ -365,7 +398,7 @@ function PolicyDashboard() {
         return false;
       return true;
     });
-  }, [policies, filters]);
+  }, [visiblePolicies, filters]);
 
   // Keeps the custom thumb's width/position matched to the table's actual
   // scrollable width. Reads scrollWidth off the wrapper (the element that
@@ -406,9 +439,9 @@ function PolicyDashboard() {
   const summary = useMemo(() => {
     const buckets = ["Motor", "Health", "Life", "Other"] as const;
     const counts: Record<string, number> = { Motor: 0, Health: 0, Life: 0, Other: 0 };
-    for (const p of policies) counts[bucketFor(p)] += 1;
-    return { buckets, totalPolicies: policies.length, counts };
-  }, [policies]);
+    for (const p of visiblePolicies) counts[bucketFor(p)] += 1;
+    return { buckets, totalPolicies: visiblePolicies.length, counts };
+  }, [visiblePolicies]);
 
   const sumByBucket = (list: Policy[], key: "grossPremium" | "commissionAmount" | "payoutAmount") => {
     const buckets = ["Motor", "Health", "Life", "Other"] as const;
@@ -422,9 +455,9 @@ function PolicyDashboard() {
     return { buckets, total, sums };
   };
 
-  const premiumSummary = useMemo(() => sumByBucket(policies, "grossPremium"), [policies]);
-  const commissionSummary = useMemo(() => sumByBucket(policies, "commissionAmount"), [policies]);
-  const payoutSummary = useMemo(() => sumByBucket(policies, "payoutAmount"), [policies]);
+  const premiumSummary = useMemo(() => sumByBucket(visiblePolicies, "grossPremium"), [visiblePolicies]);
+  const commissionSummary = useMemo(() => sumByBucket(visiblePolicies, "commissionAmount"), [visiblePolicies]);
+  const payoutSummary = useMemo(() => sumByBucket(visiblePolicies, "payoutAmount"), [visiblePolicies]);
 
   const exportCsv = () => {
     const visible = COLUMNS.filter((c) => visibleColumns[c.key]);
@@ -453,6 +486,7 @@ function PolicyDashboard() {
         policyDocStatus: p.policyDocumentStatus || "",
         policyRemark: p.policyRemark || "",
         reconcile: p.reconcile || "",
+        uploadPdf: p.policyDocuments && p.policyDocuments.length > 0 ? "Uploaded" : "Not uploaded",
       };
       return visible.map((c) => cellFor[c.key]);
     });
@@ -466,6 +500,66 @@ function PolicyDashboard() {
     a.download = `policies_${toIso(range.from)}_to_${toIso(range.to)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const viewPolicyDocument = (dataUri: string) => {
+    try {
+      const [header, base64] = dataUri.split(",");
+      const mime = header.match(/data:(.*);base64/)?.[1] || "application/pdf";
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+      window.open(blobUrl, "_blank");
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+    } catch (err) {
+      console.error("Failed to open policy document", err);
+      window.open(dataUri, "_blank");
+    }
+  };
+
+  const handleUploadPolicyDocument = async (policyId: string, file?: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      alert("Please upload a PDF file");
+      return;
+    }
+    setUploadingPdfId(policyId);
+    try {
+      const fileData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch(`/api/admin/policies/${policyId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ fileData, fileName: file.name }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert(data.message || "Failed to upload document");
+        return;
+      }
+      setPolicies((prev) =>
+        prev.map((p) =>
+          p._id === policyId
+            ? {
+                ...p,
+                policyDocuments: data.policy.policyDocuments,
+                policyDocumentStatus: data.policy.policyDocumentStatus,
+              }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("Upload policy document failed", err);
+      alert("Failed to upload document");
+    } finally {
+      setUploadingPdfId(null);
+    }
   };
 
   const visibleFillerCount = FILLER_KEYS.filter((k) => visibleColumns[k]).length;
@@ -489,20 +583,42 @@ function PolicyDashboard() {
   return (
     <div className={styles.cont}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Policy Dashboard</h2>
+        <h2 className={styles.heading}>Customer Dashboard</h2>
         <div className={styles.headerActions}>
-          <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
-            <FiUploadCloud /> Bulk Upload
-          </button>
           <button
             className={styles.outlineBtn}
-            onClick={() => alert("Import from policy document is coming soon.")}
+            onClick={() => {
+              setShowAgentPolicies((v) => !v);
+              setShowAddForm(false);
+            }}
           >
-            <FiFile /> Import from policy document
+            <FiUsers /> {showAgentPolicies ? "Close" : "Agent Policies"}
+            {pendingAgentPolicyCount > 0 && (
+              <span className={styles.pendingCountBadge}>{pendingAgentPolicyCount}</span>
+            )}
           </button>
-          <button className={styles.primaryBtn} onClick={() => setShowAddForm((v) => !v)}>
-            <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
-          </button>
+          {!showAgentPolicies && (
+            <>
+              <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
+                <FiUploadCloud /> Bulk Upload
+              </button>
+              <button
+                className={styles.outlineBtn}
+                onClick={() => alert("Import from policy document is coming soon.")}
+              >
+                <FiFile /> Import from policy document
+              </button>
+              <button
+                className={styles.primaryBtn}
+                onClick={() => {
+                  setShowAddForm((v) => !v);
+                  setShowAgentPolicies(false);
+                }}
+              >
+                <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -513,7 +629,16 @@ function PolicyDashboard() {
         />
       )}
 
-      {showAddForm ? (
+      {showAgentPolicies ? (
+        <AgentPolicyReview
+          policies={agentPolicies}
+          loading={loading}
+          onBack={() => setShowAgentPolicies(false)}
+          onUpdated={(updated) =>
+            setPolicies((prev) => prev.map((p) => (p._id === updated._id ? { ...p, ...updated } : p)))
+          }
+        />
+      ) : showAddForm ? (
         <AddPolicyForm
           onCancel={() => setShowAddForm(false)}
           onSuccess={() => {
@@ -823,7 +948,7 @@ function PolicyDashboard() {
                       {visibleColumns.policyDocStatus && (
                         <td>
                           <span className={styles.badgeTeal}>
-                            {p.policyDocumentStatus || "Pending"}
+                            {p.policyDocumentStatus || "PENDING"}
                           </span>
                         </td>
                       )}
@@ -831,6 +956,46 @@ function PolicyDashboard() {
                       {visibleColumns.reconcile && (
                         <td>
                           <span className={styles.badgeAmber}>{p.reconcile || "No"}</span>
+                        </td>
+                      )}
+                      {visibleColumns.uploadPdf && (
+                        <td>
+                          {p.policyDocuments && p.policyDocuments.length > 0 ? (
+                            <button
+                              type="button"
+                              className={styles.pdfActionBtn}
+                              onClick={() => viewPolicyDocument(p.policyDocuments![0].data)}
+                              title="View PDF"
+                              aria-label="View PDF"
+                            >
+                              <FiEye size={15} />
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                className={styles.pdfActionBtn}
+                                onClick={() => pdfInputRefs.current[p._id]?.click()}
+                                title="Upload PDF"
+                                aria-label="Upload PDF"
+                                disabled={uploadingPdfId === p._id}
+                              >
+                                <FiUploadCloud size={15} />
+                              </button>
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                hidden
+                                ref={(el) => {
+                                  pdfInputRefs.current[p._id] = el;
+                                }}
+                                onChange={(e) => {
+                                  handleUploadPolicyDocument(p._id, e.target.files?.[0]);
+                                  e.target.value = "";
+                                }}
+                              />
+                            </>
+                          )}
                         </td>
                       )}
                     </tr>

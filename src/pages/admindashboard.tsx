@@ -11,6 +11,7 @@ import CreateAgent from "@/components/superadminsidebar/createagent";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
+import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import styles from "@/styles/pages/admindashboard.module.css";
 import { useRouter } from "next/router";
 // import withAuth from "@/lib/withAuth";
@@ -29,6 +30,7 @@ import {
   FiBriefcase,
   FiUser,
   FiFileText,
+  FiSettings,
 } from "react-icons/fi";
 import axios from "axios";
 
@@ -236,7 +238,20 @@ const router = useRouter();
             >
               <span className={styles.iconLabel}>
                 <FiFileText className={styles.icon} />
-                <span className={styles.label}>Policy data</span>
+                <span className={styles.label}>Customer</span>
+              </span>
+            </li>
+
+            <li
+              className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("configManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiSettings className={styles.icon} />
+                <span className={styles.label}>Configuration</span>
               </span>
             </li>
 
@@ -316,6 +331,7 @@ const router = useRouter();
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}
           {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "configManagement" && <ConfigManagement />}
         </main>
       </div>
     </div>

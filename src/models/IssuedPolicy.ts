@@ -61,6 +61,10 @@ const IssuedPolicySchema =
 
       caseType: String,
 
+      riskStartDateTP: Date,
+
+      riskEndDateTP: Date,
+
     },
 
     businessSegment: String,
@@ -216,6 +220,26 @@ const IssuedPolicySchema =
       type: String,
       default: "No",
     },
+
+    // Admin review of an agent-submitted policy. Defaults to "Pending" so
+    // every newly created policy starts unreviewed. Policies with no
+    // createdByAgentId (i.e. added directly by an admin) are never gated by
+    // this status in the Customer Dashboard list — only agent submissions
+    // are held back until reviewed.
+    adminApprovalStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+
+    adminApprovalRemark: {
+      type: String,
+      default: "",
+    },
+
+    adminApprovalReviewedBy: String,
+
+    adminApprovalReviewedAt: Date,
 
     // ADD THESE
 
