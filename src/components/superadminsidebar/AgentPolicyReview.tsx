@@ -477,7 +477,7 @@ function PolicyReviewModal({
             type="button"
             className={`${styles.btn} ${styles.btnReject}`}
             onClick={() => submit("reject")}
-            disabled={saving !== null}
+            disabled={saving !== null || current.adminApprovalStatus === "Rejected"}
           >
             <FiXCircle size={15} /> {saving === "reject" ? "Rejecting..." : "Reject"}
           </button>
@@ -485,7 +485,7 @@ function PolicyReviewModal({
             type="button"
             className={`${styles.btn} ${styles.btnApprove}`}
             onClick={() => submit("approve")}
-            disabled={saving !== null}
+            disabled={saving !== null || current.adminApprovalStatus === "Approved"}
           >
             <FiCheckCircle size={15} /> {saving === "approve" ? "Approving..." : "Approve"}
           </button>
