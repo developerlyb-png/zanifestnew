@@ -65,7 +65,17 @@ const IssuedPolicySchema =
 
       riskEndDateTP: Date,
 
+      chassisNumber: String,
+
+      engineNumber: String,
+
     },
+
+    sumInsured: Number,
+
+    idv: Number,
+
+    nominee: String,
 
     businessSegment: String,
 
@@ -170,6 +180,16 @@ const IssuedPolicySchema =
       type: String,
       default: "online",
     },
+
+    // Set when this policy was created via the AI "Import from policy
+    // document" flow — points back at the PolicyImport record holding the
+    // original PDF and raw extraction for audit purposes.
+    aiImportId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PolicyImport",
+    },
+
+    aiExtractionConfidence: Number,
 
     premium: Number,
 

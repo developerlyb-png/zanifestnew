@@ -149,7 +149,19 @@ export default function VideoLectureDashboard() {
   if (checking || loadingProgress) return null;
 
   if (allModulesComplete) {
-    return <TestPage onClose={() => {}} onProgressChange={() => {}} onResultVisible={() => {}} />;
+    // "/agentpage" itself gates on trainingCompleted — passed agents land on
+    // their dashboard, and anyone closing out of a failed attempt gets
+    // bounced straight back here to retake it. Previously this was a no-op,
+    // so the Result popup's Close button did nothing at all.
+    return (
+      <TestPage
+        onClose={() => {
+          window.location.href = "/agentpage";
+        }}
+        onProgressChange={() => {}}
+        onResultVisible={() => {}}
+      />
+    );
   }
 
   const activeSeconds = modules[currentModule - 1]?.secondsSpent ?? 0;

@@ -15,6 +15,7 @@ import AddPolicyForm from "./AddPolicyForm";
 import BulkUploadModal from "./BulkUploadModal";
 import PolicyDetailView from "./PolicyDetailView";
 import AgentPolicyReview from "./AgentPolicyReview";
+import PolicyDocumentImport from "./PolicyDocumentImport";
 
 export interface Policy {
   _id: string;
@@ -269,6 +270,7 @@ function PolicyDashboard() {
   const [filters, setFilters] = useState<ColumnFilters>(EMPTY_FILTERS);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAgentPolicies, setShowAgentPolicies] = useState(false);
+  const [showPolicyImport, setShowPolicyImport] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
@@ -590,6 +592,7 @@ function PolicyDashboard() {
             onClick={() => {
               setShowAgentPolicies((v) => !v);
               setShowAddForm(false);
+              setShowPolicyImport(false);
             }}
           >
             <FiUsers /> {showAgentPolicies ? "Close" : "Agent Policies"}
@@ -597,14 +600,18 @@ function PolicyDashboard() {
               <span className={styles.pendingCountBadge}>{pendingAgentPolicyCount}</span>
             )}
           </button>
-          {!showAgentPolicies && (
+          {!showAgentPolicies && !showPolicyImport && (
             <>
               <button className={styles.outlineBtn} onClick={() => setShowBulkUpload(true)}>
                 <FiUploadCloud /> Bulk Upload
               </button>
               <button
                 className={styles.outlineBtn}
-                onClick={() => alert("Import from policy document is coming soon.")}
+                onClick={() => {
+                  setShowPolicyImport(true);
+                  setShowAgentPolicies(false);
+                  setShowAddForm(false);
+                }}
               >
                 <FiFile /> Import from policy document
               </button>
@@ -613,6 +620,7 @@ function PolicyDashboard() {
                 onClick={() => {
                   setShowAddForm((v) => !v);
                   setShowAgentPolicies(false);
+                  setShowPolicyImport(false);
                 }}
               >
                 <FiPlus /> {showAddForm ? "Close" : "Add Policy"}
@@ -637,6 +645,13 @@ function PolicyDashboard() {
           onUpdated={(updated) =>
             setPolicies((prev) => prev.map((p) => (p._id === updated._id ? { ...p, ...updated } : p)))
           }
+        />
+      ) : showPolicyImport ? (
+        <PolicyDocumentImport
+          onBack={() => {
+            setShowPolicyImport(false);
+            setRefreshKey((k) => k + 1);
+          }}
         />
       ) : showAddForm ? (
         <AddPolicyForm

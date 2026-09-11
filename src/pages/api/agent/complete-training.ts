@@ -72,18 +72,22 @@ export default async function handler(
   // Auto-generate the POS appointment-letter certificate right away — the
   // agent shouldn't have to wait on an admin to manually click "Generate
   // Certificate" before they can download it from their own dashboard.
+  // One retry on failure (transient PDF-render/DB hiccups shouldn't cost the
+  // agent their certificate just because it happened on their Nth attempt) —
+  // and even if both attempts fail, /api/agent/certificate self-heals by
+  // generating it on demand the next time the agent checks, so a passed exam
+  // is never permanently stuck without a certificate.
   let certificateUrl: string | null = null;
   let agentCode: string | null = null;
-  try {
-    const cert = await generateAgentCertificate(String(agent._id));
-    certificateUrl = cert.url;
-    agentCode = cert.agentCode;
-  } catch (err) {
-    // Don't fail the whole training-completion response over a PDF-render
-    // hiccup — the admin's manual "Generate Certificate" button still works
-    // as a fallback, and the agent dashboard will just show "not generated
-    // yet" until it's retried.
-    console.error("AUTO CERTIFICATE GENERATION ERROR:", err);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const cert = await generateAgentCertificate(String(agent._id));
+      certificateUrl = cert.url;
+      agentCode = cert.agentCode;
+      break;
+    } catch (err) {
+      console.error(`AUTO CERTIFICATE GENERATION ERROR (attempt ${attempt + 1}):`, err);
+    }
   }
 
   /* =========================
