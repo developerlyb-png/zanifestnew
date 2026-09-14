@@ -243,6 +243,8 @@ export function mapRow(row: Record<string, any>, managersByName: Map<string, any
     endorsementNo: "-",
     pospPartner: pospPartnerValue || "Direct Business",
     policyRemark: str(row.policyRemark) || "",
+    previousPolicyNo: str(row.previousPolicyNo),
+    additionalRemarks: str(row.additionalRemarks),
     status: str(row.status) || "Active",
     startDate: date(row.startDate),
     endDate: date(row.endDate),

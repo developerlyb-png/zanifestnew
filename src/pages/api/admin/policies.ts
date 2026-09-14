@@ -49,7 +49,22 @@ export default async function handler(
 
       await dbConnect();
 
-      const policies = await IssuedPolicy.find(query).sort({ createdAt: -1 });
+      // The dashboard list only needs to know *whether* a PDF/transaction-proof
+      // exists (to show a view/upload icon) — not the base64 bytes themselves,
+      // which is what was making this endpoint slow: every policy embeds its
+      // uploaded PDF(s) directly in the document (same convention as PAN/
+      // Aadhaar uploads elsewhere), so a full year's worth of policies meant
+      // megabytes of base64 serialized on every load. Excluding those fields
+      // here (full documents are still fetched on demand via
+      // /api/admin/policies/[id] for viewing/the detail popup) plus .lean()
+      // (skip Mongoose document hydration, not needed for a read-only list)
+      // are the two levers that actually matter at this collection size.
+      const policies = await IssuedPolicy.find(query, {
+        "policyDocuments.data": 0,
+        "paymentDetails.transactionProof.data": 0,
+      })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return res.status(200).json({ success: true, policies });
     } catch (err: any) {

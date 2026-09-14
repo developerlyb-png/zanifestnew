@@ -11,34 +11,68 @@ import {
   FiClock,
   FiRefreshCw,
   FiEye,
+  FiList,
   FiTrash2,
   FiInbox,
   FiAlertTriangle,
   FiSave,
+  FiX,
 } from "react-icons/fi";
 
+// Same keys as BULK_UPLOAD_COLUMNS (src/constants/bulkUploadColumns.ts) plus
+// a handful of AI-only bonus fields — kept in sync by hand with
+// src/utils/aiPolicyExtractor.ts's ExtractedPolicy interface, since that's
+// the server-side source of truth for what the AI actually extracts and
+// saves.
 interface ExtractedFields {
-  policy_number?: string | null;
-  proposal_number?: string | null;
-  insured_name?: string | null;
-  mobile?: string | null;
-  email?: string | null;
+  insuredName?: string | null;
+  subInsuredName?: string | null;
+  insuredMobile?: string | null;
+  insuredEmail?: string | null;
+  address?: string | null;
+  transactionType?: string | null;
+  lineOfBusiness?: string | null;
+  product?: string | null;
+  paymentReceivedDate?: string | null;
+  policyTypeStructure?: string | null;
+  policyNumber?: string | null;
+  previousPolicyNo?: string | null;
   insurer?: string | null;
-  policy_type?: string | null;
-  product_name?: string | null;
-  start_date?: string | null;
-  end_date?: string | null;
-  gross_premium?: number | null;
-  net_premium?: number | null;
-  gst?: number | null;
-  sum_insured?: number | null;
+  policyRemark?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  branchName?: string | null;
+  agentType?: string | null;
+  pospPartner?: string | null;
+  directAgentName?: string | null;
+  mediumOfIssuance?: string | null;
+  additionalRemarks?: string | null;
+  status?: string | null;
+  premium?: number | null;
+  taxRate?: number | null;
+  gstAmount?: number | null;
+  grossPremium?: number | null;
+  commissionAmount?: number | null;
+  payoutAmount?: number | null;
+  payoutStatus?: string | null;
+  rewardStatus?: string | null;
+  commissionRemark?: string | null;
+  vehicleType?: string | null;
+  fuelType?: string | null;
+  modelYear?: string | null;
+  motorMake?: string | null;
+  itemsCovered?: string | null;
+  caseType?: string | null;
+  registrationNumber?: string | null;
+  ncbApplicable?: string | null;
+  // AI-only bonus fields
+  proposalNumber?: string | null;
+  sumInsured?: number | null;
   idv?: number | null;
-  vehicle_number?: string | null;
-  make_model?: string | null;
-  engine_number?: string | null;
-  chassis_number?: string | null;
   nominee?: string | null;
-  agent_broker_name?: string | null;
+  chassisNumber?: string | null;
+  engineNumber?: string | null;
+  // Meta
   confidence?: number;
   notes?: string | null;
   [key: string]: any;
@@ -62,7 +96,12 @@ const readFileAsDataUri = (file: File): Promise<string> =>
     reader.readAsDataURL(file);
   });
 
-const viewPdfDataUri = (dataUri: string) => {
+// `targetWindow`, when passed, is an already-open tab (opened synchronously
+// inside the click handler, before any await) that just needs navigating —
+// window.open() called only after an async fetch resolves loses the
+// "triggered by a user gesture" context and gets silently popup-blocked, so
+// every caller here opens the tab first and hands it in.
+const viewPdfDataUri = (dataUri: string, targetWindow?: Window | null) => {
   try {
     const [header, base64] = dataUri.split(",");
     const mime = header.match(/data:(.*);base64/)?.[1] || "application/pdf";
@@ -70,10 +109,12 @@ const viewPdfDataUri = (dataUri: string) => {
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
-    window.open(blobUrl, "_blank");
+    if (targetWindow) targetWindow.location.href = blobUrl;
+    else window.open(blobUrl, "_blank");
     setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
   } catch (err) {
     console.error("Failed to open PDF", err);
+    if (targetWindow) targetWindow.close();
   }
 };
 
@@ -187,6 +228,229 @@ function ProcessingModal({
   );
 }
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className={styles.field}>
+      <label className={styles.fieldLabel}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
+// Full view/edit popup for one row — every field the AI can extract (the
+// same set bulk upload accepts), not just the handful shown inline in the
+// table. Review-status rows are editable and save straight to the Customer
+// Dashboard; already-saved/failed rows render read-only, as an audit view.
+function ViewEditModal({
+  row,
+  initialEdits,
+  onClose,
+  onFieldChange,
+  onSaved,
+}: {
+  row: ImportRow;
+  initialEdits: Partial<ExtractedFields>;
+  onClose: () => void;
+  onFieldChange: (key: keyof ExtractedFields, value: any) => void;
+  onSaved: () => void;
+}) {
+  const [fields, setFields] = useState<ExtractedFields>(() => ({
+    ...(row.extracted || {}),
+    ...initialEdits,
+  }));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const isSaved = row.status === "saved";
+
+  const setField = (key: keyof ExtractedFields, value: any) => {
+    setFields((prev) => ({ ...prev, [key]: value }));
+    onFieldChange(key, value);
+  };
+
+  const text = (key: keyof ExtractedFields, label: string, type: "text" | "number" | "date" = "text") => (
+    <Field label={label}>
+      <input
+        type={type}
+        className={styles.input}
+        value={(fields[key] as any) ?? ""}
+        onChange={(e) =>
+          setField(key, type === "number" ? (e.target.value === "" ? null : Number(e.target.value)) : e.target.value)
+        }
+      />
+    </Field>
+  );
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/policy-import/${row._id}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ data: fields }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        const dup = data.duplicate;
+        setError(
+          dup
+            ? `Duplicate policy: ${dup.reasonLabel || dup.reason} (existing policy ${dup.policyNumber || dup.id})`
+            : data.message || "Failed to save"
+        );
+        return;
+      }
+      onSaved();
+    } catch (err) {
+      console.error("Save policy failed", err);
+      setError("Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleView = async () => {
+    const win = window.open("", "_blank");
+    const data = await fetchPdfDataUri(row._id);
+    if (data) viewPdfDataUri(data, win);
+    else {
+      win?.close();
+      alert("Failed to load PDF");
+    }
+  };
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <div>
+            <h2 className={styles.modalTitle}>{row.originalName}</h2>
+            <div className={styles.modalSubtitle}>
+              <ConfidenceBadge value={fields.confidence ?? row.confidence} /> extraction confidence
+            </div>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+            <FiX size={22} />
+          </button>
+        </div>
+
+        {error && <p className={styles.errorBanner}>{error}</p>}
+        {isSaved && (
+          <p className={styles.reviewedNote}>
+            This document has already been saved to the Customer Dashboard — edit any field and Save
+            Changes to update it there.
+          </p>
+        )}
+        {fields.notes && <div className={styles.notesBanner}>AI notes: {fields.notes}</div>}
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Policy Details</h3>
+          <div className={styles.formGrid}>
+            {text("policyNumber", "Policy Number")}
+            {text("previousPolicyNo", "Previous Policy No")}
+            {text("proposalNumber", "Proposal Number")}
+            {text("insurer", "Insurance Company")}
+            {text("lineOfBusiness", "Line of Business")}
+            {text("product", "Product")}
+            {text("policyTypeStructure", "Policy Type")}
+            {text("transactionType", "Business Type")}
+            {text("paymentReceivedDate", "Payment Received Date", "date")}
+            {text("startDate", "Risk Start Date", "date")}
+            {text("endDate", "Risk End Date", "date")}
+            {text("policyRemark", "Policy Remark")}
+            {text("mediumOfIssuance", "Medium of Issuance")}
+            {text("branchName", "Branch Name")}
+            {text("status", "Status")}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Insured Details</h3>
+          <div className={styles.formGrid}>
+            {text("insuredName", "Insured Name")}
+            {text("subInsuredName", "Sub Insured Name")}
+            {text("insuredMobile", "Mobile")}
+            {text("insuredEmail", "Email")}
+            {text("nominee", "Nominee")}
+            <div className={`${styles.field} ${styles.fieldFull}`}>
+              <label className={styles.fieldLabel}>Address</label>
+              <input
+                className={styles.input}
+                value={fields.address ?? ""}
+                onChange={(e) => setField("address", e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Premium &amp; Coverage</h3>
+          <div className={styles.formGrid}>
+            {text("premium", "Premium Amount", "number")}
+            {text("taxRate", "Tax Rate", "number")}
+            {text("gstAmount", "GST Amount", "number")}
+            {text("grossPremium", "Gross Premium", "number")}
+            {text("sumInsured", "Sum Insured", "number")}
+            {text("idv", "IDV", "number")}
+            {text("commissionAmount", "Commission Amount", "number")}
+            {text("payoutAmount", "Payout Amount", "number")}
+            {text("payoutStatus", "Payout Status")}
+            {text("rewardStatus", "Reward Status")}
+            {text("commissionRemark", "Commission Remark")}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Vehicle Details</h3>
+          <div className={styles.formGrid}>
+            {text("registrationNumber", "Registration Number")}
+            {text("motorMake", "Motor Make")}
+            {text("itemsCovered", "Model Name")}
+            {text("vehicleType", "Vehicle Type")}
+            {text("fuelType", "Fuel Type")}
+            {text("modelYear", "Model Year")}
+            {text("caseType", "Case Type")}
+            {text("ncbApplicable", "NCB Applicable")}
+            {text("chassisNumber", "Chassis Number")}
+            {text("engineNumber", "Engine Number")}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Assignment &amp; Other</h3>
+          <div className={styles.formGrid}>
+            {text("agentType", "Agent Type")}
+            {text("pospPartner", "Agent Name (if POSP)")}
+            {text("directAgentName", "Direct Agent Name")}
+            <div className={`${styles.field} ${styles.fieldFull}`}>
+              <label className={styles.fieldLabel}>Remarks</label>
+              <input
+                className={styles.input}
+                value={fields.additionalRemarks ?? ""}
+                onChange={(e) => setField("additionalRemarks", e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.modalFooter}>
+          <button type="button" className={`${styles.btn} ${styles.btnOutline}`} onClick={handleView}>
+            <FiEye size={14} /> View Original PDF
+          </button>
+          <div className={styles.footerSpacer} />
+          <button type="button" className={`${styles.btn} ${styles.btnGhost}`} onClick={onClose} disabled={saving}>
+            Cancel
+          </button>
+          <button type="button" className={`${styles.btn} ${styles.btnSave}`} onClick={handleSave} disabled={saving}>
+            <FiCheckCircle size={14} /> {saving ? "Saving..." : isSaved ? "Save Changes" : "Save & Add to Policies"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PolicyDocumentImport({ onBack }: { onBack: () => void }) {
   const [items, setItems] = useState<ImportRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,6 +466,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
   const [savingRowId, setSavingRowId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingSelected, setDeletingSelected] = useState(false);
+  const [viewRowId, setViewRowId] = useState<string | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -301,9 +566,13 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
   };
 
   const handleViewPdf = async (importId: string) => {
+    const win = window.open("", "_blank");
     const data = await fetchPdfDataUri(importId);
-    if (data) viewPdfDataUri(data);
-    else alert("Failed to load PDF");
+    if (data) viewPdfDataUri(data, win);
+    else {
+      win?.close();
+      alert("Failed to load PDF");
+    }
   };
 
   const handleRetry = async (row: ImportRow) => {
@@ -469,6 +738,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
   };
 
   const reviewCount = items.filter((i) => i.status === "review").length;
+  const viewRow = items.find((i) => i._id === viewRowId) || null;
 
   return (
     <div className={styles.panel}>
@@ -646,15 +916,15 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                         <td>
                           <input
                             className={styles.cellInput}
-                            value={(fieldFor(row, "policy_number") as string) || ""}
-                            onChange={(e) => setField(row._id, "policy_number", e.target.value)}
+                            value={(fieldFor(row, "policyNumber") as string) || ""}
+                            onChange={(e) => setField(row._id, "policyNumber", e.target.value)}
                           />
                         </td>
                         <td>
                           <input
                             className={styles.cellInput}
-                            value={(fieldFor(row, "insured_name") as string) || ""}
-                            onChange={(e) => setField(row._id, "insured_name", e.target.value)}
+                            value={(fieldFor(row, "insuredName") as string) || ""}
+                            onChange={(e) => setField(row._id, "insuredName", e.target.value)}
                           />
                         </td>
                         <td>
@@ -667,46 +937,46 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                         <td>
                           <input
                             className={styles.cellInput}
-                            value={(fieldFor(row, "policy_type") as string) || ""}
-                            onChange={(e) => setField(row._id, "policy_type", e.target.value)}
+                            value={(fieldFor(row, "policyTypeStructure") as string) || ""}
+                            onChange={(e) => setField(row._id, "policyTypeStructure", e.target.value)}
                           />
                         </td>
                         <td>
                           <input
                             type="date"
                             className={styles.cellInput}
-                            value={(fieldFor(row, "start_date") as string) || ""}
-                            onChange={(e) => setField(row._id, "start_date", e.target.value)}
+                            value={(fieldFor(row, "startDate") as string) || ""}
+                            onChange={(e) => setField(row._id, "startDate", e.target.value)}
                           />
                         </td>
                         <td>
                           <input
                             type="date"
                             className={styles.cellInput}
-                            value={(fieldFor(row, "end_date") as string) || ""}
-                            onChange={(e) => setField(row._id, "end_date", e.target.value)}
+                            value={(fieldFor(row, "endDate") as string) || ""}
+                            onChange={(e) => setField(row._id, "endDate", e.target.value)}
                           />
                         </td>
                         <td>
                           <input
                             type="number"
                             className={styles.cellInput}
-                            value={(fieldFor(row, "gross_premium") as number) ?? ""}
+                            value={(fieldFor(row, "grossPremium") as number) ?? ""}
                             onChange={(e) =>
-                              setField(row._id, "gross_premium", e.target.value === "" ? null : Number(e.target.value))
+                              setField(row._id, "grossPremium", e.target.value === "" ? null : Number(e.target.value))
                             }
                           />
                         </td>
                       </>
                     ) : (
                       <>
-                        <td>{row.extracted?.policy_number || "--"}</td>
-                        <td>{row.extracted?.insured_name || "--"}</td>
+                        <td>{row.extracted?.policyNumber || "--"}</td>
+                        <td>{row.extracted?.insuredName || "--"}</td>
                         <td>{row.extracted?.insurer || "--"}</td>
-                        <td>{row.extracted?.policy_type || "--"}</td>
-                        <td>{row.extracted?.start_date || "--"}</td>
-                        <td>{row.extracted?.end_date || "--"}</td>
-                        <td>{row.extracted?.gross_premium ?? "--"}</td>
+                        <td>{row.extracted?.policyTypeStructure || "--"}</td>
+                        <td>{row.extracted?.startDate || "--"}</td>
+                        <td>{row.extracted?.endDate || "--"}</td>
+                        <td>{row.extracted?.grossPremium ?? "--"}</td>
                       </>
                     )}
                     <td>
@@ -722,6 +992,16 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                         >
                           <FiEye size={14} />
                         </button>
+                        {row.extracted && (
+                          <button
+                            type="button"
+                            className={styles.actionBtn}
+                            onClick={() => setViewRowId(row._id)}
+                            title="View / edit all extracted fields"
+                          >
+                            <FiList size={14} />
+                          </button>
+                        )}
                         {row.status === "review" && (
                           <button
                             type="button"
@@ -770,6 +1050,20 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
 
       {processingBatch && (
         <ProcessingModal rows={processingBatchRows} onDismiss={() => setProcessingBatch(null)} />
+      )}
+
+      {viewRow && (
+        <ViewEditModal
+          row={viewRow}
+          initialEdits={edits[viewRow._id] || {}}
+          onClose={() => setViewRowId(null)}
+          onFieldChange={(key, value) => setField(viewRow._id, key, value)}
+          onSaved={() => {
+            seenIdsRef.current.add(viewRow._id);
+            setViewRowId(null);
+            fetchItems();
+          }}
+        />
       )}
     </div>
   );

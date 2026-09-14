@@ -591,6 +591,26 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
 }
 
+.input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: default;
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.reviewedNote {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 12.5px;
+  margin: 0 0 14px;
+}
+
 .modalFooter {
   display: flex;
   align-items: center;

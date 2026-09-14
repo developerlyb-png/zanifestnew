@@ -59,7 +59,10 @@ export interface Policy {
   reconcile?: string;
   createdAt?: string;
   customer?: { fullName?: string; email?: string; mobile?: string; address?: string };
-  policyDocuments?: { data: string; fileName: string }[];
+  // `data` is stripped out of the list endpoint's response for performance
+  // (see /api/agent/policies GET) — present only on a document fetched
+  // individually (e.g. via handleViewPolicyDocument's on-demand fetch).
+  policyDocuments?: { data?: string; fileName: string }[];
 }
 
 type Preset = "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
@@ -481,6 +484,7 @@ function AgentPolicyDashboard() {
   const columnPickerRef = useRef<HTMLDivElement>(null);
   const [fixedAgent, setFixedAgent] = useState<{ id: string; name: string } | null>(null);
   const [uploadingPdfId, setUploadingPdfId] = useState<string | null>(null);
+  const [viewingPdfId, setViewingPdfId] = useState<string | null>(null);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const pdfInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [salesChartWidth, setSalesChartWidth] = useState(0);
@@ -788,7 +792,10 @@ function AgentPolicyDashboard() {
     URL.revokeObjectURL(url);
   };
 
-  const viewPolicyDocument = (dataUri: string) => {
+  // `targetWindow`, when passed, is an already-open tab (opened synchronously
+  // inside the click handler, before any await) that just needs navigating —
+  // see handleViewPolicyDocument below for why that matters.
+  const viewPolicyDocument = (dataUri: string, targetWindow?: Window | null) => {
     try {
       const [header, base64] = dataUri.split(",");
       const mime = header.match(/data:(.*);base64/)?.[1] || "application/pdf";
@@ -796,11 +803,49 @@ function AgentPolicyDashboard() {
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
       const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
-      window.open(blobUrl, "_blank");
+      if (targetWindow) targetWindow.location.href = blobUrl;
+      else window.open(blobUrl, "_blank");
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
     } catch (err) {
       console.error("Failed to open policy document", err);
-      window.open(dataUri, "_blank");
+      if (targetWindow) targetWindow.location.href = dataUri;
+      else window.open(dataUri, "_blank");
+    }
+  };
+
+  // The list endpoint no longer sends the PDF's base64 bytes (that's what
+  // was making the dashboard slow to load) — only whether a document
+  // exists. So viewing one now fetches that single policy's full record on
+  // demand, the moment the eye icon is actually clicked.
+  //
+  // The tab must be opened synchronously, right here inside the click
+  // handler — opening it only after the fetch below resolves loses the
+  // "triggered by a user gesture" context, and every major browser then
+  // silently blocks it as a popup. Opening a blank tab now and pointing it
+  // at the PDF once it's loaded keeps it within that gesture.
+  const handleViewPolicyDocument = async (policyId: string, cachedData?: string) => {
+    if (cachedData) {
+      viewPolicyDocument(cachedData);
+      return;
+    }
+    const win = window.open("", "_blank");
+    setViewingPdfId(policyId);
+    try {
+      const res = await fetch(`/api/agent/policies/${policyId}`, { credentials: "include" });
+      const data = await res.json();
+      const docData = data?.policy?.policyDocuments?.[0]?.data;
+      if (!res.ok || !data.success || !docData) {
+        win?.close();
+        alert(data.message || "Failed to load document");
+        return;
+      }
+      viewPolicyDocument(docData, win);
+    } catch (err) {
+      console.error("Failed to load policy document", err);
+      win?.close();
+      alert("Failed to load document");
+    } finally {
+      setViewingPdfId(null);
     }
   };
 
@@ -1347,7 +1392,8 @@ function AgentPolicyDashboard() {
                             <button
                               type="button"
                               className={styles.pdfActionBtn}
-                              onClick={() => viewPolicyDocument(p.policyDocuments![0].data)}
+                              onClick={() => handleViewPolicyDocument(p._id, p.policyDocuments![0].data)}
+                              disabled={viewingPdfId === p._id}
                               title="View PDF"
                               aria-label="View PDF"
                             >

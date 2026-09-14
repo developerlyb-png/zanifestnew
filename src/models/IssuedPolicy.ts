@@ -236,6 +236,10 @@ const IssuedPolicySchema =
       default: "",
     },
 
+    previousPolicyNo: String,
+
+    additionalRemarks: String,
+
     reconcile: {
       type: String,
       default: "No",
@@ -299,6 +303,22 @@ const IssuedPolicySchema =
     },
 
   });
+
+// No indexes existed on this collection at all — every list/filter query
+// (the admin & agent Policy Dashboards' `.sort({ createdAt: -1 })`, the
+// agent dashboard's `{ createdByAgentId }` filter, the policyNumber
+// uniqueness check on create, and the AI-import/bulk-upload duplicate
+// lookups by policyNumber/proposalNumber/vehicle.number/vehicle.chassisNumber)
+// was doing a full collection scan + in-memory sort. That's the real cause
+// behind both "Policy Dashboard loads slowly" and "policy import save/view
+// takes too long" (its duplicate check runs one of these scans on every
+// save) — these indexes let MongoDB satisfy each of those queries directly.
+IssuedPolicySchema.index({ createdAt: -1 });
+IssuedPolicySchema.index({ createdByAgentId: 1, createdAt: -1 });
+IssuedPolicySchema.index({ policyNumber: 1 }, { sparse: true });
+IssuedPolicySchema.index({ proposalNumber: 1 }, { sparse: true });
+IssuedPolicySchema.index({ "vehicle.number": 1 }, { sparse: true });
+IssuedPolicySchema.index({ "vehicle.chassisNumber": 1 }, { sparse: true });
 
 export default
 

@@ -8,6 +8,7 @@ import {
   batchDuplicateMap,
   buildPolicyFromExtraction,
 } from "@/utils/aiPolicyExtractor";
+import { loadReferenceLists } from "@/utils/policyBulkMapping";
 
 export const config = {
   api: {
@@ -57,6 +58,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // any of them exist in the database yet).
     const withinBatch = batchDuplicateMap(rows.map((r) => ({ id: r.id, data: r.data || {} })));
 
+    // Loaded once for the whole batch rather than per-row inside
+    // buildPolicyFromExtraction — same branch/motor-make/insurer lists apply
+    // to every row in this request.
+    const refs = await loadReferenceLists();
+
     const saved: { id: string; policyId: string }[] = [];
     const duplicates: { id: string; originalName?: string; duplicate: any }[] = [];
     const skipped: { id: string; reason: string }[] = [];
@@ -93,11 +99,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         continue;
       }
 
-      const policyFields = buildPolicyFromExtraction(merged, {
+      const policyFields = await buildPolicyFromExtraction(merged, {
         createdBy: adminName,
         importId: String(imp._id),
         fileData: imp.fileData,
         originalName: imp.originalName,
+        refs,
       });
       const policy = await IssuedPolicy.create(policyFields);
 

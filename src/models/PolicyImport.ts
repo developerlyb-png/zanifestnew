@@ -35,4 +35,11 @@ const PolicyImportSchema = new Schema(
   { timestamps: true }
 );
 
+// Every row embeds its source PDF as base64 (up to 15MB) in `fileData`. The
+// list query excludes that field from its *output*, but without an index on
+// createdAt, satisfying `.sort({ createdAt: -1 }).limit(100)` still requires
+// scanning every document off disk (fileData included) before sorting — this
+// index lets Mongo walk the sort order directly instead.
+PolicyImportSchema.index({ createdAt: -1 });
+
 export default mongoose.models.PolicyImport || mongoose.model("PolicyImport", PolicyImportSchema);

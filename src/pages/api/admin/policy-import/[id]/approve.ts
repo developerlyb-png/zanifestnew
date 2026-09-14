@@ -49,23 +49,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!imp) {
       return res.status(404).json({ success: false, message: "Import not found" });
     }
-    if (imp.status === "saved") {
-      return res.status(409).json({ success: false, message: "Already saved" });
-    }
 
     const edits = req.body?.data && typeof req.body.data === "object" ? req.body.data : {};
     const merged = { ...(imp.extracted || {}), ...edits };
+
+    const adminName =
+      `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
+      (admin as any).email;
+
+    // Already saved — this is an edit of the already-issued policy (from the
+    // "View / edit all fields" popup), not a new save, so it updates the
+    // existing IssuedPolicy in place instead of creating a duplicate one and
+    // skips the duplicate check (which would otherwise just match itself).
+    if (imp.status === "saved") {
+      if (!imp.savedPolicyId) {
+        return res.status(409).json({ success: false, message: "Saved policy reference is missing" });
+      }
+      const policyFields: any = await buildPolicyFromExtraction(merged, {
+        createdBy: adminName,
+        importId: String(imp._id),
+      });
+      // Creation-only fields — never overwrite these on an edit of an
+      // already-issued policy.
+      delete policyFields.source;
+      delete policyFields.createdBy;
+      delete policyFields.aiImportId;
+      delete policyFields.policyDocuments;
+      delete policyFields.policyDocumentStatus;
+
+      const policy = await IssuedPolicy.findByIdAndUpdate(imp.savedPolicyId, { $set: policyFields }, { new: true });
+      if (!policy) {
+        return res.status(404).json({ success: false, message: "Saved policy not found" });
+      }
+
+      imp.extracted = merged;
+      imp.confidence = merged.confidence ?? imp.confidence;
+      await imp.save();
+
+      return res.status(200).json({ success: true, policy, updated: true });
+    }
 
     const dup = await findDuplicatePolicy(merged);
     if (dup) {
       return res.status(409).json({ success: false, message: "Duplicate policy detected", duplicate: dup });
     }
 
-    const adminName =
-      `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
-      (admin as any).email;
-
-    const policyFields = buildPolicyFromExtraction(merged, {
+    const policyFields = await buildPolicyFromExtraction(merged, {
       createdBy: adminName,
       importId: String(imp._id),
       fileData: imp.fileData,

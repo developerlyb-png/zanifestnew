@@ -54,7 +54,10 @@ const StatusBadge: React.FC<{ status?: string }> = ({ status }) => {
   );
 };
 
-const viewDocument = (dataUri: string) => {
+// `targetWindow`, when passed, is an already-open tab (opened synchronously
+// inside the click handler, before any await) that just needs navigating —
+// see handleViewDocument below for why that matters.
+const viewDocument = (dataUri: string, targetWindow?: Window | null) => {
   try {
     const [header, base64] = dataUri.split(",");
     const mime = header.match(/data:(.*);base64/)?.[1] || "application/pdf";
@@ -62,11 +65,13 @@ const viewDocument = (dataUri: string) => {
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
-    window.open(blobUrl, "_blank");
+    if (targetWindow) targetWindow.location.href = blobUrl;
+    else window.open(blobUrl, "_blank");
     setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
   } catch (err) {
     console.error("Failed to open document", err);
-    window.open(dataUri, "_blank");
+    if (targetWindow) targetWindow.location.href = dataUri;
+    else window.open(dataUri, "_blank");
   }
 };
 
@@ -128,6 +133,43 @@ function PolicyReviewModal({
   const [saving, setSaving] = useState<"save" | "approve" | "reject" | null>(null);
   const [error, setError] = useState("");
   const [current, setCurrent] = useState<Policy>(policy);
+  const [viewingDocIdx, setViewingDocIdx] = useState<number | null>(null);
+
+  // The list endpoint this modal's `policy` prop came from no longer sends
+  // the PDF's base64 bytes (that's what was making the dashboard slow to
+  // load) — only whether a document exists. So viewing one fetches this
+  // policy's full record on demand, the moment a document is actually
+  // clicked.
+  // The tab must be opened synchronously, right here inside the click
+  // handler — opening it only after the fetch below resolves loses the
+  // "triggered by a user gesture" context, and every major browser then
+  // silently blocks it as a popup. Opening a blank tab now and pointing it
+  // at the PDF once it's loaded keeps it within that gesture.
+  const handleViewDocument = async (doc: { data?: string; fileName?: string }, idx: number) => {
+    if (doc.data) {
+      viewDocument(doc.data);
+      return;
+    }
+    const win = window.open("", "_blank");
+    setViewingDocIdx(idx);
+    try {
+      const res = await fetch(`/api/admin/policies/${current._id}`, { credentials: "include" });
+      const data = await res.json();
+      const docData = data?.policy?.policyDocuments?.[idx]?.data;
+      if (!res.ok || !data.success || !docData) {
+        win?.close();
+        alert(data.message || "Failed to load document");
+        return;
+      }
+      viewDocument(docData, win);
+    } catch (err) {
+      console.error("Failed to load document", err);
+      win?.close();
+      alert("Failed to load document");
+    } finally {
+      setViewingDocIdx(null);
+    }
+  };
 
   const setField = <K extends keyof EditableFields>(key: K, value: EditableFields[K]) =>
     setFields((f) => ({ ...f, [key]: value }));
@@ -444,7 +486,8 @@ function PolicyReviewModal({
                   key={i}
                   type="button"
                   className={styles.docItem}
-                  onClick={() => viewDocument(doc.data)}
+                  onClick={() => handleViewDocument(doc, i)}
+                  disabled={viewingDocIdx === i}
                 >
                   <FiFileText size={14} /> {doc.fileName || `Document ${i + 1}`}
                 </button>
