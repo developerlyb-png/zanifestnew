@@ -29,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/logowhite.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
@@ -55,6 +55,7 @@ import ShowResult from "@/components/superadminsidebar/showresult";
 import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
+import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
 
 
@@ -64,15 +65,12 @@ import axios from "axios";
 import {
   FiUsers,
   FiUserPlus,
-  FiLock,
   FiMenu,
   FiX,
   FiGrid,
   FiShield,
   FiUser,
   FiBriefcase,
-  FiKey,
-  FiEdit3,
   FiSettings,
   FiClipboard,
   FiAward,
@@ -85,7 +83,6 @@ import {
   FiActivity,
   FiPackage,
   FiBookOpen,
-  FiLogOut,
   FiChevronDown,
   FiTarget,
   FiLayers,
@@ -118,105 +115,6 @@ const statusTone = (status?: string) => {
   if (s === "draft" || s === "pending") return "draft";
   if (s === "expired" || s === "cancelled") return "danger";
   return "other";
-};
-
-type ProfileMenuAdmin = {
-  userFirstName?: string;
-  userLastName?: string;
-  email?: string;
-} | null;
-
-const ProfileMenu = ({
-  admin,
-  onNavigate,
-  onLogout,
-}: {
-  admin: ProfileMenuAdmin;
-  onNavigate: (section: string) => void;
-  onLogout: () => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const initials = `${(admin?.userFirstName || "A").charAt(0)}${(
-    admin?.userLastName || ""
-  ).charAt(0)}`.toUpperCase();
-
-  const go = (section: string) => {
-    onNavigate(section);
-    setOpen(false);
-  };
-
-  return (
-    <div className={styles.profileMenuWrapper} ref={wrapperRef}>
-      <button
-        type="button"
-        className={styles.profileTrigger}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className={styles.profileAvatar}>{initials}</span>
-        <FiChevronDown
-          size={14}
-          className={`${styles.profileChevron} ${open ? styles.profileChevronOpen : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div className={styles.profileDropdown}>
-          <div className={styles.profileDropdownHeader}>
-            <span className={styles.profileAvatar}>{initials}</span>
-            <div className={styles.profileDropdownIdentity}>
-              <span className={styles.profileDropdownName}>
-                {admin?.userFirstName ?? "SuperAdmin"} {admin?.userLastName ?? ""}
-              </span>
-              {admin?.email && (
-                <span className={styles.profileDropdownEmail}>{admin.email}</span>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.profileDropdownDivider} />
-
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("profileEdit")}>
-            <span className={styles.profileItemIcon}><FiEdit3 size={15} /></span>
-            <span className={styles.profileItemLabel}>Edit Profile</span>
-          </button>
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("changepassword")}>
-            <span className={styles.profileItemIcon}><FiLock size={15} /></span>
-            <span className={styles.profileItemLabel}>Change Password</span>
-          </button>
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("resetpassword")}>
-            <span className={styles.profileItemIcon}><FiKey size={15} /></span>
-            <span className={styles.profileItemLabel}>Reset Password</span>
-          </button>
-
-          <div className={styles.profileDropdownDivider} />
-
-          <button
-            type="button"
-            className={`${styles.profileDropdownItem} ${styles.profileDropdownLogout}`}
-            onClick={() => {
-              setOpen(false);
-              onLogout();
-            }}
-          >
-            <span className={styles.profileItemIcon}><FiLogOut size={15} /></span>
-            <span className={styles.profileItemLabel}>Logout</span>
-          </button>
-        </div>
-      )}
-    </div>
-  );
 };
 
 const SuperAdminDashboard = () => {

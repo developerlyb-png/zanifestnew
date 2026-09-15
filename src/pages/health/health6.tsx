@@ -13,6 +13,7 @@ import Image from "next/image";
 import zunoLogo from "@/assets/insurance/zuno.png";
 import licLogo from "@/assets/insurance/liclogo.png";
 import sbiLogo from "@/assets/insurance/sbi.png";
+import iciciLogo from "@/assets/pageImages/Icici.png";
 
 import { useRouter } from "next/router";
 
@@ -70,6 +71,13 @@ return sbiLogo;
 }
 
 
+if(name?.includes("icici")){
+
+return iciciLogo;
+
+}
+
+
 // fallback logo
 
 return zunoLogo;
@@ -99,6 +107,21 @@ try{
 
 
 setLoading(true);
+
+
+// If health.tsx already fetched a real quote (Zuno, or ICICI when Zuno
+// failed) it's passed straight through here as `plans` — use it as-is
+// instead of re-fetching a separate (and currently hardcoded/test-data)
+// Zuno quick-quote below.
+if (router.query.plans) {
+  try {
+    const parsed = JSON.parse(router.query.plans as string);
+    setPlans(Array.isArray(parsed) ? parsed : []);
+    return;
+  } catch (parseErr) {
+    console.log("PLANS QUERY PARSE ERROR", parseErr);
+  }
+}
 
 
 
@@ -496,6 +519,31 @@ className={styles.customize}
 
 
 onClick={()=>{
+
+
+// ICICI's raw Premium response has a completely different shape than
+// Zuno's (no primaryRatingObject.policyData) and needs its own next
+// step — CKYC comes right after Premium in ICICI's documented flow,
+// before Proposal — so it never reaches the Zuno-specific cart page.
+if(plan.insurer === "icici"){
+
+router.push({
+
+pathname:
+"/health/health7",
+
+query:{
+
+plan:
+JSON.stringify(plan)
+
+}
+
+});
+
+return;
+
+}
 
 
 router.push({

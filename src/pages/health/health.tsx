@@ -129,6 +129,63 @@ const Health = () => {
     return `${year}-01-01`;
   };
 
+  // ===============================
+  // ICICI (Elevate Health) mapping helpers
+  // ===============================
+
+  // ICICI dates are dd-MMM-yyyy (e.g. "01-Jan-1995"), not the yyyy-01-01
+  // getDOBFromAge produces for Zuno.
+  const MONTH_ABBR = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
+  const getIciciDobFromAge = (age: string) => {
+    const year = new Date().getFullYear() - Number(age);
+    return `01-${MONTH_ABBR[0]}-${year}`;
+  };
+
+  // Same relation strings the Zuno mapper above accepts, mapped to ICICI's
+  // uppercase relationship codes (Masters Data 3.xlsx "Relationship" sheet).
+  const iciciRelationMap: Record<string, string> = {
+    self: "SELF",
+    wife: "SPOUSE",
+    husband: "SPOUSE",
+    spouse: "SPOUSE",
+    father: "FATHER",
+    mother: "MOTHER",
+    son: "SON",
+    daughter: "DAUGHTER",
+    brother: "BROTHER",
+    sister: "SISTER",
+    "father-in-law": "FATHER_IN_LAW",
+    "mother-in-law": "MOTHER_IN_LAW",
+    grandfather: "GRANDFATHER",
+    grandmother: "GRANDMOTHER",
+  };
+  const mapIciciRelation = (rel: string) => {
+    const key = (rel || "").toLowerCase().trim();
+    return iciciRelationMap[key] || (rel || "SELF").toUpperCase();
+  };
+
+  // The quote form only collects a city name, not a pincode, but ICICI's
+  // Premium API mandates a numeric PinCode (it drives zone-based pricing).
+  // Representative pincodes for the popularCities chips below — an
+  // approximation until a real pincode field is added to this form; ICICI's
+  // returned ZoneName/premium will only be as accurate as this pincode is.
+  const CITY_PINCODES: Record<string, string> = {
+    Delhi: "110001",
+    Bengaluru: "560001",
+    Pune: "411001",
+    Hyderabad: "500001",
+    Mumbai: "400001",
+    Thane: "400601",
+    Gurgaon: "122001",
+    Chennai: "600001",
+    Ghaziabad: "201001",
+    Ernakulam: "682001",
+  };
+  const getPincodeForCity = (city: string) => CITY_PINCODES[city] || "110001";
+
   const postJson = async (url: string, body: Record<string, string>) => {
     const response = await fetch(url, {
       method: "POST",
@@ -387,7 +444,26 @@ const Health = () => {
         return;
       }
 
-      const payload = {
+      const resolvedMembers = members.map((m: any, index: number) => {
+        const relation = m.relation || m.name;
+        const isFemale = [
+          "Wife",
+          "Mother",
+          "Daughter",
+          "Grandmother",
+          "Mother-in-law",
+        ].includes(relation);
+
+        return {
+          name: relation === "Self" ? fullName : relation,
+          relation,
+          age: ages[index],
+          gender: m.gender || (isFemale ? "F" : "M"),
+          dob: getDOBFromAge(ages[index]),
+        };
+      });
+
+      const zunoPayload = {
         name: fullName,
         gender: gender,
         dob: getDOBFromAge(ages[0]),
@@ -397,55 +473,115 @@ const Health = () => {
         sumInsured: "500000",
         policyTenure: 1,
         medical: medical,
-
-        members: members.map((m: any, index: number) => {
-          const relation = m.relation || m.name;
-
-          return {
-            name: relation === "Self" ? fullName : relation,
-            relation: relation,
-            age: ages[index],
-            gender:
-              m.gender ||
-              ([
-                "Wife",
-                "Mother",
-                "Daughter",
-                "Grandmother",
-                "Mother-in-law",
-              ].includes(relation)
-                ? "F"
-                : "M"),
-            dob: getDOBFromAge(ages[index]),
-          };
-        }),
+        members: resolvedMembers,
       };
 
-      console.log("ZUNO CREATE-QUOTE REQUEST", payload);
+      const hasPED = medical.length > 0 && !medical.includes("None of these");
 
-      const response = await fetch("/api/zuno/health/create-quote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const iciciPayload = {
+        RequestId:
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `icici-${Date.now()}`,
+        SumInsured: Number(zunoPayload.sumInsured),
+        Tenure: zunoPayload.policyTenure,
+        RoomModifier: 1,
+        PaymentOption: 0,
+        PinCode: Number(getPincodeForCity(selectedCity)),
+        TwoHourHospitalization: false,
+        IsCombo: false,
+        IsOPD: false,
+        Jumpstart: false,
+        IsPorting: false,
+        IsValuePlan: false,
+        IsNRI: false,
+        HasCIBIL: false,
+        ProposerName: fullName,
+        ProposerDOB: getIciciDobFromAge(ages[0]),
+        Insured: resolvedMembers.map((m) => ({
+          InsuredType: Number(m.age) < 18 ? "Kid" : "Adult",
+          Name: m.name,
+          AddOns: [],
+          DateOfBirth: getIciciDobFromAge(m.age),
+          Gender: m.gender === "F" ? "Female" : "Male",
+          IsPED: hasPED,
+          RelationshipWithApplicant: mapIciciRelation(m.relation),
+        })),
+      };
 
-      const result = await response.json();
+      // Zuno first — on ANY failure (bad response or thrown error) fall
+      // through silently to ICICI instead of alerting; only if both
+      // insurers fail do we tell the user anything went wrong.
+      let plans: any[] | null = null;
 
-      console.log("ZUNO CREATE-QUOTE RESULT", result);
+      try {
+        console.log("ZUNO CREATE-QUOTE REQUEST", zunoPayload);
+        const response = await fetch("/api/zuno/health/create-quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(zunoPayload),
+        });
+        const result = await response.json();
+        console.log("ZUNO CREATE-QUOTE RESULT", result);
 
-      if (!response.ok) {
-        alert(result?.message || "Quote failed");
+        if (response.ok) {
+          plans = [
+            {
+              company: "Zuno General Insurance",
+              productVariant: result?.plan_name || "Health Plan",
+              premium: result?.premium ?? result?.total_premium ?? result?.TotalPremium ?? 0,
+              sumInsured: zunoPayload.sumInsured,
+              policyTenure: zunoPayload.policyTenure,
+              insurer: "zuno",
+              raw: result,
+            },
+          ];
+        } else {
+          console.log("ZUNO CREATE-QUOTE FAILED — falling back to ICICI silently", result);
+        }
+      } catch (zunoError) {
+        console.log("ZUNO CREATE-QUOTE THREW — falling back to ICICI silently", zunoError);
+      }
+
+      if (!plans) {
+        try {
+          console.log("ICICI PREMIUM REQUEST", iciciPayload);
+          const response = await fetch("/api/icici/health/premium", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(iciciPayload),
+          });
+          const result = await response.json();
+          console.log("ICICI PREMIUM RESULT", result);
+
+          if (response.ok && result?.Success) {
+            plans = [
+              {
+                company: "ICICI Lombard",
+                productVariant: "Elevate Health",
+                premium: result.TotalPremium,
+                sumInsured: zunoPayload.sumInsured,
+                policyTenure: zunoPayload.policyTenure,
+                insurer: "icici",
+                transactionId: result.TransactionId,
+                raw: result,
+              },
+            ];
+          }
+        } catch (iciciError) {
+          console.log("ICICI PREMIUM THREW", iciciError);
+        }
+      }
+
+      if (!plans) {
+        alert("Could not fetch a quote right now. Please try again.");
         return;
       }
 
-      // Response shape from create-quote isn't finalized yet —
-      // pass the raw result through and inspect the console log.
       router.push({
         pathname: "./health6",
         query: {
-          quote: JSON.stringify(result),
+          plans: JSON.stringify(plans),
         },
       });
     } catch (error: any) {

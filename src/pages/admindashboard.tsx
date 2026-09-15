@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logowhite.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
+import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 import CreateManager from "@/components/superadminsidebar/createmanager";
 import AgentList from "@/components/superadminsidebar/agentlist";
 import ManagerList from "@/components/superadminsidebar/managerlist";
@@ -21,8 +22,6 @@ import { useAdmin } from "@/lib/hooks/useAdmin";
 import {
   FiUsers,
   FiUserPlus,
-  FiKey,
-  FiLock,
   FiMenu,
   FiX,
   FiGrid,
@@ -31,24 +30,59 @@ import {
   FiUser,
   FiFileText,
   FiSettings,
+  FiChevronDown,
 } from "react-icons/fi";
 import axios from "axios";
+
+// Which collapsible sidebar group a given section belongs to — mirrors the
+// same pattern superadmin.tsx uses (SIDEBAR_GROUP_OF) so navigating directly
+// into a section (e.g. via the profile dropdown, or a future deep link)
+// auto-opens its group instead of leaving it looking collapsed.
+const SIDEBAR_GROUP_OF: Record<string, string> = {
+  createManager: "create",
+  createAgent: "create",
+  managerList: "lists",
+  agentList: "lists",
+  userList: "lists",
+};
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
    const [adminCount, setAdminCount] = useState(0);
     const [agentCount, setAgentCount] = useState(0);
     const [stateManagerCount, setStateManagerCount] = useState(0);
     const [districtManagerCount, setDistrictManagerCount] = useState(0);
     const [policyCount, setPolicyCount] = useState(0);
+    const [adminData, setAdminData] = useState<any>(null);
+    const [profileLoading, setProfileLoading] = useState(false);
 const router = useRouter();
-  
+
 
    const { admin, loading } = useAdmin();
    console.log("Admin data:", admin?.userFirstName);
 
      const adminName = typeof window !== "undefined" ? localStorage.getItem("adminName") : null;
+
+  const todayLabel = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  useEffect(() => {
+    const group = SIDEBAR_GROUP_OF[activeSection];
+    if (group) {
+      setOpenSections((prev) => (prev[group] ? prev : { ...prev, [group]: true }));
+    }
+  }, [activeSection]);
 
 
    const handleLogout = () => {
@@ -115,30 +149,51 @@ const router = useRouter();
       fetchPolicyCount();
     }, []);
 
+    useEffect(() => {
+      if (activeSection === "profileEdit") {
+        setProfileLoading(true);
+        axios
+          .get("/api/admin/getadmindetails", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          })
+          .then((res) => setAdminData(res.data))
+          .catch((err) => console.error("Error fetching admin:", err))
+          .finally(() => setProfileLoading(false));
+      }
+    }, [activeSection]);
+
   return (
     <div className={styles.wrapper}>
       {/* Header */}
       <header className={styles.header}>
-        <h1>Welcome, {admin?.userFirstName ?? "Admin"}</h1>
-        <div className={styles.logoContainer}>
-          <Image
-            src={logo}
-            alt="Logo"
-            width={130}
-            height={40}
-            className={styles.logo}
-          />
-        </div>
         <button
+          type="button"
           className={styles.menuToggle}
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+          onClick={() => {
+            if (typeof window !== "undefined" && window.innerWidth <= 768) {
+              setSidebarOpen(!sidebarOpen);
+            } else {
+              setSidebarCollapsed(!sidebarCollapsed);
+            }
+          }}
         >
           {sidebarOpen ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>
+        <div className={styles.headerBrand}>
+          <Image
+            src={logo}
+            alt="Zanifest"
+            width={118}
+            height={30}
+            className={styles.headerLogo}
+          />
+          <span className={styles.headerBrandSub}>Admin Panel</span>
+        </div>
+        <div className={styles.headerSpacer} />
         <div className={styles.desktopOnlyLogout}>
-          <button className={styles.logoutButton} onClick={handleLogout}>
-            Logout
-          </button>
+          <ProfileMenu admin={admin} onNavigate={setActiveSection} onLogout={handleLogout} />
         </div>
       </header>
 
@@ -147,8 +202,14 @@ const router = useRouter();
         <aside
           className={`${styles.sidebar} ${
             sidebarOpen ? styles.sidebarMobile : ""
-          }`}
+          } ${sidebarCollapsed ? styles.sidebarCollapsed : ""}`}
         >
+          <div className={styles.sidebarGreeting}>
+            <span className={styles.sidebarGreetingName}>
+              Welcome, {admin?.userFirstName ?? "Admin"}
+            </span>
+            <span className={styles.sidebarGreetingDate}>{todayLabel}</span>
+          </div>
           <p className={styles.sectionTitle}>Menu</p>
           <ul className={styles.menu}>
             <li
@@ -163,72 +224,104 @@ const router = useRouter();
                 <span className={styles.label}>Dashboard</span>
               </span>
             </li>
-            <p className={styles.sectionTitle}>Create</p>
 
-
-            <li
-              onClick={() => {
-                setActiveSection("createManager");
-                setSidebarOpen(false);
-              }}
-              className={`${styles.menuItem} ${activeSection === "createManager" ? styles.activeMenuItem : ""}`}
+            {/* Create */}
+            <button
+              type="button"
+              className={`${styles.sectionToggle} ${openSections.create ? styles.sectionToggleOpen : ""}`}
+              onClick={() => toggleSection("create")}
             >
               <span className={styles.iconLabel}>
-                <FiUserCheck className={styles.icon} />
-                <span className={styles.label}>Create Manager</span>
+                <FiUserPlus className={styles.icon} />
+                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Create</span>
               </span>
-            </li>
+              <FiChevronDown
+                className={`${styles.sectionChevron} ${openSections.create ? styles.sectionChevronOpen : ""}`}
+              />
+            </button>
+            {openSections.create && (
+              <>
+                <li
+                  onClick={() => {
+                    setActiveSection("createManager");
+                    setSidebarOpen(false);
+                  }}
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "createManager" ? styles.activeMenu : ""}`}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiUserCheck className={styles.icon} />
+                    <span className={styles.label}>Create Manager</span>
+                  </span>
+                </li>
 
+                <li
+                  onClick={() => {
+                    setActiveSection("createAgent");
+                    setSidebarOpen(false);
+                  }}
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "createAgent" ? styles.activeMenu : ""}`}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiBriefcase className={styles.icon} />
+                    <span className={styles.label}>Create Agent</span>
+                  </span>
+                </li>
+              </>
+            )}
 
-            <li
-              onClick={() => {
-                setActiveSection("createAgent");
-                setSidebarOpen(false);
-              }}
-              className={`${styles.menuItem} ${activeSection === "createAgent" ? styles.activeMenuItem : ""}`}
+            {/* Lists */}
+            <button
+              type="button"
+              className={`${styles.sectionToggle} ${openSections.lists ? styles.sectionToggleOpen : ""}`}
+              onClick={() => toggleSection("lists")}
             >
-              <span className={styles.iconLabel}>
-                <FiBriefcase className={styles.icon} />
-                <span className={styles.label}>Create Agent</span>
-              </span>
-            </li>
-            <p className={styles.sectionTitle}>List</p>
-
-
-            <li
-              className={`${styles.menuItem} ${activeSection === "managerList" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("managerList");
-                setSidebarOpen(false);
-              }}>
               <span className={styles.iconLabel}>
                 <FiUsers className={styles.icon} />
-                <span className={styles.label}>Manager List</span>
+                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Lists</span>
               </span>
-            </li>
-            <li className={`${styles.menuItem} ${activeSection === "agentList" ? styles.activeMenuItem : ""}`}
-            onClick={()=>{
-              setActiveSection("agentList");
-              setSidebarOpen(false);
-            }}
-            >
-              <span className={styles.iconLabel}>
-                <FiBriefcase className={styles.icon} />
-                <span className={styles.label}>Agent List</span>
-              </span>
-            </li>
-            <li
-              className={`${styles.menuItem} ${activeSection === "userList" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("userList");
-                setSidebarOpen(false);
-              }}>
-              <span className={styles.iconLabel}>
-                <FiUser className={styles.icon} />
-                <span className={styles.label}>User List</span>
-              </span>
-            </li>
-            <p className={styles.sectionTitle}>Module</p>
+              <FiChevronDown
+                className={`${styles.sectionChevron} ${openSections.lists ? styles.sectionChevronOpen : ""}`}
+              />
+            </button>
+            {openSections.lists && (
+              <>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "managerList" ? styles.activeMenu : ""}`}
+                  onClick={() => {
+                    setActiveSection("managerList");
+                    setSidebarOpen(false);
+                  }}>
+                  <span className={styles.iconLabel}>
+                    <FiUsers className={styles.icon} />
+                    <span className={styles.label}>Manager List</span>
+                  </span>
+                </li>
+                <li className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
+                onClick={()=>{
+                  setActiveSection("agentList");
+                  setSidebarOpen(false);
+                }}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiBriefcase className={styles.icon} />
+                    <span className={styles.label}>Agent List</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "userList" ? styles.activeMenu : ""}`}
+                  onClick={() => {
+                    setActiveSection("userList");
+                    setSidebarOpen(false);
+                  }}>
+                  <span className={styles.iconLabel}>
+                    <FiUser className={styles.icon} />
+                    <span className={styles.label}>User List</span>
+                  </span>
+                </li>
+              </>
+            )}
+
+            {/* Modules — standalone, like Dashboard */}
             <li
               className={`${styles.menuItem} ${activeSection === "policyDashboard" ? styles.activeMenuItem : ""}`}
               onClick={() => {
@@ -254,39 +347,17 @@ const router = useRouter();
                 <span className={styles.label}>Configuration</span>
               </span>
             </li>
-
-            <p className={styles.sectionTitle}>Security</p>
-            <li
-              onClick={() => {
-                setActiveSection("resetpassword");
-                setSidebarOpen(false);
-              }}
-              className={`${styles.menuItem} ${activeSection === "resetpassword" ? styles.activeMenuItem : ""}`}
-            >
-              <span className={styles.iconLabel}>
-                <FiKey className={styles.icon} />
-                <span className={styles.label}>Reset password</span>
-              </span>
-            </li>
-
-            <li
-              onClick={() => {
-                setActiveSection("changepassword");
-                setSidebarOpen(false);
-              }}
-              className={`${styles.menuItem} ${activeSection === "changepassword" ? styles.activeMenuItem : ""}`}
-            >
-              <span className={styles.iconLabel}>
-                <FiLock className={styles.icon} />
-                <span className={styles.label}>Change Password</span>
-              </span>
-            </li>
           </ul>
 
           <div className={styles.mobileOnlyLogout}>
-            <button className={styles.logoutButton} onClick={handleLogout}>
-              Logout
-            </button>
+            <ProfileMenu
+              admin={admin}
+              onNavigate={(section) => {
+                setActiveSection(section);
+                setSidebarOpen(false);
+              }}
+              onLogout={handleLogout}
+            />
           </div>
         </aside>
 
@@ -323,6 +394,9 @@ const router = useRouter();
             </div>
           )}
           {activeSection === "createAdmin" && <CreateAdmin />}
+          {activeSection === "profileEdit" && (
+            <CreateAdmin initialData={adminData} mode="edit" />
+          )}
           {activeSection === "createManager" && <CreateManager />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
