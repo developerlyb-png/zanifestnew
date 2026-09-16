@@ -71,6 +71,10 @@ export interface ExtractedPolicy {
   nominee: string | null;
   chassisNumber: string | null;
   engineNumber: string | null;
+  // Motor only — printed as "Total Own Damage Premium" / "OD Premium" on the
+  // policy schedule. Maps to the "OD" row of the same premiumBreakdown the
+  // manual Add Policy form's PREMIUM_ROW_LABELS already uses.
+  totalOwnDamagePremium: number | null;
 
   // ---- Meta ----
   confidence: number;
@@ -130,6 +134,7 @@ const POLICY_EXTRACTION_SCHEMA = {
     nominee: nullableString,
     chassisNumber: nullableString,
     engineNumber: nullableString,
+    totalOwnDamagePremium: nullableNumber,
     confidence: { type: "number", minimum: 0, maximum: 100 },
     notes: nullableString,
   },
@@ -141,7 +146,7 @@ const POLICY_EXTRACTION_SCHEMA = {
     "taxRate", "gstAmount", "grossPremium", "commissionAmount", "payoutAmount", "payoutStatus",
     "rewardStatus", "commissionRemark", "vehicleType", "fuelType", "modelYear", "motorMake",
     "itemsCovered", "caseType", "registrationNumber", "ncbApplicable", "proposalNumber", "sumInsured",
-    "idv", "nominee", "chassisNumber", "engineNumber", "confidence", "notes",
+    "idv", "nominee", "chassisNumber", "engineNumber", "totalOwnDamagePremium", "confidence", "notes",
   ],
 };
 
@@ -164,6 +169,10 @@ const EXTRACTION_PROMPT =
   "that name in pospPartner (if agentType is POSP) or directAgentName (if agentType is Direct).\n" +
   "- registrationNumber/chassisNumber/engineNumber/motorMake/modelYear/itemsCovered (model name) apply to " +
   "motor policies only — leave null for non-motor policies.\n" +
+  "- totalOwnDamagePremium (motor only): the Own Damage (OD) section's premium total, usually printed as " +
+  "'Total Own Damage Premium', 'OD Premium', or under an 'Own Damage' heading in the premium breakdown " +
+  "table — distinct from the Third Party (TP/Liability) premium and from the overall total premium. Null " +
+  "for non-motor or Third-Party-only policies.\n" +
   "- sumInsured and idv are typically only present on health/life and motor policies respectively.\n" +
   "- notes: anything unusual, ambiguous, or worth a human reviewer's attention; otherwise null.\n" +
   "- confidence is your overall extraction confidence from 0 to 100.";
@@ -429,6 +438,16 @@ export async function buildPolicyFromExtraction(
     fileData?: string;
     originalName?: string;
     refs?: ReferenceLists;
+    // Set only when this import came from an agent's own "Upload PDF" (not
+    // admin's "Import from policy document"). Mirrors what
+    // /api/agent/policies-bulk.ts and /api/agent/policies.ts already do for
+    // manual/Excel-created policies: unconditionally attribute the policy to
+    // the submitting agent (pospPartner/assignment.pospAgent), regardless of
+    // any POSP/agent name the PDF itself happens to print, and leave
+    // adminApprovalStatus at the schema default ("Pending") instead of the
+    // admin flow's implicit approval (admin-created policies bypass the gate
+    // entirely by having no createdByAgentId at all).
+    createdByAgentId?: string;
   }
 ) {
   const refs = opts.refs ?? (await loadReferenceLists());
@@ -450,9 +469,24 @@ export async function buildPolicyFromExtraction(
     sumInsured: x.sumInsured ?? undefined,
     idv: x.idv ?? undefined,
     nominee: x.nominee || undefined,
+    // Same "OD" row label the manual Add Policy form's PREMIUM_ROW_LABELS
+    // uses, so this shows up consistently wherever premiumBreakdown is read.
+    premiumBreakdown:
+      x.totalOwnDamagePremium != null
+        ? [{ label: "OD", premiumAmount: x.totalOwnDamagePremium }]
+        : undefined,
     status: base.status || "Active",
     source: "ai-import",
     createdBy: opts.createdBy,
+    createdByAgentId: opts.createdByAgentId || undefined,
+    pospPartner: opts.createdByAgentId ? opts.createdBy : base.pospPartner,
+    assignment: opts.createdByAgentId
+      ? {
+          ...(base.assignment || {}),
+          pospAgent: { id: opts.createdByAgentId, name: opts.createdBy },
+          pospPartner: opts.createdBy,
+        }
+      : base.assignment,
     aiImportId: opts.importId,
     aiExtractionConfidence: x.confidence ?? undefined,
     policyDocuments:

@@ -4,15 +4,22 @@ import Image from "next/image";
 import logo from "@/assets/logowhite.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
-import CreateManager from "@/components/superadminsidebar/createmanager";
 import AgentList from "@/components/superadminsidebar/agentlist";
 import ManagerList from "@/components/superadminsidebar/managerlist";
 import UserList from "@/components/superadminsidebar/userList";
-import CreateAgent from "@/components/superadminsidebar/createagent";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
+import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
+import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
+import ShopInsuranceList from "@/components/superadminsidebar/shopinsurancelist";
+import Healthinsurancelist from "@/components/superadminsidebar/Healthinsurancelist";
+import Homeinsurancelist from "@/components/superadminsidebar/Homeinsurancelist";
+import Doctorinsurancelist from "@/components/superadminsidebar/Doctorinsurancelist";
+import Officepackagepolicylist from "@/components/superadminsidebar/Officepackagepolicylist";
+import Directorlist from "@/components/superadminsidebar/Directorlist";
+import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
 import styles from "@/styles/pages/admindashboard.module.css";
 import { useRouter } from "next/router";
 // import withAuth from "@/lib/withAuth";
@@ -25,12 +32,22 @@ import {
   FiMenu,
   FiX,
   FiGrid,
-  FiUserCheck,
   FiBriefcase,
   FiUser,
   FiFileText,
   FiSettings,
   FiChevronDown,
+  FiTarget,
+  FiLayers,
+  FiAnchor,
+  FiMap,
+  FiShoppingBag,
+  FiHeart,
+  FiHome,
+  FiActivity,
+  FiPackage,
+  FiBookOpen,
+  FiClipboard,
 } from "react-icons/fi";
 import axios from "axios";
 
@@ -39,11 +56,26 @@ import axios from "axios";
 // into a section (e.g. via the profile dropdown, or a future deep link)
 // auto-opens its group instead of leaving it looking collapsed.
 const SIDEBAR_GROUP_OF: Record<string, string> = {
-  createManager: "create",
-  createAgent: "create",
   managerList: "lists",
-  agentList: "lists",
   userList: "lists",
+  marineinsurancelist: "leads",
+  travelinsurancelist: "leads",
+  shopinsurancelist: "leads",
+  healthinsurancelist: "leads",
+  homeinsurancelist: "leads",
+  doctorinsurancelist: "leads",
+  officepackagepolicylist: "leads",
+  directorlist: "leads",
+  agentList: "posp",
+  reviewApplication: "posp",
+};
+
+const statusTone = (status?: string) => {
+  const s = (status || "").toLowerCase();
+  if (s === "active" || s === "issued") return "active";
+  if (s === "draft" || s === "pending") return "draft";
+  if (s === "expired" || s === "cancelled") return "danger";
+  return "other";
 };
 
 const AdminDashboard = () => {
@@ -56,6 +88,7 @@ const AdminDashboard = () => {
     const [stateManagerCount, setStateManagerCount] = useState(0);
     const [districtManagerCount, setDistrictManagerCount] = useState(0);
     const [policyCount, setPolicyCount] = useState(0);
+    const [policies, setPolicies] = useState<any[]>([]);
     const [adminData, setAdminData] = useState<any>(null);
     const [profileLoading, setProfileLoading] = useState(false);
 const router = useRouter();
@@ -137,16 +170,17 @@ const router = useRouter();
     }, []);
 
     useEffect(() => {
-      const fetchPolicyCount = async () => {
+      const fetchPolicies = async () => {
         try {
           const res = await fetch("/api/admin/policies", { credentials: "include" });
           const data = await res.json();
+          setPolicies(data.policies || []);
           setPolicyCount((data.policies || []).length);
         } catch (err) {
-          console.error("Error fetching policy count:", err);
+          console.error("Error fetching policies:", err);
         }
       };
-      fetchPolicyCount();
+      fetchPolicies();
     }, []);
 
     useEffect(() => {
@@ -163,6 +197,23 @@ const router = useRouter();
           .finally(() => setProfileLoading(false));
       }
     }, [activeSection]);
+
+  const recentPolicies = policies.slice(0, 5);
+
+  const statusBuckets = policies.reduce(
+    (acc: { active: number; draft: number; other: number }, p: any) => {
+      const tone = statusTone(p.status);
+      const key = tone === "active" ? "active" : tone === "draft" ? "draft" : "other";
+      acc[key] += 1;
+      return acc;
+    },
+    { active: 0, draft: 0, other: 0 }
+  );
+
+  const totalForPct = policies.length || 1;
+  const activePct = Math.round((statusBuckets.active / totalForPct) * 100);
+  const draftPct = Math.round((statusBuckets.draft / totalForPct) * 100);
+  const otherPct = Math.max(0, 100 - activePct - draftPct);
 
   return (
     <div className={styles.wrapper}>
@@ -225,45 +276,92 @@ const router = useRouter();
               </span>
             </li>
 
-            {/* Create */}
+            {/* Leads */}
             <button
               type="button"
-              className={`${styles.sectionToggle} ${openSections.create ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("create")}
+              className={`${styles.sectionToggle} ${openSections.leads ? styles.sectionToggleOpen : ""}`}
+              onClick={() => toggleSection("leads")}
             >
               <span className={styles.iconLabel}>
-                <FiUserPlus className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Create</span>
+                <FiTarget className={styles.icon} />
+                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Leads</span>
               </span>
               <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.create ? styles.sectionChevronOpen : ""}`}
+                className={`${styles.sectionChevron} ${openSections.leads ? styles.sectionChevronOpen : ""}`}
               />
             </button>
-            {openSections.create && (
+            {openSections.leads && (
               <>
                 <li
-                  onClick={() => {
-                    setActiveSection("createManager");
-                    setSidebarOpen(false);
-                  }}
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "createManager" ? styles.activeMenu : ""}`}
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "marineinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("marineinsurancelist")}
                 >
                   <span className={styles.iconLabel}>
-                    <FiUserCheck className={styles.icon} />
-                    <span className={styles.label}>Create Manager</span>
+                    <FiAnchor className={styles.icon} />
+                    <span className={styles.label}>Marine Insurance</span>
                   </span>
                 </li>
-
                 <li
-                  onClick={() => {
-                    setActiveSection("createAgent");
-                    setSidebarOpen(false);
-                  }}
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "createAgent" ? styles.activeMenu : ""}`}
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "travelinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("travelinsurancelist")}
                 >
                   <span className={styles.iconLabel}>
-                    <FiBriefcase className={styles.icon} />
-                    <span className={styles.label}>Create Agent</span>
+                    <FiMap className={styles.icon} />
+                    <span className={styles.label}>Travel Insurance</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "shopinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("shopinsurancelist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiShoppingBag className={styles.icon} />
+                    <span className={styles.label}>Shop Insurance</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "healthinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("healthinsurancelist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiHeart className={styles.icon} />
+                    <span className={styles.label}>Health Insurance</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "homeinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("homeinsurancelist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiHome className={styles.icon} />
+                    <span className={styles.label}>Home Insurance</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "doctorinsurancelist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("doctorinsurancelist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiActivity className={styles.icon} />
+                    <span className={styles.label}>Doctor Insurance</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "officepackagepolicylist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("officepackagepolicylist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiPackage className={styles.icon} />
+                    <span className={styles.label}>Office Package Policy</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "directorlist" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("directorlist")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiBookOpen className={styles.icon} />
+                    <span className={styles.label}>Director Officer Liability</span>
                   </span>
                 </li>
               </>
@@ -294,17 +392,6 @@ const router = useRouter();
                   <span className={styles.iconLabel}>
                     <FiUsers className={styles.icon} />
                     <span className={styles.label}>Manager List</span>
-                  </span>
-                </li>
-                <li className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
-                onClick={()=>{
-                  setActiveSection("agentList");
-                  setSidebarOpen(false);
-                }}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiBriefcase className={styles.icon} />
-                    <span className={styles.label}>Agent List</span>
                   </span>
                 </li>
                 <li
@@ -347,6 +434,46 @@ const router = useRouter();
                 <span className={styles.label}>Configuration</span>
               </span>
             </li>
+
+            {/* POSP */}
+            <button
+              type="button"
+              className={`${styles.sectionToggle} ${openSections.posp ? styles.sectionToggleOpen : ""}`}
+              onClick={() => toggleSection("posp")}
+            >
+              <span className={styles.iconLabel}>
+                <FiLayers className={styles.icon} />
+                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>POSP</span>
+              </span>
+              <FiChevronDown
+                className={`${styles.sectionChevron} ${openSections.posp ? styles.sectionChevronOpen : ""}`}
+              />
+            </button>
+            {openSections.posp && (
+              <>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
+                  onClick={() => {
+                    setActiveSection("agentList");
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiBriefcase className={styles.icon} />
+                    <span className={styles.label}>Agents</span>
+                  </span>
+                </li>
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "reviewApplication" ? styles.activeMenu : ""}`}
+                  onClick={() => setActiveSection("reviewApplication")}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiClipboard className={styles.icon} />
+                    <span className={styles.label}>Review Application</span>
+                  </span>
+                </li>
+              </>
+            )}
           </ul>
 
           <div className={styles.mobileOnlyLogout}>
@@ -365,40 +492,182 @@ const router = useRouter();
         <main className={styles.mainContent}>
         
              {activeSection === "dashboard" && (
+            <>
             <div className={styles.dashboardCards}>
               <div className={styles.card}>
-                <FiUsers size={32} className={styles.cardIcon} />
-                <p className={styles.cardTitle}>Number of Admins</p>
+                <div className={styles.cardTopRow}>
+                  <span className={styles.cardIconBadge}>
+                    <FiUsers size={16} />
+                  </span>
+                  <span className={styles.cardLabel}>Number of Admins</span>
+                </div>
                 <p className={styles.cardValue}>{adminCount}</p>
+                <div className={styles.cardBottomRow}>
+                  <span className={styles.cardSubLabel}>All admin accounts</span>
+                </div>
               </div>
+
               <div className={styles.card}>
-                <FiUserPlus size={32} className={styles.cardIcon} />
-                <p className={styles.cardTitle}>State Managers</p>
+                <div className={styles.cardTopRow}>
+                  <span className={styles.cardIconBadge}>
+                    <FiUserPlus size={16} />
+                  </span>
+                  <span className={styles.cardLabel}>State Managers</span>
+                </div>
                 <p className={styles.cardValue}>{stateManagerCount}</p>
+                <div className={styles.cardBottomRow}>
+                  <span className={styles.cardSubLabel}>Regional heads</span>
+                </div>
               </div>
+
               <div className={styles.card}>
-                <FiUsers size={32} className={styles.cardIcon} />
-                <p className={styles.cardTitle}>District Managers</p>
+                <div className={styles.cardTopRow}>
+                  <span className={styles.cardIconBadge}>
+                    <FiUsers size={16} />
+                  </span>
+                  <span className={styles.cardLabel}>District Managers</span>
+                </div>
                 <p className={styles.cardValue}>{districtManagerCount}</p>
+                <div className={styles.cardBottomRow}>
+                  <span className={styles.cardSubLabel}>Local heads</span>
+                </div>
               </div>
+
               <div className={styles.card}>
-                <FiUserPlus size={32} className={styles.cardIcon} />
-                <p className={styles.cardTitle}>Agents</p>
+                <div className={styles.cardTopRow}>
+                  <span className={styles.cardIconBadge}>
+                    <FiUserPlus size={16} />
+                  </span>
+                  <span className={styles.cardLabel}>Agents</span>
+                </div>
                 <p className={styles.cardValue}>{agentCount}</p>
+                <div className={styles.cardBottomRow}>
+                  <span className={styles.cardSubLabel}>Active field agents</span>
+                </div>
               </div>
+
               <div className={styles.card}>
-                <FiFileText size={32} className={styles.cardIcon} />
-                <p className={styles.cardTitle}>Policies Issued</p>
+                <div className={styles.cardTopRow}>
+                  <span className={styles.cardIconBadge}>
+                    <FiFileText size={16} />
+                  </span>
+                  <span className={styles.cardLabel}>Policies Issued</span>
+                </div>
                 <p className={styles.cardValue}>{policyCount}</p>
+                <div className={styles.cardBottomRow}>
+                  <span className={styles.cardSubLabel}>All time total</span>
+                </div>
               </div>
             </div>
+
+            <div className={styles.dashboardGrid}>
+              {/* Recent Policies */}
+              <div className={styles.panelCard}>
+                <div className={styles.panelHeader}>
+                  <h3 className={styles.panelTitle}>Recent Policies</h3>
+                </div>
+                {recentPolicies.length === 0 ? (
+                  <p className={styles.panelEmpty}>No policies yet.</p>
+                ) : (
+                  <div className={styles.tableScroll}>
+                    <table className={styles.recentTable}>
+                      <thead>
+                        <tr>
+                          <th>Insured Name</th>
+                          <th>Insurer</th>
+                          <th>Premium</th>
+                          <th>Status</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentPolicies.map((p) => (
+                          <tr key={p._id}>
+                            <td>{p.customer?.fullName || "—"}</td>
+                            <td>{p.insurer || "—"}</td>
+                            <td>
+                              {p.premium
+                                ? `₹${Math.round(p.premium).toLocaleString("en-IN")}`
+                                : "—"}
+                            </td>
+                            <td>
+                              <span
+                                className={`${styles.statusBadge} ${
+                                  styles[`statusTone_${statusTone(p.status)}`]
+                                }`}
+                              >
+                                {p.status || "—"}
+                              </span>
+                            </td>
+                            <td>
+                              {p.createdAt
+                                ? new Date(p.createdAt).toLocaleDateString("en-GB")
+                                : "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className={styles.viewAllLink}
+                  onClick={() => setActiveSection("policyDashboard")}
+                >
+                  View All Policies →
+                </button>
+              </div>
+
+              {/* Side panels */}
+              <div className={styles.sidePanels}>
+                <div className={styles.panelCard}>
+                  <h3 className={styles.panelTitle}>Policy Status</h3>
+                  <p className={styles.statusBigPct}>
+                    {activePct}% <span>Active</span>
+                  </p>
+                  <div className={styles.statusBar}>
+                    <span className={styles.statusSegActive} style={{ width: `${activePct}%` }} />
+                    <span className={styles.statusSegDraft} style={{ width: `${draftPct}%` }} />
+                    <span className={styles.statusSegOther} style={{ width: `${otherPct}%` }} />
+                  </div>
+                  <div className={styles.statTileRow}>
+                    <div className={styles.statTile}>
+                      <span className={styles.statTileValue}>{statusBuckets.active}</span>
+                      <span className={styles.statTileLabel}>Active</span>
+                    </div>
+                    <div className={styles.statTile}>
+                      <span className={styles.statTileValue}>{statusBuckets.draft}</span>
+                      <span className={styles.statTileLabel}>Draft</span>
+                    </div>
+                    <div className={styles.statTile}>
+                      <span className={styles.statTileValue}>{statusBuckets.other}</span>
+                      <span className={styles.statTileLabel}>Other</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.quickActionsCard}>
+                  <h3 className={styles.quickActionsTitle}>Add a new policy</h3>
+                  <p className={styles.quickActionsText}>
+                    Create a policy manually or bulk upload from Excel/CSV.
+                  </p>
+                  <button
+                    type="button"
+                    className={styles.quickActionsBtn}
+                    onClick={() => setActiveSection("policyDashboard")}
+                  >
+                    Go to Policy Data →
+                  </button>
+                </div>
+              </div>
+            </div>
+            </>
           )}
           {activeSection === "createAdmin" && <CreateAdmin />}
           {activeSection === "profileEdit" && (
             <CreateAdmin initialData={adminData} mode="edit" />
           )}
-          {activeSection === "createManager" && <CreateManager />}
-          {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
           {activeSection === "resetpassword" && <ResetPassword />}
           {activeSection === "userList" && <UserList />}
@@ -406,6 +675,15 @@ const router = useRouter();
           {activeSection === "agentList" && <AgentList />}
           {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "configManagement" && <ConfigManagement />}
+          {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
+          {activeSection === "travelinsurancelist" && <TravelInsuranceList />}
+          {activeSection === "shopinsurancelist" && <ShopInsuranceList />}
+          {activeSection === "healthinsurancelist" && <Healthinsurancelist />}
+          {activeSection === "homeinsurancelist" && <Homeinsurancelist />}
+          {activeSection === "doctorinsurancelist" && <Doctorinsurancelist />}
+          {activeSection === "officepackagepolicylist" && <Officepackagepolicylist />}
+          {activeSection === "directorlist" && <Directorlist />}
+          {activeSection === "reviewApplication" && <ReviewApplication />}
         </main>
       </div>
     </div>

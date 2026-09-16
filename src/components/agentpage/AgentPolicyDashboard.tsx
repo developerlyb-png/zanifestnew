@@ -26,6 +26,7 @@ import AddPolicyForm from "@/components/superadminsidebar/AddPolicyForm";
 import BulkUploadModal from "@/components/superadminsidebar/BulkUploadModal";
 import PolicyDetailView from "@/components/superadminsidebar/PolicyDetailView";
 import EditRejectedPolicyModal from "./EditRejectedPolicyModal";
+import AgentPolicyDocumentImport from "./AgentPolicyDocumentImport";
 
 // Agent-scoped port of superadminsidebar/PolicyDashboard.tsx — same columns,
 // filters, presets, column picker and CSV export, backed by the
@@ -478,6 +479,7 @@ function AgentPolicyDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showPendingView, setShowPendingView] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [showUploadPdf, setShowUploadPdf] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnKey, boolean>>(ALL_COLUMNS_VISIBLE);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
@@ -933,6 +935,15 @@ function AgentPolicyDashboard() {
                 <FiUploadCloud /> Bulk Upload
               </button>
               <button
+                className={styles.outlineBtn}
+                onClick={() => {
+                  setShowUploadPdf(true);
+                  setShowAddForm(false);
+                }}
+              >
+                <FiFileText /> Upload PDF
+              </button>
+              <button
                 className={styles.primaryBtn}
                 onClick={() => {
                   setShowAddForm((v) => !v);
@@ -963,6 +974,13 @@ function AgentPolicyDashboard() {
             setPolicies((prev) => prev.map((p) => (p._id === updated._id ? { ...p, ...updated } : p)))
           }
           onDeleted={(id) => setPolicies((prev) => prev.filter((p) => p._id !== id))}
+        />
+      ) : showUploadPdf ? (
+        <AgentPolicyDocumentImport
+          onBack={() => {
+            setShowUploadPdf(false);
+            setRefreshKey((k) => k + 1);
+          }}
         />
       ) : showAddForm ? (
         <AddPolicyForm

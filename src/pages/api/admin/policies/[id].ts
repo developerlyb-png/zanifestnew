@@ -23,7 +23,7 @@ function emailShell(bodyHtml: string) {
   return `
   <div style="background:#f4f7fb;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
-      <div style="background:${BRAND_BLUE};padding:20px 28px;text-align:center;">
+      <div style="background:#ffffff;padding:20px 28px;text-align:center;border-bottom:1px solid #eef1f5;">
         <img src="cid:zanifest-logo" alt="Zanifest" style="height:36px;" />
       </div>
       <div style="padding:28px;color:#1f2937;font-size:14px;line-height:1.6;">
@@ -34,6 +34,21 @@ function emailShell(bodyHtml: string) {
       </div>
     </div>
   </div>`;
+}
+
+// A real button — not a text link — so it's unmissable across mail clients,
+// and always a fully-qualified absolute URL (never falls back to an empty
+// string, which would render as a broken same-path-no-host href inside an
+// email client instead of a real link).
+function loginButton() {
+  const base = process.env.BASE_URL || process.env.NEXTAUTH_URL || "";
+  const href = `${base.replace(/\/$/, "")}/agentlogin`;
+  return `
+    <p style="text-align:center;margin:24px 0 4px;">
+      <a href="${href}" style="display:inline-block;background:${BRAND_BLUE};color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;">
+        Go to Login
+      </a>
+    </p>`;
 }
 
 // Best-effort — a failed/misconfigured mail server should never block the
@@ -58,11 +73,7 @@ async function sendPolicyReviewEmail(policy: any, action: "approve" | "reject", 
           <b>Admin Remark:</b><br/>${remark || "No remark provided"}
         </div>
         <p>This policy is now live in your Policy list.</p>
-        <p>
-          <a href="${process.env.BASE_URL || ""}/agentlogin" style="color:${BRAND_BLUE};">
-            ${process.env.BASE_URL || ""}/agentlogin
-          </a>
-        </p>
+        ${loginButton()}
       `;
       await sendEmail({
         to: agent.email,
@@ -81,11 +92,7 @@ async function sendPolicyReviewEmail(policy: any, action: "approve" | "reject", 
         </div>
         <p>Please review the details, make the necessary corrections, and resubmit the policy from
           the Pending Approval section of your dashboard.</p>
-        <p>
-          <a href="${process.env.BASE_URL || ""}/agentlogin" style="color:${BRAND_BLUE};">
-            ${process.env.BASE_URL || ""}/agentlogin
-          </a>
-        </p>
+        ${loginButton()}
       `;
       await sendEmail({
         to: agent.email,

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/agentlist.module.css";
+import sharedStyles from "@/styles/components/superadminsidebar/sharedTable.module.css";
 import Image from "next/image";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
+import { FiPlus, FiX } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import FilterPanel from "@/components/superadminsidebar/FilterPanel";
 import { Modal, Input, message } from "antd";
+import CreateAgent from "./createagent";
 
 interface Agent {
   _id: string;
@@ -27,6 +30,7 @@ const AgentsPage: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCreate, setShowCreate] = useState(false);
   const agentsPerPage = 10;
 
   // status modal states
@@ -381,7 +385,20 @@ const exportToExcel = () => {
       </Modal>
 
 
-      <h1 className={styles.heading}>All Agents</h1>
+      <div className={sharedStyles.headerRow}>
+        <h1 className={styles.heading}>All Agents</h1>
+        <div className={sharedStyles.headerActions}>
+          <button className={sharedStyles.primaryBtn} onClick={() => setShowCreate((v) => !v)}>
+            {showCreate ? <FiX /> : <FiPlus />} {showCreate ? "Close" : "Add Agent"}
+          </button>
+        </div>
+      </div>
+
+      {showCreate && (
+        <div className={sharedStyles.createPanel}>
+          <CreateAgent />
+        </div>
+      )}
 
       {/* Filter Bar */}
       <div className={styles.filterBar}>

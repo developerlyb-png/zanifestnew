@@ -19,7 +19,6 @@ import {
   FiX,
   FiLock,
 } from "react-icons/fi";
-import { useAdmin } from "@/lib/hooks/useAdmin";
 
 // Same keys as BULK_UPLOAD_COLUMNS (src/constants/bulkUploadColumns.ts) plus
 // a handful of AI-only bonus fields — kept in sync by hand with
@@ -89,6 +88,12 @@ interface ImportRow {
   extracted?: ExtractedFields | null;
   confidence?: number;
   createdAt?: string;
+  // Only present once status === "saved" — the linked policy's admin-review
+  // state, populated by GET /api/agent/policy-import. Pending/Approved rows
+  // are locked from further editing here; a Rejected one can be corrected
+  // and resubmitted (see ViewEditModal below).
+  approvalStatus?: "Pending" | "Approved" | "Rejected";
+  approvalRemark?: string;
 }
 
 const readFileAsDataUri = (file: File): Promise<string> =>
@@ -123,7 +128,7 @@ const viewPdfDataUri = (dataUri: string, targetWindow?: Window | null) => {
 
 const fetchPdfDataUri = async (importId: string): Promise<string | null> => {
   try {
-    const res = await fetch(`/api/admin/policy-import/${importId}/pdf`, { credentials: "include" });
+    const res = await fetch(`/api/agent/policy-import/${importId}/pdf`, { credentials: "include" });
     const data = await res.json();
     if (!res.ok || !data.success || !data.fileData) return null;
     return data.fileData as string;
@@ -133,7 +138,10 @@ const fetchPdfDataUri = async (importId: string): Promise<string | null> => {
   }
 };
 
-const StatusPill: React.FC<{ status: ImportRow["status"] }> = ({ status }) => {
+const StatusPill: React.FC<{ status: ImportRow["status"]; approvalStatus?: ImportRow["approvalStatus"] }> = ({
+  status,
+  approvalStatus,
+}) => {
   if (status === "processing") {
     return (
       <span className={`${styles.statusPill} ${styles.statusProcessing}`}>
@@ -149,9 +157,23 @@ const StatusPill: React.FC<{ status: ImportRow["status"] }> = ({ status }) => {
     );
   }
   if (status === "saved") {
+    if (approvalStatus === "Approved") {
+      return (
+        <span className={`${styles.statusPill} ${styles.statusSaved}`}>
+          <FiCheckCircle size={12} /> Approved
+        </span>
+      );
+    }
+    if (approvalStatus === "Rejected") {
+      return (
+        <span className={`${styles.statusPill} ${styles.statusFailed}`}>
+          <FiXCircle size={12} /> Rejected
+        </span>
+      );
+    }
     return (
-      <span className={`${styles.statusPill} ${styles.statusSaved}`}>
-        <FiCheckCircle size={12} /> Saved
+      <span className={`${styles.statusPill} ${styles.statusReview}`}>
+        <FiClock size={12} /> Pending Review
       </span>
     );
   }
@@ -242,19 +264,18 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 // Full view/edit popup for one row — every field the AI can extract (the
 // same set bulk upload accepts), not just the handful shown inline in the
-// table. Review-status rows are editable and save straight to the Customer
-// Dashboard; already-saved/failed rows render read-only, as an audit view.
+// table. Review-status rows are editable and submit for admin review;
+// submitted rows render read-only while Pending/Approved, and become
+// editable again (to correct and resubmit) only once Rejected.
 function ViewEditModal({
   row,
   initialEdits,
-  isSuperAdmin,
   onClose,
   onFieldChange,
   onSaved,
 }: {
   row: ImportRow;
   initialEdits: Partial<ExtractedFields>;
-  isSuperAdmin: boolean;
   onClose: () => void;
   onFieldChange: (key: keyof ExtractedFields, value: any) => void;
   onSaved: () => void;
@@ -267,9 +288,10 @@ function ViewEditModal({
   const [error, setError] = useState("");
 
   const isSaved = row.status === "saved";
-  // Once saved, only a superadmin may keep editing/deleting it — an admin
-  // gets a read-only view from then on.
-  const readOnly = isSaved && !isSuperAdmin;
+  const isRejected = isSaved && row.approvalStatus === "Rejected";
+  // Once submitted, it's locked while Pending or Approved — only a
+  // Rejected submission can be corrected and resubmitted.
+  const readOnly = isSaved && !isRejected;
 
   const setField = (key: keyof ExtractedFields, value: any) => {
     if (readOnly) return;
@@ -296,7 +318,7 @@ function ViewEditModal({
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`/api/admin/policy-import/${row._id}/approve`, {
+      const res = await fetch(`/api/agent/policy-import/${row._id}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -349,9 +371,16 @@ function ViewEditModal({
         {error && <p className={styles.errorBanner}>{error}</p>}
         {isSaved && (
           <p className={styles.reviewedNote}>
-            {readOnly
-              ? "This document has already been saved to the Customer Dashboard — shown here read-only. Only a superadmin can edit or delete a saved policy."
-              : "This document has already been saved to the Customer Dashboard — edit any field and Save Changes to update it there."}
+            {row.approvalStatus === "Approved"
+              ? "This policy has been approved and is now live on your dashboard — shown here read-only."
+              : isRejected
+              ? "This submission was rejected — correct the fields below and resubmit for review."
+              : "Submitted and waiting for admin review — shown here read-only until it's approved or rejected."}
+          </p>
+        )}
+        {isRejected && row.approvalRemark && (
+          <p className={styles.errorBanner}>
+            <strong>Why it was rejected:</strong> {row.approvalRemark}
           </p>
         )}
         {fields.notes && <div className={styles.notesBanner}>AI notes: {fields.notes}</div>}
@@ -459,7 +488,8 @@ function ViewEditModal({
           </button>
           {!readOnly && (
             <button type="button" className={`${styles.btn} ${styles.btnSave}`} onClick={handleSave} disabled={saving}>
-              <FiCheckCircle size={14} /> {saving ? "Saving..." : isSaved ? "Save Changes" : "Save & Add to Policies"}
+              <FiCheckCircle size={14} />{" "}
+              {saving ? "Saving..." : isRejected ? "Resubmit for Review" : "Submit for Review"}
             </button>
           )}
         </div>
@@ -468,12 +498,7 @@ function ViewEditModal({
   );
 }
 
-export default function PolicyDocumentImport({ onBack }: { onBack: () => void }) {
-  // Once a row is saved to the Customer Dashboard, only a superadmin may
-  // still edit or delete it — a plain admin can only view it from then on.
-  const { admin } = useAdmin();
-  const isSuperAdmin = admin?.role === "superadmin";
-
+export default function AgentPolicyDocumentImport({ onBack }: { onBack: () => void }) {
   const [items, setItems] = useState<ImportRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -500,7 +525,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
 
   const fetchItems = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/policy-import", { credentials: "include" });
+      const res = await fetch("/api/agent/policy-import", { credentials: "include" });
       const data = await res.json();
       setItems(data.items || []);
     } catch (err) {
@@ -559,7 +584,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
       for (const f of pendingFiles) {
         try {
           const fileData = await readFileAsDataUri(f);
-          const res = await fetch("/api/admin/policy-import", {
+          const res = await fetch("/api/agent/policy-import", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -599,7 +624,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
 
   const handleRetry = async (row: ImportRow) => {
     try {
-      await fetch(`/api/admin/policy-import/${row._id}/retry`, { method: "POST", credentials: "include" });
+      await fetch(`/api/agent/policy-import/${row._id}/retry`, { method: "POST", credentials: "include" });
       seenIdsRef.current.delete(row._id);
       await fetchItems();
     } catch (err) {
@@ -607,19 +632,20 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
     }
   };
 
-  // Once a row is saved, only a superadmin may still delete it — an admin
-  // can only view it from then on.
-  const canDelete = (row: ImportRow) => row.status !== "saved" || isSuperAdmin;
+  // Once submitted, only a rejected submission can still be deleted —
+  // Pending/Approved ones are locked, matching the Pending Policies panel's
+  // same rule for manually/bulk-created policies.
+  const canDelete = (row: ImportRow) => row.status !== "saved" || row.approvalStatus === "Rejected";
 
   const handleDelete = async (row: ImportRow) => {
     if (!canDelete(row)) return;
     const note =
       row.status === "saved"
-        ? " The policy it already saved to the Customer Dashboard will NOT be deleted — only this upload entry."
+        ? " The rejected policy itself will NOT be deleted — only this upload entry."
         : "";
     if (!window.confirm(`Remove "${row.originalName}" from this list?${note}`)) return;
     try {
-      const res = await fetch(`/api/admin/policy-import/${row._id}`, {
+      const res = await fetch(`/api/agent/policy-import/${row._id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -653,7 +679,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
     if (ids.length === 0) return;
     const includesSaved = items.some((i) => ids.includes(i._id) && i.status === "saved");
     const note = includesSaved
-      ? " Any already-saved policies will NOT be deleted — only their upload entries."
+      ? " The rejected policies themselves will NOT be deleted — only their upload entries."
       : "";
     if (!window.confirm(`Remove ${ids.length} selected item(s) from this list?${note}`)) return;
     setDeletingSelected(true);
@@ -661,7 +687,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
       const results = await Promise.all(
         ids.map(async (id) => {
           try {
-            const res = await fetch(`/api/admin/policy-import/${id}`, {
+            const res = await fetch(`/api/agent/policy-import/${id}`, {
               method: "DELETE",
               credentials: "include",
             });
@@ -718,7 +744,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
     setSavingAll(true);
     setBatchSummary(null);
     try {
-      const res = await fetch("/api/admin/policy-import/bulk-approve", {
+      const res = await fetch("/api/agent/policy-import/bulk-approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -732,7 +758,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
         return;
       }
       setBatchSummary(
-        `${data.saved} saved${data.skippedDuplicates ? `, ${data.skippedDuplicates} duplicate(s) skipped` : ""}.`
+        `${data.saved} submitted for review${data.skippedDuplicates ? `, ${data.skippedDuplicates} duplicate(s) skipped` : ""}.`
       );
       reviewRows.forEach((r) => seenIdsRef.current.add(r._id));
       await fetchItems();
@@ -749,7 +775,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
   const handleSaveRow = async (row: ImportRow) => {
     setSavingRowId(row._id);
     try {
-      const res = await fetch(`/api/admin/policy-import/${row._id}/approve`, {
+      const res = await fetch(`/api/agent/policy-import/${row._id}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -781,15 +807,16 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
   return (
     <div className={styles.panel}>
       <button type="button" className={styles.backLink} onClick={onBack}>
-        <FiArrowLeft /> Back to Customer Dashboard
+        <FiArrowLeft /> Back to Dashboard
       </button>
 
       <div className={styles.panelTitleRow}>
         <div>
-          <h3 className={styles.panelTitle}>Import from Policy Document</h3>
+          <h3 className={styles.panelTitle}>Upload Policy PDF</h3>
           <p className={styles.panelHint}>
             Upload policy PDFs — AI reads each one automatically. Correct anything right in the table
-            below, then save it to the Customer Dashboard.
+            below, then submit it for admin review. Approved policies appear in your dashboard;
+            rejected ones can be corrected and resubmitted.
           </p>
         </div>
       </div>
@@ -862,7 +889,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
           )}
           {reviewCount > 0 && (
             <button type="button" className={styles.saveAllBtn} onClick={handleSaveAll} disabled={savingAll}>
-              <FiCheckCircle size={14} /> {savingAll ? "Saving..." : `Save All Unique (${reviewCount})`}
+              <FiCheckCircle size={14} /> {savingAll ? "Submitting..." : `Submit All Unique (${reviewCount})`}
             </button>
           )}
         </div>
@@ -920,13 +947,13 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                         checked={selectedIds.has(row._id)}
                         onChange={() => toggleSelectRow(row)}
                         disabled={!canDelete(row)}
-                        title={!canDelete(row) ? "Only a superadmin can delete a saved policy" : undefined}
+                        title={!canDelete(row) ? "Only a rejected submission can be deleted" : undefined}
                         aria-label={`Select ${row.originalName}`}
                       />
                     </td>
                     <td className={styles.fileCell}>{row.originalName}</td>
                     <td>
-                      <StatusPill status={row.status} />
+                      <StatusPill status={row.status} approvalStatus={row.approvalStatus} />
                     </td>
                     {row.status === "processing" ? (
                       <>
@@ -1039,8 +1066,8 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                             className={styles.actionBtn}
                             onClick={() => setViewRowId(row._id)}
                             title={
-                              row.status === "saved" && !isSuperAdmin
-                                ? "View extracted fields (read-only — only a superadmin can edit a saved policy)"
+                              row.status === "saved" && row.approvalStatus !== "Rejected"
+                                ? "View extracted fields (read-only until reviewed)"
                                 : "View / edit all extracted fields"
                             }
                           >
@@ -1073,7 +1100,7 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
                           className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
                           onClick={() => handleDelete(row)}
                           disabled={!canDelete(row)}
-                          title={canDelete(row) ? "Delete" : "Only a superadmin can delete a saved policy"}
+                          title={canDelete(row) ? "Delete" : "Only a rejected submission can be deleted"}
                         >
                           {canDelete(row) ? <FiTrash2 size={14} /> : <FiLock size={14} />}
                         </button>
@@ -1102,7 +1129,6 @@ export default function PolicyDocumentImport({ onBack }: { onBack: () => void })
         <ViewEditModal
           row={viewRow}
           initialEdits={edits[viewRow._id] || {}}
-          isSuperAdmin={isSuperAdmin}
           onClose={() => setViewRowId(null)}
           onFieldChange={(key, value) => setField(viewRow._id, key, value)}
           onSaved={() => {

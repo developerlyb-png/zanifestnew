@@ -27,6 +27,16 @@ const PolicyImportSchema = new Schema(
 
     createdBy: String,
 
+    // Set only for agent-submitted uploads (via /api/agent/policy-import) —
+    // unset/undefined for admin's own uploads. Lets agent and admin PDF
+    // imports share this one collection while each only ever sees their own
+    // via a query on this field, the same way IssuedPolicy.createdByAgentId
+    // already separates agent- from admin-created policies.
+    agentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Agent",
+    },
+
     savedPolicyId: {
       type: Schema.Types.ObjectId,
       ref: "IssuedPolicy",
@@ -41,5 +51,8 @@ const PolicyImportSchema = new Schema(
 // scanning every document off disk (fileData included) before sorting — this
 // index lets Mongo walk the sort order directly instead.
 PolicyImportSchema.index({ createdAt: -1 });
+// Agents list/poll only their own imports — same shape as IssuedPolicy's
+// { createdByAgentId: 1, createdAt: -1 } compound index.
+PolicyImportSchema.index({ agentId: 1, createdAt: -1 });
 
 export default mongoose.models.PolicyImport || mongoose.model("PolicyImport", PolicyImportSchema);

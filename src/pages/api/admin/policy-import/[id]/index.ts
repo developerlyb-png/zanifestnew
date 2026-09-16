@@ -33,13 +33,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "DELETE") {
     try {
+      const existing = await PolicyImport.findById(id);
+      if (!existing) {
+        return res.status(404).json({ success: false, message: "Import not found" });
+      }
+      // Enforced here too, not just hidden in the UI — a plain admin could
+      // otherwise call this endpoint directly to delete a saved import they
+      // can no longer see a "delete" button for.
+      if (existing.status === "saved" && (admin as any).role !== "superadmin") {
+        return res.status(403).json({
+          success: false,
+          message: "Only a superadmin can delete a policy that has already been saved",
+        });
+      }
+
       // Only removes this import record (and the PDF stored on it) — a
       // policy it already saved to the Customer Dashboard is left alone;
       // that has its own delete flow there.
-      const imp = await PolicyImport.findByIdAndDelete(id);
-      if (!imp) {
-        return res.status(404).json({ success: false, message: "Import not found" });
-      }
+      await PolicyImport.findByIdAndDelete(id);
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("POLICY IMPORT DELETE ERROR", err);

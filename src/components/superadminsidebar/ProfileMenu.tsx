@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { FiChevronDown, FiEdit3, FiLock, FiKey, FiLogOut } from "react-icons/fi";
+import { FaUser } from "react-icons/fa";
 import styles from "@/styles/pages/admindashboard.module.css";
 
 // Shared between admindashboard.tsx and superadmin.tsx (previously defined
@@ -35,10 +36,6 @@ export const ProfileMenu = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const initials = `${(admin?.userFirstName || "A").charAt(0)}${(
-    admin?.userLastName || ""
-  ).charAt(0)}`.toUpperCase();
-
   const go = (section: string) => {
     onNavigate(section);
     setOpen(false);
@@ -51,7 +48,7 @@ export const ProfileMenu = ({
         className={styles.profileTrigger}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className={styles.profileAvatar}>{initials}</span>
+        <span className={styles.profileAvatar}><FaUser size={16} /></span>
         <FiChevronDown
           size={14}
           className={`${styles.profileChevron} ${open ? styles.profileChevronOpen : ""}`}
@@ -61,7 +58,7 @@ export const ProfileMenu = ({
       {open && (
         <div className={styles.profileDropdown}>
           <div className={styles.profileDropdownHeader}>
-            <span className={styles.profileAvatar}>{initials}</span>
+            <span className={styles.profileAvatar}><FaUser size={16} /></span>
             <div className={styles.profileDropdownIdentity}>
               <span className={styles.profileDropdownName}>
                 {admin?.userFirstName ?? "Admin"} {admin?.userLastName ?? ""}

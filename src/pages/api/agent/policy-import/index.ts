@@ -4,9 +4,9 @@ import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import { runExtractionJob } from "@/utils/aiPolicyExtractor";
 
-// The frontend uploads one file per request (see PolicyDocumentImport.tsx),
-// so this only ever needs to hold a single ~15MB PDF's base64 encoding
-// (~20MB) plus JSON overhead — not a whole 25-file batch at once.
+// Agent's own "Upload PDF" flow — mirrors /api/admin/policy-import exactly
+// (same one-file-per-request upload architecture, same 25-file/15MB limits),
+// scoped to the agent's own imports via agentId instead of being admin-wide.
 export const config = {
   api: {
     bodyParser: {
@@ -15,29 +15,22 @@ export const config = {
   },
 };
 
-async function requireAdmin(req: NextApiRequest) {
-  const token = req.cookies["adminToken"];
+async function requireAgent(req: NextApiRequest) {
+  const token = req.cookies["agentToken"];
   const data = token ? await verifyToken(token) : null;
 
-  if (
-    !data ||
-    typeof data !== "object" ||
-    !("role" in data) ||
-    !["superadmin", "admin"].includes((data as any).role)
-  ) {
+  if (!data || typeof data !== "object" || (data as any).role !== "agent") {
     return null;
   }
-  return data;
+  return data as any;
 }
 
-// Matches the reference insurance-crm-mvp project: up to 25 PDFs per batch,
-// 15MB max per file.
 const MAX_FILES_PER_BATCH = 25;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const admin = await requireAdmin(req);
-  if (!admin) {
+  const agent = await requireAgent(req);
+  if (!agent) {
     return res.status(401).json({ success: false, message: "Not authorized" });
   }
 
@@ -45,16 +38,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "GET") {
     try {
-      // Agent-submitted PDF uploads (agentId set) go through their own
-      // /api/agent/policy-import staging + the existing Agent Policies
-      // review queue once submitted — they never belong in admin's own
-      // "Import from policy document" staging list.
-      const items = await PolicyImport.find({ agentId: { $exists: false } }, { fileData: 0 })
+      const items: any[] = await PolicyImport.find({ agentId: agent.id }, { fileData: 0 })
         .sort({ createdAt: -1 })
-        .limit(100);
-      return res.status(200).json({ success: true, items });
+        .limit(100)
+        .populate("savedPolicyId", "adminApprovalStatus adminApprovalRemark")
+        .lean();
+
+      // Flatten the populated policy's review status onto the row so the
+      // frontend can tell "submitted, pending review" apart from
+      // "submitted, rejected — edit and resubmit" without a second request.
+      const shaped = items.map((it: any) => ({
+        ...it,
+        savedPolicyId: it.savedPolicyId?._id ?? it.savedPolicyId,
+        approvalStatus: it.savedPolicyId?.adminApprovalStatus,
+        approvalRemark: it.savedPolicyId?.adminApprovalRemark,
+      }));
+
+      return res.status(200).json({ success: true, items: shaped });
     } catch (err: any) {
-      console.log("POLICY IMPORT LIST ERROR", err);
+      console.log("AGENT POLICY IMPORT LIST ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }
@@ -71,9 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           .json({ success: false, message: `Maximum ${MAX_FILES_PER_BATCH} PDFs per batch` });
       }
 
-      const adminName =
-        `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
-        (admin as any).email;
+      const agentName = agent.fullName || agent.email;
 
       const ids: string[] = [];
       const skipped: string[] = [];
@@ -95,10 +95,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           originalName: fileName,
           fileData,
           status: "processing",
-          createdBy: adminName,
+          createdBy: agentName,
+          agentId: agent.id,
         });
         ids.push(String(doc._id));
-        // Fire-and-forget — the review queue polls GET / for status updates.
         runExtractionJob(String(doc._id));
       }
 
@@ -108,7 +108,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(202).json({ success: true, ids, skipped });
     } catch (err: any) {
-      console.log("POLICY IMPORT UPLOAD ERROR", err);
+      console.log("AGENT POLICY IMPORT UPLOAD ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }

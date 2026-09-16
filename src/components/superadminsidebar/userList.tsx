@@ -88,12 +88,16 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import logo from "@/assets/logo.png";
 import styles from "@/styles/pages/admin/userlist.module.css";
+import sharedStyles from "@/styles/components/superadminsidebar/sharedTable.module.css";
+import { FiPlus, FiX } from "react-icons/fi";
+import CreateUser from "@/components/agentpage/createuser";
 
 function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCreate, setShowCreate] = useState(false);
   const itemsPerPage = 10;
 
   const fetchUsers = async () => {
@@ -147,7 +151,25 @@ function UsersPage() {
         </button>
       </header> */}
 
-      <h1 className={styles.heading}>Registered Users</h1>
+      <div className={sharedStyles.headerRow}>
+        <h1 className={styles.heading}>Registered Users</h1>
+        <div className={sharedStyles.headerActions}>
+          <button className={sharedStyles.primaryBtn} onClick={() => setShowCreate((v) => !v)}>
+            {showCreate ? <FiX /> : <FiPlus />} {showCreate ? "Close" : "Add User"}
+          </button>
+        </div>
+      </div>
+
+      {showCreate && (
+        <div className={sharedStyles.createPanel}>
+          <CreateUser
+            onSuccess={() => {
+              setShowCreate(false);
+              fetchUsers();
+            }}
+          />
+        </div>
+      )}
 
       {loading ? (
         <div className={styles.loaderWrapper}>
