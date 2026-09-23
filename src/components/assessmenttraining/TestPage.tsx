@@ -2588,6 +2588,85 @@ const QUESTION_SETS = [
 ];
 
 /* ======================================================
+   NEWLY ADDED QUESTIONS (uploaded on top of the original 5 sets) —
+   IDs here are temporary; QUESTION_BANK below renumbers everything
+   sequentially so ids stay unique across all 300 questions.
+====================================================== */
+const NEW_QUESTIONS = [
+  { q: "What is IDV?", choices: ["Insured Direct Valuation", "Insured Declared Value", "Initial Deductible Value", "Indemnity Depreciation Value"], answer: 1 },
+  { q: "What is cashless claim?", choices: ["Claim settled directly by insurer", "Claim paid via digital bank transfer to customer", "Claim settled only through cash payments", "Claim rejected due to lack of funds"], answer: 0 },
+  { q: "What is KYC?", choices: ["Keep Your Cash", "Key Yield Calculation", "Know Your Customer", "Known Year Contract"], answer: 2 },
+  { q: "What is underwriting?", choices: ["Marketing insurance products", "Settling motor claims", "Calculating commission payouts", "Risk evaluation"], answer: 3 },
+  { q: "What is subrogation?", choices: ["The right to cancel a policy anytime", "Insurer's right to recover", "The duty of utmost good faith", "Double insurance compensation"], answer: 1 },
+  { q: "Health policy waiting period?", choices: ["Grace period for paying premiums", "Time taken to issue a policy bond", "Initial exclusion period", "Hospital discharge time frame"], answer: 2 },
+  { q: "Motor TP insurance mandatory?", choices: ["Yes", "No, it is completely optional", "Only for commercial vehicles", "Only during the first year of purchase"], answer: 0 },
+  { q: "What is indemnity?", choices: ["Making a profit out of a loss", "Transferring all risks to reinsurers", "Canceling coverage without penalty", "Compensation for loss"], answer: 3 },
+  { q: "What is IDV?", choices: ["Internal Depreciation Variable", "Insured Declared Value", "Investment Delivery Volume", "Insurance Dividend Voucher"], answer: 1 },
+  { q: "What is cashless claim?", choices: ["A claim that requires zero documentation", "Claim settled directly by insurer", "A policy that has expired without claims", "Reimbursement provided after 90 days"], answer: 0 },
+  { q: "What is KYC?", choices: ["Knowledge Yield Center", "Key Yearly Cost", "Know Your Customer", "Kinetic Valuation Criteria"], answer: 2 },
+  { q: "What is underwriting?", choices: ["Risk evaluation", "Legal contract signing", "Investment of premium funds", "Designing promotional brochures"], answer: 0 },
+  { q: "What is subrogation?", choices: ["Transfer of policy to a family member", "Reduction of sum insured due to age", "Insurer's right to recover", "The process of renewing a lapsed policy"], answer: 2 },
+  { q: "Health policy waiting period?", choices: ["Initial exclusion period", "Time allowed to change the nominee", "The processing window for online premium payments", "The standard duration of a hospital stay"], answer: 0 },
+  { q: "Motor TP insurance mandatory?", choices: ["No, it depends on the vehicle owner's choice", "Yes", "Only for vehicles older than 5 years", "Only for luxury sports cars"], answer: 1 },
+  { q: "What is indemnity?", choices: ["Penalty for late premium payment", "A type of life insurance bonus", "Compensation for loss", "The legal age limit to buy insurance"], answer: 2 },
+  { q: "What is IDV?", choices: ["Institutional Discount Value", "Integrated Data Verification", "Immediate Damage Validation", "Insured Declared Value"], answer: 3 },
+  { q: "What is cashless claim?", choices: ["Claim settled directly by insurer", "A claim settled using physical gold bars", "A waiver of the premium for disabled policyholders", "An online discount given during policy renewal"], answer: 0 },
+  { q: "What is KYC?", choices: ["Key Yield Capital", "Know Your Customer", "Knowledge Verification Clause", "Kernel Yard Calculator"], answer: 1 },
+  { q: "What is underwriting?", choices: ["Printing the physical policy booklet", "Hiring new insurance agents", "Risk evaluation", "Auditing company balance sheets"], answer: 2 },
+  { q: "What is subrogation?", choices: ["Splitting the claim amount between two insurers", "Insurer's right to recover", "Forfeiting the premium upon fraud detection", "Terminating a policy before maturity"], answer: 1 },
+  { q: "Health policy waiting period?", choices: ["The time taken to dispatch the health card", "The standard appointment time for a medical test", "Initial exclusion period", "The free-look period for returning a policy"], answer: 2 },
+  { q: "Motor TP insurance mandatory?", choices: ["Yes", "No, unless required by bank financing", "Only for high-speed expressways", "It is completely voluntary"], answer: 0 },
+  { q: "What is indemnity?", choices: ["A regular monthly pension payout", "Compensation for loss", "The dynamic appreciation of an asset", "The total commission earned by a POSP"], answer: 1 },
+  { q: "What is IDV?", choices: ["Insured Depreciation Variable", "Internal Declared Valuation", "Insured Declared Value", "Index Derived Value"], answer: 2 },
+  { q: "What is cashless claim?", choices: ["A claim paid out in gift vouchers", "Claim settled directly by insurer", "A claim that does not require an identity check", "Free insurance offered during festival sales"], answer: 1 },
+  { q: "What is KYC?", choices: ["Key Yearly Contract", "Know Your Company", "Knowledge Yield Criteria", "Know Your Customer"], answer: 3 },
+  { q: "What is underwriting?", choices: ["Selling policies via digital apps", "Risk evaluation", "Managing customer complaints", "Determining the insurance company's stock price"], answer: 1 },
+  { q: "What is subrogation?", choices: ["Insurer's right to recover", "The policyholder's right to change nominees", "The dynamic adjustment of market premiums", "The legal absolute transfer of ownership"], answer: 0 },
+  { q: "Health policy waiting period?", choices: ["The duration of a medical checkup", "The time limit to submit hospital bills", "Initial exclusion period", "The frequency of health checkups allowed"], answer: 2 },
+  { q: "Motor TP insurance mandatory?", choices: ["Only for temporary state permits", "Yes", "No, personal accident cover is sufficient", "Only for commercial transport trucks"], answer: 1 },
+  { q: "What is indemnity?", choices: ["The absolute double payment of sum assured", "A dynamic interest rate added to savings", "Compensation for loss", "A strict penalty for false claims"], answer: 2 },
+  { q: "What is IDV?", choices: ["Incremental Damage Valuation", "Insured Declared Value", "Inflation Adjusted Value", "Institutional Deductible Variable"], answer: 1 },
+  { q: "What is cashless claim?", choices: ["Claim settled directly by insurer", "A claim settled completely online via UPI", "A rejected insurance claim due to premium default", "A promotional policy discount"], answer: 0 },
+  { q: "What is KYC?", choices: ["Know Your Customer", "Key Yield Calculator", "Kinetic Verification Clause", "Knowledge Matrix Code"], answer: 0 },
+  { q: "What is underwriting?", choices: ["Marketing campaigns for insurance agents", "Risk evaluation", "The legal process of filing a claim court case", "Settling arguments during a grievance meet"], answer: 1 },
+  { q: "What is subrogation?", choices: ["Passing the premium costs to a third party", "Merging two different insurance covers", "Insurer's right to recover", "The legal termination of a contract due to death"], answer: 2 },
+  { q: "Health policy waiting period?", choices: ["The time window to buy a top-up plan", "Initial exclusion period", "The duration required to process a claim approval", "The gap between two consecutive doctor visits"], answer: 1 },
+  { q: "Motor TP insurance mandatory?", choices: ["Yes", "No, it's optional if you have comprehensive cover", "Only for corporate-owned passenger fleets", "No, it's voluntary for private two-wheelers"], answer: 0 },
+  { q: "What is indemnity?", choices: ["Compensation for loss", "An advance payment for future losses", "A legal tax deduction on health premiums", "Profit sharing among policyholders"], answer: 0 },
+  { q: "What is IDV?", choices: ["Integrated Delivery Valuation", "Insured Direct Variable", "Insured Declared Value", "Internal Depreciation Value"], answer: 2 },
+  { q: "What is cashless claim?", choices: ["Reimbursement via digital wallets", "Claim settled directly by insurer", "A completely free health insurance cover", "A claim that requires no physical signature"], answer: 1 },
+  { q: "What is KYC?", choices: ["Key Yield Conversion", "Knowledge of Your Company", "Know Your Customer", "Kinetic Valuation Core"], answer: 2 },
+  { q: "What is underwriting?", choices: ["Risk evaluation", "Distributing physical policies", "Calculating agent commissions", "Reviewing consumer court disputes"], answer: 0 },
+  { q: "What is subrogation?", choices: ["The absolute cancellation of the policy bond", "Insurer's right to recover", "Transferring the policy to another insurance provider", "The sharing of risks between multiple policyholders"], answer: 1 },
+  { q: "Health policy waiting period?", choices: ["The timeline to submit pre-hospitalisation bills", "The gap between purchasing a policy and receiving the physical card", "Initial exclusion period", "The time period allowed to renew a policy without a gap"], answer: 2 },
+  { q: "Motor TP insurance mandatory?", choices: ["Yes", "Optional for vehicles driven less than 1000 km a year", "Voluntary for agricultural tractors", "No, only comprehensive plan is legally binding"], answer: 0 },
+  { q: "What is indemnity?", choices: ["An added monetary benefit for surviving the policy term", "Compensation for loss", "A structural penalty for premature termination", "An investment return on equity-linked plans"], answer: 1 },
+  { q: "What is IDV?", choices: ["Insured Dynamic Valuation", "Insured Declared Value", "Inflation Deductible Variable", "Internal Damage Verification"], answer: 1 },
+  { q: "What is cashless claim?", choices: ["Claim settled directly by insurer", "A claim settled through a barter system", "A policy that offers zero coverage for accidents", "A complete waiver of processing fees"], answer: 0 },
+];
+
+/* ======================================================
+   QUESTION BANK — every question across the original 5 sets plus the
+   newly uploaded batch, flattened into one pool (300 questions once
+   more batches are added; currently 250 + 50 = 300). Random draws of
+   50 for a test are sampled from here instead of picking one whole
+   pre-made set, so no two agents necessarily see the same 50 in the
+   same order. IDs are reassigned sequentially here — the original
+   per-set ids (1-50 within each set) collide across sets, which would
+   corrupt answer-tracking (keyed by id) once questions from different
+   sets can land in the same sampled test.
+====================================================== */
+const QUESTION_BANK = [
+  ...QUESTION_SETS.flatMap((s) => s.questions),
+  ...NEW_QUESTIONS,
+].map((question, i) => ({ ...question, id: i + 1 }));
+
+function sampleQuestions(pool: typeof QUESTION_BANK, count: number) {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+/* ======================================================
    TEST PAGE
 ====================================================== */
 export default function TestPage({
@@ -2647,11 +2726,10 @@ useEffect(() => {
   }, [timeLeft, showResult]);
 
   /* ===============================
-     RANDOM SET PICK
+     RANDOM 50-QUESTION DRAW FROM THE FULL BANK
   =============================== */
   useEffect(() => {
-    const random = Math.floor(Math.random() * QUESTION_SETS.length);
-    setCurrentSet(QUESTION_SETS[random]);
+    setCurrentSet({ questions: sampleQuestions(QUESTION_BANK, 50) });
 
     fetch("/api/agent/save-training-progress", {
       method: "POST",
@@ -2759,7 +2837,7 @@ useEffect(() => {
 
             <section className={m1.heroCard}>
               <h1>Agent Certification Test</h1>
-              <p>Test Set : Set {currentSet.set}</p>
+              <p>IRDAI POSP Certification Practice Test</p>
               <small>
                 {questions.length} Questions · Time limit: 60 minutes · Passing marks:{" "}
                 {Math.ceil(questions.length * 0.4)}
