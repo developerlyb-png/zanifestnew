@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import styles from "@/styles/components/videolecturedashboard/VideoPlayer.module.css";
+import styles from "@/styles/components/assessmenttraining/VideoPlayer.module.css";
 
 export default function VideoPlayer({
   src,

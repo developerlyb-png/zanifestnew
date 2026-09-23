@@ -22,7 +22,9 @@ export default async function handler(
     await dbConnect();
 
     const agents = await Agent.find({})
-      .select("_id firstName lastName email phone city district state pinCode status trainingCompleted createdAt")
+      .select(
+        "_id agentCode firstName lastName email phone city district state pinCode status trainingCompleted createdAt assignedTo accountStatus lifetimeSales"
+      )
       .lean();
 
     const progressDocs = await TrainingProgress.find({
@@ -45,6 +47,7 @@ export default async function handler(
 
       return {
         _id: String(agent._id),
+        agentCode: agent.agentCode || "",
         name: `${agent.firstName || ""} ${agent.lastName || ""}`.trim(),
         email: agent.email || "",
         phone: agent.phone || "",
@@ -55,6 +58,12 @@ export default async function handler(
         trainingCompleted: modulesTrainingCompleted,
         assessmentCompleted: !!agent.trainingCompleted,
         createdAt: agent.createdAt,
+        assignedTo: agent.assignedTo || "",
+        accountStatus: agent.accountStatus || "inactive",
+        // Model field is `lifetimeSales` — getallagents.ts's list endpoint
+        // selects a non-existent `sales` field (always undefined there),
+        // using the real field name here instead of copying that bug.
+        lifetimeSales: agent.lifetimeSales || 0,
       };
     });
 

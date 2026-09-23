@@ -10,6 +10,7 @@ import UserList from "@/components/superadminsidebar/userList";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
+import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -48,6 +49,7 @@ import {
   FiPackage,
   FiBookOpen,
   FiClipboard,
+  FiRefreshCw,
 } from "react-icons/fi";
 import axios from "axios";
 
@@ -423,6 +425,19 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "policyRenewals" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("policyRenewals");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Policy Renewals</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("configManagement");
@@ -451,18 +466,23 @@ const router = useRouter();
             </button>
             {openSections.posp && (
               <>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
-                  onClick={() => {
-                    setActiveSection("agentList");
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiBriefcase className={styles.icon} />
-                    <span className={styles.label}>Agents</span>
-                  </span>
-                </li>
+                {/* Agents — hidden from the sidebar now that POSP Management
+                    (Assigned To / Lifetime Sales / Status / Delete / +Add Agent)
+                    covers everything this list did. Feature kept intact. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
+                    onClick={() => {
+                      setActiveSection("agentList");
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiBriefcase className={styles.icon} />
+                      <span className={styles.label}>Agents</span>
+                    </span>
+                  </li>
+                )}
                 <li
                   className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "reviewApplication" ? styles.activeMenu : ""}`}
                   onClick={() => setActiveSection("reviewApplication")}
@@ -674,6 +694,7 @@ const router = useRouter();
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}
           {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
           {activeSection === "travelinsurancelist" && <TravelInsuranceList />}

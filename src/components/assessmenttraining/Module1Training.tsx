@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import styles from "@/styles/components/videolecturedashboard/Module1Training.module.css";
+import styles from "@/styles/components/assessmenttraining/Module1Training.module.css";
 import { MODULE1_SECTION_QUIZZES, MODULE1_FINAL_QUIZ } from "@/constants/pospModule1Quiz";
 import QuizBlock from "./QuizBlock";
 
@@ -47,9 +47,8 @@ const Module1Training: React.FC<Module1TrainingProps> = ({ onComplete }) => {
     <div className={styles.root}>
       <header className={styles.topbar}>
         <div className={styles.brandRow}>
-          <img src="/logo.png" alt="Zanifest" className={styles.brandLogo} />
+          <span className={styles.brandName}>Zanifest</span>
           <div className={styles.brand}>
-            <span className={styles.brandKicker}>Zanifest</span>
             <strong>POSP Onboarding Journey</strong>
           </div>
         </div>

@@ -115,7 +115,7 @@ const CreateAgent = () => {
   const [rejectedFields, setRejectedFields] = useState<string[]>([]);
   const [rejectionRemark, setRejectionRemark] = useState("");
   const [step, setStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 4;
   const [showPassword, setShowPassword] = useState(false);
   const [submittedStep, setSubmittedStep] = useState<number | null>(null);
 
@@ -181,14 +181,11 @@ const CreateAgent = () => {
 
     if (step === 3) {
       if (!attachments.tenthMarksheetAttachment) newErrors.tenthMarksheetAttachment = "Upload required";
-    }
-
-    if (step === 4) {
       if (!formData.nomineeName) newErrors.nomineeName = "Required";
       if (!formData.nomineeRelation) newErrors.nomineeRelation = "Required";
     }
 
-    if (step === 5) {
+    if (step === 4) {
       if (!formData.accountHolderName) newErrors.accountHolderName = "Required";
       if (!formData.bankName) newErrors.bankName = "Required";
       if (!formData.accountNumber) newErrors.accountNumber = "Required";
@@ -1151,7 +1148,7 @@ const CreateAgent = () => {
 
         {step === 3 && (
           <>
-            <h3 className={styles.sectionTitle}>Education Details</h3>
+            <h3 className={styles.sectionTitle}>Education & Nominee Details</h3>
 
             <div className={styles.step2Grid}>
               <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
@@ -1186,15 +1183,7 @@ const CreateAgent = () => {
                 </label>
               </div>
               </div>
-            </div>
-          </>
-        )}
 
-        {step === 4 && (
-          <>
-            <h3 className={styles.sectionTitle}>Nominee Details</h3>
-
-            <div className={styles.step2Grid}>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel} htmlFor="nomineeName">Nominee Name</label>
                 <input
@@ -1220,7 +1209,7 @@ const CreateAgent = () => {
           </>
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <>
             <h3 className={styles.sectionTitle}>Bank Details</h3>
 
@@ -1380,15 +1369,11 @@ const CreateAgent = () => {
         </div>
         <div className={styles.arrow}>›</div>
         <div className={`${styles.stepItem} ${step === 3 ? styles.activeStep : ""}`}>
-          Step 3 <span>Education Details</span>
+          Step 3 <span>Education & Nominee</span>
         </div>
         <div className={styles.arrow}>›</div>
         <div className={`${styles.stepItem} ${step === 4 ? styles.activeStep : ""}`}>
-          Step 4 <span>Nominee Details</span>
-        </div>
-        <div className={styles.arrow}>›</div>
-        <div className={`${styles.stepItem} ${step === 5 ? styles.activeStep : ""}`}>
-          Step 5 <span>Bank Details</span>
+          Step 4 <span>Bank Details</span>
         </div>
       </div>
     </div>

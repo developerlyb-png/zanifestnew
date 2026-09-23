@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "@/styles/components/videolecturedashboard/Module1Training.module.css";
+import styles from "@/styles/components/assessmenttraining/Module1Training.module.css";
 import { QuizQuestion } from "@/constants/pospModule1Quiz";
 
 interface QuizBlockProps {

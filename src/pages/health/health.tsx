@@ -509,10 +509,11 @@ const Health = () => {
         })),
       };
 
-      // Zuno first — on ANY failure (bad response or thrown error) fall
-      // through silently to ICICI instead of alerting; only if both
-      // insurers fail do we tell the user anything went wrong.
-      let plans: any[] | null = null;
+      // Fetch both insurers so the user can compare — Zuno is no longer
+      // gated behind ICICI failing (it used to be a silent fallback-only
+      // call, which is why ICICI seemed to "disappear" once Zuno started
+      // succeeding).
+      const plans: any[] = [];
 
       try {
         console.log("ZUNO CREATE-QUOTE REQUEST", zunoPayload);
@@ -524,56 +525,65 @@ const Health = () => {
         const result = await response.json();
         console.log("ZUNO CREATE-QUOTE RESULT", result);
 
-        if (response.ok) {
-          plans = [
-            {
+        // Zuno's Retail Health API wraps the real premium data under
+        // data.plan_list (one entry per plan tier) — { plan_name,
+        // premium_amount, coverage_amount, ... }. The old code read
+        // top-level result.premium/plan_name, which never exist on this
+        // response, so it silently fell back to ICICI every time.
+        const planList = result?.data?.plan_list;
+        // coverage_amount on plan_list is an add-on/rider figure, not the
+        // total sum insured (Zuno returns "0" there) — the real requested
+        // SI lives on the member details / the request itself.
+        const memberSumInsured =
+          result?.data?.member_details?.[0]?.sum_insured;
+
+        if (response.ok && Array.isArray(planList) && planList.length > 0) {
+          plans.push(
+            ...planList.map((p: any) => ({
               company: "Zuno General Insurance",
-              productVariant: result?.plan_name || "Health Plan",
-              premium: result?.premium ?? result?.total_premium ?? result?.TotalPremium ?? 0,
-              sumInsured: zunoPayload.sumInsured,
+              productVariant: p.plan_name || "Health Plan",
+              premium: p.premium_amount ?? 0,
+              sumInsured: memberSumInsured || zunoPayload.sumInsured,
               policyTenure: zunoPayload.policyTenure,
               insurer: "zuno",
-              raw: result,
-            },
-          ];
+              quoteId: result?.data?.quote_id,
+              raw: { ...result, selectedPlan: p },
+            })),
+          );
         } else {
-          console.log("ZUNO CREATE-QUOTE FAILED — falling back to ICICI silently", result);
+          console.log("ZUNO CREATE-QUOTE FAILED", result);
         }
       } catch (zunoError) {
-        console.log("ZUNO CREATE-QUOTE THREW — falling back to ICICI silently", zunoError);
+        console.log("ZUNO CREATE-QUOTE THREW", zunoError);
       }
 
-      if (!plans) {
-        try {
-          console.log("ICICI PREMIUM REQUEST", iciciPayload);
-          const response = await fetch("/api/icici/health/premium", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(iciciPayload),
+      try {
+        console.log("ICICI PREMIUM REQUEST", iciciPayload);
+        const response = await fetch("/api/icici/health/premium", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(iciciPayload),
+        });
+        const result = await response.json();
+        console.log("ICICI PREMIUM RESULT", result);
+
+        if (response.ok && result?.Success) {
+          plans.push({
+            company: "ICICI Lombard",
+            productVariant: "Elevate Health",
+            premium: result.TotalPremium,
+            sumInsured: zunoPayload.sumInsured,
+            policyTenure: zunoPayload.policyTenure,
+            insurer: "icici",
+            transactionId: result.TransactionId,
+            raw: result,
           });
-          const result = await response.json();
-          console.log("ICICI PREMIUM RESULT", result);
-
-          if (response.ok && result?.Success) {
-            plans = [
-              {
-                company: "ICICI Lombard",
-                productVariant: "Elevate Health",
-                premium: result.TotalPremium,
-                sumInsured: zunoPayload.sumInsured,
-                policyTenure: zunoPayload.policyTenure,
-                insurer: "icici",
-                transactionId: result.TransactionId,
-                raw: result,
-              },
-            ];
-          }
-        } catch (iciciError) {
-          console.log("ICICI PREMIUM THREW", iciciError);
         }
+      } catch (iciciError) {
+        console.log("ICICI PREMIUM THREW", iciciError);
       }
 
-      if (!plans) {
+      if (plans.length === 0) {
         alert("Could not fetch a quote right now. Please try again.");
         return;
       }

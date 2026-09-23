@@ -556,8 +556,11 @@ pathname:
 query:{
 
 
+// Pass the full plan (company/premium/sumInsured/insurer) not just
+// plan.raw — Zuno's Retail Health raw response has no top-level
+// premium/company fields, so the cart page needs these directly.
 plan:
-JSON.stringify(plan.raw)
+JSON.stringify(plan)
 
 
 }

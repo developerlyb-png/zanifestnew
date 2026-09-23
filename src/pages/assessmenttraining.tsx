@@ -2,7 +2,7 @@
 "use client";
 import React, { useEffect } from "react";
 // import { useRouter } from "next/navigation";
-import VideoLectureDashboard from "@/components/videolecturedashboard/VideoLectureDashboard";
+import VideoLectureDashboard from "@/components/assessmenttraining/VideoLectureDashboard";
 
 export default function VideoLecturesPage() {
   // const router = useRouter();

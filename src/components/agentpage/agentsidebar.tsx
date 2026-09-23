@@ -71,33 +71,38 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
           </li>
         </ul>
 
-        {/* USER MANAGEMENT */}
-        <p className={styles.sectionTitle}>USER MANAGEMENT</p>
-        <ul className={styles.menu}>
-          <li
-            className={`${styles.menuItem} ${
-              activeSection === "createuser" ? styles.active : ""
-            }`}
-            onClick={() => handleClick("createuser")}
-          >
-            <div className={styles.iconLabel}>
-              <FiUserPlus className={styles.icon} />
-              <span>Create User</span>
-            </div>
-          </li>
+        {/* USER MANAGEMENT — hidden from the agent sidebar for now (per
+            request), feature kept intact for later re-enabling. */}
+        {false && (
+          <>
+            <p className={styles.sectionTitle}>USER MANAGEMENT</p>
+            <ul className={styles.menu}>
+              <li
+                className={`${styles.menuItem} ${
+                  activeSection === "createuser" ? styles.active : ""
+                }`}
+                onClick={() => handleClick("createuser")}
+              >
+                <div className={styles.iconLabel}>
+                  <FiUserPlus className={styles.icon} />
+                  <span>Create User</span>
+                </div>
+              </li>
 
-          <li
-            className={`${styles.menuItem} ${
-              activeSection === "userlist" ? styles.active : ""
-            }`}
-            onClick={() => handleClick("userlist")}
-          >
-            <div className={styles.iconLabel}>
-              <FiUsers className={styles.icon} />
-              <span>User List</span>
-            </div>
-          </li>
-        </ul>
+              <li
+                className={`${styles.menuItem} ${
+                  activeSection === "userlist" ? styles.active : ""
+                }`}
+                onClick={() => handleClick("userlist")}
+              >
+                <div className={styles.iconLabel}>
+                  <FiUsers className={styles.icon} />
+                  <span>User List</span>
+                </div>
+              </li>
+            </ul>
+          </>
+        )}
 
         {/* LEAD MANAGEMENT */}
         <p className={styles.sectionTitle}>LEAD MANAGEMENT</p>

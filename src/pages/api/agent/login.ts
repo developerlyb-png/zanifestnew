@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // a first login — the certificate is only generated after training/exam
     // completion (see complete-training.ts). Login must succeed here so
     // agentpage.tsx's trainingCompleted check can route them to
-    // /videolectures instead of being blocked before ever reaching it.
+    // /assessmenttraining instead of being blocked before ever reaching it.
 
     // 🔁 Rejected → redirect to edit form
     if (agent.status === "rejected") {

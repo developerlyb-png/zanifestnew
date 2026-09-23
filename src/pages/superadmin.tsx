@@ -54,6 +54,7 @@ import ReviewApplication from "@/components/superadminsidebar/reviewapplication"
 import ShowResult from "@/components/superadminsidebar/showresult";
 import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
+import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -88,6 +89,7 @@ import {
   FiLayers,
   FiTrendingUp,
   FiSliders,
+  FiRefreshCw,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -451,6 +453,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Policy Renewals (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "policyRenewals" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("policyRenewals");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Policy Renewals</span>
+              </span>
+            </li>
+
             {/* Config Management (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -499,20 +517,25 @@ const SuperAdminDashboard = () => {
             </button>
             {openSections.posp && (
               <>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${
-                    activeSection === "agentlist" ? styles.activeMenu : ""
-                  }`}
-                  onClick={() => {
-                    setActiveSection("agentlist");
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiBriefcase className={styles.icon} />
-                    <span className={styles.label}>Agents</span>
-                  </span>
-                </li>
+                {/* Agents — hidden from the sidebar now that POSP Management
+                    (Assigned To / Lifetime Sales / Status / Delete / +Add Agent)
+                    covers everything this list did. Feature kept intact. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${
+                      activeSection === "agentlist" ? styles.activeMenu : ""
+                    }`}
+                    onClick={() => {
+                      setActiveSection("agentlist");
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiBriefcase className={styles.icon} />
+                      <span className={styles.label}>Agents</span>
+                    </span>
+                  </li>
+                )}
                 <li
                   className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "reviewApplication" ? styles.activeMenu : ""
@@ -539,24 +562,20 @@ const SuperAdminDashboard = () => {
                     </span>
                   </li>
                 )}
-                {/* POSP Management — hidden from the sidebar for now (per request),
-                    feature kept intact for later re-enabling. */}
-                {false && (
-                  <li
-                    className={`${styles.menuItem} ${styles.subMenuItem} ${
-                      activeSection === "pospManagement" ? styles.activeMenu : ""
-                    }`}
-                    onClick={() => {
-                      setActiveSection("pospManagement");
-                      setSidebarOpen(false);
-                    }}
-                  >
-                    <span className={styles.iconLabel}>
-                      <FiTrendingUp className={styles.icon} />
-                      <span className={styles.label}>POSP Management</span>
-                    </span>
-                  </li>
-                )}
+                <li
+                  className={`${styles.menuItem} ${styles.subMenuItem} ${
+                    activeSection === "pospManagement" ? styles.activeMenu : ""
+                  }`}
+                  onClick={() => {
+                    setActiveSection("pospManagement");
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <span className={styles.iconLabel}>
+                    <FiTrendingUp className={styles.icon} />
+                    <span className={styles.label}>POSP Management</span>
+                  </span>
+                </li>
               </>
             )}
 
@@ -813,6 +832,7 @@ const SuperAdminDashboard = () => {
           )}
 
           {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}

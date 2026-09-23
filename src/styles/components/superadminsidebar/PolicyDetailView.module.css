@@ -168,8 +168,8 @@
 }
 
 .sectionTitle {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: #1a1a2e;
 }
 
@@ -210,10 +210,10 @@
 }
 
 .fieldValue {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1a1a2e;
-  word-break: break-word;
+      font-size: 11px;
+    font-weight: 600;
+    color: #545459;
+    word-break: break-word;
 }
 
 .tableWrapper {
@@ -287,9 +287,9 @@
 
 .docName {
   flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a2e;
+ font-size: 11px;
+    font-weight: 500;
+  color: #545459;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -320,4 +320,147 @@
   .fieldGrid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ================= Agent / POSP detail view ================= */
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.topRowActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.statusPill {
+  display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.statusPillBlue {
+  background: #0c6bde;
+  color: #fff;
+}
+
+.statusPillGreen {
+  background: #16a34a;
+  color: #fff;
+}
+
+.statusPillGray {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.statusPillRed {
+  background: #ef4444;
+  color: #fff;
+}
+
+.certBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: #007bff;
+  border: 1.5px solid #cfe0f8;
+  border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 11.5px;
+    font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.certBtn:hover {
+  background: #f0f7ff;
+}
+
+.certBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Document card grid (Attached Documents) */
+.docGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.docCard {
+  border: 1px solid #eef1f6;
+  border-radius: 10px;
+  padding: 14px;
+  background: #fff;
+}
+
+.docCardLabel {
+      font-size: 11px;
+    font-weight: 600;
+  color: #545459;
+  margin-bottom: 10px;
+}
+
+.docCardRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fb;
+  border: 1px solid #eef1f6;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.docThumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: #eef1f6;
+  color: #9aa7b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Bank details — masked value + reveal/edit affordance */
+.fieldWithActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fieldActionBtn {
+  background: none;
+  border: none;
+  color: #9aa7b8;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 3px;
+}
+
+.fieldActionBtn:hover {
+  color: #1c75bb;
+}
+
+.subHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 14px;
 }

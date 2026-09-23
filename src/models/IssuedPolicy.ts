@@ -197,6 +197,17 @@ const IssuedPolicySchema =
 
     status: String,
 
+    // Renewal outreach tracking — surfaced on the Policy Renewals
+    // dashboard. Separate from `status` (the policy's own lifecycle
+    // state), this tracks where the renewal follow-up itself stands.
+    renewalStatus: {
+      type: String,
+      enum: ["Not Started", "Initiated", "Pending", "Renewed", "Lost"],
+      default: "Not Started",
+    },
+
+    nextFollowUpDate: Date,
+
     subInsured: String,
 
     endorsementNo: {

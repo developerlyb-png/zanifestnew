@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import m1 from "@/styles/components/videolecturedashboard/Module1Training.module.css";
-import styles from "@/styles/components/videolecturedashboard/Testpage.module.css";
+import m1 from "@/styles/components/assessmenttraining/Module1Training.module.css";
+import styles from "@/styles/components/assessmenttraining/Testpage.module.css";
 import image1 from "@/assets/testdashboard/image1.png";
 import image2 from "@/assets/testdashboard/image2.png";
 import image3 from "@/assets/testdashboard/image3.png";
@@ -2690,9 +2690,8 @@ useEffect(() => {
     <div className={m1.root}>
       <header className={m1.topbar}>
         <div className={m1.brandRow}>
-          <img src="/logo.png" alt="Zanifest" className={m1.brandLogo} />
+          <span className={m1.brandName}>Zanifest</span>
           <div className={m1.brand}>
-            <span className={m1.brandKicker}>Zanifest</span>
             <strong>POSP Onboarding Journey</strong>
           </div>
         </div>
@@ -3000,7 +2999,7 @@ function Result({
             ) : (
               <button
                 className={styles.linkBtn}
-                onClick={() => window.location.replace("/videolectures")}
+                onClick={() => window.location.replace("/assessmenttraining")}
               >
                 Return to Training
               </button>

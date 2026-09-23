@@ -5,7 +5,7 @@ import Module1Training from "./Module1Training";
 import Module2Training from "./Module2Training";
 import Module3Training from "./Module3Training";
 import TestPage from "./TestPage";
-import styles from "@/styles/components/videolecturedashboard/VideoLectureDashboard.module.css";
+import styles from "@/styles/components/assessmenttraining/VideoLectureDashboard.module.css";
 import { MODULE_SECONDS } from "@/constants/moduleTraining";
 
 const HEARTBEAT_SECONDS = 20; // how often we persist elapsed time to the server

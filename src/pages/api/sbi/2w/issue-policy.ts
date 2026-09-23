@@ -71,55 +71,51 @@ export default async function handler(
       });
     }
 
-    // KYC field — same validator family as 4W:
-    // "Please provide either VISoF_KYC_Req_No or IC_KYC_No"
-    const kycField =
-      req.body.kycField === "IC_KYC_No" ? "IC_KYC_No" : "VISoF_KYC_Req_No";
-
-    // The 2W e-KYC step's response always carries a "zuno-" prefix
-    // (our own tracking prefix layered on Zuno's raw numeric reference).
-    // Zuno's core service almost certainly expects the raw reference,
-    // not this prefixed string — strip it by default (unlike 4W, whose
-    // KYC values don't normally carry this prefix, so 4W leaves it opt-in).
-    // Pass stripKycPrefix: false explicitly to send the raw kycNo unmodified.
-    const kycValue =
-      req.body.stripKycPrefix === false
-        ? String(kycNo)
-        : String(kycNo).replace(/^zuno-/i, "");
+    // Confirmed via a real 422 "KYC Not Approved Yet" (E1208) from Zuno:
+    // the raw (stripped) reference was wrong — the same stored test KYC
+    // value works once the "zuno-" prefix is kept intact.
+    const kycValue = req.body.stripKycPrefix
+      ? String(kycNo).replace(/^zuno-/i, "")
+      : String(kycNo);
 
     // =====================
     // ZUNO 2W ISSUE PAYLOAD
-    // Mirrors the 4W payload shape exactly (src/pages/api/zuno/4w/issue-policy.ts),
-    // which is confirmed working. Earlier iterations here kept stacking extra
-    // top-level "policyList"/"issuePolicyList" wrappers and a policyNumber/policyNo
-    // field to satisfy Zuno's input *validator* one error at a time — but that bloated,
-    // redundant shape is what the core service then rejects with a generic E1205.
-    // Passing a pre-allocated policy number isn't part of the working 4W shape either,
-    // so it's dropped from the outgoing request (fqPolicyNumber is still used below
-    // purely as a fallback when saving our own IssuedPolicy record).
+    // Rebuilt to match Zuno's own reference Postman collection exactly
+    // (New_Partner_2W_ZunoPay_2025/.../ZunoPay/"IssuePolicy" request) —
+    // fetched live from their hosted collection, not reverse-engineered.
+    // The previous shape mirrored 4W's *bloated superset* (quote/KYC
+    // fields duplicated at every nesting level, ipContextInfo as a
+    // top-level sibling of policyRequest) which got past Zuno's input
+    // *validator* but was then rejected by the *core service* as E1205 —
+    // 2W's real schema is much narrower: quoteNo/quoteOptionNo/KYC only
+    // ever appear inside policyRequest.issuePolicyList[0].issuePolicy, and
+    // ipContextInfo nests *inside* policyRequest, not beside it. The
+    // reference sample also sends BOTH IC_KYC_No and VISoF_KYC_Req_No with
+    // the same value rather than picking one.
     // =====================
-    const item: any = {
-      quoteNo: String(quoteNo),
-      quoteOptionNo: String(quoteOptionNo),
-      [kycField]: kycValue,
-    };
-
     const issuePayload = {
-      ...item,
-
       product: {
         name: "EGICProductWebServicesV1",
         version: "1",
       },
 
       policyRequest: {
-        ...item,
-        issuePolicyList: [{ ...item, issuePolicy: { ...item } }],
-      },
-
-      ipContextInfo: {
-        productName: "EGICProductWebServicesV1",
-        productVersion: "1",
+        issuePolicyList: [
+          {
+            issuePolicy: {
+              quoteNo: String(quoteNo),
+              quoteOptionNo: String(quoteOptionNo),
+              IC_KYC_No: kycValue,
+              VISoF_KYC_Req_No: kycValue,
+            },
+          },
+        ],
+        ipContextInfo: {
+          productName: "string",
+          productVersion: "1",
+          LeadID: "",
+          eKYCFlag: "Y",
+        },
       },
     };
 

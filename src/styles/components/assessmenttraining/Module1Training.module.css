@@ -45,6 +45,15 @@
   width: auto;
   object-fit: contain;
 }
+/* Wordmark used in place of the logo image — sized to match the old
+   30px-tall logo so the header row's height/alignment is unchanged. */
+.brandName {
+  font-size: 22px;
+  font-weight: 800;
+  color: #066de6;
+  line-height: 30px;
+  letter-spacing: -0.02em;
+}
 .brand {
   display: flex;
   flex-direction: column;
@@ -55,7 +64,7 @@
   color: #798190;
 }
 .brand strong {
-  color: #1843b8;
+  color: #483f3f;
   font-size: 14px;
 }
 .logout {
@@ -208,7 +217,7 @@
 }
 
 .heroCard {
-  background: linear-gradient(135deg, #173a98, #0a2d82);
+  background: linear-gradient(135deg, #173a98, #066de6);
   padding: 20px 25px;
   color: white;
 }

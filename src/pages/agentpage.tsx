@@ -54,7 +54,7 @@ const AgentDashboard = () => {
           setAgentProfile(res.data.agent);
         }
         if (!res.data?.agent?.trainingCompleted) {
-          router.replace("/videolectures");
+          router.replace("/assessmenttraining");
         }
       })
       .catch(() => {

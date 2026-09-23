@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import styles from "@/styles/components/videolecturedashboard/VideoLectureDashboard.module.css";
+import styles from "@/styles/components/assessmenttraining/VideoLectureDashboard.module.css";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdPlayCircle } from "react-icons/md";
 import { AiOutlineLock } from "react-icons/ai";

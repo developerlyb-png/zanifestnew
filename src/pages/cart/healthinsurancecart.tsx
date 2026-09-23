@@ -114,6 +114,12 @@ policyData?.contractDetails;
 
 const premium =
 
+// health6 now passes the full plan object (see health6.tsx) which
+// already carries the real Zuno Retail Health premium_amount as
+// plan.premium — check that before falling back to the old
+// Edelweiss-shaped contractPremium paths.
+plan?.premium ||
+
 contract
 ?.contractPremium
 ?.premiumAfterTax ||
@@ -126,20 +132,18 @@ contract
 ?.contractPremium
 ?.netPremium ||
 
-plan?.premium ||
-
 "0";
 
 
 
 const sumInsured =
 
+plan?.sumInsured ||
+
 contract
 ?.coveragePackage
 ?.coverage
 ?.sumInsured ||
-
-plan?.sumInsured ||
 
 "500000";
 
@@ -208,8 +212,26 @@ quickData
 
 
 
-const response =
-await axios.post(
+// Zuno's Retail Health flow has no "full-quote" step — the RH
+// equivalent after create-quote is select-plan (locks in the plan
+// tier the user picked). The old /full-quote call was still built
+// for the pre-RH Edelweiss shape and crashed on the new payload.
+const isZuno = quickData?.insurer === "zuno";
+
+const response = isZuno
+? await axios.post("/api/zuno/health/select-plan", {
+business_type: "fresh",
+policy_type:
+(quickData?.raw?.data?.member_details?.length || 1) > 1
+? "floater"
+: "individual",
+total_si: quickData?.raw?.data?.member_details?.[0]?.sum_insured || quickData?.sumInsured,
+policy_tenure: quickData?.raw?.data?.policy_tenure || 1,
+plan_name: quickData?.raw?.selectedPlan?.plan_name,
+quote_id: quickData?.raw?.data?.quote_id,
+members: quickData?.raw?.data?.member_details,
+})
+: await axios.post(
 
 "/api/zuno/health/full-quote",
 
