@@ -11,6 +11,8 @@ import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
+import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
+import Claims from "@/components/superadminsidebar/Claims";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -50,6 +52,8 @@ import {
   FiBookOpen,
   FiClipboard,
   FiRefreshCw,
+  FiPercent,
+  FiShield,
 } from "react-icons/fi";
 import axios from "axios";
 
@@ -438,6 +442,32 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "payInPayOut" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("payInPayOut");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Pay In Pay Out</span>
+              </span>
+            </li>
+
+            <li
+              className={`${styles.menuItem} ${activeSection === "claims" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("claims");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiShield className={styles.icon} />
+                <span className={styles.label}>Claims</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("configManagement");
@@ -695,6 +725,8 @@ const router = useRouter();
           {activeSection === "agentList" && <AgentList />}
           {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
+          {activeSection === "payInPayOut" && <PayInPayOut />}
+          {activeSection === "claims" && <Claims />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
           {activeSection === "travelinsurancelist" && <TravelInsuranceList />}

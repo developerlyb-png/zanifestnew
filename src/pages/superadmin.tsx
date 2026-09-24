@@ -55,6 +55,8 @@ import ShowResult from "@/components/superadminsidebar/showresult";
 import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
+import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
+import Claims from "@/components/superadminsidebar/Claims";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -90,6 +92,7 @@ import {
   FiTrendingUp,
   FiSliders,
   FiRefreshCw,
+  FiPercent,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -469,6 +472,38 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Claims (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "claims" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("claims");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiShield className={styles.icon} />
+                <span className={styles.label}>Claims</span>
+              </span>
+            </li>
+
+            {/* Pay In Pay Out (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "payInPayOut" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("payInPayOut");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Pay In Pay Out</span>
+              </span>
+            </li>
+
             {/* Config Management (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -833,6 +868,8 @@ const SuperAdminDashboard = () => {
 
           {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
+          {activeSection === "payInPayOut" && <PayInPayOut />}
+          {activeSection === "claims" && <Claims />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
