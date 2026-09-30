@@ -12,6 +12,7 @@ import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
+import Commission from "@/components/superadminsidebar/Commission";
 import Claims from "@/components/superadminsidebar/Claims";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
@@ -455,6 +456,19 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "commission" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("commission");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Commission</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "claims" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("claims");
@@ -726,6 +740,7 @@ const router = useRouter();
           {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "payInPayOut" && <PayInPayOut />}
+          {activeSection === "commission" && <Commission />}
           {activeSection === "claims" && <Claims />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}

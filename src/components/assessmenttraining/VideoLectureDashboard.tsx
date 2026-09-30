@@ -6,7 +6,7 @@ import Module2Training from "./Module2Training";
 import Module3Training from "./Module3Training";
 import TestPage from "./TestPage";
 import styles from "@/styles/components/assessmenttraining/VideoLectureDashboard.module.css";
-import { MODULE_SECONDS } from "@/constants/moduleTraining";
+import { MODULE_SECONDS, SKIP_TEST_FOR_TESTING } from "@/constants/moduleTraining";
 
 const HEARTBEAT_SECONDS = 20; // how often we persist elapsed time to the server
 
@@ -146,7 +146,28 @@ export default function VideoLectureDashboard() {
     };
   }, [checking, loadingProgress, allModulesComplete, currentModule]);
 
+  /* ===============================
+     TEMPORARY TESTING: skip the exam and auto-pass once modules finish
+  =============================== */
+  useEffect(() => {
+    if (!SKIP_TEST_FOR_TESTING || checking || loadingProgress || !allModulesComplete) return;
+    fetch("/api/agent/complete-training", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ score: 50, total: 50 }),
+    })
+      .catch((e) => console.error("AUTO-PASS (testing) ERROR", e))
+      .finally(() => {
+        window.location.href = "/agentpage";
+      });
+  }, [checking, loadingProgress, allModulesComplete]);
+
   if (checking || loadingProgress) return null;
+
+  if (allModulesComplete && SKIP_TEST_FOR_TESTING) {
+    return null;
+  }
 
   if (allModulesComplete) {
     // "/agentpage" itself gates on trainingCompleted — passed agents land on

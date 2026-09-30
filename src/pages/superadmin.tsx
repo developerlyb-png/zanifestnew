@@ -56,6 +56,7 @@ import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
+import Commission from "@/components/superadminsidebar/Commission";
 import Claims from "@/components/superadminsidebar/Claims";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
@@ -504,6 +505,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Commission (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "commission" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("commission");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Commission</span>
+              </span>
+            </li>
+
             {/* Config Management (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -869,6 +886,7 @@ const SuperAdminDashboard = () => {
           {activeSection === "policyDashboard" && <PolicyDashboard />}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "payInPayOut" && <PayInPayOut />}
+          {activeSection === "commission" && <Commission />}
           {activeSection === "claims" && <Claims />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}

@@ -8,6 +8,7 @@ import {
   FiUsers,
   FiLock,
   FiChevronRight,
+  FiPercent,
 } from "react-icons/fi";
 import ProfileMenu from "./ProfileMenu";
 
@@ -128,6 +129,18 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
             <div className={styles.iconLabel}>
               <FiLock className={styles.icon} />
               <span>List of Policy</span>
+            </div>
+          </li>
+
+          <li
+            className={`${styles.menuItem} ${
+              activeSection === "mycommission" ? styles.active : ""
+            }`}
+            onClick={() => handleClick("mycommission")}
+          >
+            <div className={styles.iconLabel}>
+              <FiPercent className={styles.icon} />
+              <span>My Commission</span>
             </div>
           </li>
         </ul>
