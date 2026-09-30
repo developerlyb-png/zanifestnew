@@ -53,6 +53,56 @@ const ALL_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) => {
 
 const RENEWAL_STATUSES = ["Not Started", "Initiated", "Pending", "Renewed", "Lost"];
 
+type Preset = "all" | "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
+
+const PRESETS: { key: Preset; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "today", label: "Today" },
+  { key: "thisMonth", label: "This Month" },
+  { key: "lastMonth", label: "Last Month" },
+  { key: "thisYear", label: "This Year" },
+  { key: "lastYear", label: "Last Year" },
+  { key: "custom", label: "Custom Range" },
+];
+
+// Indian financial year: Apr 1 - Mar 31
+function financialYearRange() {
+  const today = new Date();
+  let fy = today.getFullYear();
+  if (today.getMonth() < 3) fy -= 1;
+  return { from: new Date(fy, 3, 1), to: new Date(fy + 1, 2, 31, 23, 59, 59) };
+}
+
+function presetRange(preset: Preset): { from: Date; to: Date } | null {
+  const now = new Date();
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  switch (preset) {
+    case "all":
+      return null;
+    case "today":
+      return { from: startOfToday, to: endOfToday };
+    case "thisMonth":
+      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfToday };
+    case "lastMonth":
+      return {
+        from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+        to: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59),
+      };
+    case "thisYear":
+      return financialYearRange();
+    case "lastYear": {
+      const { from } = financialYearRange();
+      return {
+        from: new Date(from.getFullYear() - 1, 3, 1),
+        to: new Date(from.getFullYear(), 2, 31, 23, 59, 59),
+      };
+    }
+    default:
+      return null;
+  }
+}
+
 const daysToExpiry = (endDate?: string) => {
   if (!endDate) return null;
   const end = new Date(endDate);
@@ -96,6 +146,20 @@ function PolicyRenewals() {
   const [phoneSearch, setPhoneSearch] = useState("");
   const [lobFilter, setLobFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [preset, setPreset] = useState<Preset>("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+
+  // Filters by Expiry Date (endDate) — the date renewals actually revolve
+  // around. Custom Range only applies once both ends are picked.
+  const dateRange = useMemo(() => {
+    if (preset === "custom") {
+      return customFrom && customTo
+        ? { from: new Date(customFrom), to: new Date(`${customTo}T23:59:59`) }
+        : null;
+    }
+    return presetRange(preset);
+  }, [preset, customFrom, customTo]);
 
   useEffect(() => {
     setLoading(true);
@@ -142,6 +206,11 @@ function PolicyRenewals() {
         const d = daysToExpiry(p.endDate);
         if (d === null || d > 30) return false;
       }
+      if (dateRange) {
+        if (!p.endDate) return false;
+        const end = new Date(p.endDate);
+        if (end < dateRange.from || end > dateRange.to) return false;
+      }
       return true;
     });
   }, [
@@ -154,6 +223,7 @@ function PolicyRenewals() {
     statusFilter,
     showFollowUpsOnly,
     dueSoonFilterActive,
+    dateRange,
   ]);
 
   const summary = useMemo(() => {
@@ -491,6 +561,34 @@ function PolicyRenewals() {
       </div>
 
       <div className={styles.filterRow}>
+        <div className={styles.presets}>
+          {PRESETS.map((p) => (
+            <button
+              key={p.key}
+              className={`${styles.presetBtn} ${preset === p.key ? styles.presetBtnActive : ""}`}
+              onClick={() => setPreset(p.key)}
+            >
+              {p.key === "custom" && <FiCalendar style={{ marginRight: 6 }} />}
+              {p.label}
+            </button>
+          ))}
+          {preset === "custom" && (
+            <>
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={customFrom}
+                onChange={(e) => setCustomFrom(e.target.value)}
+              />
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={customTo}
+                onChange={(e) => setCustomTo(e.target.value)}
+              />
+            </>
+          )}
+        </div>
         <div className={styles.filterRowRight}>
           <button className={styles.exportSolidBtn} onClick={exportCsv}>
             <FiDownload /> Export

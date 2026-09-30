@@ -737,7 +737,9 @@ const router = useRouter();
           {activeSection === "userList" && <UserList />}
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}
-          {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "policyDashboard" && (
+            <PolicyDashboard canEditPolicy={admin?.role === "superadmin"} />
+          )}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "payInPayOut" && <PayInPayOut />}
           {activeSection === "commission" && <Commission />}

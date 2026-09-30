@@ -883,7 +883,9 @@ const SuperAdminDashboard = () => {
             </>
           )}
 
-          {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "policyDashboard" && (
+            <PolicyDashboard canEditPolicy={admin?.role === "superadmin"} />
+          )}
           {activeSection === "policyRenewals" && <PolicyRenewals />}
           {activeSection === "payInPayOut" && <PayInPayOut />}
           {activeSection === "commission" && <Commission />}

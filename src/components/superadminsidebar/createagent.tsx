@@ -284,17 +284,10 @@ const CreateAgent = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const maxSize =
-      key === "panAttachment" || key === "adhaarAttachment" || key === "adhaarBackAttachment"
-        ? 500 * 1024
-        : 200 * 1024;
+    const maxSize = 2 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      alert(
-        key === "panAttachment" || key === "adhaarAttachment" || key === "adhaarBackAttachment"
-          ? "Please upload must be 500KB"
-          : "File size must be ≤ 200KB"
-      );
+      alert("File size must be ≤ 2MB");
       e.target.value = "";
       setAttachments((p) => ({
         ...p,

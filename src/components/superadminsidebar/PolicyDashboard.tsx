@@ -263,7 +263,14 @@ const ALL_COLUMNS_VISIBLE: Record<ColumnKey, boolean> = COLUMNS.reduce((acc, c) 
   return acc;
 }, {} as Record<ColumnKey, boolean>);
 
-function PolicyDashboard() {
+interface PolicyDashboardProps {
+  // Only superadmin gets the full-field "Edit Policy" button on a policy's
+  // detail view — regular admin can still view/create/delete, just not edit
+  // every field of an existing policy.
+  canEditPolicy?: boolean;
+}
+
+function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
   const [preset, setPreset] = useState<Preset>("thisYear");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -617,6 +624,7 @@ function PolicyDashboard() {
       <div className={styles.cont}>
         <PolicyDetailView
           policyId={selectedPolicyId}
+          canEditPolicy={canEditPolicy}
           onBack={() => setSelectedPolicyId(null)}
           onDeleted={() => {
             setSelectedPolicyId(null);

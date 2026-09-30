@@ -6,6 +6,7 @@ import {
   FiArrowLeft, FiEdit2, FiTrash2, FiChevronUp, FiChevronDown, FiUser, FiFileText,
   FiEye, FiDownload, FiCalendar, FiTruck, FiPercent,
 } from "react-icons/fi";
+import AddPolicyForm from "./AddPolicyForm";
 
 interface PolicyDetailViewProps {
   policyId: string;
@@ -14,9 +15,11 @@ interface PolicyDetailViewProps {
   /** Base path for the fetch/delete requests — lets the agent dashboard
    * point this at its own scoped API instead of the admin one. */
   apiBasePath?: string;
-  /** Hides the Edit/Delete header actions for contexts (like the agent
+  /** Hides the Delete header action for contexts (like the agent
    * dashboard) that shouldn't offer generic delete from this view. */
   canDelete?: boolean;
+  /** Shows the full-field "Edit Policy" button — superadmin only. */
+  canEditPolicy?: boolean;
 }
 
 const ordinal = (n: number) => {
@@ -109,13 +112,15 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
   onDeleted,
   apiBasePath = "/api/admin/policies",
   canDelete = true,
+  canEditPolicy = false,
 }) => {
   const [policy, setPolicy] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
     setLoading(true);
     fetch(`${apiBasePath}/${policyId}`, { credentials: "include" })
       .then((r) => r.json())
@@ -125,7 +130,9 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
       })
       .catch(() => setError("Failed to load policy"))
       .finally(() => setLoading(false));
-  }, [apiBasePath, policyId]);
+  };
+
+  useEffect(load, [apiBasePath, policyId]);
 
   const handleDelete = async () => {
     if (!window.confirm("Delete this policy? This action cannot be undone.")) return;
@@ -167,6 +174,19 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
     );
   }
 
+  if (editing && canEditPolicy) {
+    return (
+      <AddPolicyForm
+        editPolicy={policy}
+        onCancel={() => setEditing(false)}
+        onSuccess={() => {
+          setEditing(false);
+          load();
+        }}
+      />
+    );
+  }
+
   const isMotor = (policy.lineOfBusiness || policy.policyType) === "Motor" && policy.vehicle;
   const documents: { data: string; fileName: string }[] = [
     ...(policy.policyDocuments || []),
@@ -202,14 +222,18 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
             <div className={styles.headerInsured}>Insured: {policy.customer?.fullName || "—"}</div>
           </div>
         </div>
-        {canDelete && (
+        {(canEditPolicy || canDelete) && (
           <div className={styles.headerActions}>
-            <button type="button" className={styles.editBtn} title="Editing is not available yet">
-              <FiEdit2 /> Edit Policy
-            </button>
-            <button type="button" className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
-              <FiTrash2 /> {deleting ? "Deleting..." : "Delete Policy"}
-            </button>
+            {canEditPolicy && (
+              <button type="button" className={styles.editBtn} onClick={() => setEditing(true)}>
+                <FiEdit2 /> Edit Policy
+              </button>
+            )}
+            {canDelete && (
+              <button type="button" className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
+                <FiTrash2 /> {deleting ? "Deleting..." : "Delete Policy"}
+              </button>
+            )}
           </div>
         )}
       </div>

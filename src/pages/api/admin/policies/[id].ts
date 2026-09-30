@@ -192,6 +192,63 @@ export default async function handler(
 
   if (req.method === "PUT") {
     try {
+      // Full-policy edit — used by AddPolicyForm in edit mode (superadmin
+      // "Edit Policy"), which lets every field the create form can set be
+      // changed, not just the narrow whitelist below. Kept as a separate
+      // branch (rather than replacing the "fields" one) so the existing
+      // narrow-edit callers (AgentPolicyReview's approve/reject-with-edit)
+      // are unaffected.
+      if (req.body?.payload && typeof req.body.payload === "object") {
+        // UI hides the Edit Policy button from non-superadmin already, but
+        // that's just the UI — enforce it here too, since this is the actual
+        // boundary a direct API call would have to get past.
+        if ((admin as any).role !== "superadmin") {
+          return res.status(403).json({ success: false, message: "Only superadmin can edit a policy" });
+        }
+
+        const payload = { ...req.body.payload };
+        // Never let the client override these via a full-payload edit.
+        delete payload._id;
+        delete payload.createdBy;
+        delete payload.createdByAgentId;
+        delete payload.source;
+        delete payload.adminApprovalStatus;
+        delete payload.adminApprovalRemark;
+        delete payload.adminApprovalReviewedBy;
+        delete payload.adminApprovalReviewedAt;
+
+        const requiredFields = ["policyNumber", "insurer", "lineOfBusiness", "premium"];
+        const missing = requiredFields.filter((f) => !payload[f] && payload[f] !== 0);
+        if (missing.length) {
+          return res.status(400).json({
+            success: false,
+            message: `Missing required field(s): ${missing.join(", ")}`,
+          });
+        }
+
+        const duplicate = await IssuedPolicy.findOne({
+          policyNumber: payload.policyNumber,
+          _id: { $ne: id },
+        });
+        if (duplicate) {
+          return res.status(409).json({
+            success: false,
+            message: `Policy Number "${payload.policyNumber}" already exists`,
+          });
+        }
+
+        payload.updatedBy =
+          `${(admin as any).userFirstName ?? ""} ${(admin as any).userLastName ?? ""}`.trim() ||
+          (admin as any).email;
+        payload.updatedAt = new Date();
+
+        const policy = await IssuedPolicy.findByIdAndUpdate(id, { $set: payload }, { new: true });
+        if (!policy) {
+          return res.status(404).json({ success: false, message: "Policy not found" });
+        }
+        return res.status(200).json({ success: true, policy });
+      }
+
       const fields = req.body?.fields && typeof req.body.fields === "object" ? req.body.fields : {};
       const action = req.body?.action; // "approve" | "reject" | undefined
       const remark = typeof req.body?.remark === "string" ? req.body.remark.trim() : "";
