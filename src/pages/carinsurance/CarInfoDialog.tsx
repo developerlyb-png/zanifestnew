@@ -129,13 +129,9 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   const [showExpiryDialog, setShowExpiryDialog] = useState(false);
 
   const [showClaimDialog, setShowClaimDialog] = useState(false);
-<<<<<<< HEAD
   const [pincode, setPincode] = useState("");
   // RC owner address normally carries the pincode, so ask only when it's missing.
   const effectivePincode = () => rcDetails?.pincode || pincode;
-=======
-
->>>>>>> origin/vishal
   const [policyExpiryDate, setPolicyExpiryDate] = useState<string | null>(
     null
   );
@@ -462,11 +458,7 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         ...quoteInput,
 
         previousPolicyExpiryDate: expiryDate || "",
-<<<<<<< HEAD
         pincode: effectivePincode(),
-=======
-
->>>>>>> origin/vishal
         claimDeclaration:
           claim === "Yes"
             ? "Yes"
@@ -511,28 +503,12 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           JSON.stringify(plan)
         );
 
-<<<<<<< HEAD
         // SBI is stored as-is (success or failure) so carinsurance3 can show
         // it alongside Zuno's plan, or a friendly "unavailable" state.
         localStorage.setItem("selectedQuoteSbi", JSON.stringify(sbiEntry || null));
         localStorage.setItem(
           "selectedQuoteDigit",
           JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "DIGIT") || null)
-=======
-        localStorage.setItem(
-          "carQuoteInput",
-          JSON.stringify(enrichedInput)
-        );
-
-        localStorage.setItem(
-          "carRcDetails",
-          JSON.stringify(rcDetails)
-        );
-
-        localStorage.setItem(
-          "selectedQuoteSbi",
-          JSON.stringify(sbiEntry || null)
->>>>>>> origin/vishal
         );
 
         router.push("/carinsurance/carinsurance3");
@@ -856,7 +832,6 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           =================================================== */}
 
           {emailVerified && (
-<<<<<<< HEAD
             <>
               {!rcDetails?.pincode && (
                 <input
@@ -887,27 +862,6 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
                 View prices
               </button>
             </>
-=======
-            <button
-              className={styles.viewBtn}
-              onClick={() => {
-                if (
-                  !rcDetails ||
-                  (!rcDetails.reg_no && !vehicleNumber)
-                ) {
-                  alert(
-                    "Vehicle data not found — please search your car number again"
-                  );
-
-                  return;
-                }
-
-                setShowExpiryDialog(true);
-              }}
-            >
-              View prices
-            </button>
->>>>>>> origin/vishal
           )}
 
 

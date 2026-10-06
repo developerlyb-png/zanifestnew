@@ -123,7 +123,6 @@ const Health = () => {
     return `${year}-01-01`;
   };
 
-<<<<<<< HEAD
   // ===============================
   // ICICI (Elevate Health) mapping helpers
   // ===============================
@@ -182,12 +181,6 @@ const Health = () => {
   const getPincodeForCity = (city: string) => CITY_PINCODES[city] || "110001";
 
   const postJson = async (url: string, body: Record<string, string>) => {
-=======
-  const postJson = async (
-    url: string,
-    body: Record<string, string>
-  ) => {
->>>>>>> origin/vishal
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -517,7 +510,6 @@ const Health = () => {
         sumInsured: "500000",
         policyTenure: 1,
         medical: medical,
-<<<<<<< HEAD
         members: resolvedMembers,
       };
 
@@ -553,56 +545,6 @@ const Health = () => {
           RelationshipWithApplicant: mapIciciRelation(m.relation),
         })),
       };
-=======
-
-        members: members.map(
-          (m: any, index: number) => {
-            const relation = m.relation || m.name;
-
-            return {
-              name:
-                relation === "Self"
-                  ? fullName
-                  : relation,
-
-              relation: relation,
-
-              age: ages[index],
-
-              gender:
-                m.gender ||
-                ([
-                  "Wife",
-                  "Mother",
-                  "Daughter",
-                  "Grandmother",
-                  "Mother-in-law",
-                ].includes(relation)
-                  ? "F"
-                  : "M"),
-
-              dob: getDOBFromAge(ages[index]),
-            };
-          }
-        ),
-      };
-
-      console.log(
-        "ZUNO CREATE-QUOTE REQUEST",
-        payload
-      );
-
-      const response = await fetch(
-        "/api/zuno/health/create-quote",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
->>>>>>> origin/vishal
 
       // Fetch both insurers so the user can compare — Zuno is no longer
       // gated behind ICICI failing (it used to be a silent fallback-only
@@ -610,7 +552,6 @@ const Health = () => {
       // succeeding).
       const plans: any[] = [];
 
-<<<<<<< HEAD
       try {
         console.log("ZUNO CREATE-QUOTE REQUEST", zunoPayload);
         const response = await fetch("/api/zuno/health/create-quote", {
@@ -681,17 +622,6 @@ const Health = () => {
 
       if (plans.length === 0) {
         alert("Could not fetch a quote right now. Please try again.");
-=======
-      console.log(
-        "ZUNO CREATE-QUOTE RESULT",
-        result
-      );
-
-      if (!response.ok) {
-        alert(
-          result?.message || "Quote failed"
-        );
->>>>>>> origin/vishal
         return;
       }
 

@@ -692,11 +692,7 @@ const CarInsurance3 = () => {
             </div>
           ) : plan ? (
             <>
-<<<<<<< HEAD
               <h2>{`${planCount} plan${planCount > 1 ? "s" : ""} available`}</h2>
-=======
-              <h2>{sbiQuote?.success ? "2 Plans Available" : "1 Plan Available"}</h2>
->>>>>>> origin/vishal
               <p>Covers damages to your car. Premium includes GST.</p>
 
               <div className={styles.planCard}>
