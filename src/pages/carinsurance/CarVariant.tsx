@@ -429,29 +429,32 @@ new Date().getFullYear()
 <div className={styles.right}>
 
 
-<div className={styles.header}>
-
-
-<button
-
-className={styles.arrowBtn}
-
-onClick={onBackToModel}
-
+<div
+  className={styles.header}
+  style={{
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+  }}
 >
 
-‹
+  <button
+    className={styles.arrowBtn}
+    onClick={onBackToModel}
+  >
+    ‹
+  </button>
 
-</button>
-
-
-
-<span>
-
-Select Vehicle Variant
-
-</span>
-
+  <span
+    style={{
+      position: "absolute",
+      left: "50%",
+      transform: "translateX(-50%)",
+      whiteSpace: "nowrap",
+    }}
+  >
+    Select Vehicle Variant
+  </span>
 
 </div>
 

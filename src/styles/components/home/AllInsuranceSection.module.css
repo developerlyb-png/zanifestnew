@@ -16,15 +16,15 @@
 .head::after {
   content: "";
   position: absolute;
-  bottom: -15px; 
+  bottom: -15px;
   width: 25%;
-  height: 5px; 
-  background-color: #fa621a; 
+  height: 5px;
+  background-color: #1876bd;
   border-radius: 3px;
 }
 
-.heading { 
-  font-size: 2.5rem;
+.heading {
+  font-size: 2.3rem;
   font-weight: 800;
   display: flex;
   text-align: center;
@@ -37,7 +37,7 @@
 }
 
 .orange {
-  color: orangered;
+  color: #1876bd;
 }
 
 .bottom {
@@ -66,7 +66,8 @@
   all: unset;
   font-size: 20px;
   transition: all 0.3s;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: "Manrope", sans-serif;
 }
 
 .desc {
@@ -74,12 +75,14 @@
   text-align: center;
   font-size: 14px;
   transition: all 0.3s;
+  font-family: "Manrope", sans-serif;
 }
 
 .arrow {
   font-size: 20px;
   transition: all 0.3s;
   cursor: pointer;
+  color: #1876bd;
 }
 
 .serviceItem:hover .arrow,
@@ -106,22 +109,28 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* RESPONSIVE */
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media screen and (max-width: 1200px) {
   .bottom {
     grid-template-columns: 1fr;
     width: 60%;
     display: none;
   }
+
   .bottomCarousal {
     display: block;
   }
+
   .head::after {
     width: 65%;
   }
@@ -131,9 +140,11 @@
   .heading {
     font-size: 21px;
   }
+
   .desc {
     justify-content: justify;
   }
+
   .head::after {
     width: 65%;
   }
@@ -147,13 +158,16 @@
     margin-bottom: 0px;
     position: relative;
   }
+
   .head::after {
     display: none;
   }
+
   .mobileEllipsis {
-    display: block;           
-    text-align: center;           
-    font-size: 20px;             
+    display: block;
+    text-align: center;
+    font-size: 20px;
+    color: #1876bd;
   }
 }
 
@@ -164,28 +178,34 @@
     width: 80%;
     justify-content: center;
   }
+
   .serviceItem {
     margin: 0px 15px;
     margin-top: 10px;
   }
+
   .bottom {
     width: 80%;
   }
+
   .head::after {
     width: 65%;
   }
 }
+
 @media screen and (max-width: 768px) {
   .serviceItem:hover .arrow,
   .serviceItem:hover .name,
   .serviceItem:hover .desc {
-    transform: none;   /* 👈 cut issue fix */
+    transform: none;
   }
+
   .serviceItem {
-    padding: 0px 16px 0px;  /* 👈 bottom space */
+    padding: 0px 16px 20px;
     box-sizing: border-box;
-    height: auto;             /* 👈 allow content grow */
+    height: auto;
   }
+
   .bottomCarousal {
     overflow: visible !important;
   }
@@ -194,6 +214,7 @@
     overflow-x: hidden;
     overflow-y: visible;
   }
+
   .desc {
     line-height: 1.4;
     word-break: break-word;

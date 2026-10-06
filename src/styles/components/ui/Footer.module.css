@@ -2,13 +2,16 @@
   background-color: #2a3440;
   display: grid;
   place-items: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 20px 0;
   gap: 2rem;
+  width: 100%;
+  overflow-x: hidden;
 }
-.break{
+
+.break {
   color: white;
 }
+
 .top {
   display: grid;
   width: 90%;
@@ -19,6 +22,7 @@
 .logoImage {
   width: 18rem;
   height: auto;
+  max-width: 100%;
 }
 
 .list {
@@ -28,10 +32,10 @@
 
 .icons {
   display: flex;
-  padding: 0px 0px;
   padding-top: 40px;
   color: white;
   gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .head {
@@ -39,12 +43,15 @@
   font-size: 50px;
   font-weight: 600;
   padding-bottom: 20px;
+  word-break: break-word;
 }
 
 .heading {
-  color: #989494;
+  color: #fcfbfb;
   padding: 1rem 0;
   font-size: 20px;
+  word-break: break-word;
+  font-weight: 500;
 }
 
 .desc {
@@ -65,36 +72,34 @@
 .atag {
   text-decoration: none;
   color: white;
+  font-weight: 400;
 }
 
-/* .bottom {
-  display: grid;
-  width: 90%;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
-  justify-content: space-between;
-  padding-top: 50px;
-} */
-
+/* Bottom Section */
 .bottom {
   display: grid;
   width: 90%;
   grid-template-columns: 1fr 1fr 1fr;
   padding-top: 50px;
-  align-items: center;  
-  gap:2rem;
-  margin-left: 38rem;
-} 
+  align-items: center;
+  gap: 2rem;
+
+  /* IMPORTANT */
+  margin-left: 0;
+}
 
 .bottomItem {
   cursor: pointer;
   color: white;
+  font-size: 14px;
 }
 
 .bottomLinks {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .loginButtonWrapper {
@@ -117,8 +122,6 @@
   transition: background-color 0.3s ease;
 }
 
-
-
 .loginagent {
   cursor: pointer;
   font-size: 20px;
@@ -126,95 +129,195 @@
   transform: translateY(-45px);
 }
 
-@media screen and (max-width: 1200px) {
-  .top {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .logoImage {
-    height: 3rem;
-    width: auto;
-  }
-
-  .loginButtonWrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 0;
-  }
-
-  .loginButton {
-    width: 80%;
-    text-align: center;
-  }
-}
-
-@media screen and (max-width: 415px) {
-  .bottom {
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .loginagent {
-    transform: translateY(0px);
-  }
-
-  .loginButtonWrapper {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .loginButton {
-    font-size: 14px;
-    padding: 0.5rem 1rem;
-  }
-}
-
-@media screen and (max-width: 370px) {
-  .head {
-    width: 70%;
-    overflow: scroll;
-  }
-
-  .icons {
-    width: 70%;
-    padding: 20px 0px;
-  }
-}
-
-.bottomLinks {
-  display: flex;
-  gap: 8px;   
-  align-items: center;
-}
-
-.bottomItem {
-  font-size: 14px;
-  color: white;
-}
-
 .footerBottomWrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 93vw;
-
+  width: 100%;
   margin: 0;
   padding: 15px 30px;
   box-sizing: border-box;
 }
 
 
+/* =========================
+   TABLET
+========================= */
+
+@media screen and (max-width: 1200px) {
+
+  .top {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
 @media screen and (max-width: 768px) {
+
+  .cont {
+    padding: 30px 20px;
+    place-items: start;
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    gap: 1.5rem;
+  }
+
+  .logoImage {
+    width: 12rem;
+    height: auto;
+  }
+
+  .head {
+    font-size: 32px;
+    line-height: 1.2;
+    width: 100%;
+    padding-bottom: 10px;
+    overflow: visible;
+    text-align: left;
+  }
+
+  .heading {
+    font-size: 18px;
+    padding: 0.5rem 0;
+    text-align: left;
+  }
+
+  .desc {
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .list {
+    padding-top: 0;
+  }
+
+  .icons {
+    padding-top: 20px;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 25px;
+    margin-left: 0;
+    gap: 1.5rem;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .bottomLinks {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .loginButtonWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .loginButton {
+    width: auto;
+    text-align: left;
+  }
+
+  .loginagent {
+    transform: translateY(0);
+    justify-self: start;
+  }
+
   .footerBottomWrapper {
     flex-direction: column;
     gap: 10px;
-    text-align: center;
+    text-align: left;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 15px 0;
+  }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media screen and (max-width: 480px) {
+
+  .top {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: left;
+  }
+
+  .logoImage {
+    width: 10rem;
+  }
+
+  .head {
+    font-size: 28px;
+    width: 100%;
+    overflow: visible;
+    text-align: left;
+  }
+
+  .heading {
+    font-size: 18px;
+    text-align: left;
+  }
+
+  .icons {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .bottom {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .loginButtonWrapper {
+    align-items: flex-start;
+  }
+
+  .bottomLinks {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media screen and (max-width: 370px) {
+
+  .head {
+    font-size: 24px;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .icons {
+    width: 100%;
+    padding: 20px 0;
     justify-content: center;
   }
+
+  .heading {
+    font-size: 16px;
+  }
+
 }

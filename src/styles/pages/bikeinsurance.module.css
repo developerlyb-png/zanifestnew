@@ -1,135 +1,464 @@
 .cont {
   display: flex;
-  flex-direction: column; /* Default: mobile = image on top */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  /* display: grid;
-  grid-template-columns: 1fr 1fr; */
+
   width: 70%;
   margin: auto;
   place-items: center;
+
   min-height: 60vh;
-  padding: 5vw 0 5vw 0;
+  padding: 5vw 0;
+
+  box-sizing: border-box;
 }
 
-/* On larger screens: reverse the order (text left, image right) */
+/* =========================================
+   DESKTOP LAYOUT
+========================================= */
+
 @media screen and (min-width: 1000px) {
   .cont {
     flex-direction: row-reverse;
     align-items: center;
     justify-content: space-between;
+    gap: 4rem;
   }
 }
 
+/* =========================================
+   IMAGE SECTION
+========================================= */
+
 .imageCont {
   width: 60%;
+
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .image {
   width: 80%;
   height: auto;
-  object-fit: cover;
-  z-index: -1;
+
+  object-fit: contain;
 }
+
+/* =========================================
+   MAIN HEADING
+========================================= */
 
 .headings {
-  margin: 0;
+  margin: 0 0 28px;
+
+  padding: 0;
+
   font-size: 25px;
-  padding: 4vw 0 2vw 0;
-  text-align: center;
+  font-weight: 500;
+
+  color: #17384f;
+
+  text-align: left;
 }
+
+/* =========================================
+   FORM CARD
+========================================= */
 
 .bottom {
+  width: 100%;
+  max-width: 400px;
+
   display: flex;
   flex-direction: column;
-  height: 80%;
-  width:100%;
-  border-radius: 10px;
-  margin-bottom: 50px;
-  padding: 40px 20px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  box-sizing: border-box;
+
+  padding: 32px 24px 26px;
+
+  margin: 0 0 40px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9e8f3;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 24px rgba(24, 118, 189, 0.10);
 }
 
-.form {
-  display: grid;
-
-  gap: 2rem;
-  width: 100%;
-}
+/* =========================================
+   FORM HEADING
+========================================= */
 
 .heading {
-  margin: 0;
-  font-size: 20px;
-  text-align: left;
-  color: #888287;
-}
+  margin: 0 0 8px;
 
-.path {
-  display: flex;
-  align-items: center;
-  color: #888287;
-  gap: 1rem;
-  border-style: none none solid none;
-  border-width: 1px;
-  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 500;
+
+  text-align: left;
+
+  color: #667788;
+
+  line-height: 1.4;
 }
 
 .bold {
-  font-size: 25px;
+  font-size: 26px;
+
+  font-weight: 700;
+
+  color: #17384f;
 }
+
+/* =========================================
+   STEPS
+========================================= */
+
+.path {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 0 16px;
+
+  margin-bottom: 20px;
+
+  border-bottom: 1px solid #c8dbe9;
+
+  box-sizing: border-box;
+}
+
+.path section {
+  display: flex;
+  align-items: center;
+
+  flex-shrink: 0;
+}
+
+.path section p {
+  margin: 0;
+
+  white-space: nowrap;
+
+  font-size: 14px;
+
+  color: #667788;
+}
+
+.path section svg {
+  font-size: 18px;
+
+  color: #1876bd;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.form {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+/* =========================================
+   INPUT
+========================================= */
 
 .input {
   width: 100%;
-  padding: 20px 20px;
-  border-radius: 10px;
-  border-color: #dfe0e2;
-  border-width: 1px;
-  border-style: solid;
+
+  box-sizing: border-box;
+
+  padding: 19px 18px;
+
+  border-radius: 11px;
+
+  border: 1px solid #d5e1ea;
+
+  background: #ffffff;
+
+  font-size: 15px;
+
+  color: #17384f;
+
+  outline: none;
+
+  transition: 0.25s ease;
 }
 
 .input::placeholder {
-  color: #afafaf;
+  color: #9da8b2;
+}
+
+.input:focus {
+  border-color: #1876bd;
+
+  box-shadow:
+    0 0 0 3px rgba(24, 118, 189, 0.10);
+
+  background: #ffffff;
+}
+
+/* =========================================
+   CHECK PRICES BUTTON
+========================================= */
+
+.button {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: none;
+
+  padding: 15px 15px;
+
+  border-radius: 11px;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.button:hover {
+  background: #125d96;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(24, 118, 189, 0.22);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* =========================================
+   POLICY TEXT
+========================================= */
+
+.bottom > p:last-of-type {
+  margin: 8px 0 0;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  color: #4d5964;
 }
 
 .policy {
-  color: #609dff;
+  color: #1876bd;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
 }
 
-.button {
-  all: unset;
-  width: 88%;
-  padding: 20px 20px;
-  border-radius: 10px;
-  text-align: center;
-  background-color: #f34653;
-  color: white;
-  display: flex;
+.policy:hover {
+  color: #125d96;
+}
+
+/* =========================================
+   TRANSPARENT / BIKE BUTTON
+========================================= */
+
+.transparentButton {
+  display: none;
+
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+
+  color: #1876bd;
+
+  margin-top: 15px;
+
+  font-size: 16px;
+
   cursor: pointer;
 }
 
-.transparentButton {
-  all: unset;
-  display: flex;
-  align-items: center;
-  color: #609dff;
-  margin-top: auto;
-  margin-bottom: auto;
-  font-size: 16px;
-  display: none;
-}
+/* =========================================
+   TABLET
+========================================= */
 
 @media screen and (max-width: 1000px) {
   .cont {
-    grid-template-columns: 1fr;
     width: 90%;
+
+    flex-direction: column;
+
+    align-items: center;
   }
-  /* .imageCont {
+
+  .imageCont {
+    width: 80%;
+
+    justify-content: center;
+  }
+
+  .image {
+    width: 80%;
+  }
+
+  .headings {
+    text-align: left;
+  }
+
+  .bottom {
+    max-width: 450px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media screen and (max-width: 768px) {
+  .cont {
+    width: 92%;
+
+    padding: 30px 0 45px;
+
+    gap: 25px;
+  }
+
+  .imageCont {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .image {
+    width: 85%;
+  }
+
+  .headings {
+    font-size: 22px;
+
+    margin-bottom: 20px;
+
+    text-align: left;
+  }
+
+  .bottom {
+    width: 100%;
+
+    max-width: 100%;
+
+    padding: 26px 20px 22px;
+
+    margin-bottom: 0;
+
+    border-radius: 12px;
+  }
+
+  .heading {
+    font-size: 18px;
+  }
+
+  .bold {
+    font-size: 23px;
+  }
+
+  .path {
+    gap: 8px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+  }
+
+  .path::-webkit-scrollbar {
     display: none;
-  } */
+  }
+
+  .path section p {
+    font-size: 13px;
+  }
+
+  .input {
+    padding: 17px 15px;
+
+    font-size: 14px;
+  }
+
+  .button {
+    padding: 17px 15px;
+  }
+
+  .bottom > p:last-of-type {
+    font-size: 13px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media screen and (max-width: 480px) {
+  .cont {
+    width: 94%;
+
+    padding: 25px 0 35px;
+  }
+
+  .image {
+    width: 60%;
+  }
+
+  .headings {
+    font-size: 20px;
+  }
+
+  .bottom {
+    padding: 24px 15px 20px;
+
+    border-radius: 10px;
+  }
+
+  .heading {
+    font-size: 16px;
+  }
+
+  .bold {
+    font-size: 22px;
+  }
+
+  .path {
+    gap: 7px;
+
+    margin-bottom: 18px;
+  }
+
+  .path section p {
+    font-size: 12px;
+  }
+
+  .bottom > p:last-of-type {
+    font-size: 13px;
+  }
 }

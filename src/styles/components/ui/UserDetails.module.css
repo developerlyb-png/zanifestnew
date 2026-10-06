@@ -1,93 +1,80 @@
 .cont {
-  display: grid;
-  grid-template-columns: 2fr 3fr;
-  width: 100%;
-  /* background-color: #f4f4f4; */
-  background-color: black;
-  height: 3rem;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 2.5rem;
+
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  background-color: #000;
 }
 
+/* Email section - left */
 .detailsSection {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: auto;
   gap: 1rem;
 }
 
 .detailItem {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
+
   color: #fa621a;
   font-size: 1rem;
 }
 
 .detailsText {
   all: unset;
-  color: white;
+
+  color: #ffffff;
   font-size: 16px;
- 
+  white-space: nowrap;
 }
-
-.line {
-  height: 20px;
-  border-style: solid;
-  border-color: grey;
-  width: 0;
-  
-}
-
-.logosCont {
- width: 82%;
-justify-content: right;
-  display: flex;
-  gap: 1rem;
-  /* color: #1c75bb; */
-  color: white;
-  font-size: 1.2rem;
-}
-.logosCont a{
+.emailLink {
   color: #ffffff;
   text-decoration: none;
 }
 
+.emailLink:hover {
+  color: #fa621a;
+}
+/* Social icons - right */
+.logosCont {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  width: auto;
+
+  gap: 1rem;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.logosCont a {
+  display: flex;
+  align-items: center;
+
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Tablet */
 @media screen and (max-width: 1000px) {
   .logosCont {
     display: none;
   }
-
-  .cont {
-    grid-template-columns: 1fr;
-  }
-}
-.detailsText {
-  all: unset;
-  color: white;
-  font-size: 16px;
-  white-space: nowrap;
-}
-@media screen and (max-width: 768px) {
-  .detailsText {
-    max-width: 150px;     
-    display: block;
-    white-space: nowrap;   
-    overflow: hidden;
-    text-overflow: ellipsis; 
-    font-size: 14px;
-  }
-}
-/* ===== Desktop default ===== */
-.cont {
-  display: grid;
-  grid-template-columns: 2fr 3fr;
-  width: 100%;
-  background-color: black;
-  height: 3rem;
-  align-items: center;
 }
 
-/* ===== Mobile: hide complete UserDetails ===== */
+/* Mobile */
 @media screen and (max-width: 768px) {
   .cont {
     display: none;

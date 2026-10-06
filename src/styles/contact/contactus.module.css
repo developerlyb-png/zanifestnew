@@ -1,4 +1,5 @@
 /* ================= CONTACT HEADER ================= */
+
 .contactHeader {
   width: 100%;
   background: #ffffff;
@@ -18,35 +19,43 @@
   font-size: 48px;
   justify-content: center;
   font-weight: 700;
-  color: #111111;
+  color: #ffffff;
   text-transform: uppercase;
   margin: 0;
-  text-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 6px 12px rgba(20, 41, 75, 0.35);
 }
 
 /* ================= HERO / CAROUSEL ================= */
+
 .carousel {
   position: relative;
   width: 100%;
-  height: 65vh;              /* balanced hero height */
+  height: 65vh;
   overflow: hidden;
 }
 
-/* IMAGE – full width, no black, no stretch */
+/* IMAGE */
+
 .singleImage {
-  object-fit: cover;        /* full width */
-  object-position: center top; /* faces safe */
+  object-fit: cover;
+  object-position: center top;
 }
 
-/* DARK OVERLAY FOR TEXT READABILITY */
+/* DARK BLUE OVERLAY */
+
 .imageOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 41, 75, 0.45),
+    rgba(24, 118, 189, 0.18)
+  );
   z-index: 1;
 }
 
 /* TEXT ON IMAGE */
+
 .carouselText {
   position: relative;
   z-index: 2;
@@ -59,22 +68,28 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  font-family: "Manrope", sans-serif;
   color: #ffffff;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  }
+  text-shadow: 0 4px 12px rgba(20, 41, 75, 0.6);
+}
 
 .heroPara {
   font-size: 19px;
   line-height: 1.7;
   margin-bottom: 14px;
+  font-family: "Manrope", sans-serif;
+  color: #34465c;
 }
 
 .subLine {
   font-size: 16px;
   opacity: 0.95;
+  font-family: "Manrope", sans-serif;
+  color: #4f6075;
 }
 
 /* ================= CONTACT SECTION ================= */
+
 .contactSection {
   padding: 70px 20px;
   background: #ffffff;
@@ -92,30 +107,40 @@
   align-items: flex-start;
 }
 
-/* COMMON CARD */
+/* ================= COMMON CARD ================= */
+
 .card {
   background: #ffffff;
   padding: 28px;
   border-radius: 14px;
-  border: 1px solid #dc2626;
+  border: 1px solid #d8e8f4;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.06);
 }
 
 .card h2 {
   margin-bottom: 16px;
   font-size: 21px;
   font-weight: 600;
-  color: #111827;
+  color: #14294b;
 }
 
-/* FORM */
+/* ================= FORM ================= */
+
 .card input,
 .card textarea {
   width: 100%;
   padding: 14px 16px;
   margin-bottom: 14px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #d8e8f4;
   font-size: 14px;
+  color: #14294b;
+  background: #ffffff;
+}
+
+.card input::placeholder,
+.card textarea::placeholder {
+  color: #7a8a9d;
 }
 
 .card textarea {
@@ -125,34 +150,41 @@
 .card input:focus,
 .card textarea:focus {
   outline: none;
-  border-color: #f97316;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.08);
 }
 
-/* BUTTON */
+/* ================= BUTTON ================= */
+
 .card button {
   width: 100%;
   padding: 14px;
   margin-top: 6px;
-  background: linear-gradient(135deg, #f97316, #dc2626);
+
+  background: #1876bd;
   color: #ffffff;
+
   border-radius: 10px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  border: 2px solid transparent;
+
+  border: 2px solid #1876bd;
+
   transition: all 0.3s ease;
 }
 
 .card button:hover {
   background: #ffffff;
-  color: #dc2626;
-  border-color: #dc2626;
+  color: #1876bd;
+  border-color: #1876bd;
 }
 
-/* CONTACT DETAILS */
+/* ================= CONTACT DETAILS ================= */
+
 .detailBox {
   padding: 12px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #e6eef5;
 }
 
 .detailBox:last-child {
@@ -162,19 +194,20 @@
 
 .detailBox span {
   font-size: 13px;
-  color: #6b7280;
+  color: #66758a;
   font-weight: 500;
 }
 
 .detailBox p {
   font-size: 15px;
   margin-top: 4px;
-  color: #111827;
+  color: #14294b;
   line-height: 1.4;
   word-break: break-word;
 }
 
 /* ================= RESPONSIVE ================= */
+
 @media (max-width: 768px) {
   .contactTitle {
     font-size: 34px;
@@ -200,7 +233,11 @@
     padding: 24px;
   }
 }
-/* ================= CONTACT HEADER ================= */
+
+/* =========================================================
+   CONTACT HEADER
+========================================================= */
+
 .contactHeader {
   width: 100%;
   background: #ffffff;
@@ -219,13 +256,16 @@
 .contactTitle {
   font-size: clamp(28px, 4vw, 48px);
   font-weight: 700;
-  color: white;
+  color: #ffffff;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.2;
 }
 
-/* ================= HERO / IMAGE ================= */
+/* =========================================================
+   HERO / IMAGE
+========================================================= */
+
 .carousel {
   position: relative;
   width: 100%;
@@ -243,7 +283,13 @@
 .imageOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 41, 75, 0.45),
+    rgba(24, 118, 189, 0.16)
+  );
+
   z-index: 1;
 }
 
@@ -260,21 +306,26 @@
   align-items: center;
   text-align: center;
   color: #ffffff;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 4px 12px rgba(20, 41, 75, 0.6);
 }
 
 .heroPara {
   font-size: clamp(15px, 2.2vw, 19px);
   line-height: 1.7;
   margin-bottom: 12px;
+  color: #34465c;
 }
 
 .subLine {
   font-size: clamp(13px, 2vw, 16px);
   opacity: 0.95;
+  color: #4f6075;
 }
 
-/* ================= CONTACT SECTION ================= */
+/* =========================================================
+   CONTACT SECTION
+========================================================= */
+
 .contactSection {
   padding: clamp(40px, 6vw, 80px) 20px;
   background: #ffffff;
@@ -292,68 +343,103 @@
   align-items: flex-start;
 }
 
-/* ================= CARD ================= */
+/* =========================================================
+   CARD
+========================================================= */
+
 .card {
   background: #ffffff;
   padding: clamp(22px, 3vw, 30px);
   border-radius: 14px;
-  border: 1px solid #dc2626;
+
+  border: 1px solid #d8e8f4;
+
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.06);
 }
 
 .card h2 {
   margin-bottom: 16px;
   font-size: clamp(18px, 2.5vw, 21px);
   font-weight: 600;
-  color: #111827;
+  color: #14294b;
 }
 
-/* ================= FORM ================= */
+/* =========================================================
+   FORM
+========================================================= */
+
 .card input,
 .card textarea {
   width: 100%;
   padding: 14px 16px;
   margin-bottom: 14px;
+
   border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #d8e8f4;
+
   font-size: 14px;
+  font-family: "Manrope", sans-serif;
+
+  color: #14294b;
+  background: #ffffff;
+}
+
+.card input::placeholder,
+.card textarea::placeholder {
+  color: #7a8a9d;
 }
 
 .card textarea {
   resize: none;
-  min-height: 120px;
+  min-height: 90px;
+  height: 90px;
+  font-family: "Manrope", sans-serif;
 }
 
 .card input:focus,
 .card textarea:focus {
   outline: none;
-  border-color: #f97316;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.08);
 }
 
-/* ================= BUTTON ================= */
+/* =========================================================
+   BUTTON
+========================================================= */
+
 .card button {
   width: 100%;
   padding: 14px;
   margin-top: 6px;
-  background: linear-gradient(135deg, #f97316, #dc2626);
+
+  background: #1876bd;
   color: #ffffff;
+
   border-radius: 10px;
+
   font-weight: 600;
   font-size: 15px;
+
   cursor: pointer;
-  border: 2px solid transparent;
+
+  border: 2px solid #1876bd;
+
   transition: all 0.3s ease;
 }
 
 .card button:hover {
   background: #ffffff;
-  color: #dc2626;
-  border-color: #dc2626;
+  color: #1876bd;
+  border-color: #1876bd;
 }
 
-/* ================= CONTACT DETAILS ================= */
+/* =========================================================
+   CONTACT DETAILS
+========================================================= */
+
 .detailBox {
-  padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 10px 0;
+  border-bottom: 1px solid #e6eef5;
 }
 
 .detailBox:last-child {
@@ -362,20 +448,23 @@
 }
 
 .detailBox span {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 17px;
+  color: #66758a;
   font-weight: 500;
 }
 
 .detailBox p {
-  font-size: 15px;
-  margin-top: 0px;
-  color: #111827;
+  font-size: 16px;
+  margin-top: 0;
+  color: #14294b;
   line-height: 1.5;
   word-break: break-word;
 }
 
-/* ================= TABLETS ================= */
+/* =========================================================
+   TABLETS
+========================================================= */
+
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: 1fr;
@@ -386,7 +475,10 @@
   }
 }
 
-/* ================= MOBILES ================= */
+/* =========================================================
+   MOBILES
+========================================================= */
+
 @media (max-width: 640px) {
   .carousel {
     height: 48vh;
@@ -404,14 +496,22 @@
   .card button {
     font-size: 14px;
   }
+
   .heroPara {
     font-size: clamp(12px, 3vw, 16px);
+    color: #34465c;
   }
-  .subLine{
+
+  .subLine {
     font-size: clamp(11px, 2.5vw, 14px);
+    color: #4f6075;
   }
- 
 }
+
+/* =========================================================
+   CONTACT TITLE
+========================================================= */
+
 .contactTitle {
   color: #ffffff;
   font-weight: 700;
@@ -420,6 +520,9 @@
   text-align: center;
 }
 
+/* =========================================================
+   TITLE RESPONSIVE
+========================================================= */
 
 @media (max-width: 1200px) {
   .contactTitle {
@@ -427,6 +530,7 @@
     transform: translateY(-45px);
   }
 }
+
 @media (max-width: 480px) {
   .contactTitle {
     font-size: 28px;
@@ -434,18 +538,24 @@
     text-align: center;
   }
 }
+
 @media (max-width: 768px) {
   .contactTitle {
     font-size: 36px;
     transform: translateY(-5px);
   }
 }
+
 @media (max-width: 360px) {
   .contactTitle {
     font-size: 24px;
     transform: translateY(-5px);
   }
 }
+
+/* =========================================================
+   HERO TEXT SECTION
+========================================================= */
 
 .carouselTexts {
   position: relative;
@@ -454,31 +564,67 @@
   max-width: 960px;
   margin: auto;
   padding: 0 clamp(16px, 4vw, 24px);
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   text-align: center;
+
   margin-top: 30px;
 }
 
+/* =========================================================
+   CARD FINAL LAYOUT
+========================================================= */
 
-  .card {
-    grid-template-columns: 1fr;
-    column-gap: 20px;
-    display: grid;
-    justify-content: start;
-    align-content: space-evenly;
-    align-items: end;
-    justify-items: stretch;
+.card {
+  grid-template-columns: 1fr;
+  column-gap: 20px;
+
+  display: grid;
+
+  justify-content: start;
+  align-content: space-evenly;
+  align-items: end;
+  justify-items: stretch;
+
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.06);
 }
+
+/* =========================================================
+   FINAL IMAGE OVERLAY
+========================================================= */
+
 .imageOverlay {
   position: absolute;
   inset: 0;
+
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.35),
-    rgba(0,0,0,0.15)
+    rgba(20, 41, 75, 0.42),
+    rgba(24, 118, 189, 0.14)
   );
+
   z-index: 1;
+}
+
+/* =========================================================
+   MANROPE FONT
+========================================================= */
+
+.contactHeader,
+.carousel,
+.carouselText,
+.carouselTexts,
+.contactSection,
+.card,
+.card input,
+.card textarea,
+.card button,
+.detailBox {
+  font-family: "Manrope", sans-serif;
 }

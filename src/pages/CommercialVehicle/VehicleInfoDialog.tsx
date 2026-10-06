@@ -368,7 +368,7 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
           <p className={styles.terms}>
             By clicking on 'View prices', you agree to our{" "}
-            <a href="#">Privacy Policy</a> &<a href="#"> Terms of Use</a>
+            <a href="https://zanifestinsurance.com/Privacypolicy">Privacy Policy</a> &<a href="https://zanifestinsurance.com/Termscondition"> Terms of Use</a>
           </p>
         </div>
       </div>

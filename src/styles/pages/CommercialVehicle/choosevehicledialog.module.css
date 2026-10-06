@@ -1,214 +1,618 @@
+/* ==========================
+   OVERLAY
+========================== */
+
 .overlay {
   position: fixed;
+
   inset: 0;
-  background: rgba(0,0,0,0.4);
+
+  background: rgba(0, 0, 0, 0.4);
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   z-index: 9999;
+
   padding: 20px;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* ==========================
+   DIALOG
+========================== */
 
 .dialog {
   background: #fff;
+
   border-radius: 12px;
+
   display: flex;
+
   max-width: 1150px;
+
   width: 100%;
-  height: auto;              /* keep responsive */
-  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+
+  height: auto;
+
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+
   overflow: hidden;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* ==========================
+   LEFT PANEL
+========================== */
 
 .left {
   flex: 1;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   padding: 30px;
+
+  box-sizing: border-box;
 }
 
+
+/* ==========================
+   VEHICLE IMAGE
+========================== */
+
 .vehicleImg {
-  width: 280px;              
+  width: 280px;
+
+  height: auto;
+
+  object-fit: contain;
+
+  display: block;
 }
+
+
+/* ==========================
+   RIGHT PANEL
+========================== */
 
 .right {
   flex: 2;
+
   padding: 20px 0 30px 0;
+
+  min-width: 0;
+
+  box-sizing: border-box;
 }
+
+
+/* ==========================
+   HEADER
+========================== */
 
 .header {
-  align-items: center;
-  background: #ff5722;
-  border-radius: 8px;
-  margin: 0 20px 20px 20px;
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
-  background: #fb6530;
+
+  justify-content: space-between;
+
+  background: #fa621a;
+
   color: #fff;
+
   padding: 10px 20px;
+
+  margin: 0 20px 20px 20px;
+
   border-radius: 6px;
+
   font-size: 16px;
+
   font-weight: 500;
-}
-.arrowBtn {
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-}
-.navBtn {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
 
+
+/* ==========================
+   HEADER TITLE
+========================== */
+
+.header h2 {
+  margin: 0;
+
+  padding: 0;
+
+  flex: 1;
+
+  text-align: center;
+
+  color: #fff;
+
+  font-size: 16px;
+
+  font-weight: 500;
+
+  font-family: "Manrope", sans-serif;
+}
+
+
+/* ==========================
+   BACK ARROW
+========================== */
+
+.arrowBtn {
+  width: 25px;
+
+  height: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: none;
+
+  color: #fff;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  line-height: 1;
+
+  flex-shrink: 0;
+}
+
+
+.arrowBtn:hover {
+  opacity: 0.8;
+}
+
+
+/* ==========================
+   NAVIGATION BUTTON
+========================== */
+
+.navBtn {
+  width: 25px;
+
+  height: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: none;
+
+  color: #fff;
+
+  font-size: 22px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  line-height: 1;
+
+  flex-shrink: 0;
+}
+
+
+.navBtn:hover {
+  opacity: 0.8;
+}
+
+
+/* ==========================
+   VEHICLE GRID
+========================== */
 
 .vehicleGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
   gap: 16px;
+
   margin: 0 20px;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* ==========================
+   VEHICLE BUTTON
+========================== */
 
 .vehicleGrid button {
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
+  justify-content: center;
+
   gap: 10px;
-  border: 1px solid #ccc;
+
+  width: 100%;
+
+  min-height: 100px;
+
   padding: 20px;
-  border-radius: 8px;
+
+  border: 1px solid #dce3ed;
+
+  border-radius: 7px;
+
   background: #fff;
+
   cursor: pointer;
+
   font-size: 14px;
-  transition: all 0.3s ease;
-  color: #444;
-  min-height: 100px;        
+
+  font-weight: 500;
+
+  color: #1e2a4a;
+
+  font-family: "Manrope", sans-serif;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
 }
 
+
+/* ==========================
+   VEHICLE ICON
+========================== */
+
 .vehicleGrid button svg {
-  font-size: 32px;           
+  font-size: 32px;
+
+  color: #64748b;
+
+  flex-shrink: 0;
 }
+
+
+/* ==========================
+   VEHICLE TEXT
+========================== */
 
 .vehicleGrid button span {
   font-size: 14px;
+
+  font-weight: 500;
+
+  color: inherit;
+
+  font-family: "Manrope", sans-serif;
+
+  text-align: center;
 }
+
+
+/* ==========================
+   VEHICLE HOVER
+========================== */
 
 .vehicleGrid button:hover {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #fa621a;
+
+  background: #fffaf8;
+
+  color: #fa621a;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-.active {
-  border-color: #007bff !important;
-  background: #fef4f0 !important;
-  color: #007bff !important;
-  font-weight: bold;
+
+.vehicleGrid button:hover svg {
+  color: #fa621a;
 }
+
+
+/* ==========================
+   ACTIVE VEHICLE
+========================== */
+
+.active {
+  border-color: #fa621a !important;
+
+  background: #fff5f1 !important;
+
+  color: #fa621a !important;
+
+  font-weight: 600;
+}
+
+
+.active svg {
+  color: #fa621a !important;
+}
+
+
+/* ==========================
+   OTHER TYPE
+========================== */
 
 .otherType {
   text-align: center;
+
   margin: 24px 20px 0 20px;
+
   padding: 8px;
+
   border-radius: 6px;
-  border: 2px solid #007bff;
+
+  border: 1px solid #fa621a;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* ==========================
+   OTHER TYPE LINK
+========================== */
 
 .otherType a {
-  color: #007bff;
+  color: #fa621a;
+
   font-weight: 500;
+
   cursor: pointer;
+
   text-decoration: none;
+
+  font-family: "Manrope", sans-serif;
 }
 
 
-/* ✅ Responsive Design */
+.otherType a:hover {
+  text-decoration: underline;
+}
+
+
+/* ==========================
+   TABLET
+========================== */
+
 @media (max-width: 1024px) {
-  .vehicleGrid {
-    grid-template-columns: repeat(3, 1fr); 
+
+  .dialog {
+    width: 95vw;
+
+    max-width: 1150px;
   }
+
+
+  .vehicleGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+
+  .vehicleGrid button {
+    padding: 16px;
+
+    min-height: 95px;
+  }
+
 }
+
+
+/* ==========================
+   MOBILE
+========================== */
 
 @media (max-width: 768px) {
-  .dialog {
-    flex-direction: column;   
+
+  .overlay {
+    align-items: flex-start;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    overflow-y: auto;
   }
+
+
+  .dialog {
+    flex-direction: column;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    height: auto;
+
+    max-height: none;
+
+    border-radius: 10px;
+  }
+
 
   .left {
-    display: none;          
+    display: none;
   }
-  .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: flex-start;   
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
-  overflow-y: auto;          
-}
+
 
   .right {
+    width: 100%;
+
     flex: 1;
-    padding: 20px ;
+
+    padding: 20px;
+
+    box-sizing: border-box;
   }
 
-  .vehicleGrid {
-    grid-template-columns: repeat(3, 1fr); 
-    margin: 0 10px;
-  }
 
   .header {
     margin: 0 10px 15px 10px;
+
     font-size: 14px;
-    padding: 6px 12px;
+
+    padding: 7px 12px;
+
+    min-height: 42px;
   }
+
 
   .header h2 {
     font-size: 15px;
   }
 
+
+  .arrowBtn,
+  .navBtn {
+    width: 24px;
+
+    height: 24px;
+
+    font-size: 20px;
+  }
+
+
+  .vehicleGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin: 0 10px;
+  }
+
+
   .vehicleGrid button {
     padding: 15px;
+
     min-height: 90px;
+
+    gap: 8px;
+
+    font-size: 13px;
   }
+
 
   .vehicleGrid button svg {
     font-size: 28px;
   }
 
+
   .vehicleGrid button span {
     font-size: 13px;
   }
 
+
   .otherType {
     margin: 20px 10px 0 10px;
   }
+
 }
 
+
+/* ==========================
+   SMALL MOBILE
+========================== */
+
 @media (max-width: 400px) {
+
+  .overlay {
+    padding: 10px;
+  }
+
+
+  .dialog {
+    border-radius: 8px;
+  }
+
+
+  .right {
+    padding: 15px;
+  }
+
+
   .vehicleGrid {
-    grid-template-columns: 1fr 1fr ; 
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
     gap: 12px;
   }
 
+
   .vehicleGrid button {
     padding: 12px;
+
     min-height: 80px;
+
+    gap: 7px;
   }
+
+
+  .vehicleGrid button svg {
+    font-size: 26px;
+  }
+
+
+  .vehicleGrid button span {
+    font-size: 12px;
+  }
+
+
+  .header {
+    padding: 7px 10px;
+  }
+
 
   .header h2 {
     font-size: 13px;
   }
+
+
   .vehicleImg {
-  width: 2o0px;              
-  height: 20px;
-}
+    width: 200px;
+
+    height: auto;
+  }
+
 }

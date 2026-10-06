@@ -687,7 +687,7 @@ const CarInsurance3 = () => {
             </div>
           ) : plan ? (
             <>
-              <h2>{sbiQuote?.success ? "2 plans available" : "1 plan available"}</h2>
+              <h2>{sbiQuote?.success ? "2 Plans Available" : "1 Plan Available"}</h2>
               <p>Covers damages to your car. Premium includes GST.</p>
 
               <div className={styles.planCard}>

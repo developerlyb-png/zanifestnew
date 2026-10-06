@@ -1,11 +1,18 @@
-
 .cont {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 40px;
-  margin-bottom: 60px;
+  padding-bottom: 40px;
+  margin-bottom: 20px;
+  background-image: url("../../../../src/assets/background-car.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
+
+/* ================= HEADING ================= */
 
 .head {
   display: flex;
@@ -20,100 +27,128 @@
   position: absolute;
   bottom: -15px;
   width: 25%;
-  height: 5px; 
-  background-color: #fa621a;
+  height: 5px;
+  background-color: #1876bd;
   border-radius: 3px;
 }
 
-/* .heading {
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.orange {
-  color: #fa621a;
-} */
-
-
 .heading {
-  font-size: 2.5rem;
-  font-weight: bold;
-  display: inline; /* or no need if using <p> */
+  font-family: "Manrope", sans-serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  display: inline;
+  margin: 0;
+  color: #17384f;
 }
-
-
-
 
 .orange {
-  color: #fa621a;
+  color: #1876bd;
 }
 
-/* fixed 6x2 grid for 12 items */
+
+/* ================= GRID ================= */
+
 .list {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+
   gap: 25px;
+
   justify-items: center;
+
   width: 80%;
   max-width: 1200px;
+
   margin-top: 25px;
 }
 
+
+/* ================= CARD ================= */
+
 .item {
   width: 135px;
-  background-color: white;
+
+  background-color: #ffffff;
+
   border-radius: 16px;
-  box-shadow: rgba(6, 4, 6, 0.1) 0px 4px 8px;
-  border: 1px solid white;
+
+  overflow: hidden;
+
+  box-shadow: rgba(24, 118, 189, 0.10) 0px 4px 8px;
+
+  border: 1px solid transparent;
+
   cursor: pointer;
-  transition: border-color 0.3s ease;
+
+  transition: all 0.3s ease;
 }
 
 .item:hover {
-  border-color: #fa621a;
+  border-color: #1876bd;
+
+  transform: translateY(-4px);
+
+  box-shadow: rgba(24, 118, 189, 0.16) 0px 8px 16px;
 }
 
+
+/* ================= IMAGE ================= */
+
 .imageCont {
-  background-color: #f6f6f6;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  background-color: #eaf5fc;
+
   display: flex;
+
   justify-content: center;
   align-items: center;
+
   height: 100px;
 }
 
 .image {
   height: 60px;
   width: auto;
+
   object-fit: contain;
 }
 
+
+/* ================= TEXT ================= */
+
 .bottom {
   padding: 12px;
+
   text-align: center;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.2;
+
+  line-height: 1.3;
+
   word-break: break-word;
-}
-.mobileEllipsis {
-  display: none;
-  row-gap: 2px;
- 
+
+  color: #17384f;
 }
 
-/* Responsive breakpoints */
+
+/* ================= MOBILE ELLIPSIS ================= */
+
+.mobileEllipsis {
+  display: none;
+}
+
+
+/* ================= 1200px ================= */
+
 @media screen and (max-width: 1200px) {
+
   .list {
     grid-template-columns: repeat(4, 1fr);
+
     gap: 20px;
   }
-  .mobileEllipsis {
-  display: none;
-  /* margin-top: 8px; */
-  /* font-size: 20px; */
-}
 
   .item {
     width: 115px;
@@ -123,10 +158,6 @@
     height: 90px;
   }
 
-  .imageCont {
-    width: auto;
-  }
-
   .image {
     height: 50px;
   }
@@ -134,24 +165,30 @@
   .bottom {
     font-size: 12px;
   }
+
 }
 
+
+/* ================= TABLET ================= */
+
 @media screen and (max-width: 768px) {
+
   .heading {
     font-size: 24px;
   }
 
   .list {
     grid-template-columns: repeat(3, 1fr);
+
     gap: 15px;
   }
 
   .item {
-    width: 100px;
+    width: 110px;
   }
 
   .imageCont {
-    height: 80px;
+    height: 85px;
   }
 
   .image {
@@ -161,107 +198,61 @@
   .bottom {
     font-size: 11px;
   }
-}
-
-@media screen and (max-width: 500px) {
-  .list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .item {
-    width: 130px;
-  }
-.cont{
-/* padding: 0 4rem; */
-  padding-top: 40px;
 
 }
-  .imageCont {
-    height: 100px;
-  }
 
-  .image {
-    height: 60px;
-    width: auto;
-  }
 
-  .bottom {
-    font-size: 10px;
-  }
-}
+/* ================= MOBILE ================= */
 
-@media screen and (max-width: 370px) {
-  .list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .item {
-    width: 120px;
-  }
-.cont{
-  padding-top: 40px;
-
-}
-  .imageCont {
-    height: 100px;
-  }
-
-  .image {
-    height: 60px;
-    width: auto;
-  }
-
-  .bottom {
-    font-size: 10px;
-  }
-}
 @media screen and (max-width: 700px) {
+
+  .head {
+    margin-bottom: 0;
+  }
+
   .head::after {
     display: none;
   }
+
   .mobileEllipsis {
     display: block;
-    margin-bottom: 0%;
+    margin-top: 5px;
+    color: #1876bd;
   }
-  .heading{
-    margin-bottom: 0%;
-  }
-  .head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 0px;
-  position: relative;
-}
+
 }
 
-/* ----- FADE-IN/OUT ANIMATION ------ */
-.animateOnce {
-  animation: fadeInStay 1.5s ease-in-out forwards;
-}
 
-@keyframes fadeInStay {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ================= MOBILE 500px ================= */
 
 @media screen and (max-width: 500px) {
+
+  .cont {
+    padding-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .heading {
+    font-size: 22px;
+  }
+
+  /* 🔥 4 Cards Per Row */
   .list {
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 8px;
     width: 100%;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 8px;
+
+    padding: 0 8px;
+
+    margin-top: 20px;
   }
 
   .item {
     width: 100%;
+
+    border-radius: 10px;
   }
 
   .imageCont {
@@ -273,25 +264,57 @@
   }
 
   .bottom {
-    font-size: 9px;
     padding: 6px;
-  }
-}
-@media screen and (max-width: 500px) {
-  .list {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 0 5px;   
+
+    font-size: 9px;
+
+    line-height: 1.2;
   }
 
-  .item {
-    max-width: 100%;
-  }
 }
-@media screen and (max-width: 500px) {
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media screen and (max-width: 370px) {
+
   .list {
-    grid-template-columns: repeat(4, 1fr);
-    padding: 0 10px;   
-    gap: 10px;
+    gap: 6px;
+
+    padding: 0 6px;
   }
+
+  .imageCont {
+    height: 65px;
+  }
+
+  .image {
+    height: 32px;
+  }
+
+  .bottom {
+    font-size: 8px;
+  }
+
+}
+
+
+/* ================= ANIMATION ================= */
+
+.animateOnce {
+  animation: fadeInStay 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeInStay {
+
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
 }

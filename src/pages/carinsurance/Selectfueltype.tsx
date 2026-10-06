@@ -477,7 +477,7 @@ onNextToVariant();
 
 <input
 
-placeholder="Search fuel type"
+placeholder="Search Fuel Type"
 
 value={search}
 

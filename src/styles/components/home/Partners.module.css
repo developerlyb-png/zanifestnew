@@ -19,12 +19,12 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-size: 2.3rem;
+  font-weight: 500;
   text-align: center;
   position: relative;
   margin-top: 40px;
-  font-family: Arial;
+  font-family: "Manrope", sans-serif;
   opacity: 0;
   transform: translateY(50%);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
@@ -41,12 +41,12 @@
   bottom: -15px;
   width: 25%;
   height: 5px;
-  background-color: #fa621a;
+  background-color: #1876bd;
   border-radius: 3px;
 }
 
 .orange {
-  color: #fa621a;
+  color: #1876bd;
 }
 
 /* ---------- BOTTOM SECTION ---------- */
@@ -60,7 +60,7 @@
 
 /* ---------- MOBILE ELLIPSIS ---------- */
 .mobileEllipsis {
-  display: none;
+  display: none;  
   margin-bottom: 0%;
 }
 
@@ -204,7 +204,7 @@
   }
 
   .active .mobileTabName {
-    color: #1877c0;
+    color: #1876bd;
     font-weight: 600;
   }
 
@@ -217,7 +217,7 @@
     width: 80%;
     height: 3px;
     border-radius: 2px;
-    background-color: #1877c0;
+    background-color: #1876bd;
   }
 
   .partList {
@@ -279,7 +279,7 @@
   }
 
   .mobileTab.active {
-    color: #1f8f4a; /* GREEN like screenshot */
+    color: #1876bd; /* GREEN like screenshot */
     font-weight: 600;
   }
 
@@ -291,7 +291,7 @@
     transform: translateX(-50%);
     width: 100%;
     height: 2.5px;
-    background-color: #1f8f4a;
+    background-color: #1876bd;
     border-radius: 2px;
   }
 
@@ -358,7 +358,7 @@
   }
 
   .mobileTab.active {
-    color: #1f8f4a; /* green like screenshot */
+    color: #1876bd; /* green like screenshot */
     font-weight: 600;
     align-items: center;
   }
@@ -370,7 +370,7 @@
     left: 0;
     width: 100%;
     height: 2.5px;
-    background-color: #1f8f4a;
+    background-color: #1876bd;
     border-radius: 2px;
   }
 }
@@ -388,7 +388,7 @@
 }
 
 .mobileTab.active {
-  color: #1f8f4a;
+  color: #1876bd;
   font-weight: 600;
 }
 
@@ -400,7 +400,7 @@
   transform: translateX(-50%);
   width: 70%;           /* 🔥 TEXT WIDTH FEEL */
   height: 2.5px;
-  background-color: #1f8f4a;
+  background-color: #1876bd;
   border-radius: 2px;
 }
 .partList {
@@ -594,7 +594,7 @@
   }
 
   .active .mobileTabName {
-    color: #1877c0;
+    color: #1876bd;
     font-weight: 600;
   }
 
@@ -607,7 +607,7 @@
     width: 80%;
     height: 3px;
     border-radius: 2px;
-    background-color: #1877c0;
+    background-color: #1876bd;
   }
 
   .partList {
@@ -649,5 +649,397 @@
   .partItem {
     width: 90px;
     aspect-ratio: 1 / 1;
+  }
+}
+
+/* =====================================================
+   UPDATED DESIGN OVERRIDES - APPENDED WITHOUT DELETING
+   ORIGINAL CSS
+   ===================================================== */
+
+@media screen and (min-width: 1201px) {
+  .bottom {
+    width: 100%;
+    max-width: 1180px;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+    align-items: stretch;
+  }
+
+  .catList {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #d8e0e8;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .catItem {
+    width: 100%;
+    min-height: 112px;
+    height: auto;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-top: 0;
+    border-radius: 14px;
+  }
+
+  .catItem:hover {
+    background: #f3f8fc;
+    border: none;
+    box-shadow: inset 4px 0 0 #1876bd;
+  }
+
+  .catItem img {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .catName {
+    margin: 0;
+    font-family: "Manrope", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #243447;
+  }
+
+   .partList {
+    width: 100%;
+    display: grid;
+
+    /* 🔥 5 logos per row */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    gap: 14px;
+
+    align-content: start;
+    justify-items: stretch;
+
+    padding: 10px;
+
+    background: #ffffff;
+    border: 1px solid #d8e0e8;
+    border-radius: 20px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+
+    overflow: visible;
+  }
+
+  .partItem {
+    width: 100%;
+    height: 92px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: #ffffff;
+    border: 1px solid #eef1f4;
+    border-radius: 14px;
+
+    transition: all 0.3s ease;
+  }
+
+  .partItem:hover {
+    transform: translateY(-4px);
+    border-color: #1876bd;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .imagePartner {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    border-radius: 0;
+  }
+}
+/* =====================================================
+   PREMIUM PARTNER SLIDER - FINAL
+   ===================================================== */
+
+
+/* ================= DESKTOP ================= */
+
+@media screen and (min-width: 1201px) {
+
+  .partList {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+
+    padding: 14px !important;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e9ee !important;
+
+    border-radius: 20px !important;
+
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.05) !important;
+
+    overflow: visible !important;
+  }
+
+  .partItem {
+    width: 100% !important;
+    height: 92px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 6px !important;
+
+    background: #ffffff;
+
+    border: 1px solid #edf0f3 !important;
+
+    border-radius: 14px !important;
+
+    transition: all 0.3s ease !important;
+  }
+
+  .partItem:hover {
+    transform: translateY(-4px);
+
+    border-color: #1876bd !important;
+
+    box-shadow:
+      0 10px 25px rgba(250, 98, 26, 0.12) !important;
+  }
+
+  .imagePartner {
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: contain !important;
+
+    border-radius: 0 !important;
+  }
+}
+
+
+/* ================= TABLET + MOBILE SLIDER ================= */
+
+@media screen and (max-width: 1200px) {
+
+  .partList {
+
+    width: 100% !important;
+
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    align-items: center !important;
+
+    gap: 14px !important;
+
+
+    /* Slider */
+
+    overflow-x: auto !important;
+
+    overflow-y: hidden !important;
+
+    scroll-snap-type: x mandatory;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+
+
+    /* Premium Container */
+
+    padding: 14px !important;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e9ee !important;
+
+    border-radius: 18px !important;
+
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.05) !important;
+  }
+
+
+  /* Hide scrollbar */
+
+  .partList::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  /* ================= LOGO CARD ================= */
+
+  .partItem {
+
+    flex: 0 0 auto !important;
+
+    width: 110px !important;
+
+    height: 90px !important;
+
+    aspect-ratio: auto !important;
+
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+
+    padding: 8px !important;
+
+
+    /* Premium Card */
+
+    background: linear-gradient(
+      145deg,
+      #ffffff,
+      #f8fafc
+    ) !important;
+
+    border: 1px solid #e7ebef !important;
+
+    border-radius: 14px !important;
+
+
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.04) !important;
+
+
+    scroll-snap-align: start !important;
+
+
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease !important;
+  }
+
+
+  .partItem:hover {
+
+    transform: translateY(-3px);
+
+    border-color: #1876bd !important;
+
+    box-shadow:
+      0 8px 20px rgba(250, 98, 26, 0.12) !important;
+  }
+
+
+  /* ================= LOGO ================= */
+
+  .imagePartner {
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    object-fit: contain !important;
+
+    border-radius: 0 !important;
+  }
+}
+
+
+/* ================= MOBILE ================= */
+
+@media screen and (max-width: 768px) {
+
+  .bottom {
+
+    width: 95% !important;
+
+    padding: 0 !important;
+
+    margin-top: 20px !important;
+  }
+
+
+  .partList {
+
+    gap: 12px !important;
+
+    padding: 12px !important;
+
+    border-radius: 16px !important;
+
+    /* Smooth side spacing */
+
+    padding-left: 10px !important;
+
+    padding-right: 10px !important;
+  }
+
+
+  .partItem {
+
+    width: 95px !important;
+
+    height: 80px !important;
+
+    padding: 6px !important;
+
+    border-radius: 12px !important;
+  }
+
+
+  .imagePartner {
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    object-fit: contain !important;
+  }
+}
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media screen and (max-width: 480px) {
+
+  .bottom {
+    width: 96% !important;
+  }
+
+
+  .partList {
+
+    gap: 10px !important;
+
+    padding: 10px 8px !important;
+
+    border-radius: 14px !important;
+  }
+
+
+  .partItem {
+
+    width: 88px !important;
+
+    height: 72px !important;
+
+    border-radius: 10px !important;
   }
 }

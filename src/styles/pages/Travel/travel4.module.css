@@ -41,7 +41,7 @@
 }
 
 .arrow{
-     color: #0966ec;
+     color: #fa621a;
     font-size: 22px;
 }
 .blockHeader {
@@ -86,8 +86,8 @@
 }
 
 .radioActive .radioDot {
-  border-color: #2563eb;
-  background: #2563eb;
+  border-color: #fa621a;
+  background: #fa621a;
 }
 
 /* ===== Main content ===== */
@@ -1466,6 +1466,6 @@ width: 25%;
     width: 280px; /* your existing desktop sidebar width */
     height: auto;
     box-shadow: none;
-    transition: none;
+    transition: none; 
   }
 }
