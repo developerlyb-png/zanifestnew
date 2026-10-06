@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { buildDigitQuickQuoteBody } from "@/lib/digit4wRequestBuilder";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,7 +29,17 @@ export default async function handler(
     // CALL BOTH APIS
     // ===========================
 
-    const [zunoResult, sbiResult] = await Promise.allSettled([
+    const digitBuilt = buildDigitQuickQuoteBody(body);
+    const digitPromise: Promise<any> =
+      "error" in digitBuilt
+        ? Promise.resolve({ success: false, message: digitBuilt.error })
+        : fetch(`${baseUrl}/api/digit/4w/quickquote`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(digitBuilt.body),
+          }).then((r) => r.json());
+
+    const [zunoResult, sbiResult, digitResult] = await Promise.allSettled([
       fetch(`${baseUrl}/api/zuno/4w/quote`, {
         method: "POST",
         headers: {
@@ -44,6 +55,8 @@ export default async function handler(
         },
         body: JSON.stringify(body),
       }).then((r) => r.json()),
+
+      digitPromise,
     ]);
 
     const quotes: any[] = [];
@@ -95,6 +108,14 @@ export default async function handler(
             : sbiResult.reason,
       });
     }
+
+    quotes.push({
+      insurer: "DIGIT",
+      success:
+        digitResult.status === "fulfilled" && digitResult.value?.success === true,
+      response:
+        digitResult.status === "fulfilled" ? digitResult.value : digitResult.reason,
+    });
 
     console.log("FINAL QUOTES >>>", quotes);
 

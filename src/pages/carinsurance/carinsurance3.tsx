@@ -111,6 +111,8 @@ const CarInsurance3 = () => {
   // ({ insurer: "SBI", success: false, response }) when the master-data
   // matching for SBI isn't resolvable yet for this vehicle.
   const [sbiQuote, setSbiQuote] = useState<any>(null);
+  // Go Digit quote — read-only display for now (purchase not wired yet).
+  const [digitQuote, setDigitQuote] = useState<any>(null);
 
   // Original Zuno-quoted IDV, fixed as the baseline for the edit range
   const [defaultIdv, setDefaultIdv] = useState<number | null>(null);
@@ -180,6 +182,8 @@ const CarInsurance3 = () => {
       const q = localStorage.getItem("carQuoteInput");
       const a = localStorage.getItem("carSelectedAddons");
       const s = localStorage.getItem("selectedQuoteSbi");
+      const dq = localStorage.getItem("selectedQuoteDigit");
+      if (dq && dq !== "undefined") setDigitQuote(JSON.parse(dq));
       const ck = localStorage.getItem("sbiCkycResult");
       if (ck && ck !== "undefined") setCkycResult(JSON.parse(ck));
       if (p && p !== "undefined") {
@@ -233,6 +237,7 @@ const CarInsurance3 = () => {
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
+  const planCount = 1 + (sbiQuote?.success ? 1 : 0) + (digitQuote?.success ? 1 : 0);
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
 
@@ -687,7 +692,7 @@ const CarInsurance3 = () => {
             </div>
           ) : plan ? (
             <>
-              <h2>{sbiQuote?.success ? "2 plans available" : "1 plan available"}</h2>
+              <h2>{`${planCount} plan${planCount > 1 ? "s" : ""} available`}</h2>
               <p>Covers damages to your car. Premium includes GST.</p>
 
               <div className={styles.planCard}>
@@ -778,6 +783,43 @@ const CarInsurance3 = () => {
                   </div>
                 )}
               </div>
+
+              {digitQuote?.success && (() => {
+                const dq = digitQuote.response?.quote || {};
+                const num = (v: any) => Number(String(v || "").replace(/[^0-9.]/g, "")) || 0;
+                const net = num(dq.netPremium);
+                const gross = num(dq.grossPremium);
+                const gst = num(dq.serviceTax?.totalTax);
+                const idv = num(dq.vehicle?.vehicleIDV?.idv);
+                return (
+                  <div className={styles.planCard}>
+                    <div className={styles.planHeader}>
+                      <FaTrophy className={styles.trophy} />
+                      Go Digit General Insurance
+                      <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 500, color: "#5a5959" }}>
+                        Comprehensive (OD + TP + PA)
+                      </span>
+                    </div>
+                    <div className={styles.planDetails}>
+                      <div>
+                        <div style={{ color: "#5a5959" }}>
+                          IDV Cover <strong>{inr(idv)}</strong>
+                        </div>
+                        <div className={styles.premiumBreakdown}>
+                          <span>Net Premium {inr(net)}</span>
+                          <span>GST {inr(gst)}</span>
+                        </div>
+                      </div>
+                      <div className={styles.actions}>
+                        <div className={styles.price} style={{ cursor: "default" }}>
+                          {inr(gross)}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#5a5959" }}>Purchase coming soon</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {sbiQuote && (
                 <div className={styles.planCard}>
