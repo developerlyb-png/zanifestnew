@@ -6,10 +6,8 @@ import { City } from "country-state-city";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import UserDetails from "@/components/ui/UserDetails";
-
 import Image from "next/image";
 import { FiSearch } from "react-icons/fi";
-
 import womanicon from "@/assets/pageImages/health/2.webp";
 import manicon from "@/assets/health/manicon.webp";
 import { useRouter } from "next/router";
@@ -20,15 +18,12 @@ const Health = () => {
   const [step, setStep] = useState(1);
   const [loggedUser, setLoggedUser] = useState<any>(null);
   const [gender, setGender] = useState("M");
-
   const [members, setMembers] = useState<any[]>([]);
-
   const [ages, setAges] = useState<{ [key: number]: string }>({});
-
   const [selectedCity, setSelectedCity] = useState("");
   const [citySearch, setCitySearch] = useState("");
-
   const [allCities, setAllCities] = useState<string[]>([]);
+
   const popularCities = [
     "Delhi",
     "Bengaluru",
@@ -54,8 +49,8 @@ const Health = () => {
     "Other disease",
     "None of these",
   ];
-  const [fullName, setFullName] = useState("");
 
+  const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [mobileOtp, setMobileOtp] = useState("");
@@ -106,7 +101,6 @@ const Health = () => {
     if (router.query.members) {
       try {
         const data = JSON.parse(router.query.members as string);
-
         setMembers(data);
       } catch (error) {
         console.log(error);
@@ -129,6 +123,7 @@ const Health = () => {
     return `${year}-01-01`;
   };
 
+<<<<<<< HEAD
   // ===============================
   // ICICI (Elevate Health) mapping helpers
   // ===============================
@@ -187,6 +182,12 @@ const Health = () => {
   const getPincodeForCity = (city: string) => CITY_PINCODES[city] || "110001";
 
   const postJson = async (url: string, body: Record<string, string>) => {
+=======
+  const postJson = async (
+    url: string,
+    body: Record<string, string>
+  ) => {
+>>>>>>> origin/vishal
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -212,7 +213,11 @@ const Health = () => {
 
     try {
       setOtpLoading("mobile-send");
-      await postJson("/api/auth/send-whatsapp-otp", { mobile });
+
+      await postJson("/api/auth/send-whatsapp-otp", {
+        mobile,
+      });
+
       setMobileOtpSent(true);
       setOtpMessage("Mobile OTP sent on WhatsApp");
     } catch (error: any) {
@@ -230,12 +235,14 @@ const Health = () => {
 
     try {
       setOtpLoading("mobile-verify");
+
       await postJson("/api/auth/verify-whatsapp-otp", {
         mobile,
         otp: mobileOtp,
         fullName,
         email,
       });
+
       setMobileVerified(true);
       setOtpMessage("Mobile verified");
     } catch (error: any) {
@@ -251,6 +258,7 @@ const Health = () => {
       return;
     }
 
+    // FIXED EMAIL REGEX
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       alert("Enter valid email");
       return;
@@ -263,7 +271,12 @@ const Health = () => {
 
     try {
       setOtpLoading("email-send");
-      await postJson("/api/auth/send-email-otp", { email, mobile });
+
+      await postJson("/api/auth/send-email-otp", {
+        email,
+        mobile,
+      });
+
       setEmailOtpSent(true);
       setOtpMessage("Email OTP sent");
     } catch (error: any) {
@@ -292,6 +305,7 @@ const Health = () => {
       // ===============================
       // CREATE USER LOGIN
       // ===============================
+
       const loginRes = await fetch("/api/users/health-login", {
         method: "POST",
         headers: {
@@ -314,7 +328,10 @@ const Health = () => {
       // save login user
       localStorage.setItem(
         "user",
-        JSON.stringify({ ...loginData.user, loginTime: Date.now() })
+        JSON.stringify({
+          ...loginData.user,
+          loginTime: Date.now(),
+        })
       );
 
       // update navbar instantly
@@ -337,17 +354,21 @@ const Health = () => {
 
           const lower = memberName.toLowerCase();
 
-          const minAge = lower === "son" || lower === "daughter" ? 0 : 18;
+          const minAge =
+            lower === "son" || lower === "daughter" ? 0 : 18;
 
           const ageOptions = Array.from(
             {
               length: 101 - minAge,
             },
-            (_, i) => (i + minAge).toString(),
+            (_, i) => (i + minAge).toString()
           );
 
           return (
-            <div key={idx} className={styles.step1MemberCard}>
+            <div
+              key={idx}
+              className={styles.step1MemberCard}
+            >
               <Image
                 src={getMemberImage(m)}
                 alt={memberName}
@@ -356,19 +377,28 @@ const Health = () => {
 
               <p>{memberName}</p>
 
-              <div className={styles.step1Dropdown} ref={dropdownRef}>
+              <div
+                className={styles.step1Dropdown}
+                ref={dropdownRef}
+              >
                 <button
                   type="button"
                   className={styles.step1DropdownToggle}
                   onClick={() => {
-                    setIsOpenIndex(isOpenIndex === idx ? null : idx);
+                    setIsOpenIndex(
+                      isOpenIndex === idx ? null : idx
+                    );
                   }}
                 >
-                  {ages[idx] ? `Age: ${ages[idx]}` : "Select Age"}
+                  {ages[idx]
+                    ? `Age: ${ages[idx]}`
+                    : "Select Age"}
 
                   <span
                     className={`${styles.step1Arrow} ${
-                      isOpenIndex === idx ? styles.up : ""
+                      isOpenIndex === idx
+                        ? styles.up
+                        : ""
                     }`}
                   >
                     ▼
@@ -376,14 +406,22 @@ const Health = () => {
                 </button>
 
                 {isOpenIndex === idx && (
-                  <ul className={styles.step1DropdownMenu}>
+                  <ul
+                    className={
+                      styles.step1DropdownMenu
+                    }
+                  >
                     {ageOptions.map((age) => (
                       <li
                         key={age}
                         className={
-                          ages[idx] === age ? styles.step1SelectedOption : ""
+                          ages[idx] === age
+                            ? styles.step1SelectedOption
+                            : ""
                         }
-                        onClick={() => handleAgeSelect(idx, age)}
+                        onClick={() =>
+                          handleAgeSelect(idx, age)
+                        }
                       >
                         {age}
                       </li>
@@ -399,14 +437,19 @@ const Health = () => {
   };
 
   // ===============================
-  // FINAL SUBMIT  (now calls create-quote)
+  // FINAL SUBMIT
   // ===============================
 
   const handleSubmit = async () => {
     try {
       for (let i = 0; i < members.length; i++) {
         if (!ages[i]) {
-          alert(`Select age for ${members[i].name || members[i].relation}`);
+          alert(
+            `Select age for ${
+              members[i].name || members[i].relation
+            }`
+          );
+
           setStep(1);
           return;
         }
@@ -434,6 +477,7 @@ const Health = () => {
         return;
       }
 
+      // FIXED EMAIL REGEX
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert("Enter valid email");
         return;
@@ -473,6 +517,7 @@ const Health = () => {
         sumInsured: "500000",
         policyTenure: 1,
         medical: medical,
+<<<<<<< HEAD
         members: resolvedMembers,
       };
 
@@ -508,6 +553,56 @@ const Health = () => {
           RelationshipWithApplicant: mapIciciRelation(m.relation),
         })),
       };
+=======
+
+        members: members.map(
+          (m: any, index: number) => {
+            const relation = m.relation || m.name;
+
+            return {
+              name:
+                relation === "Self"
+                  ? fullName
+                  : relation,
+
+              relation: relation,
+
+              age: ages[index],
+
+              gender:
+                m.gender ||
+                ([
+                  "Wife",
+                  "Mother",
+                  "Daughter",
+                  "Grandmother",
+                  "Mother-in-law",
+                ].includes(relation)
+                  ? "F"
+                  : "M"),
+
+              dob: getDOBFromAge(ages[index]),
+            };
+          }
+        ),
+      };
+
+      console.log(
+        "ZUNO CREATE-QUOTE REQUEST",
+        payload
+      );
+
+      const response = await fetch(
+        "/api/zuno/health/create-quote",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+>>>>>>> origin/vishal
 
       // Fetch both insurers so the user can compare — Zuno is no longer
       // gated behind ICICI failing (it used to be a silent fallback-only
@@ -515,6 +610,7 @@ const Health = () => {
       // succeeding).
       const plans: any[] = [];
 
+<<<<<<< HEAD
       try {
         console.log("ZUNO CREATE-QUOTE REQUEST", zunoPayload);
         const response = await fetch("/api/zuno/health/create-quote", {
@@ -585,6 +681,17 @@ const Health = () => {
 
       if (plans.length === 0) {
         alert("Could not fetch a quote right now. Please try again.");
+=======
+      console.log(
+        "ZUNO CREATE-QUOTE RESULT",
+        result
+      );
+
+      if (!response.ok) {
+        alert(
+          result?.message || "Quote failed"
+        );
+>>>>>>> origin/vishal
         return;
       }
 
@@ -595,21 +702,35 @@ const Health = () => {
         },
       });
     } catch (error: any) {
-      console.log("HEALTH FRONT ERROR", error);
-      alert(error.message || "Something went wrong");
+      console.log(
+        "HEALTH FRONT ERROR",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Something went wrong"
+      );
     }
   };
 
   useEffect(() => {
-    const cities = City.getCitiesOfCountry("IN") || [];
+    const cities =
+      City.getCitiesOfCountry("IN") || [];
 
-    setAllCities(cities.map((item) => item.name));
+    setAllCities(
+      cities.map((item) => item.name)
+    );
   }, []);
 
   const searchedCities = citySearch
     ? allCities
         .filter((city) =>
-          city.toLowerCase().includes(citySearch.toLowerCase()),
+          city
+            .toLowerCase()
+            .includes(
+              citySearch.toLowerCase()
+            )
         )
         .slice(0, 50)
     : [];
@@ -622,18 +743,35 @@ const Health = () => {
 
       <div className={styles.wrapper}>
         {step === 1 && (
-          <div className={styles.step1Wrapper}>
-            <div className={styles.step1BackBtn} onClick={() => router.back()}>
+          <div
+            className={
+              styles.step1Wrapper
+            }
+          >
+            <div
+              className={
+                styles.step1BackBtn
+              }
+              onClick={() =>
+                router.back()
+              }
+            >
               ‹
             </div>
 
-            <h2>Select Age for Each Member</h2>
+            <h2>
+              Select Age for Each Member
+            </h2>
 
             {renderMembers()}
 
             <button
-              className={styles.continueBtn}
-              onClick={() => setStep(2)}
+              className={
+                styles.continueBtn
+              }
+              onClick={() =>
+                setStep(2)
+              }
             >
               Continue
             </button>
@@ -641,53 +779,105 @@ const Health = () => {
         )}
 
         {step === 2 && (
-          <div className={styles.cityMainWrapper}>
-            <div className={styles.cityBack} onClick={() => setStep(1)}>
+          <div
+            className={
+              styles.cityMainWrapper
+            }
+          >
+            <div
+              className={styles.cityBack}
+              onClick={() =>
+                setStep(1)
+              }
+            >
               ‹
             </div>
 
-            <div className={styles.cityImageBox}>
+            <div
+              className={
+                styles.cityImageBox
+              }
+            >
               <Image
-                src={getMemberImage(members[0])}
+                src={getMemberImage(
+                  members[0]
+                )}
                 alt="User"
-                className={styles.cityUserImage}
+                className={
+                  styles.cityUserImage
+                }
               />
             </div>
 
-            <div className={styles.cityRight}>
-              <h2>Select your city</h2>
+            <div
+              className={
+                styles.cityRight
+              }
+            >
+              <h2>
+                Select your city
+              </h2>
 
-              <div className={styles.citySearchBox}>
+              <div
+                className={
+                  styles.citySearchBox
+                }
+              >
                 <input
                   value={citySearch}
                   placeholder="Search your city"
-                  onChange={(e) => setCitySearch(e.target.value)}
+                  onChange={(e) =>
+                    setCitySearch(
+                      e.target.value
+                    )
+                  }
                 />
 
                 {citySearch ? (
                   <span
-                    className={styles.clearCity}
-                    onClick={() => {
-                      setCitySearch("");
-                    }}
+                    className={
+                      styles.clearCity
+                    }
+                    onClick={() =>
+                      setCitySearch("")
+                    }
                   >
                     ×
                   </span>
                 ) : (
-                  <FiSearch className={styles.citySearchIcon} />
+                  <FiSearch
+                    className={
+                      styles.citySearchIcon
+                    }
+                  />
                 )}
               </div>
 
-              <div className={styles.cityList}>
-                {(citySearch ? searchedCities : popularCities).map((city) => (
+              <div
+                className={
+                  styles.cityList
+                }
+              >
+                {(
+                  citySearch
+                    ? searchedCities
+                    : popularCities
+                ).map((city) => (
                   <button
                     key={city}
                     className={`${styles.cityChip} ${
-                      selectedCity === city ? styles.activeCity : ""
+                      selectedCity === city
+                        ? styles.activeCity
+                        : ""
                     }`}
                     onClick={() => {
-                      setSelectedCity(city);
-                      setCitySearch(city);
+                      setSelectedCity(
+                        city
+                      );
+
+                      setCitySearch(
+                        city
+                      );
                     }}
                   >
                     {city}
@@ -696,14 +886,15 @@ const Health = () => {
               </div>
 
               <button
-                className={styles.cityContinueBtn}
+                className={
+                  styles.cityContinueBtn
+                }
                 onClick={() => {
                   if (!selectedCity) {
                     alert("Select city");
                     return;
                   }
 
-                  // if already login skip OTP screen
                   if (loggedUser) {
                     setStep(4);
                   } else {
@@ -718,147 +909,280 @@ const Health = () => {
         )}
 
         {step === 3 && (
-          <div className={styles.detailsMainWrapper}>
-            <div className={styles.detailsBack} onClick={() => setStep(2)}>
+          <div
+            className={
+              styles.detailsMainWrapper
+            }
+          >
+            <div
+              className={
+                styles.detailsBack
+              }
+              onClick={() =>
+                setStep(2)
+              }
+            >
               {"‹"}
             </div>
 
-            <div className={styles.detailsImageBox}>
+            <div
+              className={
+                styles.detailsImageBox
+              }
+            >
               <Image
-                src={getMemberImage(members[0])}
+                src={getMemberImage(
+                  members[0]
+                )}
                 alt="User"
-                className={styles.detailsUserImage}
+                className={
+                  styles.detailsUserImage
+                }
               />
             </div>
 
-            <div className={styles.detailsRight}>
-              <h2>Save your progress</h2>
+            <div
+              className={
+                styles.detailsRight
+              }
+            >
+              <h2>
+                Save your progress
+              </h2>
 
-              <p className={styles.detailsSubtitle}>
-                Get to plans directly next time you visit us
+              <p
+                className={
+                  styles.detailsSubtitle
+                }
+              >
+                Get to plans directly next
+                time you visit us
               </p>
 
               {/* STEP 1 - NAME MOBILE */}
-              {!mobileOtpSent && !mobileVerified && (
-                <>
-                  <input
-                    className={styles.detailsInput}
-                    placeholder="Your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
 
-                  <div className={styles.detailsPhoneGroup}>
-                    <span className={styles.detailsCode}>+91</span>
-
+              {!mobileOtpSent &&
+                !mobileVerified && (
+                  <>
                     <input
-                      className={styles.detailsInput}
-                      placeholder="Enter mobile number"
-                      value={mobile}
-                      maxLength={10}
-                      inputMode="numeric"
+                      className={
+                        styles.detailsInput
+                      }
+                      placeholder="Your full name"
+                      value={fullName}
                       onChange={(e) =>
-                        setMobile(e.target.value.replace(/\D/g, ""))
+                        setFullName(
+                          e.target.value
+                        )
                       }
                     />
-                  </div>
 
-                  <button
-                    className={styles.detailsContinueBtn}
-                    onClick={sendMobileOtp}
-                    disabled={Boolean(otpLoading)}
-                  >
-                    {otpLoading === "mobile-send" ? "Sending..." : "Continue"}
-                  </button>
-                </>
-              )}
+                    <div
+                      className={
+                        styles.detailsPhoneGroup
+                      }
+                    >
+                      <span
+                        className={
+                          styles.detailsCode
+                        }
+                      >
+                        +91
+                      </span>
+
+                      <input
+                        className={
+                          styles.detailsInput
+                        }
+                        placeholder="Enter mobile number"
+                        value={mobile}
+                        maxLength={10}
+                        inputMode="numeric"
+                        onChange={(e) =>
+                          setMobile(
+                            e.target.value.replace(
+                              /\D/g,
+                              ""
+                            )
+                          )
+                        }
+                      />
+                    </div>
+
+                    <button
+                      className={
+                        styles.detailsContinueBtn
+                      }
+                      onClick={
+                        sendMobileOtp
+                      }
+                      disabled={Boolean(
+                        otpLoading
+                      )}
+                    >
+                      {otpLoading ===
+                      "mobile-send"
+                        ? "Sending..."
+                        : "Continue"}
+                    </button>
+                  </>
+                )}
 
               {/* STEP 2 MOBILE OTP */}
-              {mobileOtpSent && !mobileVerified && (
-                <>
-                  <input
-                    className={styles.detailsInput}
-                    placeholder="Enter Mobile OTP"
-                    value={mobileOtp}
-                    maxLength={6}
-                    onChange={(e) =>
-                      setMobileOtp(e.target.value.replace(/\D/g, ""))
-                    }
-                  />
 
-                  <button
-                    className={styles.detailsContinueBtn}
-                    onClick={verifyMobileOtp}
-                  >
-                    Verify Mobile
-                  </button>
-                </>
-              )}
+              {mobileOtpSent &&
+                !mobileVerified && (
+                  <>
+                    <input
+                      className={
+                        styles.detailsInput
+                      }
+                      placeholder="Enter Mobile OTP"
+                      value={mobileOtp}
+                      maxLength={6}
+                      onChange={(e) =>
+                        setMobileOtp(
+                          e.target.value.replace(
+                            /\D/g,
+                            ""
+                          )
+                        )
+                      }
+                    />
+
+                    <button
+                      className={
+                        styles.detailsContinueBtn
+                      }
+                      onClick={
+                        verifyMobileOtp
+                      }
+                    >
+                      Verify Mobile
+                    </button>
+                  </>
+                )}
 
               {/* STEP 3 EMAIL */}
-              {mobileVerified && !emailOtpSent && !emailVerified && (
-                <>
-                  <div className={styles.verifiedBox}>✓ Mobile Verified</div>
 
-                  <input
-                    className={styles.detailsInput}
-                    placeholder="Enter Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+              {mobileVerified &&
+                !emailOtpSent &&
+                !emailVerified && (
+                  <>
+                    <div
+                      className={
+                        styles.verifiedBox
+                      }
+                    >
+                      ✓ Mobile Verified
+                    </div>
 
-                  <button
-                    className={styles.detailsContinueBtn}
-                    onClick={sendEmailOtp}
-                  >
-                    Send Email OTP
-                  </button>
-                </>
-              )}
+                    <input
+                      className={
+                        styles.detailsInput
+                      }
+                      placeholder="Enter Email"
+                      value={email}
+                      onChange={(e) =>
+                        setEmail(
+                          e.target.value
+                        )
+                      }
+                    />
+
+                    <button
+                      className={
+                        styles.detailsContinueBtn
+                      }
+                      onClick={
+                        sendEmailOtp
+                      }
+                    >
+                      Send Email OTP
+                    </button>
+                  </>
+                )}
 
               {/* STEP 4 EMAIL OTP */}
-              {emailOtpSent && !emailVerified && (
-                <>
-                  <input
-                    className={styles.detailsInput}
-                    placeholder="Enter Email OTP"
-                    value={emailOtp}
-                    maxLength={6}
-                    onChange={(e) =>
-                      setEmailOtp(e.target.value.replace(/\D/g, ""))
-                    }
-                  />
 
-                  <button
-                    className={styles.detailsContinueBtn}
-                    onClick={verifyEmailOtp}
-                  >
-                    Verify Email
-                  </button>
-                </>
-              )}
+              {emailOtpSent &&
+                !emailVerified && (
+                  <>
+                    <input
+                      className={
+                        styles.detailsInput
+                      }
+                      placeholder="Enter Email OTP"
+                      value={emailOtp}
+                      maxLength={6}
+                      onChange={(e) =>
+                        setEmailOtp(
+                          e.target.value.replace(
+                            /\D/g,
+                            ""
+                          )
+                        )
+                      }
+                    />
+
+                    <button
+                      className={
+                        styles.detailsContinueBtn
+                      }
+                      onClick={
+                        verifyEmailOtp
+                      }
+                    >
+                      Verify Email
+                    </button>
+                  </>
+                )}
 
               {/* FINAL */}
-              {mobileVerified && emailVerified && (
-                <>
-                  <div className={styles.verifiedBox}>✓ Verified</div>
 
-                  <button
-                    className={styles.detailsContinueBtn}
-                    onClick={() => setStep(4)}
-                  >
-                    View Plans
-                  </button>
+              {mobileVerified &&
+                emailVerified && (
+                  <>
+                    <div
+                      className={
+                        styles.verifiedBox
+                      }
+                    >
+                      ✓ Verified
+                    </div>
 
-                  <p className={styles.detailsTerms}>
-                    By clicking on View Plans, you agree to our Privacy Policy &
-                    Terms of Use
-                  </p>
-                </>
-              )}
+                    <button
+                      className={
+                        styles.detailsContinueBtn
+                      }
+                      onClick={() =>
+                        setStep(4)
+                      }
+                    >
+                      View Plans
+                    </button>
+
+                    <p
+                      className={
+                        styles.detailsTerms
+                      }
+                    >
+                      By clicking on View
+                      Plans, you agree to
+                      our Privacy Policy &
+                      Terms of Use
+                    </p>
+                  </>
+                )}
 
               {otpMessage && (
-                <p className={styles.otpMessage}>{otpMessage}</p>
+                <p
+                  className={
+                    styles.otpMessage
+                  }
+                >
+                  {otpMessage}
+                </p>
               )}
             </div>
           </div>
@@ -866,10 +1190,20 @@ const Health = () => {
       </div>
 
       {step === 4 && (
-        <div className={styles.medicalOverlay}>
-          <div className={styles.medicalBox}>
+        <div
+          className={
+            styles.medicalOverlay
+          }
+        >
+          <div
+            className={
+              styles.medicalBox
+            }
+          >
             <div
-              className={styles.medicalBack}
+              className={
+                styles.medicalBack
+              }
               onClick={() => {
                 if (loggedUser) {
                   setStep(2);
@@ -881,62 +1215,114 @@ const Health = () => {
               ‹
             </div>
 
-            <div className={styles.medicalAvatarBox}>
+            <div
+              className={
+                styles.medicalAvatarBox
+              }
+            >
               <Image
-                src={getMemberImage(members[0])}
+                src={getMemberImage(
+                  members[0]
+                )}
                 alt="user"
-                className={styles.medicalAvatar}
+                className={
+                  styles.medicalAvatar
+                }
               />
             </div>
 
-            <h2>Medical history</h2>
+            <h2>
+              Medical history
+            </h2>
 
             <h3>
-              Do any member(s) have any existing illnesses for which they take
-              regular medication?
+              Do any member(s) have any
+              existing illnesses for which
+              they take regular medication?
             </h3>
 
             <p>
-              That'll make sure their condition is covered and the claim isn't
-              rejected.
+              That'll make sure their
+              condition is covered and the
+              claim isn't rejected.
             </p>
 
-            <div className={styles.diseaseGrid}>
+            <div
+              className={
+                styles.diseaseGrid
+              }
+            >
               {diseases.map((item) => (
                 <div
                   key={item}
                   className={`${styles.diseaseItem} ${
-                    medical.includes(item) ? styles.activeDisease : ""
+                    medical.includes(item)
+                      ? styles.activeDisease
+                      : ""
                   }`}
                   onClick={() => {
-                    if (item === "None of these") {
-                      setMedical(["None of these"]);
+                    if (
+                      item ===
+                      "None of these"
+                    ) {
+                      setMedical([
+                        "None of these",
+                      ]);
                     } else {
-                      setMedical((prev) => {
-                        const removeNone = prev.filter(
-                          (x) => x !== "None of these",
-                        );
+                      setMedical(
+                        (prev) => {
+                          const removeNone =
+                            prev.filter(
+                              (x) =>
+                                x !==
+                                "None of these"
+                            );
 
-                        return removeNone.includes(item)
-                          ? removeNone.filter((x) => x !== item)
-                          : [...removeNone, item];
-                      });
+                          return removeNone.includes(
+                            item
+                          )
+                            ? removeNone.filter(
+                                (x) =>
+                                  x !==
+                                  item
+                              )
+                            : [
+                                ...removeNone,
+                                item,
+                              ];
+                        }
+                      );
                     }
                   }}
                 >
                   <input
                     type="checkbox"
-                    checked={medical.includes(item)}
+                    checked={medical.includes(
+                      item
+                    )}
                     readOnly
                   />
 
-                  <span>{item}</span>
+                  <span>
+                    {item}
+                  </span>
                 </div>
               ))}
             </div>
 
-            <div className={styles.medicalBottom}>
-              <button className={styles.finalBtn} onClick={handleSubmit}>
+            <div
+              className={
+                styles.medicalBottom
+              }
+            >
+              <button
+                className={
+                  styles.finalBtn
+                }
+                onClick={
+                  handleSubmit
+                }
+              >
                 View plans ›
               </button>
             </div>

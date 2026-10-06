@@ -1,117 +1,167 @@
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
 .container {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: 3rem;
-  padding: 3rem 6%;
-  background: #fff;
-  font-family: "Inter", sans-serif;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  gap: 4rem;
+  width: 100%;
+  min-height: auto;
+  height: auto;
+  padding: 2.5rem 6%;
+  box-sizing: border-box;
+  background: #ffffff;
+  font-family: "Manrope", sans-serif;
+  margin: 0;
 }
 
-/* === Left Section === */
+/* =========================================
+   LEFT SECTION
+========================================= */
+
 .left {
   flex: 1;
+  min-width: 0;
+  max-width: 760px;
 }
 
-/* Typography */
+/* =========================================
+   SUB HEADING
+========================================= */
+
 .subheading {
   font-size: 1rem;
-  color: #6d6d70;
+  color: #6b7280;
   font-weight: 500;
-  margin-bottom: 0.6rem;
+  margin: 0 0 0.8rem;
+  line-height: 1.5;
 }
 
+/* =========================================
+   MAIN HEADING
+========================================= */
+
 .heading {
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 1.5rem;
-  line-height: 1.35;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #173b5f;
+  margin: 0 0 1.5rem;
+  line-height: 1.25;
 }
 
 .iconWrapper {
-  color: #f97316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1876bd;
   font-size: 2rem;
   margin-right: 0.3rem;
 }
 
 .highlight {
-  color: #f97316;
+  color: #1876bd;
   font-weight: 700;
 }
 
 .sup {
   font-size: 20px;
-  margin-bottom: 20px;
-  color: orangered;
+  color: #1876bd;
+  position: relative;
+  top: -10px;
+  margin-left: 2px;
 }
 
-/* Features */
+/* =========================================
+   FEATURES
+========================================= */
+
 .features {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 1.5rem 2.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem 2.5rem;
+  margin-bottom: 1.5rem;
   color: #374151;
 }
 
 .features span {
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .tick {
-  width: auto;
-  height: 16px;
-  background: #c4d1e6;
-  border-radius: 50%;
-  margin-right: 12px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 2.5px;
-  color: #2563eb;
-  font-size: 0.95rem;
+  background: #e8f4fb;
+  color: #1876bd;
+  border-radius: 50%;
+  margin-right: 9px;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
-/* Row wrapper */
+/* =========================================
+   IMAGE + PARTNERS ROW
+========================================= */
+
 .row {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: nowrap;
 }
 
-/* Illustration */
+/* =========================================
+   ILLUSTRATION
+========================================= */
+
+.illustration {
+  flex: 1;
+  min-width: 0;
+}
+
 .illustration img {
   width: 100%;
   max-width: 420px;
   height: auto;
   object-fit: contain;
+  display: block;
 }
 
-/* Partners box */
+/* =========================================
+   PARTNERS BOX
+========================================= */
+
 .partners {
-  background: #e6e7e7;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   width: 270px;
+  flex-shrink: 0;
+  background: #f3f8fc;
+  border: 1px solid #dcebf4;
+  border-radius: 14px;
+  padding: 1.8rem;
+  box-sizing: border-box;
+  box-shadow: 0 5px 16px rgba(24, 118, 189, 0.07);
 }
 
 .partners h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #173b5f;
+  margin: 0 0 1.4rem;
   text-align: center;
 }
 
@@ -119,7 +169,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
@@ -127,209 +177,291 @@
   width: 90px;
   height: 50px;
   object-fit: contain;
-  padding: 0.5rem;
-  transition: transform 0.2s ease;
-  background-color: rgb(255, 254, 254);
+  padding: 0.45rem;
+  background: #ffffff;
+  border: 1px solid #e2eaf0;
+  border-radius: 7px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .partnerLogo:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(24, 118, 189, 0.1);
 }
 
-/* === Right Section === */
+/* =========================================
+   RIGHT SECTION
+========================================= */
+
 .right {
-  flex: 0 0 auto;
+  flex: 0 0 420px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-width: 0;
 }
+
+/* =========================================
+   FORM CARD
+========================================= */
 
 .card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 420px;
-  font-family: "Inter", sans-serif;
+  background: #ffffff;
+  border: 1px solid #e0e9f0;
+  border-radius: 16px;
+  padding: 28px 30px 26px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 28px rgba(24, 118, 189, 0.1);
+  font-family: "Manrope", sans-serif;
 }
 
-/* Header */
+/* =========================================
+   HEADER
+========================================= */
+
 .header {
   position: relative;
-  margin-bottom: 1.5rem;
+  margin: 0 0 20px;
 }
 
 .header h2 {
-  color: #253858;
+  color: #173b5f;
   font-size: 20px;
   font-weight: 700;
-  display: inline;
-  justify-content: center;
-  margin-right: 10px;
+  line-height: 1.4;
+  margin: 0;
+  display: block;
+  padding-right: 70px;
 }
 
 .blue {
-  color: #2563eb;
+  color: #1876bd;
 }
 
 .price {
-  font-size: 1.3rem;
+  font-size: 19px;
   font-weight: 700;
-  margin-top: 0.3rem;
-  color: #111827;
+  margin: 7px 0 0;
+  color: #173b5f;
+}
+
+.price span {
+  font-weight: 400;
+  color: #6b7280;
 }
 
 .step {
   position: absolute;
   top: 0;
   right: 0;
-  background: #e6fcff;
-  color: #00a3bf;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
+  background: #eaf5fc;
+  color: #1876bd;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  border: 1px solid #d8ebf7;
 }
 
-/* Input */
+/* =========================================
+   MOBILE INPUT
+========================================= */
+
 .inputWrapper {
   position: relative;
-  margin: 1.5rem 0 1rem 0;
+  margin: 0 0 18px;
 }
 
 .inputWrapper input {
   width: 100%;
-  padding: 0.9rem 1rem 0.9rem 2.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  height: 52px;
+  padding: 0 16px 0 43px;
+  border: 1px solid #ccdbe6;
+  border-radius: 9px;
+  font-size: 14px;
   outline: none;
-  transition: border 0.2s;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  color: #173b5f;
+  font-family: "Manrope", sans-serif;
+}
+
+.inputWrapper input::placeholder {
+  color: #9aa7b5;
+}
+
+.inputWrapper input:hover {
+  border-color: #a9c9dc;
 }
 
 .inputWrapper input:focus {
-  border-color: #2563eb;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.1);
 }
 
 .inputIcon {
   position: absolute;
-  left: 0.8rem;
-  top: 35%;
+  left: 14px;
+  top: 26px;
   transform: translateY(-50%);
-  color: #6b7280;
-  font-size: 1rem;
+  color: #1876bd;
+  font-size: 15px;
 }
 
+/* =========================================
+   WE DON'T SPAM NOTE
+========================================= */
+
 .note {
-  width: 120px;
-  height: 25px;
-  right: 5px;
+  position: absolute;
+  right: 0;
+  top: 52px;
+  width: auto;
+  min-width: 110px;
+  height: 24px;
+  padding: 0 9px;
   display: flex;
-  color: #3962ed;
-  font-size: 11px;
-  letter-spacing: 0.15px;
-  justify-content: space-evenly;
   align-items: center;
-  background: rgba(57, 97, 235, 0.1);
-  border-radius: 0 0 8px 8px;
-  font-weight: 600;
-  margin-left: 14.5rem;
+  justify-content: center;
+  gap: 5px;
+  color: #1876bd;
+  font-size: 10px;
+  font-weight: 500;
+  background: #eaf5fc;
+  border-radius: 0 0 7px 7px;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .note svg {
-  color: #2563eb;
-  font-size: 0.7rem;
-  right: -56px;
+  color: #1876bd;
+  font-size: 10px;
 }
 
-/* Button */
+/* =========================================
+   CTA / VIEW PLANS BUTTON
+========================================= */
+
 .cta {
   width: 100%;
-  padding: 0.9rem;
-  background: #f97316;
-  color: #fff;
+  height: 50px;
+  padding: 0 18px;
+  background: #1876bd;
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "Manrope", sans-serif;
   cursor: pointer;
-  margin: 1rem 0 1.5rem 0;
-  transition: background 0.2s;
+  margin: 32px 0 18px;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, 0.2);
 }
 
 .cta:hover {
-  background: #ea580c;
+  background: #125d96;
+  box-shadow: 0 7px 18px rgba(24, 118, 189, 0.28);
+  transform: translateY(-1px);
+}
+
+.cta:active {
+  background: #104f80;
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(24, 118, 189, 0.18);
+}
+
+.cta:disabled {
+  background: #b5ccdc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .arrow {
   cursor: pointer;
+  margin-left: 5px;
 }
 
-/* Badge */
+/* =========================================
+   EXPERT BADGE
+========================================= */
+
 .badge {
   display: flex;
   align-items: center;
-  position: relative;
   justify-content: center;
-  margin: 28px 0 8px 5px;
-}
-
-.badgetext {
-  background: #f8f7ff;
-  font-size: 12px;
-  border-radius: 12px;
-  font-weight: 400;
-  width: auto;
-  padding: 7px 5px 7px 25px;
-  text-align: center;
-  align-items: center;
-  color: #505f79;
-  margin-left: -19px;
+  margin: 0 0 14px;
+  position: relative;
 }
 
 .badgeIcon {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  color: #1876bd;
   border-radius: 50%;
-  border: 4px solid #fff;
+  border: 3px solid #ffffff;
   position: relative;
-  background-size: 26px;
-  flex-shrink: 0;
-  color: gray;
+  z-index: 2;
 }
 
-/* WhatsApp row */
+.badgetext {
+  background: #f1f6fa;
+  color: #50677c;
+  font-size: 12px;
+  line-height: 1.3;
+  border-radius: 12px;
+  padding: 7px 12px 7px 22px;
+  margin: 0 0 0 -18px;
+  width: auto;
+  text-align: center;
+}
+
+/* =========================================
+   WHATSAPP ROW
+========================================= */
+
 .whatsappRow {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
-  color: #111827;
-  margin-bottom: 2rem;
+  gap: 8px;
+  margin: 0 0 20px;
+  color: #455a64;
 }
 
 .wpLeft {
-  display: inline-flex;
-  justify-items: center;
-  margin: 0;
-  color: #455a64;
-  font-size: 13px;
-  font-weight: 500;
+  display: flex;
   align-items: center;
+  color: #455a64;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .wpIcon {
   color: #25d366;
-  font-size: 1.5rem;
-  margin-right: 0.5rem;
-  padding-top: 2px;
+  font-size: 19px;
+  margin-right: 7px;
+  padding: 0;
 }
 
-/* Toggle Switch */
+/* =========================================
+   TOGGLE SWITCH
+========================================= */
+
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
+  width: 38px;
   height: 22px;
-  margin-left: 5px;
+  margin-left: 0;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -341,68 +473,71 @@
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: #d1d5db;
+  border-radius: 30px;
   transition: 0.3s;
-  border-radius: 34px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 16px;
   width: 16px;
-  left: 4px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.3s;
+  height: 16px;
+  left: 3px;
+  top: 3px;
+  background-color: #ffffff;
   border-radius: 50%;
+  transition: 0.3s;
 }
 
 .switch input:checked + .slider {
-  background-color: #25d366;
+  background-color: #1876bd;
 }
 
 .switch input:checked + .slider:before {
-  transform: translateX(18px);
+  transform: translateX(16px);
 }
 
-/* Footer */
+/* =========================================
+   FOOTER
+========================================= */
+
 .footer {
-  font-size: 13px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 20px;
-  letter-spacing: normal;
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
   text-align: center;
-  color: #707070;
-  margin: 4px 12px 0;
+  color: #707b86;
 }
 
 .footer a {
-  color: #2563eb;
+  color: #1876bd;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .footer a:hover {
+  color: #125d96;
   text-decoration: underline;
 }
 
-/* Step 2 Styles */
+/* =========================================
+   LABEL
+========================================= */
+
 .label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #111827;
-  margin-bottom: 0.5rem;
   display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #173b5f;
+  margin-bottom: 0.5rem;
 }
 
-/* Dropdown Styles */
+/* =========================================
+   DROPDOWN
+========================================= */
+
 .dropdownWrapper {
   position: relative;
   margin-bottom: 16px;
@@ -415,20 +550,27 @@
 
 .commodityInput {
   width: 100%;
-  padding: 16px;
-  border: 1px solid #d1d5db;
+  padding: 15px 45px 15px 16px;
+  border: 1px solid #ccdbe6;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
-  transition: border 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
   cursor: pointer;
-  background: white;
+  background: #ffffff;
+  color: #173b5f;
+  box-sizing: border-box;
+  font-family: "Manrope", sans-serif;
+}
+
+.commodityInput:hover {
+  border-color: #a9c9dc;
 }
 
 .commodityInput:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.1);
 }
 
 .dropdownIcon {
@@ -436,36 +578,41 @@
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;
+  color: #1876bd;
   font-size: 16px;
   transition: transform 0.3s ease;
+  pointer-events: none;
 }
 
 .rotated {
   transform: translateY(-50%) rotate(180deg);
 }
 
+/* =========================================
+   DROPDOWN LIST
+========================================= */
+
 .dropdownList {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 5px);
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  margin-top: 4px;
+  background: #ffffff;
+  border: 1px solid #d7e3eb;
+  border-radius: 9px;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  box-shadow: 0 8px 22px rgba(24, 118, 189, 0.12);
 }
 
 .dropdownItem {
   padding: 12px 16px;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
-  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid #f0f3f6;
+  color: #173b5f;
 }
 
 .dropdownItem:last-child {
@@ -473,80 +620,101 @@
 }
 
 .dropdownItem:hover {
-  background: #f9fafb;
+  background: #f3f8fc;
+  color: #1876bd;
 }
 
 .selectedItem {
-  background: #e6f0ff;
-  color: #2563eb;
-  font-weight: 500;
+  background: #eaf5fc;
+  color: #1876bd;
+  font-weight: 600;
 }
+
+/* =========================================
+   POPULAR OPTIONS
+========================================= */
 
 .popularText {
   font-size: 14px;
   color: #374151;
   margin: 16px 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .optionsGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.7rem;
   margin-bottom: 1.5rem;
 }
 
 .optionBtn {
-  border: 1px solid #d1d5db;
+  border: 1px solid #ccdbe6;
   border-radius: 20px;
   padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  background: #fff;
+  font-size: 0.88rem;
+  background: #ffffff;
+  color: #36526b;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: "Manrope", sans-serif;
 }
 
 .optionBtn:hover {
-  border-color: #2563eb;
+  border-color: #1876bd;
+  color: #1876bd;
+  background: #f3f8fc;
 }
 
 .activeOption {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
+  background: #1876bd;
+  color: #ffffff;
+  border-color: #1876bd;
+  box-shadow: 0 3px 8px rgba(24, 118, 189, 0.18);
 }
 
-/* Radio Card */
+.activeOption:hover {
+  background: #125d96;
+  border-color: #125d96;
+  color: #ffffff;
+}
+
+/* =========================================
+   RADIO CARDS
+========================================= */
+
 .radioRow {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  margin: 1rem 0 1.5rem 0;
+  margin: 1rem 0 1.5rem;
 }
 
 .radioCard {
   flex: 1;
   min-width: 160px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #ccdbe6;
   border-radius: 12px;
   padding: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: #fff;
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
 .radioCard h4 {
   font-size: 0.95rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.3rem;
+  font-weight: 700;
+  color: #173b5f;
+  margin: 0 0 0.3rem;
 }
 
 .radioCard p {
   font-size: 0.8rem;
   color: #6b7280;
-  line-height: 1.3;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .radioCard input {
@@ -554,12 +722,18 @@
 }
 
 .radioCard:hover {
-  border-color: #2563eb;
+  border-color: #1876bd;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.08);
 }
 
 .activeCard {
-  border-color: #2563eb;
-  background: #f0f7ff;
+  border-color: #1876bd;
+  background: #f2f8fc;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.1);
+}
+
+.activeCard h4 {
+  color: #1876bd;
 }
 
 .coverIcon {
@@ -568,15 +742,22 @@
   margin-bottom: 8px;
 }
 
-/* Radio Buttons Row */
+/* =========================================
+   RADIO BUTTONS
+========================================= */
+
 .radioBtn {
-  border: 1px solid #d1d5db;
+  flex: 1;
+  border: 1px solid #ccdbe6;
   border-radius: 20px;
-  padding: 0.4rem 2rem;
+  padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  background: #fff;
+  background: #ffffff;
+  color: #36526b;
   cursor: pointer;
+  text-align: center;
   transition: all 0.2s ease;
+  font-family: "Manrope", sans-serif;
 }
 
 .radioBtn input {
@@ -584,183 +765,311 @@
 }
 
 .radioBtn:hover {
-  border-color: #2563eb;
+  border-color: #1876bd;
+  color: #1876bd;
+  background: #f3f8fc;
 }
 
 .activeRadio {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
+  background: #1876bd;
+  color: #ffffff;
+  border-color: #1876bd;
+  box-shadow: 0 3px 8px rgba(24, 118, 189, 0.18);
 }
 
-/* === Mobile Responsiveness === */
+.activeRadio:hover {
+  background: #125d96;
+  color: #ffffff;
+  border-color: #125d96;
+}
+
+/* =========================================
+   LARGE TABLET
+========================================= */
+
+@media (max-width: 1200px) {
+  .container {
+    gap: 2.5rem;
+    padding: 2rem 4%;
+  }
+
+  .right {
+    flex-basis: 400px;
+  }
+
+  .row {
+    gap: 1.5rem;
+  }
+
+  .heading {
+    font-size: 2.2rem;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
 @media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2.5rem;
+  }
+
+  .left {
+    max-width: 100%;
+  }
+
+  .right {
+    flex: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .card {
+    max-width: 520px;
+  }
+
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .illustration {
+    flex: 1;
+  }
+
+  .partners {
+    margin: 0;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 640px) {
+  .container {
+    flex-direction: column;
+    gap: 1.8rem;
+    padding: 1.25rem;
+    height: auto;
+    min-height: auto;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  .left {
+    width: 100%;
+  }
+
+  .subheading {
+    font-size: 0.88rem;
+  }
+
+  .heading {
+    font-size: 1.7rem;
+    line-height: 1.3;
+    gap: 0.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .iconWrapper {
+    font-size: 1.5rem;
+  }
+
+  .sup {
+    font-size: 14px;
+    top: -6px;
+  }
+
+  .features {
+    gap: 0.8rem 1rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .features span {
+    font-size: 0.82rem;
+    white-space: normal;
+  }
+
+  .tick {
+    width: 16px;
+    height: 16px;
+    margin-right: 7px;
+  }
+
   .row {
     flex-direction: column;
-    text-align: center;
-    gap: 2rem;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .illustration {
+    width: 100%;
+  }
+
+  .illustration img {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
   }
 
   .partners {
     width: 100%;
     max-width: 360px;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 640px) {
-  .container {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: left;
-    padding: 1rem;
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
+    padding: 1.4rem;
   }
 
-  .heading {
+  .partners h3 {
     font-size: 1rem;
-    line-height: 1.3;
-    text-align: center;
   }
 
-  .illustration img {
+  .partnerRow {
+    gap: 0.8rem;
+  }
+
+  .partnerLogo {
+    width: 78px;
+    height: 44px;
+  }
+
+  .right {
+    width: 100%;
+  }
+
+  .card {
+    width: 100%;
     max-width: 100%;
-    height: auto;
+    padding: 22px 18px;
+    border-radius: 14px;
   }
 
-  .optionBtn {
-    font-size: 0.7rem;
+  .header {
+    margin-bottom: 18px;
+  }
+
+  .header h2 {
+    font-size: 17px;
+    line-height: 1.35;
+    padding-right: 60px;
+  }
+
+  .price {
+    font-size: 17px;
+  }
+
+  .step {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+
+  .inputWrapper input {
+    height: 50px;
+    font-size: 13px;
+  }
+
+  .cta {
+    height: 48px;
+    font-size: 14px;
+    margin-top: 30px;
+  }
+
+  .badgetext {
+    font-size: 10px;
+    padding: 7px 9px 7px 21px;
+  }
+
+  .wpLeft {
+    font-size: 11px;
+  }
+
+  .footer {
+    font-size: 10px;
+    line-height: 17px;
   }
 
   .commodityInput {
-    font-size: 11px;
+    font-size: 13px;
+    padding: 14px 42px 14px 14px;
   }
 
   .dropdownItem {
     font-size: 12px;
   }
 
-  .partners {
-    width: 100%;
-    max-width: 100%;
-    padding: 1rem;
-    margin: 1.5rem 0 0;
-    box-sizing: border-box;
-  }
-
-  .partnerRow {
-  }
-
-  .partnerLogo {
-    width: 70px;
-    height: 50px;
-  }
-
-  .card {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto;
-    padding: 1.5rem;
-    box-sizing: border-box;
-  }
-
-  .inputWrapper input {
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  .commodityInput {
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  .cta {
-    width: 100% !important;
-    box-sizing: border-box;
-    text-align: center;
-  }
-
-  .note {
-    position: relative;
-    margin: 0 0 0 auto;
-    right: 0;
-    display: flex;
-    justify-content: center;
-  }
-
   .radioRow {
     flex-direction: column;
     align-items: stretch;
   }
 
   .radioCard {
-    min-width: 100%;
+    width: 100%;
+    min-width: unset;
   }
 
   .radioBtn {
     width: 100%;
-    text-align: center;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+  .container {
+    padding: 1rem;
   }
 
-  .footer {
-    font-size: 9px;
+  .heading {
+    font-size: 1.5rem;
   }
 
-  .badgetext {
-    font-size: 11px;
+  .features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .card {
+    padding: 20px 15px;
   }
 
   .header h2 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .price {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .radioRow {
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
-    gap: 1rem;
-    width: 100%;
+    font-size: 16px;
   }
 
-  .radioCard {
-    width: 100% !important;
-    min-width: unset;
-    box-sizing: border-box;
+  .step {
+    font-size: 9px;
+    padding: 4px 7px;
   }
 
-  .radioBtn {
-    width: 100% !important;
-    text-align: center;
-    padding: 0.6rem;
-    font-size: 14px;
-    box-sizing: border-box;
+  .cta {
+    height: 46px;
+    font-size: 13px;
   }
-}
 
-@media (max-width: 640px) {
-  .radioRow {
-    flex-direction: row;
-    justify-content: center;
+  .partners {
+    padding: 1.2rem;
+  }
+
+  .partnerLogo {
+    width: 70px;
+    height: 40px;
+  }
+
+  .optionsGrid {
     gap: 0.5rem;
-    flex-wrap: wrap;
   }
 
-  .radioCard {
-    min-width: 90px;
-    flex: 1;
-  }
-
-  .radioBtn {
-    width: auto;
-    flex: 1;
+  .optionBtn {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.8rem;
   }
 }

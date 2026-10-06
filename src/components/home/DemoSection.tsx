@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "@/styles/components/home/DemoSection.module.css";
@@ -8,7 +9,8 @@ import axios from "axios";
 import "aos/dist/aos.css";
 import AOS from "aos";
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const fetcher = (url: string) =>
+  axios.get(url).then((res) => res.data);
 
 const DEMOLIST = [
   {
@@ -36,33 +38,64 @@ const DEMOLIST = [
     color: "#faf6e2",
   },
 ];
+
 const limitText = (text: string, limit = 90) => {
   if (!text) return "";
-  return text.length > limit ? text.slice(0, limit).trim() + "…" : text;
+
+  return text.length > limit
+    ? text.slice(0, limit).trim() + "…"
+    : text;
 };
 
+// Parse heading to highlight text inside <>
 const parseHeading = (text: string) => {
   const regex = /<([^>]+)>/g;
-  const parts: { text: string; isTag: boolean }[] = [];
+
+  const parts: {
+    text: string;
+    isTag: boolean;
+  }[] = [];
+
   let lastIndex = 0;
   let match;
+
   while ((match = regex.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      parts.push({ text: text.slice(lastIndex, match.index), isTag: false });
+      parts.push({
+        text: text.slice(lastIndex, match.index),
+        isTag: false,
+      });
     }
-    parts.push({ text: match[1].trim(), isTag: true });
+
+    parts.push({
+      text: match[1].trim(),
+      isTag: true,
+    });
+
     lastIndex = match.index + match[0].length;
   }
+
   if (lastIndex < text.length) {
-    parts.push({ text: text.slice(lastIndex), isTag: false });
+    parts.push({
+      text: text.slice(lastIndex),
+      isTag: false,
+    });
   }
+
   return parts;
 };
 
 function DemoSection() {
-  const { data } = useSWR("/api/demoapi", fetcher);
-  const sectionRef = useRef<HTMLDivElement | null>(null);
-  const [animateHeading, setAnimateHeading] = useState(false);
+  const { data } = useSWR(
+    "/api/demoapi",
+    fetcher
+  );
+
+  const sectionRef =
+    useRef<HTMLDivElement | null>(null);
+
+  const [animateHeading, setAnimateHeading] =
+    useState(false);
 
   // Trigger animation only when section enters viewport
   useEffect(() => {
@@ -72,89 +105,165 @@ function DemoSection() {
           setAnimateHeading(true);
           observer.disconnect();
         }
-      },
+      }
     );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
 
     return () => observer.disconnect();
   }, []);
 
+  // Heading from API or default
   const heading =
-    data?.heading || "Why is <ZANIFEST> India’s go-to for insurance?";
+    data?.heading ||
+    "Why is Zanifest India’s go-to for insurance?";
+
+  // Automatically highlight ZANIFEST / Zanifest
+  const displayHeading =
+    heading.includes("<ZANIFEST>") ||
+    heading.includes("<Zanifest>")
+      ? heading
+      : heading.replace(
+          /zanifest/i,
+          "<ZANIFEST>"
+        );
+
   const subheading =
     data?.subheading ||
     "Zanifest is your trusted partner in insurance — providing transparent comparisons, affordable policies, and dedicated support.";
-  const items = data?.items || DEMOLIST;
+
+  const items =
+    data?.items || DEMOLIST;
 
   useEffect(() => {
-              AOS.init({ duration: 1000, once: true }); 
-  },[]);
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
 
   return (
-    <div ref={sectionRef} className={styles.cont}>
-      <div className={styles.head}  data-aos="fade-up"
-          data-aos-duration="1000"
-          data-aos-easing="ease-in">
+    <div
+      ref={sectionRef}
+      className={styles.cont}
+    >
+
+      {/* ================= HEADING ================= */}
+
+      <div
+        className={styles.head}
+        data-aos="fade-up"
+        data-aos-duration="1000"
+        data-aos-easing="ease-in"
+      >
         <div
           className={`${styles.heading} ${
-            animateHeading ? styles.animateOnce : ""
+            animateHeading
+              ? styles.animateOnce
+              : ""
           }`}
         >
-          {parseHeading(heading).map((part, idx) => (
-            <span
-              key={idx}
-              style={{
-                color: part.isTag ? "orangered" : "black",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {part.text}
-            </span>
-          ))}
+          {parseHeading(displayHeading).map(
+            (part, idx) => (
+              <span
+                key={idx}
+                style={{
+                  color: part.isTag
+                    ? "#1876bd"
+                    : "#17384f",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {part.text}
+              </span>
+            )
+          )}
         </div>
+
+        {/* Mobile Ellipsis */}
 
         <div className={styles.mobileEllipsis}>
-          <FaEllipsisH style={{ color: "#fa621a", fontSize: "25px" }} />
+          <FaEllipsisH
+            style={{
+              color: "#1876bd",
+              fontSize: "25px",
+            }}
+          />
         </div>
-
       </div>
-        <div className={styles.subHeading}>{subheading}</div>
+
+
+      {/* ================= SUB HEADING ================= */}
+
+      <div className={styles.subHeading}>
+        {subheading}
+      </div>
+
+
+      {/* ================= CARDS ================= */}
 
       <div className={styles.list}>
-        {items.map((item: any, index: number) => (
-          <div key={index} className={styles.item}>
+        {items.map(
+          (item: any, index: number) => (
             <div
-              className={styles.imageCont}
-              style={{ backgroundColor: item.color }}
+              key={index}
+              className={styles.item}
             >
-              {item.image ? (
-                <Image
-                  src={item.image}
-                  alt="icon"
-                  className={styles.image}
-                  width={60}
-                  height={60}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: 60,
-                    height: 60,
-                    background: item.color,
-                    borderRadius: "50%",
-                  }}
-                ></div>
-              )}
+
+              {/* ICON */}
+
+              <div
+                className={styles.imageCont}
+                style={{
+                  backgroundColor:
+                    item.color,
+                }}
+              >
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    className={styles.image}
+                    width={60}
+                    height={60}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 60,
+                      height: 60,
+                      background: item.color,
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
+              </div>
+
+
+              {/* CONTENT */}
+
+              <div className={styles.content}>
+
+                <p className={styles.name}>
+                  {item.name}
+                </p>
+
+                <p className={styles.desc}>
+                  {limitText(
+                    item.desc,
+                    90
+                  )}
+                </p>
+
+              </div>
+
             </div>
-            <div className={styles.content}>
-              <p className={styles.name}>{item.name}</p>
-<p className={styles.desc}>
-  {limitText(item.desc, 90)}
-</p>            </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
+
     </div>
   );
 }

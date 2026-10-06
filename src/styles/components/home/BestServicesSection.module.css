@@ -1,184 +1,482 @@
+/* ==============================
+   MAIN CONTAINER
+   ============================== */
+
 .cont {
-  margin-top: 20px;
-  display: grid;
-  place-items: center;
-  justify-content: center;
-  align-self: center;
-}
+  width: 100%;
 
-/*-------------- HEAD SECTION ------------*/
-.head {
+  padding: 50px 5%;
+
   display: flex;
-  gap: 0.7rem;
-  justify-content: center;
-  position: relative;
+  flex-direction: column;
+
+  align-items: center;
+
+  overflow: hidden;
+
+  font-family: "Manrope", sans-serif;
+
+  box-sizing: border-box;
 }
 
-.head::after {
-  content: "";
-  position: absolute;
-  bottom: 5px;
-  width: 25%;
-  height: 5px;
-  background-color: #fa621a;
-  border-radius: 3px;
+
+/* ==============================
+   HEADING
+   ============================== */
+
+.head {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  position: relative;
+
+  margin-bottom: 35px;
 }
+
 
 .heading1 {
   display: flex;
+
   flex-wrap: wrap;
+
   justify-content: center;
+
   gap: 0.6rem;
+
+  margin: 0;
+
+  padding-bottom: 15px;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 2.5rem;
-  margin-bottom: 20px;
+
+  font-weight: 700;
+
   text-align: center;
-  font-weight: 600;
+
+  line-height: 1.3;
+
   position: relative;
-  margin-top: 40px;
-  font-family: Arial;
+
+  color: #17384f;
 }
 
-/* SERVICES LIST */
-.list {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;
-  align-content: center;
-  justify-content: center;
-  width: 90%;
-  flex-wrap: wrap;
-  margin-top: 20px;
+
+.head::after {
+  content: "";
+
+  width: 70px;
+
+  height: 4px;
+
+  background-color: #1876bd;
+
+  border-radius: 10px;
+
+  margin-top: 5px;
 }
+
+
+/* ==============================
+   SERVICES
+   ============================== */
+
+.list {
+  width: 100%;
+
+  max-width: 1200px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 25px;
+
+  align-items: stretch;
+}
+
+
+/* ==============================
+   SERVICE CARD
+   ============================== */
 
 .item {
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  place-items: center;
-  width: 90%;
-  gap: 2rem;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 0px;
-  transition: all 0.3s;
+  width: 100%;
+
+  min-height: 230px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  padding: 30px 25px;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  border: 1px solid #e1eaf1;
+
+  box-shadow:
+    0 8px 25px
+    rgba(24, 118, 189, 0.07);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  box-sizing: border-box;
 }
+
+
+/* ==============================
+   CARD HOVER
+   ============================== */
 
 .item:hover {
-  border-color: #5291ca;
+  transform: translateY(-8px);
+
+  border-color: #1876bd;
+
+  box-shadow:
+    0 15px 35px
+    rgba(24, 118, 189, 0.14);
 }
 
-.selected {
-  transition: all 0.3s;
-}
 
-.item:hover .selected {
-  color: #5291ca;
-  border-color: #5291ca;
-}
+/* ==============================
+   ICON
+   ============================== */
 
 .imageCont {
+  width: 75px;
+
+  height: 75px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  align-self: center;
+
+  background: #eaf5fc;
+
+  color: #1876bd;
+
+  margin-bottom: 18px;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
 }
+
+
+/* ==============================
+   ICON HOVER
+   ============================== */
+
+.item:hover .imageCont {
+  background: #1876bd;
+
+  color: #ffffff;
+
+  transform: scale(1.08);
+}
+
+
+/* ==============================
+   CONTENT
+   ============================== */
+
+.content {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SERVICE NAME
+   ============================== */
 
 .name {
+  margin: 0 0 10px;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 20px;
-  align-self: baseline;
-  color: black;
-  width:250px;
+
+  font-weight: 700;
+
+  color: #17384f;
+
+  line-height: 1.3;
 }
 
+
+/* ==============================
+   DESCRIPTION
+   ============================== */
+
 .desc {
-  color: black;
+  margin: 0;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 14px;
+
+  line-height: 1.7;
+
+  color: #667788;
 }
+
+
+/* ==============================
+   MOBILE ELLIPSIS
+   ============================== */
 
 .mobileEllipsis {
   display: none;
-  margin-bottom: 25px;
+
+  color: #1876bd;
 }
 
-/* ----------- RESPONSIVE --------------- */
-@media screen and (max-width: 1200px) {
-  .item {
-    padding: 0px 20px;
-    grid-template-columns: 1fr;
-    place-items: center;
-    padding-bottom: 0px;
-    gap: 0rem;
+
+/* ==============================
+   ANIMATION
+   ============================== */
+
+.animateOnce {
+  animation:
+    fadeInStay
+    1.5s
+    ease-in-out
+    forwards;
+}
+
+
+@keyframes fadeInStay {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(30px);
   }
-  .name, .desc { text-align: center; }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
 }
 
-@media screen and (max-width: 800px) {
-  .imageCont { font-size: 15px; }
-  .name { font-size: 10px; }
-  .desc { font-size: 6px; }
+
+/* ==============================
+   TABLET
+   ============================== */
+
+@media screen and (max-width: 900px) {
+
+  .cont {
+    padding: 40px 4%;
+  }
+
+
+  .list {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    gap: 15px;
+  }
+
+
+  .item {
+    min-height: 260px;
+
+    padding: 25px 15px;
+  }
+
+
+  .name {
+    font-size: 18px;
+  }
+
+
+  .desc {
+    font-size: 13px;
+  }
+
 }
 
-@media screen and (max-width: 470px) {
-  .cont { margin-top: 10px; }
-  .list { grid-template-columns: 1fr; width: 90%; gap: 0rem; place-items: center; }
-  .name { font-size: 20px; }
-  .desc { font-size: 14px; }
-}
+
+/* ==============================
+   MOBILE
+   ============================== */
 
 @media screen and (max-width: 768px) {
-  .heading1, .heading2 { font-size: 25px; margin-bottom: 20px; }
-  .list { grid-template-columns: 1fr; width: 90%; gap: 0rem; place-items: center; }
-  .name { font-size: 18px; }
-  .desc { font-size: 16px; }
+
+  .cont {
+    padding:
+      35px
+      20px
+      45px;
+
+    background:
+      linear-gradient(
+        180deg,
+        #eaf5fc 0%,
+        #ffffff 100%
+      );
+  }
+
+
+  .head {
+    margin-bottom: 25px;
+  }
+
+
+  .heading1 {
+    font-size: 25px;
+
+    line-height: 1.4;
+
+    padding-bottom: 0;
+  }
+
+
+  .head::after {
+    display: none;
+  }
+
+
+  .mobileEllipsis {
+    display: block;
+
+    margin-top: 5px;
+
+    text-align: center;
+
+    color: #1876bd;
+  }
+
+
+  .list {
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+  }
+
+
+  .item {
+    min-height: auto;
+
+    display: grid;
+
+    grid-template-columns:
+      70px 1fr;
+
+    align-items: center;
+
+    text-align: left;
+
+    padding: 20px;
+
+    border-radius: 18px;
+  }
+
+
+  .imageCont {
+    width: 60px;
+
+    height: 60px;
+
+    margin-bottom: 0;
+  }
+
+
+  .content {
+    text-align: left;
+  }
+
+
+  .name {
+    font-size: 18px;
+
+    margin-bottom: 6px;
+  }
+
+
+  .desc {
+    font-size: 14px;
+
+    line-height: 1.6;
+  }
+
 }
 
-@media screen and (max-width: 700px) {
-  .head { display: block; text-align: center; margin-bottom: 0px; position: relative; }
-  .head::after { display: none; }
-  .heading1, .heading2 { margin-bottom: 0%; }
-  .mobileEllipsis { display: block; text-align: center; font-size: 20px; }
-}
-/* ========= MOBILE BACKGROUND FIX ========== */
-@media screen and (max-width: 700px) {
+
+/* ==============================
+   SMALL MOBILE
+   ============================== */
+
+@media screen and (max-width: 480px) {
+
   .cont {
-    position: relative;
-    background: linear-gradient(
-      180deg,
-      #ecf4fb 0%,    
-      #eaf3fb 35%,   
-      #ffffff 70%,  
-      #ecf3fa 100%
-    );
-    padding-top: 30px;
-    padding-bottom: 40px;
-    margin-top: 20;
+    padding:
+      30px
+      15px
+      40px;
   }
-}
-@media screen and (max-width: 700px) {
-  .cont::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.8),
-      rgba(255, 255, 255, 0)
-    );
-    pointer-events: none;
+
+
+  .heading1 {
+    font-size: 23px;
   }
-}
-@media screen and (max-width: 700px) {
+
+
   .item {
-    background-color: white;
-    border-radius: 18px;
+    grid-template-columns:
+      55px 1fr;
+
     padding: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+    gap: 10px;
   }
-}
-@media screen and (max-width: 700px) {
-  .item {
-    margin: 5px 0;
+
+
+  .imageCont {
+    width: 52px;
+
+    height: 52px;
   }
+
+
+  .name {
+    font-size: 17px;
+  }
+
+
+  .desc {
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
 }

@@ -390,7 +390,11 @@ setLoading(false);
 
         <div className={styles.bottom}>
           <p className={styles.heading}>
+<<<<<<< HEAD
             Compare & <b className={styles.bold}>save upto 90 % </b>
+=======
+            Compare & <b className={styles.bold}>save upto 90% </b>
+>>>>>>> origin/vishal
             on car insurance
           </p>
 
@@ -430,9 +434,9 @@ onClick={handleRCVerify}
               <button
                 className={styles.linkBtn}
                 // CHANGED
-                onClick={() => setStep("chooseYear")}
+                onClick={() => setStep("chooseLocation")}
               >
-                click here
+                Click here
               </button>
             </div>
           </div>

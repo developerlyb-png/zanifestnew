@@ -367,7 +367,7 @@ const PersonalDetails: React.FC = () => {
                   <label className={styles.checkbox}>
                     <input type="checkbox" /> I hereby declare that information
                     provided above is true, and I accept all{" "}
-                    <a href="#" className={styles.link}>
+                    <a href="https://zanifestinsurance.com/Termscondition" className={styles.link}>
                       Terms & Conditions
                     </a>
                   </label>

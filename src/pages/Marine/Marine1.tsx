@@ -202,7 +202,7 @@ const Marine: React.FC = () => {
                 </div>
 
                 <button className={styles.cta} onClick={handleViewPlans}>
-                  View plans <span className={styles.arrow}>›</span>
+                  View Plans <span className={styles.arrow}>›</span>
                 </button>
 
                 <div className={styles.badge}>
@@ -229,7 +229,7 @@ const Marine: React.FC = () => {
 
                 <p className={styles.footer}>
                   By clicking on <b>"View plans"</b>, you agree to our{" "}
-                  <a href="#">Privacy Policy</a>, <a href="#">Terms of Use</a> &{" "}
+                  <a href="https://zanifestinsurance.com/Privacypolicy">Privacy Policy</a>, <a href="https://zanifestinsurance.com/Termscondition">Terms of Use</a> &{" "}
                   <a href="#">Disclaimer</a>
                 </p>
               </>

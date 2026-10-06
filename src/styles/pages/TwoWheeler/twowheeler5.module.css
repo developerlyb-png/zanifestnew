@@ -1,275 +1,791 @@
 .wrapper {
   display: flex;
-  gap: 2rem;
-  padding: 2rem;
-  font-family: "Inter", sans-serif;
-  flex-wrap: wrap;
+  gap: 24px;
+  padding: 28px 72px;
+  font-family: "Manrope", sans-serif;
+  flex-wrap: nowrap;
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
-/* Toggle Icon (Mobile/Tab Only) */
+/* =========================
+   TOGGLE ICON
+========================= */
+
 .toggleIcon {
-     display: none;
-    position: absolute;
-    top: 112px;
-    left: 16px;
-    z-index: 1000;
-    background: white;
-    padding: 5px;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    align-items: center;
-    height: 30px;
+  display: none;
+  position: absolute;
+  top: 112px;
+  left: 16px;
+  z-index: 1000;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  color: #1876bd;
+
+  border: 1px solid #dceaf4;
+  border-radius: 50%;
+
+  box-shadow: 0 3px 10px rgba(24, 118, 189, 0.15);
+
+  cursor: pointer;
 }
 
-/* Sidebar styles */
+/* =========================
+   SIDEBAR
+========================= */
+
 .sidebar {
-  width: 300px;
+  width: 270px;
+  min-width: 270px;
+
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 16px;
 }
 
 .card {
-  background: #f4f8ff;
-  padding: 1.25rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  box-sizing: border-box;
+
+  background: #f5f9fc;
+
+  padding: 17px 18px;
+
+  border-radius: 12px;
+
+  border: 1px solid #dceaf4;
+
+  box-shadow: 0 3px 10px rgba(24, 118, 189, 0.05);
+
+  transition: 0.25s ease;
+}
+
+.card:hover {
+  border-color: #c7dfef;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, 0.08);
 }
 
 .card h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 15px;
+  font-weight: 700;
+
+  margin: 0 0 9px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+
+  gap: 8px;
+
+  color: #17384f;
 }
 
 .card label {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+
+  margin-top: 10px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #17384f;
 }
 
 .card p {
-  font-size: 0.9rem;
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #667788;
+
+  margin: 5px 0;
 }
 
 .card select {
   width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  height: 38px;
+
+  padding: 0 10px;
+
+  margin-top: 4px;
+
+  border-radius: 7px;
+
+  border: 1px solid #cbddea;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  outline: none;
+
+  font-family: "Monerape", sans-serif;
+  font-size: 14px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.card select:focus {
+  border-color: #1876bd;
+  box-shadow: 0 0 0 2px rgba(24, 118, 189, 0.09);
 }
 
 .edit {
-  color: #007bff;
+  color: #1876bd;
+
   cursor: pointer;
-  font-size: 0.85rem;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.edit:hover {
+  color: #125d96;
 }
 
 .link {
-  color: #007bff;
+  color: #1876bd;
+
   cursor: pointer;
-  font-size: 0.8rem;
+
+  font-size: 14px;
+  font-weight: 600;
 }
 
-/* Main content */
+.link:hover {
+  color: #125d96;
+}
+
+/* =========================
+   MAIN
+========================= */
+
 .main {
   flex: 1;
-  min-width: 300px;
+  min-width: 0;
+
+  box-sizing: border-box;
 }
+
+/* =========================
+   PLAN CONTROLS
+========================= */
 
 .planControls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 22px;
+
+  width: 100%;
 }
 
 .planBox {
+  width: 270px;
+  height: 46px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border: 1px solid #d7e4f7;
-  border-radius: 12px;
-  background-color: #f6f9ff;
-  min-width: 260px;
-  flex: 1;
-  max-width: 300px;
+
+  padding: 0 15px;
+
+  border: 1px solid #d8e8f3;
+
+  border-radius: 9px;
+
+  background: #f7fbfe;
+
+  box-sizing: border-box;
+
+  transition: 0.25s ease;
+}
+
+.planBox:hover {
+  border-color: #1876bd;
+  background: #f3f9fd;
 }
 
 .planLabel {
-  font-size: 0.85rem;
-  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #667788;
 }
 
 .planValue {
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #17384f;
 }
 
+/* =========================
+   HEADING
+========================= */
+
 .heading {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.3;
+
+  font-weight: 700;
+
+  color: #17384f;
+
+  margin: 0 0 5px;
 }
 
 .subtext {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-bottom: 1rem;
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #667788;
+
+  margin: 0 0 16px;
 }
+
+/* =========================
+   PLAN LIST
+========================= */
 
 .planList {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+
+  gap: 12px;
+
+  width: 100%;
 }
 
+/* =========================
+   PLAN CARD
+========================= */
+
 .planCard {
-  background: #fff;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  position: relative;
+  width: 100%;
+
+  background: #ffffff;
+
+  border-radius: 13px;
+
+  padding: 16px;
+
+  border: 1px solid #d8e8f3;
+
+  box-shadow: 0 4px 13px rgba(24, 118, 189, 0.06);
+
+  box-sizing: border-box;
+
+  transition: 0.25s ease;
 }
+
+.planCard:hover {
+  border-color: #1876bd;
+
+  box-shadow: 0 6px 17px rgba(24, 118, 189, 0.10);
+}
+
+/* =========================
+   TOP PLAN ROW
+========================= */
+
+.planLeft {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: 245px 1fr 150px;
+
+  align-items: center;
+
+  column-gap: 18px;
+
+  padding: 0;
+
+  min-height: 42px;
+
+  box-sizing: border-box;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #17384f;
+}
+
+/* =========================
+   LOGO SECTION
+========================= */
 
 .logoSection {
   display: flex;
   align-items: center;
-  gap: 1rem;
+
+  gap: 10px;
+
+  min-width: 0;
 }
 
-.planLeft {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-weight: 600;
-  font-size: 20px;
-  flex-wrap: wrap;
+.logoSection img {
+  width: 58px;
+  height: 40px;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
 }
+
+/* =========================
+   PLAN RIGHT
+========================= */
 
 .planRight {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  text-align: right;
+  position: static;
+
+  display: flex;
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  width: auto;
+
+  text-align: left;
 }
 
+/* =========================
+   IDV
+========================= */
+
 .idvLabel {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-bottom: 0;
-  margin-left: 1rem;
+  display: block;
+
+  font-size: 14px;
+  line-height: 1.2;
+
+  font-weight: 500;
+
+  color: #667788;
+
+  margin: 0 0 2px;
 }
 
 .idvValue {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  font-size: 15px;
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  color: #17384f;
+
+  margin: 0;
+
+  white-space: nowrap;
 }
 
+/* =========================
+   BUY BUTTON
+========================= */
+
 .buyBtn {
-  background-color:orangered;
-  color: white;
-  padding: 0.4rem 0.8rem;
+  width: 128px;
+  min-width: 128px;
+
+  height: 38px;
+
+  padding: 0 12px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  height: 50px;
-  width: 17%;
+
+  border-radius: 7px;
+
+  font-family: "Monerape", sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
   cursor: pointer;
+
+  box-shadow: 0 4px 9px rgba(24, 118, 189, 0.17);
+
+  transition: 0.25s ease;
+}
+
+.buyBtn:hover {
+  background: #125d96;
+
+  box-shadow: 0 5px 13px rgba(18, 93, 150, 0.20);
+
+  transform: translateY(-1px);
+}
+
+.buyBtn:active {
+  transform: scale(0.98);
 }
 
 .buyBtn span {
-  margin-left: 0.5rem;
+  margin-left: 5px;
 }
 
+/* =========================
+   BADGE
+========================= */
+
 .badge {
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  padding: 0.6rem 0.6rem;
-  border-radius: 6px;
   width: 100%;
-  display: inline-block;
+
+  margin-top: 10px;
+
+  padding: 8px 10px;
+
+  display: block;
+
+  box-sizing: border-box;
+
+  border-radius: 6px;
+
+  font-size: 13px;
+
+  line-height: 1.3;
+
+  font-weight: 600;
 }
 
 .green {
-  background-color: #e7f9ec;
+  background: #e9f9ee;
+
   color: #0f9d58;
+
+  border: 1px solid #ccefd8;
 }
 
 .orange {
-  background: linear-gradient(to right, #ff6a00, #ee0979);
-  color: #fff;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    #1876bd,
+    #125d96
+  );
+
+  color: #ffffff;
+
+  padding: 5px 8px;
+
+  border-radius: 5px;
+
+  font-size: 13px;
 }
 
-/* Mobile Sidebar Slide-In */
+/* =========================
+   MOBILE SIDEBAR
+========================= */
+
 .mobileSidebar {
   position: fixed;
+
   top: 70px;
   left: -100%;
-  height: 100%;
-  width: 80%;
-  background: #f4f8ff;
+
+  height: calc(100% - 70px);
+
+  width: 300px;
+  max-width: 85%;
+
+  background: #ffffff;
+
   z-index: 999;
-  padding: 1rem;
+
+  padding: 16px;
+
   overflow-y: auto;
-  transition: all 0.3s ease-in-out;
+
+  box-sizing: border-box;
+
+  border-right: 1px solid #dceaf4;
+
+  box-shadow: 5px 0 18px rgba(24, 118, 189, 0.12);
+
+  transition: left 0.3s ease-in-out;
 }
 
 .mobileSidebar.open {
   left: 0;
 }
 
-/* Responsive */
-@media screen and (max-width: 1024px) {
-  .toggleIcon {
-    display: block;
-  }
+/* =========================
+   1200px
+========================= */
 
-.planLeft{
-          flex-direction: row !important;
-        align-items: flex-start;
-}
+@media screen and (max-width: 1200px) {
   .wrapper {
-    flex-direction: column;
-    padding: 1rem;
+    padding: 28px 40px;
+    gap: 20px;
   }
 
   .sidebar {
-    width: 90%;
+    width: 250px;
+    min-width: 250px;
   }
 
-  .card {
-            width: 80%;
+  .planLeft {
+    grid-template-columns: 210px 1fr 140px;
+
+    column-gap: 12px;
+  }
+
+  .buyBtn {
+    width: 120px;
+    min-width: 120px;
+  }
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media screen and (max-width: 1024px) {
+  .toggleIcon {
+    display: flex;
+  }
+
+  .wrapper {
+    flex-direction: column;
+
+    padding: 24px 20px;
+
+    gap: 18px;
+  }
+
+  .sidebar {
+    display: none;
   }
 
   .main {
-    margin-top: 1rem;
+    width: 100%;
+
+    min-width: 0;
+
+    margin-top: 25px;
+  }
+
+  .planControls {
+    width: 100%;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+  }
+
+  .planBox {
+    width: calc(50% - 5px);
+
+    flex: 1;
+
+    min-width: 220px;
+  }
+
+  .planLeft {
+    grid-template-columns: 1fr auto;
+
+    row-gap: 12px;
+  }
+
+  .logoSection {
+    grid-column: 1;
+  }
+
+  .planRight {
+    grid-column: 2;
+
+    grid-row: 1;
+  }
+
+  .buyBtn {
+    width: 120px;
+    min-width: 120px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media screen and (max-width: 767px) {
+  .wrapper {
+    padding: 18px 14px;
+  }
+
+  .toggleIcon {
+    top: 95px;
+    left: 12px;
+
+    width: 36px;
+    height: 36px;
+  }
+
+  .main {
+    margin-top: 25px;
   }
 
   .planControls {
     flex-direction: column;
+
+    gap: 9px;
   }
 
   .planBox {
-    width: 85%;
+    width: 100%;
+
+    min-width: 0;
+
+    max-width: none;
+
+    flex: none;
+  }
+
+  .heading {
+    font-size: 17px;
+  }
+
+  .subtext {
+    font-size: 13px;
+
+    margin-bottom: 13px;
+  }
+
+  /* Mobile Plan Card */
+
+  .planCard {
+    padding: 14px;
+
+    border-radius: 11px;
   }
 
   .planLeft {
-    flex-direction: column;
+    display: flex;
+
+    flex-direction: column !important;
+
     align-items: flex-start;
+
+    gap: 10px;
+
+    min-height: auto;
+
+    font-size: 15px;
+  }
+
+  .logoSection {
+    width: 100%;
+  }
+
+  .logoSection img {
+    width: 55px;
+    height: 30px;
+  }
+
+  .planRight {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+  }
+
+  .idvLabel {
+    font-size: 9px;
+  }
+
+  .idvValue {
+    font-size: 15px;
   }
 
   .buyBtn {
-    width: 100%;
+    width: auto;
+
+    min-width: 125px;
+
+    height: 38px;
+
+    font-size: 12px;
+  }
+
+  .badge {
+    margin-top: 9px;
+
+    padding: 8px;
+
+    font-size: 10px;
+  }
+
+  .mobileSidebar {
+    width: 85%;
+  }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media screen and (max-width: 480px) {
+  .wrapper {
+    padding: 16px 12px;
+  }
+
+  .planCard {
+    padding: 12px;
+  }
+
+  .planLeft {
+    font-size: 14px;
+  }
+
+  .planRight {
+    align-items: center;
+  }
+
+  .idvValue {
+    font-size: 14px;
+  }
+
+  .buyBtn {
+    min-width: 112px;
+
+    height: 36px;
+
+    padding: 0 9px;
+
+    font-size: 11px;
+  }
+
+  .badge {
+    font-size: 9px;
+
+    padding: 7px 8px;
   }
 }

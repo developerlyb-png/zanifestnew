@@ -62,7 +62,7 @@
           >
             {renderHeading(mainHeading)}
             <div className={styles.mobileEllipsis}>
-              <FaEllipsisH style={{ color: "#fa621a", fontSize: "25px" }} />
+              <FaEllipsisH style={{ color: "#1876bd", fontSize: "25px" }} />
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
         </div>
 
         {/* Services Heading */}
-        <div className={styles.servciesCont}>
+        {/* <div className={styles.servciesCont}>
           <div  data-aos="fade-up" data-aos-duration="1000"  data-aos-easing="ease-in-sine"
             className={`${styles.heading} ${
               animateheading ? styles.animateOnce : ""
@@ -97,10 +97,10 @@
           </div>
           <div className={styles.mobileEllipsis}>
             <FaEllipsisH style={{ color: "#fa621a", fontSize: "25px" }} />
-          </div>
+          </div> */}
 
           {/* Services */}
-          <div className={styles.services}>
+          {/* <div className={styles.services}>
             {services.map((item: any, index: number) => (
               <div className={styles.serviceItem} key={index}>
                 <div className={styles.servicetop}>
@@ -145,7 +145,7 @@
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     );
   }

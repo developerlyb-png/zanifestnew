@@ -131,9 +131,9 @@ function Footer() {
   </a>
 
  {/* Twitter / X */}
-  <a href="#" target="_blank" rel="noopener noreferrer">
+  {/* <a href="#" target="_blank" rel="noopener noreferrer">
     <FaXTwitter size={30} color="#fff" />
-  </a>
+  </a> */}
 
 </div>
         </div>

@@ -1,350 +1,1002 @@
+/* =========================================================
+   OVERLAY
+========================================================= */
+
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+
+  background: rgba(20, 41, 75, 0.42);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   z-index: 9999;
+
   padding: 20px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
 
-.dialog {
-  background: #fff;
-  border-radius: 12px;
-  display: flex;
-  width: 1150px;
-    height: 550px;
 
-  max-width: 95%;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+/* =========================================================
+   DIALOG
+========================================================= */
+
+.dialog {
+  width: min(1050px, 96vw);
+
+  height: 520px;
+
+  max-height: 90vh;
+
+  background: #ffffff;
+
+  border-radius: 17px;
+
+  display: flex;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 55px rgba(20, 41, 75, 0.20);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+
+.left {
+  width: 315px;
+
+  min-width: 315px;
+
+  padding: 42px 28px;
+
+  background: #f4f8fd;
+
+  border-right: none;
+
+  flex-shrink: 0;
+
+  box-sizing: border-box;
+
   overflow: hidden;
 }
 
-/* Left */
-.left {
-  width: 30%;
-  padding: 25px;
-  border-right: 1px solid #eee;
- 
-  flex-shrink: 0;
-}
 
+/* =========================================================
+   LEFT TITLE
+========================================================= */
 
 .leftTitle {
   font-size: 20px;
+
   font-weight: 600;
-  margin-bottom: 15px;
-  color: #1e2a4a;
+
+  margin: 0 0 18px;
+
+  color: #14294b;
+
+  line-height: 1.3;
 }
 
-.searchBox {
+
+/* =========================================================
+   SELECTION BOX
+========================================================= */
+
+.selectionBox {
+  border: 1px solid #dcecff;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 5px 18px rgba(24, 118, 189, 0.05);
+}
+
+
+/* =========================================================
+   SELECTION ITEM
+========================================================= */
+
+.selectionItem {
   display: flex;
+
   align-items: center;
-  width: 100%;             
-  max-width: 900px;       
-  margin: 15px auto;     
+
+  gap: 10px;
+
+  padding: 13px 15px;
+
+  min-height: 45px;
+
+  font-size: 14px;
+
+  color: #14294b;
+
+  border-bottom: 1px solid #edf2f7;
+
+  box-sizing: border-box;
+
+  line-height: 1.4;
 }
 
-.searchBox input {
+
+.selectionItem:last-child {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.icon {
+  flex-shrink: 0;
+
+  color: #1876bd;
+
+  font-size: 16px;
+}
+
+
+/* =========================================================
+   EDIT ICON
+========================================================= */
+
+.editIcon {
+  margin-left: auto;
+
+  color: #1876bd;
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition: color 0.2s ease;
+}
+
+
+.editIcon:hover {
+  color: #145f9f;
+}
+
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.right {
+  width: calc(100% - 315px);
+
   flex: 1;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
+
+  min-width: 0;
+
+  height: 100%;
+
+  padding: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  background: #eaf3ff;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  height: 48px;
+
+  min-height: 48px;
+
+  background: #ffffff;
+
+  color: #14294b;
+
+  padding: 0 10px;
+
+  border-radius: 11px;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+  margin-bottom: 15px;
+
+  flex-shrink: 0;
+
+  box-sizing: border-box;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   HEADER TITLE
+========================================================= */
+
+.header span {
+  flex: 1;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  color: #14294b;
+
+  font-size: 18px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   HEADER H3
+========================================================= */
+
+.header h3 {
+  flex: 1;
+
+  padding: 0 48px 0 0;
+
+  margin: 0;
+
+  text-align: center;
+
+  color: #14294b;
+
+  font-size: 18px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   HEADER ARROWS
+========================================================= */
+
+.arrowBtn,
+.backBtn {
+  width: 34px;
+
+  height: 34px;
+
+  min-width: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #eef7fd;
+
+  border: none;
+
   border-radius: 8px;
-  font-size: 15px;
-  outline: none;
+
+  color: #1876bd;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  padding: 0;
+
+  line-height: 1;
+
+  flex-shrink: 0;
+
   transition: all 0.2s ease;
 }
 
-.searchBox input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0,123,255,0.3);
+
+.arrowBtn:hover,
+.backBtn:hover {
+  background: #dceeff;
+
+  color: #145f9f;
+
+  transform: scale(1.03);
 }
 
 
-.selectionItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-  font-size: 15px;
-  color: #1e2a4a;
-}
-
-.selectionItem:last-child {
-  border-bottom: none;
-}
-
-.icon {
-  margin-right: 8px;
-  color: #4a6280;
-}
-
-.editIcon {
-  color: #999;
-  cursor: pointer;
-}
-
-/* Right */
-.right {
-  flex: 1;
-  padding: 20px;
-}
-.header {
-     display: flex
-;
-    justify-content: space-between;
-    align-items: center;
-    background: #fb6530;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 20px;
-}
-
-.arrowBtn {
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.header h3{
-    padding: 0;
-    margin: 0%;
-    padding: 8px 0;
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  margin-right: 10px;
-  cursor: pointer;
-}
+/* =========================================================
+   SEARCH BOX
+========================================================= */
 
 .searchBox {
   position: relative;
-  margin-bottom: 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  height: 46px;
+
+  min-height: 46px;
+
+  margin: 0 0 15px;
+
+  border: 1px solid #d5e3f0;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.searchBox input {
-  padding: 10px 40px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
+
+/* =========================================================
+   SEARCH ICON
+========================================================= */
+
+.searchBox svg {
+  position: absolute;
+
+  left: 15px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 18px;
+
+  color: #1876bd;
+
+  pointer-events: none;
+
+  z-index: 1;
 }
+
+
+/* =========================================================
+   SEARCH ICON CLASS
+========================================================= */
 
 .searchIcon {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  color: #888;
-}
-.selectionBox {
-  flex: 1;
-  border: 1px solid #eee;
+  margin-right: 8px;
+
+  color: #1876bd;
 }
 
-.selectionTitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 20px;
+
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
+
+.searchBox input {
+  width: 100%;
+
+  height: 46px;
+
+  padding: 0 15px 0 43px;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  font-size: 14px;
+
+  color: #14294b;
+
+  border-radius: 9px;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
 
-.selectionList {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 0;
+
+/* =========================================================
+   PLACEHOLDER
+========================================================= */
+
+.searchBox input::placeholder {
+  color: #7b8ba1;
+
+  opacity: 1;
 }
 
-.selectionItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  font-size: 15px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+
+/* =========================================================
+   SEARCH FOCUS
+========================================================= */
+
+.searchBox:focus-within {
+  border-color: #1876bd;
+
+  box-shadow:
+    0 0 0 3px rgba(24, 118, 189, 0.10);
 }
 
-.selectionItem:last-child {
-  border-bottom: none;
-}
 
-.icon {
-  margin-right: 10px;
-  color: #6b7280;
-}
-/* Models Grid */
+/* =========================================================
+   VEHICLE MODEL GRID
+========================================================= */
+
 .modelsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 12px;
+
+  width: 100%;
+
+  flex: 1;
+
+  min-height: 0;
+
+  align-content: start;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  padding: 0 5px 5px 0;
+
+  box-sizing: border-box;
+
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
 }
+
+
+/* =========================================================
+   HIDE SCROLLBAR
+========================================================= */
+
+.modelsGrid::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   MODEL BUTTON
+========================================================= */
 
 .modelBtn {
-  background: #fff;
-  border: 1px solid #dce3ed;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e2a4a;
+  position: relative;
+
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
+
+  justify-content: space-between;
+
+  width: 100%;
+
+  min-height: 58px;
+
+  padding: 12px 35px 12px 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #dcecff;
+
+  border-radius: 9px;
+
+  color: #14294b;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.35;
+
+  text-align: left;
+
   cursor: pointer;
-  transition: all 0.2s;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+/* =========================================================
+   MODEL HOVER
+========================================================= */
 
 .modelBtn:hover {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #1876bd;
+
+  background: #f5faff;
+
+  color: #1876bd;
+
+  box-shadow:
+    0 5px 14px rgba(24, 118, 189, 0.10);
+
+  /* transform: translateY(-1px); */
 }
 
-.arrow {
+
+/* =========================================================
+   ACTIVE MODEL
+========================================================= */
+
+.active {
+  border: 1.5px solid #1876bd;
+
+  background: #eef7ff;
+
+  color: #1876bd;
+
+  box-shadow:
+    0 4px 14px rgba(24, 118, 189, 0.10);
+}
+
+
+/* =========================================================
+   MODEL ARROW
+========================================================= */
+
+.modelBtn .arrow {
+  position: absolute;
+
+  right: 12px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
   font-size: 18px;
+
+  color: #8ba0b5;
+
+  line-height: 1;
+
+  pointer-events: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+/* =========================================================
+   ACTIVE ARROW
+========================================================= */
+
+.modelBtn.active .arrow {
+  color: #1876bd;
+
+  transform:
+    translateY(-50%)
+    translateX(2px);
+}
+
+
+/* =========================================================
+   VARIANT GRID
+========================================================= */
+
+.variantGrid {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  padding-right: 5px;
+
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+}
+
+
+.variantGrid::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   BRAND GRID
+========================================================= */
+
+.brandGrid {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  padding-right: 5px;
+
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+}
+
+
+.brandGrid::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1024px) {
-  .dialog {
-    flex-direction: column;
-    width: 100%;
-    height: auto;
-    max-height: 90vh;  
-    overflow-y: auto;   
-  }
 
-  .left {
-    display: none; 
-  }
-
-  .right {
-    flex: 1;
-    width: 95%;
+  .overlay {
     padding: 15px;
   }
 
-  .modelsGrid {
-    grid-template-columns: 1fr; 
+
+  .dialog {
+    width: 95vw;
+
+    height: 520px;
+
+    max-height: 90vh;
   }
-  
+
+
+  .left {
+    width: 30%;
+
+    min-width: 30%;
+
+    padding: 28px 20px;
+  }
+
+
+  .right {
+    width: 70%;
+
+    padding: 20px;
+  }
+
+
+  .modelsGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+
+  .modelBtn {
+    min-height: 55px;
+
+    padding: 11px 34px 11px 13px;
+  }
+
 }
 
-/* Small Mobile */
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 640px) {
-  .dialog {
-    border-radius: 8px;
+
+  .overlay {
     padding: 10px;
+
+    align-items: center;
+
+    overflow-y: auto;
   }
- 
+
+
+  .dialog {
+    width: 100%;
+
+    max-width: 100%;
+
+    height: auto;
+
+    min-height: auto;
+
+    max-height: 95vh;
+
+    border-radius: 12px;
+  }
+
+
+  .left {
+    display: none;
+  }
+
+
+  .right {
+    width: 100%;
+
+    height: auto;
+
+    min-height: 0;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background: #eaf3ff;
+  }
+
+
+  /* ==========================
+     HEADER
+  ========================== */
+
   .header {
+    height: 42px;
+
+    min-height: 42px;
+
+    padding: 0 10px;
+
+    font-size: 14px;
+
+    margin-bottom: 15px;
+
+    border-radius: 8px;
+  }
+
+
+  .header span {
+    font-size: 14px;
+  }
+
+
+  .header h3 {
+    font-size: 14px;
+
+    padding-right: 35px;
+  }
+
+
+  .arrowBtn,
+  .backBtn {
+    width: 30px;
+
+    height: 30px;
+
+    min-width: 30px;
+
+    font-size: 20px;
+
+    border-radius: 7px;
+  }
+
+
+  /* ==========================
+     SEARCH
+  ========================== */
+
+  .searchBox {
+    height: 44px;
+
+    min-height: 44px;
+
+    margin-bottom: 15px;
+
+    border-radius: 8px;
+  }
+
+
+  .searchBox input {
+    height: 44px;
+
+    font-size: 14px;
+
+    padding-left: 42px;
+  }
+
+
+  .searchBox svg {
+    left: 14px;
+
+    font-size: 17px;
+  }
+
+
+  /* ==========================
+     MODEL GRID
+  ========================== */
+
+  .modelsGrid {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+  }
+
+
+  /* ==========================
+     MODEL BUTTON
+  ========================== */
+
+  .modelBtn {
+    min-height: 52px;
+
+    padding: 11px 32px 11px 13px;
+
+    font-size: 14px;
+
+    border-radius: 8px;
+  }
+
+
+  .modelBtn .arrow {
+    right: 11px;
+
+    font-size: 17px;
+  }
+
+
+  /* ==========================
+     OTHER GRIDS
+  ========================== */
+
+  .variantGrid,
+  .brandGrid {
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .overlay {
+    padding: 8px;
+  }
+
+
+  .dialog {
+    max-height: 92vh;
+
+    border-radius: 10px;
+  }
+
+
+  .right {
+    padding: 12px;
+  }
+
+
+  .header {
+    height: 40px;
+
+    min-height: 40px;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+  }
+
+
+  .header span {
+    font-size: 13px;
+  }
+
+
+  .header h3 {
+    font-size: 13px;
+
+    padding-right: 30px;
+  }
+
+
+  .searchBox {
+    height: 42px;
+
+    min-height: 42px;
+
+    margin-bottom: 10px;
+  }
+
+
+  .searchBox input {
+    height: 42px;
+
+    font-size: 13px;
+
+    padding-left: 40px;
+  }
+
+
+  .modelBtn {
+    min-height: 50px;
+
+    padding: 10px 30px 10px 12px;
+
+    font-size: 13px;
+  }
+
+
+  .modelBtn .arrow {
+    right: 10px;
+
     font-size: 16px;
   }
 
-  .modelBtn {
-    font-size: 14px;
-    padding: 10px;
+
+  .modelsGrid {
+    gap: 8px;
   }
-}
-/* ==========================
-   POPUP SCROLL FIX
-========================== */
-
-.overlay {
-  overflow-y: auto;
-}
-
-
-.dialog {
-  max-height: 90vh;
-  overflow: hidden;
-}
-
-
-.right,
-.rightPanel {
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-
-/* model */
-.modelsGrid {
-
-  flex: 1;
-
-  overflow-y: auto;
-
-  max-height: calc(90vh - 180px);
-
-  padding-right: 10px;
 
 }
 
 
-/* variant + fuel */
-.variantGrid {
+/* =========================================================
+   FOCUS ACCESSIBILITY
+========================================================= */
 
-  flex: 1;
+.arrowBtn:focus-visible,
+.backBtn:focus-visible,
+.modelBtn:focus-visible,
+.searchBox input:focus-visible {
+  outline: 2px solid #1876bd;
 
-  overflow-y: auto;
-
-  max-height: calc(90vh - 180px);
-
-  padding-right: 10px;
-
-}
-
-
-/* brand */
-.brandGrid {
-
-  flex: 1;
-
-  overflow-y: auto;
-
-  max-height: calc(90vh - 180px);
-
-  padding-right: 10px;
-
-}
-
-
-/* scrollbar */
-.modelsGrid::-webkit-scrollbar,
-.variantGrid::-webkit-scrollbar,
-.brandGrid::-webkit-scrollbar {
-
- width: 6px;
-
-}
-
-
-.modelsGrid::-webkit-scrollbar-thumb,
-.variantGrid::-webkit-scrollbar-thumb,
-.brandGrid::-webkit-scrollbar-thumb {
-
- background:#999;
-
- border-radius:20px;
-
-}
-
-
-/* keep search fixed */
-.header,
-.searchBox {
-
- flex-shrink:0;
-
+  outline-offset: 2px;
 }

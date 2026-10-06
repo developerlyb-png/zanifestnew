@@ -115,7 +115,7 @@ const Carousel: React.FC<CarouselProps> = ({ refresh }) => {
         </motion.div>
       </AnimatePresence>
 
-      <button
+      {/* <button
         onClick={prevSlide}
         className={`${styles.navButton} ${styles.left}`}
       >
@@ -126,7 +126,7 @@ const Carousel: React.FC<CarouselProps> = ({ refresh }) => {
         className={`${styles.navButton} ${styles.right}`}
       >
         ▶
-      </button>
+      </button> */}
 
       <div className={styles.indicators}>
         {images.map((_, idx) => (

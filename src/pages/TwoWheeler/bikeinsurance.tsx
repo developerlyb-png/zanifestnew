@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "@/styles/pages/bikeinsurance.module.css";
 import UserDetails from "@/components/ui/UserDetails";
@@ -7,7 +8,6 @@ import Footer from "@/components/ui/Footer";
 import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
-
 import {
   MdOutlineKeyboardDoubleArrowRight,
   MdKeyboardArrowRight,
@@ -176,11 +176,24 @@ function bikeinsurance() {
             </div>
 
             <p>
-              By clicking, I agree to{" "}
-              <b className={styles.policy}>terms & conditions</b> and{" "}
-              <b className={styles.policy}>privacy policy</b>
-            </p>
+  By clicking, I agree to{" "}
+  
+  <Link
+    href="https://zanifestinsurance.com/Termscondition"
+    className={styles.policy}
+  >
+    Terms & Conditions
+  </Link>
 
+  {" "} and {" "}
+
+  <Link
+    href="https://zanifestinsurance.com/Privacypolicy"
+    className={styles.policy}
+  >
+    Privacy Policy
+  </Link>
+</p>
             <button className={styles.transparentButton}>
               Brand new Bike <MdKeyboardArrowRight />
             </button>

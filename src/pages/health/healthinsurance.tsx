@@ -429,7 +429,7 @@ return(
 
 <h2 className={styles.heading}>
 
-Find top plans for you
+Find Top Plans for You
 
 </h2>
 

@@ -1,244 +1,861 @@
+/* =========================================================
+   OVERLAY
+========================================================= */
+
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.4);
+  inset: 0;
+
+  background: rgba(20, 41, 75, 0.42);
+
   display: flex;
-  align-items: center;   
+  align-items: center;
   justify-content: center;
+
   z-index: 9999;
-  padding: 20px;        
-  overflow-y: auto;      
-}
-.formHeader{
 
-width:100%;
+  padding: 20px;
 
-height:58px;
+  overflow: hidden;
 
-background:#ff5722;
+  box-sizing: border-box;
 
-border-radius:8px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 20px;
-
-margin-bottom:25px;
-
+  font-family: "Manrope", sans-serif;
 }
 
 
-.formHeader h3{
-
-color:white;
-
-font-size:20px;
-
-font-weight:600;
-
-margin:0;
-
-}
-
-
-.headerBack{
-
-border:none;
-
-background:transparent;
-
-color:white;
-
-font-size:35px;
-
-cursor:pointer;
-
-}
-.viewBtn {
-  background: #ff5722;
-  color: #fff;
-  border: none;
-  padding: 16px;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 12px;
-  transition: background 0.3s;
-}
-
-.viewBtn:hover {
-  background: #e64a19;
-}
+/* =========================================================
+   MAIN DIALOG
+========================================================= */
 
 .dialog {
+  position: relative;
+
+  width: min(900px, 94vw);
+
+  max-width: 900px;
+
+  height: 520px;
+
+  max-height: 90vh;
+
   display: flex;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  width: 100%;           
-  max-width: 900px;      
-  margin: 0 10px;        
-  padding: 40px 30px;
-  gap: 90px;
+
+  background: #ffffff;
+
+  border-radius: 17px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 55px rgba(20, 41, 75, 0.20);
+
+  box-sizing: border-box;
+
+  margin: 0;
+
+  gap: 0;
 }
+
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
 
 .left {
-  width: 380px;
-  flex-shrink: 0;
+  width: 400px;
+
+  min-width: 400px;
+
+  max-width: 400px;
+
+  flex: 0 0 315px;
+
+  padding: 34px 28px;
+
+  background: #f4f8fd;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  font-family: "Manrope", sans-serif;
 }
 
-.right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+/* =========================================================
+   LEFT HEADING
+========================================================= */
 
 .heading {
-  font-size: 18px;
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  font-size: 20px;
+
   font-weight: 600;
-  margin-bottom: 15px;
+
+  margin: 0 0 18px;
+
+  color: #14294b;
+
+  line-height: 1.35;
+
+  white-space: normal;
+
+  font-family: "Manrope", sans-serif;
 }
 
-.infoBox {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+
+/* =========================================================
+   PREMIUM CHECK ICON
+========================================================= */
+
+.checkIcon {
+  width: 25px;
+
+  height: 25px;
+
+  color: #16a34a;
+
+  flex-shrink: 0;
+
+  stroke-width: 2.5;
 }
+
+
+/* =========================================================
+   HEADING ICON
+========================================================= */
+
+.heading svg {
+  flex-shrink: 0;
+}
+/* =========================================================
+   INFO BOX
+========================================================= */
+
+.infoBox {
+  width: 100%;
+
+  border: 1px solid #dcecff;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 5px 18px rgba(24, 118, 189, 0.05);
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   INFO ITEM
+========================================================= */
 
 .item {
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 15px;
+
+  justify-content: space-between;
+
+  width: 100%;
+
+  min-height: 53px;
+
+  padding: 0 15px;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  color: #14294b;
+
+  border: none;
+
+  border-bottom: 1px solid #edf2f7;
+
+  border-radius: 0;
+
+  box-sizing: border-box;
+
+  line-height: 1.4;
+
+  background: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  transition:
+    background 0.2s ease;
 }
+
+
+.item:last-child {
+  border-bottom: none;
+}
+
+
+.item:hover {
+  background: #f8fbff;
+}
+
+
+/* =========================================================
+   ITEM ICON
+========================================================= */
+
+.item svg,
+.item .icon {
+  color: #1876bd;
+
+  flex-shrink: 0;
+
+  margin-right: 8px;
+}
+
+
+/* =========================================================
+   EDIT ICON
+========================================================= */
 
 .editIcon {
-  color: #888;
+  margin-left: auto;
+
+  color: #1876bd;
+
   cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+.editIcon:hover {
+  color: #145f9f;
+
+  transform: scale(1.08);
+}
+
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.right {
+  width: calc(100% - 315px);
+
+  flex: 1;
+
+  min-width: 0;
+
+  height: 100%;
+
+  padding: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: flex-start;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  background: #eaf3ff;
+
+  font-family: "Manrope", sans-serif;
+}
+
+
+/* =========================================================
+   FORM HEADER
+========================================================= */
+
+.formHeader {
+  width: 100%;
+
+  height: 48px;
+
+  min-height: 48px;
+
+  background: #1876bd;
+
+  border-radius: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 10px;
+
+  margin-bottom: 15px;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+
+  box-shadow:
+    0 5px 14px rgba(24, 118, 189, 0.15);
+}
+
+
+/* =========================================================
+   FORM HEADER TITLE
+========================================================= */
+
+.formHeader h3 {
+  flex: 1;
+
+  margin: 0;
+
+  padding-right: 44px;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  font-family: "Manrope", sans-serif;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.headerBack {
+  width: 34px;
+
+  height: 34px;
+
+  min-width: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  background: rgba(255, 255, 255, 0.14);
+
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  padding: 0;
+
+  line-height: 1;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.headerBack:hover {
+  background: rgba(255, 255, 255, 0.24);
+
+  color: #ffffff;
+
+  transform: scale(1.03);
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
 
 .input {
-  padding: 12px;
-  border: 1px solid #cbd5e0;
-  border-radius: 8px;
+  width: 100%;
+
+  height: 49px;
+
+  padding: 0 14px;
+
+  border: 1px solid #cbdbea;
+
+  border-radius: 9px;
+
   margin-bottom: 15px;
-  font-size: 15px;
+
+  font-size: 14px;
+
+  color: #14294b;
+
+  background: #ffffff;
+
+  outline: none;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+
+.input:focus {
+  border-color: #1876bd;
+
+  box-shadow:
+    0 0 0 3px rgba(24, 118, 189, 0.10);
+}
+
+
+.input::placeholder {
+  color: #7b8ba1;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.viewBtn {
+  width: 100%;
+
+  height: 49px;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
+  border: 1px solid #1876bd;
+
+  padding: 0 16px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  margin-bottom: 12px;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+.viewBtn:hover {
+  background: #145f9f;
+
+  border-color: #145f9f;
+}
+
+
+/* =========================================================
+   MAIN BUTTON
+========================================================= */
 
 .button {
-  background: #ff4d2f;
-  color: #fff;
-  border: none;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 8px;
+  width: 100%;
+
+  height: 49px;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
+  border: 1px solid #1876bd;
+
+  padding: 0 16px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  border-radius: 9px;
+
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
+
 .button:hover {
-  background: #e84228;
+  background: #145f9f;
+
+  border-color: #145f9f;
 }
+
+
+/* =========================================================
+   TERMS
+========================================================= */
 
 .terms {
   margin-top: 10px;
+
   font-size: 13px;
-  color: #555;
+
+  color: #718096;
+
+  line-height: 1.5;
+
+  font-family: "Manrope", sans-serif;
 }
+
 
 .terms a {
-  color: #007bff;
+  color: #1876bd;
+
   text-decoration: none;
 }
-/* ✅ Responsive Breakpoints */
-@media (max-width: 1024px) {
-  .dialog {
-    gap: 60px;
-    padding: 30px 20px;
-  }
 
-  .left {
-    width: 220px;
-  }
+
+.terms a:hover {
+  color: #145f9f;
+
+  text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-  .dialog {
-    flex-direction: column;
-    gap: 30px;
-    padding: 25px 18px;
-  }
 
-  .heading {
-    text-align: center;
-  }
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.closeBtn {
+  position: absolute;
+
+  top: 12px;
+
+  right: 12px;
+
+  width: 30px;
+
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: transparent;
+
+  border: none;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  font-size: 22px;
+
+  color: #ffffff;
+
+  z-index: 1000;
+
+  padding: 0;
+
+  line-height: 1;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
 
   .overlay {
-    align-items: start;
-    justify-content: center;
+    padding: 15px;
+  }
+
+
+  .dialog {
+    width: 95vw;
+
+    max-width: 900px;
+
+    height: 520px;
+
+    max-height: 90vh;
+  }
+
+
+  .left {
+    width: 30%;
+
+    min-width: 30%;
+
+    max-width: 30%;
+
+    flex-basis: 30%;
+
+    padding: 28px 20px;
+  }
+
+
+  .right {
+    width: 70%;
+
+    padding: 20px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .overlay {
+    padding: 10px;
+
+    align-items: center;
+
     overflow-y: auto;
   }
 
-  .left,
+
+  .dialog {
+    width: 100%;
+
+    max-width: 100%;
+
+    height: auto;
+
+    min-height: auto;
+
+    max-height: 95vh;
+
+    border-radius: 12px;
+
+    flex-direction: column;
+  }
+
+
+  .left {
+    display: none;
+  }
+
+
   .right {
     width: 100%;
+
+    height: auto;
+
+    min-height: 0;
+
+    padding: 15px;
+
+    background: #eaf3ff;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
   }
+
+
+  .formHeader {
+    height: 42px;
+
+    min-height: 42px;
+
+    margin-bottom: 15px;
+
+    padding: 0 10px;
+
+    border-radius: 8px;
+  }
+
+
+  .formHeader h3 {
+    font-size: 14px;
+
+    padding-right: 35px;
+  }
+
+
+  .headerBack {
+    width: 30px;
+
+    height: 30px;
+
+    min-width: 30px;
+
+    font-size: 20px;
+  }
+
+
+  .input {
+    height: 44px;
+
+    font-size: 14px;
+
+    margin-bottom: 12px;
+  }
+
+
+  .viewBtn,
+  .button {
+    height: 44px;
+
+    font-size: 14px;
+  }
+
+
+  .terms {
+    font-size: 12px;
+  }
+
+
+  .closeBtn {
+    top: 10px;
+
+    right: 10px;
+
+    width: 28px;
+
+    height: 28px;
+
+    font-size: 20px;
+  }
+
 }
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
 
 @media (max-width: 480px) {
+
+  .overlay {
+    padding: 8px;
+  }
+
+
   .dialog {
-    padding: 20px 15px;
-    gap: 20px;
+    max-height: 92vh;
+
+    border-radius: 10px;
   }
 
-  .heading {
-    font-size: 15px;
-  }
 
-  .item {
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  .button {
+  .right {
     padding: 12px;
-    font-size: 14px;
-    width: 50%;
-    align-self: center;
   }
-  
-}
-.closeBtn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 22px;
-  color: #333;
-  z-index: 1000; /* ✅ ensure it's above everything */
+
+
+  .formHeader {
+    height: 40px;
+
+    min-height: 40px;
+
+    margin-bottom: 10px;
+  }
+
+
+  .formHeader h3 {
+    font-size: 13px;
+
+    padding-right: 30px;
+  }
+
+
+  .headerBack {
+    width: 28px;
+
+    height: 28px;
+
+    min-width: 28px;
+
+    font-size: 19px;
+  }
+
+
+  .input {
+    height: 42px;
+
+    font-size: 13px;
+  }
+
+
+  .viewBtn,
+  .button {
+    height: 42px;
+
+    font-size: 13px;
+  }
+
+
+  .terms {
+    font-size: 11px;
+  }
+
 }
 
-.closeBtn:hover {
-  color: red;
-}
-.dialog {
-  position: relative; /* ✅ required for close button */
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.headerBack:focus-visible,
+.closeBtn:focus-visible,
+.viewBtn:focus-visible,
+.button:focus-visible,
+.input:focus-visible {
+  outline: 2px solid #1876bd;
+
+  outline-offset: 2px;
 }

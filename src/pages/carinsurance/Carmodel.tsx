@@ -204,7 +204,7 @@ onClick={onBack}
 
 
 <span>
-Search car Model
+Search Car Model
 </span>
 
 
@@ -232,7 +232,7 @@ onNext();
 
 <input
 
-placeholder="Search car Model"
+placeholder="Search Car Model"
 
 value={search}
 

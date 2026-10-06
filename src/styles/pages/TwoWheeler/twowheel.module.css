@@ -1,289 +1,1422 @@
+/* =========================
+   MAIN PAGE
+========================= */
+
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
 .container {
   display: flex;
-  justify-content: space-between;
+
+  justify-content: center;
+
   align-items: flex-start;
-  padding: 2rem 4rem;
+
+  width: 100%;
+
+  padding: 2rem 3rem;
+
   gap: 2rem;
-  font-family: 'Inter', sans-serif;
-  height: 115vh;
-}
-.modalOverlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100vh;
-background:rgba(0,0,0,0.45);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
+
+  font-family: "Manrope", sans-serif;
+
+  min-height: 100vh;
+
+  height: auto;
+
+  box-sizing: border-box;
 }
 
 
-.modelPopup{
-background:white;
-width:700px;
-max-width:90%;
-max-height:80vh;
-overflow-y:auto;
-border-radius:15px;
-padding:25px;
-}
+/* =========================
+   LEFT SECTION
+========================= */
 
-
-.popupHeader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-
-.popupHeader button{
-border:none;
-background:#ff5722;
-color:white;
-font-size:22px;
-width:35px;
-height:35px;
-border-radius:50%;
-cursor:pointer;
-}
-/* LEFT FIXED IMAGE */
 .leftSection {
-  flex: 1;
+  flex: 0 0 42%;
+
   position: sticky;
+
   top: 6rem;
+
   align-self: flex-start;
+
   height: fit-content;
+
   z-index: 1;
 }
+
+
 .imageWrapper {
-  max-width: 500px;
   width: 100%;
+
+  max-width: 450px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
 }
+
+
 .image {
-  max-width: 100%;
+  width: 100%;
+
+  max-width: 450px;
+
   height: auto;
-  margin-top: 5rem;
-  margin-left: 2rem;
+
+  margin-top: 2rem;
+
   object-fit: contain;
+
   transform: scaleX(-1);
 }
 
-/* RIGHT SECTION */
+
+/* =========================
+   RIGHT SECTION
+========================= */
+
 .rightSection {
-  flex: 1;
+  flex: 0 0 58%;
+
   position: relative;
-  height: auto;
+
+  width: 100%;
+
+  max-width: 650px;
+
+  min-height: 600px;
+
+  padding-bottom: 3rem;
+
+  box-sizing: border-box;
 }
 
-/* Step 1: Years */
-.question {
-  font-size: 1.25rem;
-  font-weight: 600;
+
+/* =========================
+   COMMON STEP HEADER
+========================= */
+
+.stepHeader {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 70px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
   margin-bottom: 1.5rem;
+
+  box-sizing: border-box;
 }
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.headerBackButton {
+  position: absolute;
+
+  left: 0;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 44px;
+
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: #17384f;
+
+  font-size: 1.2rem;
+
+  cursor: pointer;
+
+  padding: 0;
+
+  transition: all 0.2s ease;
+}
+
+
+.headerBackButton:hover {
+  color: #1876bd;
+
+  transform:
+    translateY(-50%)
+    scale(1.08);
+}
+
+
+/* =========================
+   HEADER TITLE
+========================= */
+
+.headerTitle {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0 3.5rem;
+
+  text-align: center;
+
+  font-size: 1.5rem;
+
+  font-weight: 600;
+
+  color: #17384f;
+
+  line-height: 1.3;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   QUESTION
+========================= */
+
+.question {
+  width: 100%;
+
+  font-size: 1.25rem;
+
+  font-weight: 600;
+
+  margin: 0 0 1.5rem;
+
+  color: #17384f;
+}
+
+
+/* =========================
+   YEAR GRID
+========================= */
+
 .yearGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 1rem;
-}
-.yearButton {
-  padding: 1rem;
-  background-color: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-.yearButton:hover {
-  background-color: #f5f5f5;
+
+  width: 100%;
+
+  padding-bottom: 2rem;
+
+  box-sizing: border-box;
 }
 
-/* Step 2: Makes */
-.makesWrapper {
-  max-width: 600px;
-}
-.backButton {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
+
+/* =========================
+   YEAR BUTTON
+========================= */
+
+.yearButton {
+  width: 100%;
+
+  min-height: 52px;
+
+  padding: 1rem;
+
+  background-color: #ffffff;
+
+  color: #17384f;
+
+  border: 1px solid #1876bd;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 0 10px
+    rgba(0, 0, 0, 0.04);
+
   cursor: pointer;
-  margin-bottom: 1rem;
-}
-.searchInput {
-  width: 90%;
-  padding: 0.8rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 1rem;
-}
-.popularTitle {
+
   font-weight: 500;
+
+  transition: all 0.3s ease;
+
+  box-sizing: border-box;
+}
+
+
+.yearButton:hover {
+  background-color: #1876bd;
+
+  color: #ffffff;
+
+  border-color: #1876bd;
+}
+
+
+/* =========================
+   MAKES WRAPPER
+========================= */
+
+.makesWrapper {
+  width: 100%;
+
+  max-width: 100%;
+}
+
+
+/* =========================
+   SEARCH BOX
+========================= */
+
+.searchBox {
+  position: relative;
+
+  width: 100%;
+
+  margin-bottom: 1.5rem;
+}
+
+
+.searchInput {
+  width: 100%;
+
+  height: 56px;
+
+  padding:
+    0 3.5rem 0 1rem;
+
+  border: 1px solid #aeb9c5;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 1rem;
+
+  outline: none;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
   margin-bottom: 1rem;
 }
+
+
+.searchInput:focus {
+  border-color: #1876bd;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(24, 118, 189, 0.10);
+}
+
+
+.searchInput::placeholder {
+  color: #9aa5b1;
+
+  opacity: 1;
+}
+
+
+/* =========================
+   SEARCH ICON
+========================= */
+
+.searchIcon {
+  position: absolute;
+
+  right: 1rem;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  font-size: 1.4rem;
+
+  color: #111827;
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   POPULAR TITLE
+========================= */
+
+.popularTitle {
+  display: flex;
+
+  align-items: center;
+
+  gap: 1rem;
+
+  margin:
+    0 0 1rem;
+
+  color: #17384f;
+
+  font-size: 1.1rem;
+
+  font-weight: 500;
+
+  line-height: 1.4;
+}
+
+
+.titleLine {
+  width: 55px;
+
+  height: 2px;
+
+  background: #1876bd;
+
+  display: inline-block;
+}
+
+
+/* =========================
+   MAKE GRID
+========================= */
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 1rem;
+
+  width: 100%;
 }
+
+
+/* =========================
+   MAKE CARD
+========================= */
+
 .makeCard {
   display: flex;
+
   align-items: center;
-  background: #f9f9f9;
-  border: 1px solid #e6e6e6;
-  border-radius: 10px;
+
+  min-height: 72px;
+
+  padding:
+    0.65rem 1rem;
+
+  gap: 0.8rem;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  border:
+    1px solid #dce2e8;
+
+  border-radius: 12px;
+
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
-  gap: 1rem;
-  min-height: 60px;
-  padding: 0.5rem 1rem;
-}
-.makeCard:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.makeImageWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-}
-.makeIcon {
-  object-fit: contain;
-  width: 100% !important;
-  height: auto !important;
-}
-.makeText {
-  font-size: 1rem;
-  font-weight: 500;
-}
-.searchText {
-  margin-top: 1.5rem;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 0.95rem;
+
+  transition:
+    all 0.2s ease;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 3px 10px
+    rgba(0, 0, 0, 0.05);
 }
 
-/* Step 3: Models */
-.modelsWrapper {
-  max-width: 700px;
+
+.makeCard:hover {
+  background: #ffffff;
+
+  color: #17384f;
+
+  border-color: #1876bd;
+
+  box-shadow:
+    0 5px 15px
+    rgba(24, 118, 189, 0.12);
+
+  transform: translateY(-1px);
 }
+
+
+/* =========================
+   LOGO WRAPPER
+========================= */
+
+.makeImageWrapper {
+  width: 58px;
+
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   MAKE LOGO
+========================= */
+
+.makeIcon {
+  width: 52px !important;
+
+  height: 42px !important;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+
+/* =========================
+   MAKE TEXT
+========================= */
+
+.makeText {
+  font-family: "Manrope", sans-serif;
+
+  font-size: 1rem;
+
+  font-weight: 500;
+
+  color: #17384f;
+
+  line-height: 1.3;
+}
+
+
+/* =========================
+   SEARCH TEXT
+========================= */
+
+.searchText {
+  margin:
+    1.5rem 0 0;
+
+  color: #1876bd;
+
+  cursor: pointer;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 0.95rem;
+
+  font-weight: 500;
+
+  text-align: center;
+}
+
+
+.searchText span {
+  color: #1876bd;
+}
+
+
+.searchText:hover,
+.searchText:hover span {
+  color: #125d96;
+}
+
+
+/* =========================
+   MODELS WRAPPER
+========================= */
+
+.modelsWrapper {
+  width: 100%;
+
+  max-width: 100%;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
 .title {
   font-size: 1.5rem;
+
+  font-weight: 500;
+
   margin-bottom: 1.5rem;
+
+  color: #17384f;
 }
+
+
+/* =========================
+   SECTION TITLE
+========================= */
+
 .sectionTitle {
+  width: 100%;
+
   font-weight: 600;
+
   font-size: 1rem;
-  margin: 2rem 0 1rem;
+
+  color: #17384f;
+
+  margin:
+    2rem 0 1rem;
+
   position: relative;
+
+  box-sizing: border-box;
 }
+
+
 .sectionTitle::after {
   content: "";
+
   display: block;
+
   width: 100%;
+
   height: 1px;
-  background: #ddd;
+
+  background: #dddddd;
+
   margin-top: 0.5rem;
 }
-.grids{
+
+
+/* =========================
+   MODEL GRID
+========================= */
+
+.grids {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 👈 yaha 2 se 3 kar diya */
-  gap: 1rem;
-}
-.modelCard {
-  background: #f9f9f9;
-  border: 1px solid #e6e6e6;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 500;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.2s ease;
-  cursor: pointer;
-  
-}
-.modelCard:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.9rem;
+
+  width: 100%;
 }
 
-/* Tablet */
+
+/* =========================
+   MODEL CARD
+========================= */
+
+.modelCard {
+  width: 100%;
+
+  min-height: 52px;
+
+  padding:
+    0.75rem 0.5rem;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  border:
+    1px solid #1876bd;
+
+  border-radius: 12px;
+
+  text-align: center;
+
+  font-size: 0.95rem;
+
+  font-weight: 500;
+
+  line-height: 1.4;
+
+  box-shadow:
+    0 3px 12px
+    rgba(0, 0, 0, 0.04);
+
+  transition: all 0.2s ease;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  overflow-wrap: break-word;
+}
+
+
+.modelCard:hover {
+  background: #1876bd;
+
+  color: #ffffff;
+
+  border-color: #1876bd;
+
+  box-shadow:
+    0 4px 12px
+    rgba(24, 118, 189, 0.20);
+}
+
+
+/* =========================
+   MODAL OVERLAY
+========================= */
+
+.modalOverlay {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 95vh;
+
+  background:
+    rgba(0, 0, 0, 0.45);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 2rem;
+
+  z-index: 9999;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   MODEL POPUP
+========================= */
+
+.modelPopup {
+  width: 700px;
+
+  max-width:
+    calc(100vw - 4rem);
+
+  max-height:
+    calc(100vh - 8rem);
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  padding:
+    0 1.5rem 1.5rem;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  box-shadow:
+    0 20px 50px
+    rgba(0, 0, 0, 0.20);
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #1876bd transparent;
+}
+
+
+/* =========================
+   POPUP HEADER
+========================= */
+
+.popupHeader {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  width: 100%;
+
+  margin:
+    0 0 1.2rem;
+
+  padding: 1rem 0;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+
+.popupHeader h3 {
+  margin: 0;
+
+  font-size: 1.3rem;
+
+  font-weight: 600;
+
+  color: #17384f;
+}
+
+
+/* =========================
+   POPUP CLOSE BUTTON
+========================= */
+
+.popupHeader button {
+  border: none;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
+  font-size: 20px;
+
+  width: 36px;
+
+  height: 36px;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  transition: all 0.2s ease;
+}
+
+
+.popupHeader button:hover {
+  background: #125d96;
+
+  transform: scale(1.05);
+}
+
+
+/* =========================
+   POPUP MODEL GRID
+========================= */
+
+.modelPopup .grids {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.8rem;
+
+  width: 100%;
+
+  padding-bottom: 0.5rem;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   POPUP MODEL CARD
+========================= */
+
+.modelPopup .modelCard {
+  width: 100%;
+
+  min-height: 54px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    0.7rem 0.8rem;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  border:
+    1px solid #1876bd;
+
+  border-radius: 12px;
+
+  font-size: 0.9rem;
+
+  font-weight: 500;
+
+  text-align: center;
+
+  line-height: 1.4;
+
+  box-sizing: border-box;
+
+  overflow-wrap: break-word;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.modelPopup .modelCard:hover {
+  background: #1876bd;
+
+  color: #ffffff;
+
+  border-color: #1876bd;
+
+  box-shadow:
+    0 4px 12px
+    rgba(24, 118, 189, 0.20);
+}
+
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.modelPopup::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+.modelPopup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.modelPopup::-webkit-scrollbar-thumb {
+  background: #1876bd;
+
+  border-radius: 10px;
+}
+
+
+.modelPopup::-webkit-scrollbar-thumb:hover {
+  background: #125d96;
+}
+
+
+/* =========================
+   CONTINUE BUTTON ONLY
+========================= */
+
+.continueButton {
+  display: block;
+
+  width: 100%;
+
+  min-height: 50px;
+
+  margin:
+    0.5rem auto 0;
+
+  padding:
+    0.8rem 1.5rem;
+
+  background: #ffffff;
+
+  color: #17384f;
+
+  border:
+    1px solid #1876bd;
+
+  border-radius: 10px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 1rem;
+
+  font-weight: 500;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  box-sizing: border-box;
+}
+
+
+.continueButton:hover {
+  background: #1876bd;
+
+  color: #ffffff;
+
+  border-color: #1876bd;
+
+  box-shadow:
+    0 4px 12px
+    rgba(24, 118, 189, 0.18);
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
 @media screen and (max-width: 1024px) {
+
   .container {
     flex-direction: column;
+
     padding: 2rem;
+
     align-items: center;
+
     height: auto;
+
+    min-height: auto;
   }
+
+
+  .leftSection {
+    width: 100%;
+
+    position: relative;
+
+    top: auto;
+
+    flex: none;
+  }
+
+
+  .rightSection {
+    width: 100%;
+
+    max-width: 700px;
+
+    min-height: auto;
+
+    flex: none;
+  }
+
+
   .yearGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
+
+
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
+
+
   .grids {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
-  .backButton {
-    display: none;
-  }
+
+
   .imageWrapper {
     display: none;
   }
 }
 
-/* Mobile */
+
+/* =========================
+   TABLET POPUP
+========================= */
+
+@media screen and (max-width: 768px) {
+
+  .modalOverlay {
+    padding: 1rem;
+  }
+
+
+  .modelPopup {
+    width: 100%;
+
+    max-width:
+      calc(100vw - 2rem);
+
+    max-height:
+      calc(100vh - 4rem);
+
+    padding:
+      0 1.2rem 1.2rem;
+  }
+
+
+  .modelPopup .grids {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
 @media screen and (max-width: 640px) {
+
   .container {
     padding: 1rem;
+
     height: auto;
+
+    min-height: auto;
+
+    gap: 1rem;
   }
+
+
+  .rightSection {
+    width: 100%;
+
+    max-width: 100%;
+
+    min-height: auto;
+
+    padding-bottom: 2rem;
+  }
+
+
+  .stepHeader {
+    min-height: 60px;
+
+    margin-bottom: 1rem;
+  }
+
+
+  .headerBackButton {
+    width: 40px;
+
+    height: 40px;
+
+    font-size: 1rem;
+  }
+
+
+  .headerTitle {
+    font-size: 1.25rem;
+
+    padding:
+      0 3rem;
+  }
+
+
   .yearGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
+
+
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 0.75rem;
   }
+
+
   .grids {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
+
+
   .question {
     text-align: center;
+
+    font-size: 1.2rem;
   }
+
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+
+  .searchInput {
+    width: 100%;
+
+    height: 52px;
+  }
+
+
+  /* MAKE CARD */
+
+  .makeCard {
+    min-height: 68px;
+
+    padding:
+      0.55rem 0.65rem;
+
+    gap: 0.5rem;
+
+    border-radius: 11px;
+  }
+
+
+  .makeImageWrapper {
+    width: 48px;
+
+    height: 42px;
+  }
+
+
+  .makeIcon {
+    width: 44px !important;
+
+    height: 36px !important;
+  }
+
+
+  .makeText {
+    font-size: 0.9rem;
+  }
+
+
+  .popularTitle {
+    font-size: 1rem;
+
+    margin-bottom: 0.8rem;
+  }
+
+
+  .searchText {
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+
+    padding:
+      0 0.5rem;
+  }
+
+
+  /* CONTINUE BUTTON ONLY */
+
+  .continueButton {
+    width: 160px;
+
+    min-height: 48px;
+
+    margin:
+      0.5rem auto 0;
+
+    font-size: 0.95rem;
+  }
+
+
   .imageWrapper {
     display: none;
   }
 }
 
-/* Extra small */
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media screen and (max-width: 480px) {
+
+  .modalOverlay {
+    align-items: center;
+
+    padding: 1rem;
+  }
+
+
+  .modelPopup {
+    width: 100%;
+
+    max-width:
+      calc(100vw - 2rem);
+
+    max-height:
+      calc(100vh - 2rem);
+
+    border-radius: 16px;
+
+    padding:
+      0 1rem 1rem;
+  }
+
+
+  .popupHeader {
+    top: 0;
+
+    margin:
+      0 0 1rem;
+
+    padding:
+      0.8rem 0;
+  }
+
+
+  .popupHeader h3 {
+    font-size: 1.15rem;
+  }
+
+
+  .popupHeader button {
+    width: 34px;
+
+    height: 34px;
+
+    font-size: 18px;
+  }
+
+
+  .modelPopup .grids {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 0.7rem;
+  }
+
+
+  .modelPopup .modelCard {
+    min-height: 50px;
+
+    font-size: 0.8rem;
+
+    padding: 0.6rem;
+  }
+}
+
+
+/* =========================
+   EXTRA SMALL
+========================= */
+
 @media screen and (max-width: 370px) {
+
   .grid {
     grid-template-columns: 1fr;
   }
-   .grids {
+
+
+  .grids {
     grid-template-columns: 1fr;
   }
+
+
   .makeCard {
     width: 100%;
+
     font-size: 0.85rem;
+
     gap: 0.6rem;
   }
+
+
+  .makeImageWrapper {
+    width: 48px;
+
+    height: 40px;
+  }
+
+
+  .makeIcon {
+    width: 42px !important;
+
+    height: 34px !important;
+  }
+
+
   .makeText {
     font-size: 0.85rem;
   }
+
+
   .searchInput {
     width: 100%;
+
     font-size: 0.9rem;
-    padding: 0.6rem 0.8rem;
+
+    padding:
+      0 0.8rem;
   }
+
+
   .sectionTitle {
     font-size: 1rem;
+  }
+
+
+  .modelPopup .grids {
+    grid-template-columns: 1fr;
+  }
+
+
+  .headerTitle {
+    font-size: 1.1rem;
+  }
+
+
+  /* CONTINUE BUTTON ONLY */
+
+  .continueButton {
+    width: 150px;
+
+    min-height: 46px;
   }
 }

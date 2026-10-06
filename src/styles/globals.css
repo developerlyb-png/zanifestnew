@@ -1,25 +1,25 @@
 /* ================= GOOGLE FONTS ================= */
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 /* ================= ROOT COLORS ================= */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 
-  --bg:#F5F7FB;
-  --white:#fff;
-  --border:#E7EEF7;
-  --shadow:0 6px 18px rgba(30, 62, 98, .06);
-  --text:#1f2937;
-  --muted:#6b7280;
-  --green:#16a34a;
-  --chip-bg:#F3F6FA;
-  --chip-bd:#E6ECF2;
-  --primary:#2563eb;
-  --cta:#ff6b00;
-  --cta-dark:#ea6405;
-  --cta-arrow:#ffffff;
-  --violet:#8b5cf6;
+  --bg: #F5F7FB;
+  --white: #fff;
+  --border: #E7EEF7;
+  --shadow: 0 6px 18px rgba(30, 62, 98, .06);
+  /* --text: #1f2937; */
+  --muted: #6b7280;
+  --green: #16a34a;
+  --chip-bg: #F3F6FA;
+  --chip-bd: #E6ECF2;
+  --primary: #2563eb;
+  --cta: #ff6b00;
+  --cta-dark: #ea6405;
+  --cta-arrow: #ffffff;
+  --violet: #8b5cf6;
 
   --bg-light: #f7f9fb;
   --accent: #ff5a1f;
@@ -36,8 +36,8 @@ body {
   height: 100%;
 
   /* 🔥 Global Default Font */
-  font-family: "Roboto", sans-serif;
-  font-weight: 400; /* default = description */
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
 
   box-sizing: border-box;
 }
@@ -64,7 +64,7 @@ div {
 }
 
 /* ===================================================== */
-/* 🔥 GLOBAL TYPOGRAPHY SYSTEM (USE EVERYWHERE) */
+/* 🔥 GLOBAL TYPOGRAPHY SYSTEM */
 /* ===================================================== */
 
 /* ===== HEADING ===== */
@@ -72,8 +72,8 @@ h1,
 h2,
 h3,
 .text-heading {
-  font-family: "Roboto", sans-serif;
-  font-weight: 900;
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
   color: var(--text);
 }
 
@@ -81,8 +81,8 @@ h3,
 h4,
 h5,
 .text-subheading {
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -92,13 +92,13 @@ span,
 li,
 a,
 .text-description {
-  font-family: "Roboto", sans-serif;
-  font-weight: 400;
+  font-family: "Manrope", sans-serif;
+  font-weight: 500;
   color: var(--text);
 }
 
-/* OPTIONAL: Button text */
+/* ===== BUTTON ===== */
 button {
-  font-family: "Roboto", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-weight: 500;
 }

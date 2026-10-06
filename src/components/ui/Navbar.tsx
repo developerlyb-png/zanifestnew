@@ -1,8 +1,6 @@
-"use client"
-import React, {
- useState,
- useEffect
-} from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/styles/components/ui/Navbar.module.css";
 import { useRouter } from "next/router";
@@ -13,108 +11,106 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 
 const INSURANCE_PRODUCT_LIST = [
-  { name: "Family Health Insurance", link: "/health/healthinsurance" },
-  { name: "Marine Insurance", link: "/Marine/Marine1" },
-  { name: "Travel Insurance", link: "/Travel/Travel1" },
-  { name: "Car Insurance", link: "/carinsurance/carinsurance" },
-  { name: "2 wheeler Insurance", link: "/TwoWheeler/bikeinsurance" },
-  { name: "Shop Insurance", link: "/Shop/Shop1" },
-  { name: "Third Party Insurance", link: "/ThirdParty/Thirdparty1" },
-  { name: "Commercial Vehicle", link: "/CommercialVehicle/CommercialVehicle1" },
-  { name: "Home Insurance", link: "/Home/Homeinsurance" },
-  { name: "Office Package Policy", link: "/officepackagepolicy/officepackagepolicy" },
-  { name: "Doctor Indemnity Insurance", link: "/DoctorInd/DoctorInsurance" },
+  {
+    name: "Family Health Insurance",
+    link: "/health/healthinsurance",
+  },
+  {
+    name: "Marine Insurance",
+    link: "/Marine/Marine1",
+  },
+  {
+    name: "Travel Insurance",
+    link: "/Travel/Travel1",
+  },
+  {
+    name: "Car Insurance",
+    link: "/carinsurance/carinsurance",
+  },
+  {
+    name: "2 wheeler Insurance",
+    link: "/TwoWheeler/bikeinsurance",
+  },
+  {
+    name: "Shop Insurance",
+    link: "/Shop/Shop1",
+  },
+  {
+    name: "Third Party Insurance",
+    link: "/ThirdParty/Thirdparty1",
+  },
+  {
+    name: "Commercial Vehicle",
+    link: "/CommercialVehicle/CommercialVehicle1",
+  },
+  {
+    name: "Home Insurance",
+    link: "/Home/Homeinsurance",
+  },
+  {
+    name: "Office Package Policy",
+    link: "/officepackagepolicy/officepackagepolicy",
+  },
+  {
+    name: "Doctor Indemnity Insurance",
+    link: "/DoctorInd/DoctorInsurance",
+  },
   {
     name: "Director & Officer Liability Insurance",
     link: "/DirectorOfficerLiabilityInsurance/DirectorInsurance1",
   },
 ];
 
-
 function Navbar() {
   const router = useRouter();
   const { isLoggedIn, logout } = useAuth();
+
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [listIndex, setListIndex] = useState<number>(0);
-const [otpUser,setOtpUser] =
-useState<any>(null);
+  const [otpUser, setOtpUser] = useState<any>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-const [showUserMenu,setShowUserMenu] =
-useState(false);
+  useEffect(() => {
+    const loadUser = () => {
+      const saved = localStorage.getItem("user");
 
-useEffect(()=>{
+      if (saved && saved !== "undefined") {
+        try {
+          setOtpUser(JSON.parse(saved));
+        } catch (error) {
+          localStorage.removeItem("user");
+          setOtpUser(null);
+        }
+      } else {
+        setOtpUser(null);
+      }
+    };
 
+    loadUser();
 
-const loadUser = () => {
+    window.addEventListener("userLogin", loadUser);
 
+    return () => {
+      window.removeEventListener("userLogin", loadUser);
+    };
+  }, []);
 
-const saved =
-localStorage.getItem("user");
+  const closeMobileMenu = () => {
+    setShowMobileMenu(false);
+    setListIndex(0);
+  };
 
-
-if(
- saved &&
- saved !== "undefined"
-){
-
-
-try{
-
-
-setOtpUser(
-JSON.parse(saved)
-);
-
-
-}
-catch(error){
-
-
-localStorage.removeItem("user");
-
-setOtpUser(null);
-
-
-}
-
-
-}
-else{
-
-
-setOtpUser(null);
-
-
-}
-
-
-};
-
-
-loadUser();
-
-
-window.addEventListener(
-"userLogin",
-loadUser
-);
-
-
-return()=>{
-
-window.removeEventListener(
-"userLogin",
-loadUser
-);
-
-};
-
-
-},[]);
   return (
     <div className={styles.cont}>
-      {/* LOGO */}
-      <div className={styles.logoCont} onClick={() => router.push("/")}>
+
+      {/* =====================================================
+          LOGO
+      ===================================================== */}
+
+      <div
+        className={styles.logoCont}
+        onClick={() => router.push("/")}
+      >
         <h3 className={styles.logo}>
           <Image
             src={require("@/assets/logo.png")}
@@ -124,7 +120,10 @@ loadUser
         </h3>
       </div>
 
-      {/* MOBILE MENU ICON */}
+      {/* =====================================================
+          MOBILE MENU ICON
+      ===================================================== */}
+
       <div
         className={styles.openMenu}
         onClick={() => setShowMobileMenu(true)}
@@ -132,17 +131,22 @@ loadUser
         <IoMdMenu />
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* =====================================================
+          MOBILE MENU
+      ===================================================== */}
+
       {showMobileMenu && (
         <div className={styles.mobileMenuList}>
-          
-          {/* 🔥 MOBILE HEADER */}
+
+          {/* MOBILE HEADER */}
+
           <div className={styles.mobileHeader}>
+
             <div
               className={styles.mobileLogo}
               onClick={() => {
                 router.push("/");
-                setShowMobileMenu(false);
+                closeMobileMenu();
               }}
             >
               <Image
@@ -154,304 +158,345 @@ loadUser
 
             <div
               className={styles.mobileClose}
-              onClick={() => setShowMobileMenu(false)}
+              onClick={closeMobileMenu}
             >
               <IoCloseSharp />
             </div>
+
           </div>
 
-          {/* HOME */}
-          <div className={styles.menuItem} onClick={() => router.push("/")}>
-            <div className={`${styles.heading} ${styles.headingBlue}`}>
+          {/* =================================================
+              HOME
+          ================================================= */}
+
+          <div
+            className={styles.menuItem}
+            onClick={() => {
+              router.push("/");
+              closeMobileMenu();
+            }}
+          >
+            <div
+              className={`${styles.heading} ${styles.headingBlue}`}
+            >
               Home
             </div>
+
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* INSURANCE PRODUCT */}
+          {/* =================================================
+              INSURANCE PRODUCT
+          ================================================= */}
+
           <div
             className={styles.menuItem}
-            onClick={() => setListIndex(listIndex === 2 ? 0 : 2)}
+            onClick={() =>
+              setListIndex(listIndex === 2 ? 0 : 2)
+            }
           >
-            <div className={`${styles.heading} ${styles.activeMenu}`}>
+            <div
+              className={`${styles.heading} ${styles.activeMenu}`}
+            >
               Insurance Product
+
               <div className={styles.mobilearrow}>
                 <IoIosArrowDown />
               </div>
             </div>
+
             <div className={styles.totalLine}></div>
 
             <AnimatePresence>
               {listIndex === 2 && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{
+                    opacity: 0,
+                    y: -10,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -10,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                  }}
                   className={styles.dropDownMobile}
                 >
-                  {INSURANCE_PRODUCT_LIST.map((item, index) => (
-                    <div
-                      key={index}
-                      className={styles.dropItemMobile}
-                      onClick={() => {
-                        router.push(item.link);
-                        setShowMobileMenu(false);
-                      }}
-                    >
-                      {item.name}
-                      <div className={styles.totalLine}></div>
-                    </div>
-                  ))}
+                  {INSURANCE_PRODUCT_LIST.map(
+                    (item, index) => (
+                      <div
+                        key={index}
+                        className={styles.dropItemMobile}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(item.link);
+                          closeMobileMenu();
+                        }}
+                      >
+                        {item.name}
+
+                        <div
+                          className={styles.totalLine}
+                        ></div>
+                      </div>
+                    )
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* ABOUT */}
+          {/* =================================================
+              ABOUT US
+          ================================================= */}
+
           <div
             className={styles.menuItem}
-            onClick={() => router.push("/about")}
+            onClick={() => {
+              router.push("/about");
+              closeMobileMenu();
+            }}
           >
-            <div className={`${styles.heading} ${styles.headingBlue}`}>
+            <div
+              className={`${styles.heading} ${styles.headingBlue}`}
+            >
               About Us
             </div>
+
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* CONTACT */}
+          {/* =================================================
+              CONTACT US
+          ================================================= */}
+
           <div
             className={styles.menuItem}
-            onClick={() => router.push("/contact")}
+            onClick={() => {
+              router.push("/contact");
+              closeMobileMenu();
+            }}
           >
-            <div className={`${styles.heading} ${styles.headingBlue}`}>
+            <div
+              className={`${styles.heading} ${styles.headingBlue}`}
+            >
               Contact Us
             </div>
+
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* LOGIN / LOGOUT */}
+          {/* =================================================
+              MOBILE LOGIN / LOGOUT
+          ================================================= */}
+
           {!otpUser && !isLoggedIn ? (
             <div
               className={styles.loginButton}
-              onClick={() => router.push("/login")}
+              onClick={() => {
+                router.push("/login");
+                closeMobileMenu();
+              }}
             >
               <p className={styles.loginText}>
-                Login/Register <FaSignInAlt />
+                <FaSignInAlt
+                  className={styles.loginIcon}
+                />
+
+                <span>Login</span>
               </p>
             </div>
           ) : (
-           <div
-className={styles.loginButton}
-onClick={() => {
-
- if(otpUser){
-
-  router.push("/dashboard");
-
- }
- else{
-
-  logout();
-
- }
-
-}}
->
-
-<p className={styles.loginText}>
-
-{
-otpUser
-?
-` ${otpUser.name}`
-:
-"Logout"
-}
-
-</p>
-
-</div>
+            <div
+              className={styles.loginButton}
+              onClick={() => {
+                if (otpUser) {
+                  router.push("/dashboard");
+                  closeMobileMenu();
+                } else {
+                  logout();
+                  closeMobileMenu();
+                }
+              }}
+            >
+              <p className={styles.loginText}>
+                {otpUser ? otpUser.name : "Logout"}
+              </p>
+            </div>
           )}
+
         </div>
       )}
 
-      {/* ================= DESKTOP MENU (UNCHANGED) ================= */}
+      {/* =====================================================
+          DESKTOP MENU
+      ===================================================== */}
+
       <div className={styles.menuCont}>
-        <div className={styles.menuItem} onClick={() => router.push("/")}>
-          <div className={`${styles.heading} ${styles.headingBlue}`}>Home</div>
+
+        {/* HOME */}
+
+        <div
+          className={styles.menuItem}
+          onClick={() => router.push("/")}
+        >
+          <div
+            className={`${styles.heading} ${styles.headingBlue}`}
+          >
+            Home
+          </div>
         </div>
 
+        {/* INSURANCE PRODUCT */}
+
         <div className={styles.menuItem}>
-          <div className={`${styles.heading} ${styles.activeMenu}`}>
+
+          <div
+            className={`${styles.heading} ${styles.activeMenu}`}
+          >
             Insurance Product
+
             <div className={styles.arrow}>
               <IoIosArrowDown />
             </div>
           </div>
 
           <div className={styles.dropDown}>
-            {INSURANCE_PRODUCT_LIST.map((item, index) => (
-              <div
-                key={index}
-                className={styles.dropItem}
-                onClick={() => router.push(item.link)}
-              >
-                {item.name}
-              </div>
-            ))}
+            {INSURANCE_PRODUCT_LIST.map(
+              (item, index) => (
+                <div
+                  key={index}
+                  className={styles.dropItem}
+                  onClick={() =>
+                    router.push(item.link)
+                  }
+                >
+                  {item.name}
+                </div>
+              )
+            )}
           </div>
+
         </div>
+
+        {/* ABOUT */}
 
         <div
           className={styles.menuItem}
           onClick={() => router.push("/about")}
         >
-          <div className={`${styles.heading} ${styles.headingBlue}`}>
+          <div
+            className={`${styles.heading} ${styles.headingBlue}`}
+          >
             About Us
           </div>
         </div>
+
+        {/* CONTACT */}
 
         <div
           className={styles.menuItem}
           onClick={() => router.push("/contact")}
         >
-          <div className={`${styles.heading} ${styles.headingBlue}`}>
+          <div
+            className={`${styles.heading} ${styles.headingBlue}`}
+          >
             Contact Us
           </div>
         </div>
+
       </div>
 
-      {/* DESKTOP LOGIN */}
-  <div className={styles.loginCont}>
+      {/* =====================================================
+          DESKTOP LOGIN
+      ===================================================== */}
 
-{
-otpUser ?
+      <div className={styles.loginCont}>
 
-(
+        {otpUser ? (
 
-<div style={{position:"relative"}}>
+          <div
+            className={styles.userWrapper}
+          >
 
+            <div
+              className={styles.loginButton}
+              onClick={() =>
+                setShowUserMenu(!showUserMenu)
+              }
+            >
+              <p className={styles.loginText}>
+                <span>{otpUser.name}</span>
+              </p>
+            </div>
 
-<div
-className={styles.loginButton}
-onClick={() =>
-setShowUserMenu(!showUserMenu)
-}
->
+            {showUserMenu && (
+              <div className={styles.userDropdown}>
 
-<p className={styles.loginText}>
+                <p
+                  onClick={() => {
+                    router.push("/dashboard");
+                    setShowUserMenu(false);
+                  }}
+                >
+                  Dashboard
+                </p>
 
- {otpUser.name}
+                <p
+                  onClick={() => {
+                    localStorage.removeItem("user");
+                    setOtpUser(null);
+                    setShowUserMenu(false);
+                    logout();
+                  }}
+                >
+                  Logout
+                </p>
 
-</p>
+              </div>
+            )}
 
-</div>
+          </div>
 
+        ) : isLoggedIn ? (
 
+          <div
+            className={styles.loginButton}
+            onClick={logout}
+          >
+            <p className={styles.loginText}>
+              <FaSignInAlt
+                className={styles.loginIcon}
+              />
 
-{
-showUserMenu &&
+              <span>Logout</span>
+            </p>
+          </div>
 
-<div className={styles.userDropdown}>
+        ) : (
 
+          <div
+            className={styles.loginButton}
+            onClick={() => router.push("/login")}
+          >
+            <p className={styles.loginText}>
+              <FaSignInAlt
+                className={styles.loginIcon}
+              />
 
-<p
-onClick={()=>{
+              <span>Login</span>
+            </p>
+          </div>
 
-router.push("/dashboard");
+        )}
 
-setShowUserMenu(false);
+      </div>
 
-}}
->
-
-Dashboard
-
-</p>
-
-
-
-<p
-onClick={()=>{
-
-localStorage.removeItem("user");
-
-setOtpUser(null);
-
-setShowUserMenu(false);
-
-logout();
-
-}}
->
-
-Logout
-
-</p>
-
-
-</div>
-
-}
-
-
-</div>
-
-)
-
-
-:
-
-isLoggedIn ?
-
-(
-
-<div
-className={styles.loginButton}
-onClick={logout}
->
-
-<p className={styles.loginText}>
-
-Logout
-
-</p>
-
-</div>
-
-)
-
-
-:
-
-(
-
-<div
-className={styles.loginButton}
-onClick={() => router.push("/login")}
->
-
-<p className={styles.loginText}>
-
-Login/Register
-
-<FaSignInAlt
-style={{
-position:"relative",
-top:"5px"
-}}
-/>
-
-</p>
-
-</div>
-
-)
-
-}
-
-</div>
     </div>
   );
 }

@@ -26,19 +26,19 @@
   bottom: 5px;
   width: 25%;
   height: 5px;
-  background-color: #fa621a;
+  background-color: #1876bd;
   border-radius: 3px;
 }
 
 .heading {
-  font-size: 2.5rem;
+  font-size: 2.3rem;
   font-weight: bold;
   margin: 0;
   padding-bottom: 17px;
 }
 
 .orange {
-  color: #fa621a;
+  color: #1876bd;
 }
 
 .bottom {
@@ -49,7 +49,7 @@
 .serviceItem {
   position: relative;
   min-width: 300px;
-  max-width: 300px;
+  max-width: 360px !important;
   flex-shrink: 0;
   background-color: white;
   padding: 20px;
@@ -76,8 +76,9 @@
 .name {
   all: unset;
   font-size: 20px;
-  color: #1c75bb;
+  color: #1876bd;
   font-weight: 600;
+   font-family: "Manrope", sans-serif;
 }
 
 .desc {
@@ -85,10 +86,12 @@
   text-align: center;
   font-size: 14px;
   padding: 10px;
+   font-family: "Manrope", sans-serif;
 }
 
 .post {
   font-size: 12px;
+   font-family: "Manrope", sans-serif;
 }
 
 .dots {
@@ -214,7 +217,7 @@
 
 .carouselWindow {
   width: 100%;
-  max-width: 1020px;
+  max-width: 1220px;
   overflow: hidden;
   margin: 0 auto;
   padding: 0 20px;
