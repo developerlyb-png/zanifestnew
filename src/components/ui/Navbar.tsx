@@ -1,10 +1,10 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/styles/components/ui/Navbar.module.css";
 import { useRouter } from "next/router";
-import { FaSignInAlt } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdMenu } from "react-icons/io";
 import Image from "next/image";
@@ -102,11 +102,7 @@ function Navbar() {
 
   return (
     <div className={styles.cont}>
-
-      {/* =====================================================
-          LOGO
-      ===================================================== */}
-
+      {/* LOGO */}
       <div
         className={styles.logoCont}
         onClick={() => router.push("/")}
@@ -120,10 +116,7 @@ function Navbar() {
         </h3>
       </div>
 
-      {/* =====================================================
-          MOBILE MENU ICON
-      ===================================================== */}
-
+      {/* MOBILE MENU ICON */}
       <div
         className={styles.openMenu}
         onClick={() => setShowMobileMenu(true)}
@@ -131,17 +124,11 @@ function Navbar() {
         <IoMdMenu />
       </div>
 
-      {/* =====================================================
-          MOBILE MENU
-      ===================================================== */}
-
+      {/* MOBILE MENU */}
       {showMobileMenu && (
         <div className={styles.mobileMenuList}>
-
           {/* MOBILE HEADER */}
-
           <div className={styles.mobileHeader}>
-
             <div
               className={styles.mobileLogo}
               onClick={() => {
@@ -162,13 +149,9 @@ function Navbar() {
             >
               <IoCloseSharp />
             </div>
-
           </div>
 
-          {/* =================================================
-              HOME
-          ================================================= */}
-
+          {/* HOME */}
           <div
             className={styles.menuItem}
             onClick={() => {
@@ -185,10 +168,7 @@ function Navbar() {
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* =================================================
-              INSURANCE PRODUCT
-          ================================================= */}
-
+          {/* INSURANCE PRODUCT */}
           <div
             className={styles.menuItem}
             onClick={() =>
@@ -227,34 +207,27 @@ function Navbar() {
                   }}
                   className={styles.dropDownMobile}
                 >
-                  {INSURANCE_PRODUCT_LIST.map(
-                    (item, index) => (
-                      <div
-                        key={index}
-                        className={styles.dropItemMobile}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(item.link);
-                          closeMobileMenu();
-                        }}
-                      >
-                        {item.name}
+                  {INSURANCE_PRODUCT_LIST.map((item, index) => (
+                    <div
+                      key={index}
+                      className={styles.dropItemMobile}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(item.link);
+                        closeMobileMenu();
+                      }}
+                    >
+                      {item.name}
 
-                        <div
-                          className={styles.totalLine}
-                        ></div>
-                      </div>
-                    )
-                  )}
+                      <div className={styles.totalLine}></div>
+                    </div>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* =================================================
-              ABOUT US
-          ================================================= */}
-
+          {/* ABOUT US */}
           <div
             className={styles.menuItem}
             onClick={() => {
@@ -271,10 +244,7 @@ function Navbar() {
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* =================================================
-              CONTACT US
-          ================================================= */}
-
+          {/* CONTACT US */}
           <div
             className={styles.menuItem}
             onClick={() => {
@@ -291,10 +261,7 @@ function Navbar() {
             <div className={styles.totalLine}></div>
           </div>
 
-          {/* =================================================
-              MOBILE LOGIN / LOGOUT
-          ================================================= */}
-
+          {/* MOBILE LOGIN / LOGOUT */}
           {!otpUser && !isLoggedIn ? (
             <div
               className={styles.loginButton}
@@ -304,10 +271,6 @@ function Navbar() {
               }}
             >
               <p className={styles.loginText}>
-                <FaSignInAlt
-                  className={styles.loginIcon}
-                />
-
                 <span>Login</span>
               </p>
             </div>
@@ -329,18 +292,12 @@ function Navbar() {
               </p>
             </div>
           )}
-
         </div>
       )}
 
-      {/* =====================================================
-          DESKTOP MENU
-      ===================================================== */}
-
+      {/* DESKTOP MENU */}
       <div className={styles.menuCont}>
-
         {/* HOME */}
-
         <div
           className={styles.menuItem}
           onClick={() => router.push("/")}
@@ -353,9 +310,7 @@ function Navbar() {
         </div>
 
         {/* INSURANCE PRODUCT */}
-
         <div className={styles.menuItem}>
-
           <div
             className={`${styles.heading} ${styles.activeMenu}`}
           >
@@ -367,25 +322,19 @@ function Navbar() {
           </div>
 
           <div className={styles.dropDown}>
-            {INSURANCE_PRODUCT_LIST.map(
-              (item, index) => (
-                <div
-                  key={index}
-                  className={styles.dropItem}
-                  onClick={() =>
-                    router.push(item.link)
-                  }
-                >
-                  {item.name}
-                </div>
-              )
-            )}
+            {INSURANCE_PRODUCT_LIST.map((item, index) => (
+              <div
+                key={index}
+                className={styles.dropItem}
+                onClick={() => router.push(item.link)}
+              >
+                {item.name}
+              </div>
+            ))}
           </div>
-
         </div>
 
         {/* ABOUT */}
-
         <div
           className={styles.menuItem}
           onClick={() => router.push("/about")}
@@ -398,7 +347,6 @@ function Navbar() {
         </div>
 
         {/* CONTACT */}
-
         <div
           className={styles.menuItem}
           onClick={() => router.push("/contact")}
@@ -409,26 +357,15 @@ function Navbar() {
             Contact Us
           </div>
         </div>
-
       </div>
 
-      {/* =====================================================
-          DESKTOP LOGIN
-      ===================================================== */}
-
+      {/* DESKTOP LOGIN / LOGOUT */}
       <div className={styles.loginCont}>
-
         {otpUser ? (
-
-          <div
-            className={styles.userWrapper}
-          >
-
+          <div className={styles.userWrapper}>
             <div
               className={styles.loginButton}
-              onClick={() =>
-                setShowUserMenu(!showUserMenu)
-              }
+              onClick={() => setShowUserMenu(!showUserMenu)}
             >
               <p className={styles.loginText}>
                 <span>{otpUser.name}</span>
@@ -437,7 +374,6 @@ function Navbar() {
 
             {showUserMenu && (
               <div className={styles.userDropdown}>
-
                 <p
                   onClick={() => {
                     router.push("/dashboard");
@@ -457,46 +393,29 @@ function Navbar() {
                 >
                   Logout
                 </p>
-
               </div>
             )}
-
           </div>
-
         ) : isLoggedIn ? (
-
           <div
             className={styles.loginButton}
             onClick={logout}
           >
             <p className={styles.loginText}>
-              <FaSignInAlt
-                className={styles.loginIcon}
-              />
-
               <span>Logout</span>
             </p>
           </div>
-
         ) : (
-
           <div
             className={styles.loginButton}
             onClick={() => router.push("/login")}
           >
             <p className={styles.loginText}>
-              <FaSignInAlt
-                className={styles.loginIcon}
-              />
-
               <span>Login</span>
             </p>
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }

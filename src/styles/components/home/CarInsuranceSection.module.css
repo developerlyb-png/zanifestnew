@@ -1,320 +1,649 @@
+/* =========================================
+   MAIN INSURANCE SECTION
+========================================= */
+
 .cont {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  margin-bottom: 20px;
-  background-image: url("../../../../src/assets/background-car.png");
-  background-size: cover;
-  background-position: center;
+  box-sizing: border-box;
+  padding: 50px 50px 24px;
+  margin: 0 0 20px;
+
+  /* Continuous blue-to-light-blue background */
+  background-color: #eaf6ff;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(20, 91, 156, 0.96) 0%,
+      rgba(24, 118, 189, 0.92) 28%,
+      rgba(135, 204, 242, 0.88) 65%,
+      rgba(234, 246, 255, 0.98) 100%
+    ),
+    url("../../../../src/assets/background-car.png");
+
+  background-size: cover, cover;
+  background-position: center top, center top;
   background-repeat: no-repeat;
+  font-family: "Manrope", sans-serif;
+  overflow: hidden;
 }
 
-
-/* ================= HEADING ================= */
+/* =========================================
+   HEADING
+========================================= */
 
 .head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 40px;
   position: relative;
-}
-
-.head::after {
-  content: "";
-  position: absolute;
-  bottom: -15px;
-  width: 25%;
-  height: 5px;
-  background-color: #1876bd;
-  border-radius: 3px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 0 28px;
+  text-align: center;
 }
 
 .heading {
-  font-family: "Manrope", sans-serif;
-  font-size: 2.3rem;
-  font-weight: 700;
-  display: inline;
   margin: 0;
-  color: #17384f;
-}
-
-.orange {
-  color: #1876bd;
-}
-
-
-/* ================= GRID ================= */
-
-.list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-
-  gap: 25px;
-
-  justify-items: center;
-
-  width: 80%;
-  max-width: 1200px;
-
-  margin-top: 25px;
-}
-
-
-/* ================= CARD ================= */
-
-.item {
-  width: 135px;
-
-  background-color: #ffffff;
-
-  border-radius: 16px;
-
-  overflow: hidden;
-
-  box-shadow: rgba(24, 118, 189, 0.10) 0px 4px 8px;
-
-  border: 1px solid transparent;
-
-  cursor: pointer;
-
-  transition: all 0.3s ease;
-}
-
-.item:hover {
-  border-color: #1876bd;
-
-  transform: translateY(-4px);
-
-  box-shadow: rgba(24, 118, 189, 0.16) 0px 8px 16px;
-}
-
-
-/* ================= IMAGE ================= */
-
-.imageCont {
-  background-color: #eaf5fc;
-
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
-  height: 100px;
-}
-
-.image {
-  height: 60px;
-  width: auto;
-
-  object-fit: contain;
-}
-
-
-/* ================= TEXT ================= */
-
-.bottom {
-  padding: 12px;
-
-  text-align: center;
-
+  color: #ffffff;
   font-family: "Manrope", sans-serif;
-
-  font-size: 13px;
-  font-weight: 500;
-
-  line-height: 1.3;
-
-  word-break: break-word;
-
-  color: #17384f;
+  font-size: clamp(25px, 2.5vw, 34px);
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
 }
 
+.highlight {
+  color: #ffdc18;
+}
 
-/* ================= MOBILE ELLIPSIS ================= */
+/* Heading decoration */
+
+.headingDecoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.headingDecoration span {
+  width: 36px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+}
+
+.headingDecoration i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffdc18;
+}
+
+/* Mobile ellipsis */
 
 .mobileEllipsis {
   display: none;
 }
 
+/* =========================================
+   INSURANCE GRID
+========================================= */
 
-/* ================= 1200px ================= */
+.list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  max-width: 1440px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  margin: 0 auto;
+}
 
-@media screen and (max-width: 1200px) {
+/* =========================================
+   INSURANCE CARD
+========================================= */
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  min-height: 150px;
+  padding: 12px 10px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  background: linear-gradient(
+    145deg,
+    #ffffff 0%,
+    #f6fbff 100%
+  );
+  box-shadow: 0 5px 15px rgba(10, 63, 113, 0.13);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.item:hover {
+  transform: translateY(-4px);
+  border-color: #8bd3ff;
+  box-shadow: 0 10px 24px rgba(4, 47, 91, 0.2);
+}
+
+.item:focus-visible {
+  outline: 3px solid #ffdc18;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   CARD IMAGE
+========================================= */
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 82px;
+  flex: 0 0 82px;
+  margin-bottom: 4px;
+}
+
+.imageCont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 145px;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* =========================================
+   CARD TITLE
+========================================= */
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 2px 5px;
+  box-sizing: border-box;
+  color: #092d59;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   CARD ACCENT COLORS
+========================================= */
+
+.cardAccent {
+  display: block;
+  width: 24px;
+  height: 3px;
+  flex: 0 0 3px;
+  margin-top: 3px;
+  border-radius: 5px;
+  background: #1685d4;
+}
+
+.item:nth-child(2) .cardAccent {
+  background: #79bd38;
+}
+
+.item:nth-child(3) .cardAccent {
+  background: #e56eaa;
+}
+
+.item:nth-child(4) .cardAccent {
+  background: #ffbe25;
+}
+
+.item:nth-child(5) .cardAccent {
+  background: #8454d6;
+}
+
+.item:nth-child(6) .cardAccent {
+  background: #16b8bd;
+}
+
+.item:nth-child(7) .cardAccent {
+  background: #f4b82b;
+}
+
+.item:nth-child(8) .cardAccent {
+  background: #13b9a5;
+}
+
+.item:nth-child(9) .cardAccent {
+  background: #36b98a;
+}
+
+.item:nth-child(10) .cardAccent {
+  background: #ffbd24;
+}
+
+.item:nth-child(11) .cardAccent {
+  background: #8d55d9;
+}
+
+.item:nth-child(12) .cardAccent {
+  background: #1789d7;
+}
+
+/* =========================================
+   ENTRY ANIMATION
+========================================= */
+
+.animateOnce .item {
+  animation: cardFadeIn 0.45s ease both;
+}
+
+.animateOnce .item:nth-child(2) {
+  animation-delay: 0.04s;
+}
+
+.animateOnce .item:nth-child(3) {
+  animation-delay: 0.08s;
+}
+
+.animateOnce .item:nth-child(4) {
+  animation-delay: 0.12s;
+}
+
+.animateOnce .item:nth-child(5) {
+  animation-delay: 0.16s;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   TRUST INFORMATION
+========================================= */
+
+.trustRow {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  width: 100%;
+  max-width: 1300px;
+  margin: 30px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.trustItem + .trustItem {
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.trustIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.trustTagline {
+  display: none;
+}
+
+/* =========================================
+   WEBSITE FOOTER
+========================================= */
+
+.website {
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* =========================================
+   LARGE DESKTOP
+========================================= */
+
+@media (min-width: 1400px) {
+  .cont {
+    padding: 58px 38px 28px;
+  }
 
   .list {
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 20px;
+    gap: 14px;
   }
 
   .item {
-    width: 115px;
+    min-height: 165px;
+    padding: 13px 12px 12px;
   }
 
-  .imageCont {
-    height: 90px;
+  .top {
+    height: 92px;
+    flex-basis: 92px;
+  }
+
+  .bottom {
+    font-size: 13px;
+  }
+}
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1199px) and (min-width: 901px) {
+  .cont {
+    padding: 48px 20px 24px;
+  }
+
+  .list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .item {
+    min-height: 145px;
+  }
+
+  .top {
+    height: 78px;
+    flex-basis: 78px;
   }
 
   .image {
-    height: 50px;
+    max-width: 135px;
+  }
+
+  .trustItem {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 900px) and (min-width: 601px) {
+  .cont {
+    padding: 42px 16px 22px;
+  }
+
+  .head {
+    margin-bottom: 24px;
+  }
+
+  .heading {
+    font-size: 27px;
+  }
+
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .item {
+    min-height: 145px;
+    padding: 9px 8px 10px;
+  }
+
+  .top {
+    height: 76px;
+    flex-basis: 76px;
+  }
+
+  .image {
+    max-width: 125px;
   }
 
   .bottom {
     font-size: 12px;
   }
 
+  .trustRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 10px;
+  }
+
+  .trustItem:nth-child(3) {
+    border-left: none;
+  }
 }
 
+/* =========================================
+   MOBILE
+========================================= */
 
-/* ================= TABLET ================= */
-
-@media screen and (max-width: 768px) {
-
-  .heading {
-    font-size: 24px;
+@media (max-width: 600px) {
+  .cont {
+    padding: 35px 12px 20px;
+    margin-bottom: 12px;
+    background-position: center top, center top;
   }
-
-  .list {
-    grid-template-columns: repeat(3, 1fr);
-
-    gap: 15px;
-  }
-
-  .item {
-    width: 110px;
-  }
-
-  .imageCont {
-    height: 85px;
-  }
-
-  .image {
-    height: 45px;
-  }
-
-  .bottom {
-    font-size: 11px;
-  }
-
-}
-
-
-/* ================= MOBILE ================= */
-
-@media screen and (max-width: 700px) {
 
   .head {
-    margin-bottom: 0;
+    margin-bottom: 8px;
   }
 
-  .head::after {
-    display: none;
+  .heading {
+    font-size: clamp(21px, 5.5vw, 26px);
+    line-height: 1.3;
+  }
+
+  .headingDecoration {
+    margin-top: 10px;
+    gap: 6px;
+  }
+
+  .headingDecoration span {
+    width: 25px;
+  }
+
+  .headingDecoration i {
+    width: 6px;
+    height: 6px;
   }
 
   .mobileEllipsis {
-    display: block;
-    margin-top: 5px;
-    color: #1876bd;
-  }
-
-}
-
-
-/* ================= MOBILE 500px ================= */
-
-@media screen and (max-width: 500px) {
-
-  .cont {
-    padding-top: 40px;
-    margin-bottom: 40px;
-  }
-
-  .heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 14px;
+    color: #ffdc18;
     font-size: 22px;
   }
 
-  /* 🔥 4 Cards Per Row */
   .list {
-    width: 100%;
-
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 8px;
-
-    padding: 0 8px;
-
-    margin-top: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .item {
-    width: 100%;
-
-    border-radius: 10px;
+    min-height: 133px;
+    padding: 8px 7px 9px;
+    border-radius: 11px;
+    box-shadow: 0 4px 12px rgba(10, 63, 113, 0.12);
   }
 
-  .imageCont {
-    height: 70px;
+  .item:hover {
+    transform: none;
+  }
+
+  .top {
+    height: 68px;
+    flex-basis: 68px;
+    margin-bottom: 3px;
   }
 
   .image {
-    height: 35px;
+    max-width: 120px;
   }
 
   .bottom {
-    padding: 6px;
-
-    font-size: 9px;
-
-    line-height: 1.2;
+    min-height: 32px;
+    font-size: 11px;
+    line-height: 1.3;
+    padding: 0 1px 4px;
   }
 
+  .cardAccent {
+    width: 22px;
+    height: 3px;
+    flex-basis: 3px;
+    margin-top: 2px;
+  }
+
+  .trustRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 4px;
+    margin-top: 20px;
+    padding-top: 14px;
+  }
+
+  .trustItem {
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 5px 4px;
+    font-size: 9px;
+  }
+
+  .trustItem + .trustItem {
+    border-left: none;
+  }
+
+  .trustIcon {
+    flex-basis: 23px;
+    width: 23px;
+    height: 23px;
+    font-size: 14px;
+  }
+
+  .website {
+    margin-top: 16px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
 }
 
+/* =========================================
+   SMALL MOBILE
+========================================= */
 
-/* ================= SMALL MOBILE ================= */
-
-@media screen and (max-width: 370px) {
+@media (max-width: 380px) {
+  .cont {
+    padding: 30px 8px 18px;
+  }
 
   .list {
-    gap: 6px;
-
-    padding: 0 6px;
+    gap: 8px;
   }
 
-  .imageCont {
-    height: 65px;
+  .item {
+    min-height: 125px;
+    padding: 7px 6px 8px;
   }
 
-  .image {
-    height: 32px;
+  .top {
+    height: 62px;
+    flex-basis: 62px;
   }
 
   .bottom {
+    font-size: 10px;
+  }
+
+  .trustItem {
     font-size: 8px;
   }
 
+  .website {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
 }
 
+/* =========================================
+   REDUCED MOTION
+========================================= */
 
-/* ================= ANIMATION ================= */
-
-.animateOnce {
-  animation: fadeInStay 1.5s ease-in-out forwards;
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .animateOnce .item {
+    animation: none;
+    transition: none;
+  }
 }
-
-@keyframes fadeInStay {
-
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+.mobileEllipsis {
+  display: none !important;
 }

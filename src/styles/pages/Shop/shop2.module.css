@@ -2,208 +2,425 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 40px;
-  padding: 80px 60px;
-  background: #f9fbff;
-  /* min-height: 100vh; */
+  gap: 45px;
+  padding: 65px 50px;
+  background: #f4f8fc;
   box-sizing: border-box;
-
+  font-family: "Manrope", sans-serif;
+  width: 100%;
 }
 
-/* LEFT SECTION */
+/* =========================================================
+   LEFT SECTION
+========================================================= */
+
 .left {
   flex: 1;
-  max-width: 55%;
+  width: 100%;
+  max-width: calc(100% - 410px);
+  min-width: 0;
 }
 
 .subHeading {
   font-size: 14px;
-  color: #555;
-  margin-bottom: 6px;
+  font-weight: 600;
+  color: #5c6f82;
+  margin-bottom: 7px;
+  line-height: 1.5;
 }
 
 .heading {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #14294b;
+  line-height: 1.3;
+  margin: 0 0 12px;
 }
 
 .highlight {
-  color: #e63946;
+  color: #1876bd;
   font-weight: 700;
 }
 
 .price {
-  color: #ff3d00;
+  color: #1876bd;
   font-weight: 700;
 }
+
+/* =========================================================
+   FEATURES
+========================================================= */
 
 .features {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   font-size: 14px;
-  margin: 15px 0 25px 0;
-  color: #444;
+  margin: 15px 0 25px;
+  padding: 0;
+  color: #46586c;
+  list-style: none;
 }
 
+.features li {
+  position: relative;
+  padding-left: 22px;
+  line-height: 1.5;
+}
+
+.features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #1876bd;
+  font-weight: 800;
+}
+
+/* =========================================================
+   MIDDLE
+========================================================= */
 
 .middle {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 30px;
   margin-top: 20px;
+  width: 100%;
+}
+
+/* =========================================================
+   ILLUSTRATION
+========================================================= */
+
+.illustration {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .illustration img {
+  width: 100%;
   max-width: 500px;
-  height: auto; 
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
+/* =========================================================
+   PARTNERS
+========================================================= */
 
 .partnersBox {
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  flex: 1;
-  max-width: 420px;   /* 🔑 width control */
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 14px;
+  border: 1px solid #d8e8f4;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.06);
+  flex: 0 1 390px;
+  max-width: 390px;
+  box-sizing: border-box;
 }
 
 .partnersGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px 40px;
+  gap: 18px 30px;
   margin-top: 15px;
+  align-items: center;
+  justify-items: center;
+}
+
+.partner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .partner img {
+  width: 100%;
   max-width: 120px;
   height: auto;
   object-fit: contain;
+  display: block;
 }
-/* RIGHT SECTION */
+
+/* =========================================================
+   RIGHT SECTION
+========================================================= */
+
 .right {
-  flex: 1;
-  max-width: 40%;
+  flex: 0 0 480px;
+  width: 480px;
+  max-width: 480px;
+  box-sizing: border-box;
 }
 
 .card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #d8e8f4;
+  box-shadow: 0 12px 30px rgba(20, 41, 75, 0.09);
   padding: 30px;
+  box-sizing: border-box;
 }
 
+/* =========================================================
+   CARD HEADING
+========================================================= */
+
 .cardHeading {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #14294b;
+  margin: 0 0 20px;
+  line-height: 1.4;
 }
+
+/* =========================================================
+   BUSINESS OPTIONS
+========================================================= */
 
 .businessOptions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 9px;
   margin-bottom: 25px;
 }
 
 .businessOptions button {
-  padding: 6px 14px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+  padding: 7px 14px;
+  border: 1px solid #d2e2ee;
+  border-radius: 22px;
   font-size: 13px;
-  background: #f9fbff;
+  font-family: "Manrope", sans-serif;
+  font-weight: 500;
+  color: #46586c;
+  background: #ffffff;
   cursor: pointer;
-}
-.businessOptions button:hover {
-  background: #eef4ff;
-  border-color: #5a8dee;
+  transition: all 0.25s ease;
 }
 
-/* Owner / Tenant */
+.businessOptions button:hover {
+  background: #eef6fd;
+  border-color: #1876bd;
+  color: #1876bd;
+}
+
+/* =========================================================
+   OWNER / TENANT
+========================================================= */
+
 .subText {
   font-size: 14px;
+  font-weight: 600;
+  color: #46586c;
   margin-bottom: 12px;
 }
 
 .ownerTenant {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 
 .option {
   flex: 1;
-  border: 1px solid #ccc;
+  border: 1px solid #d2e2ee;
   border-radius: 12px;
   padding: 12px;
   text-align: center;
   cursor: pointer;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.option:hover {
+  border-color: #1876bd;
+  background: #f7fbff;
 }
 
 .option p {
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
+  color: #14294b;
   margin: 6px 0;
 }
 
 .option small {
   font-size: 11px;
-  color: #666;
+  color: #718196;
 }
 
 .option.active {
-  border: 2px solid #ff3d00;
-  background: #fff6f2;
+  border: 2px solid #1876bd;
+  background: #eef6fd;
 }
 
-/* Button */
+.option.active p {
+  color: #1876bd;
+}
+
+/* =========================================================
+   CONTINUE BUTTON
+========================================================= */
+
 .continueBtn {
   width: 100%;
-  background: #ff3d00;
-  color: #fff;
+  min-height: 48px;
+  background: #1876bd;
+  color: #ffffff;
   border: none;
   border-radius: 10px;
-  padding: 12px;
+  padding: 12px 16px;
+  font-family: "Manrope", sans-serif;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  box-sizing: border-box;
 }
+
 .continueBtn:hover {
-  background: #e63200;
+  background: #145f9f;
+  box-shadow: 0 7px 18px rgba(24, 118, 189, 0.2);
+  transform: translateY(-1px);
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
+/* =========================================================
+   OPTION BUTTON
+========================================================= */
+
+.optionBtn {
+  border: 1px solid #d2e2ee;
+  background: #ffffff;
+  color: #46586c;
+  border-radius: 25px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.optionBtn:hover {
+  background: #eef6fd;
+  border-color: #1876bd;
+  color: #1876bd;
+}
+
+.optionBtn.active {
+  border: 2px solid #1876bd;
+  color: #1876bd;
+  background: #eaf4fc;
+}
+
+/* =========================================================
+   INPUT BOX
+========================================================= */
+
+.otherInputBox {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.textField {
+  flex: 1;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d2e2ee;
+  border-radius: 9px;
+  outline: none;
+  font-family: "Manrope", sans-serif;
+  color: #14294b;
+  background: #ffffff;
+  font-size: 14px;
+  min-width: 200px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.textField::placeholder {
+  color: #91a1b1;
+}
+
+.textField:focus {
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.1);
+}
+
+/* =========================================================
+   TABLETS / SMALL LAPTOPS
+========================================================= */
+
+@media (max-width: 1100px) {
   .wrapper {
-    flex-direction: column;
-    padding: 20px;
+    gap: 30px;
+    padding: 50px 30px;
   }
 
-  .left,
+  .left {
+    max-width: calc(100% - 350px);
+  }
+
   .right {
-    max-width: 100%;
+    flex: 0 0 350px;
+    width: 350px;
+    max-width: 350px;
   }
 
-  .partnerBox {
-    max-width: 100%;
+  .middle {
+    gap: 22px;
   }
 
-  .illustration {
-    max-width: 200px;
+  .partnersBox {
+    max-width: 350px;
+    padding: 18px 20px;
   }
 }
-/* 📱 TABLETS & SMALL LAPTOPS (≤1024px) */
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1024px) {
   .wrapper {
     flex-direction: column;
-    padding: 30px 20px;
+    align-items: center;
+    padding: 40px 25px;
     gap: 30px;
   }
 
   .left,
   .right {
+    width: 100%;
     max-width: 100%;
+  }
+
+  .left {
+    text-align: center;
+  }
+
+  .heading {
+    font-size: 28px;
+  }
+
+  .features {
+    align-items: center;
   }
 
   .middle {
@@ -214,13 +431,12 @@
 
   .illustration {
     width: 100%;
-    display: flex;
     justify-content: center;
   }
 
   .illustration img {
     width: 100%;
-    max-width: 100%;
+    max-width: 520px;
     height: auto;
   }
 
@@ -229,7 +445,6 @@
     max-width: 100%;
     padding: 20px;
     margin: 0 auto;
-    box-sizing: border-box;
   }
 
   .partnersGrid {
@@ -238,130 +453,94 @@
     width: 100%;
   }
 
-  .partner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .partner img {
     max-width: 140px;
     width: 100%;
-    height: auto;
-    object-fit: contain;
+  }
+
+  .right {
+    display: flex;
+    justify-content: center;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 600px;
   }
 }
-/* 📱 PHONES & SMALL TABLETS (≤768px) */
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 768px) {
   .wrapper {
-    padding: 20px 15px;
+    padding: 30px 18px;
     gap: 25px;
   }
 
-  .heading { font-size: 22px; }
-  .subHeading { font-size: 13px; }
-  .features { font-size: 13px; }
-
-  .partnersBox { padding: 20px; }
-
-  .partnersGrid {
-    grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row */
-    gap: 15px;
+  .heading {
+    font-size: 24px;
+    line-height: 1.35;
   }
 
-  .partner img {
-    max-width: 140px;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
+  .subHeading {
+    font-size: 13px;
   }
 
-  .businessOptions { gap: 8px; }
-  .businessOptions button { font-size: 12px; padding: 6px 12px; }
+  .features {
+    font-size: 13px;
+    gap: 6px;
+    margin: 14px 0 22px;
+  }
 
-  .ownerTenant { flex-direction: column; gap: 12px; }
-  .option { padding: 10px; }
-
-  .card { padding: 22px; }
-}
-
-/* 📱 SMALL PHONES (≤480px) */
-@media (max-width: 480px) {
-  .wrapper { padding: 15px 10px; gap: 20px; }
-
-  .heading { font-size: 20px; }
-  .subHeading { font-size: 12px; }
-  .features { font-size: 12px; gap: 4px; }
+  .middle {
+    gap: 22px;
+  }
 
   .illustration img {
-    width: 100%;
-    height:auto;
-    max-width: 100%;
+    max-width: 420px;
   }
 
-  .partnersBox { padding: 18px; }
+  .partnersBox {
+    padding: 20px;
+  }
 
   .partnersGrid {
-    grid-template-columns: repeat(2, 1fr); /* ✅ still 2 per row */
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 
   .partner img {
     max-width: 120px;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
   }
 
-  .card { padding: 20px; }
-  .cardHeading { font-size: 16px; }
-  .continueBtn { font-size: 14px; padding: 10px; }
-}
-.optionBtn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 25px;
-  padding: 8px 14px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 14px;
-  white-space: nowrap;
-}
+  .businessOptions {
+    gap: 8px;
+  }
 
-.optionBtn:hover {
-  background: #f3f4f6;
-}
+  .businessOptions button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 
-.optionBtn.active {
-  border: 2px solid #1e40af;
-  color: #1e40af;
-  background: #e0ecff;
-}
+  .ownerTenant {
+    flex-direction: column;
+    gap: 12px;
+  }
 
-/* ---------- Input box ---------- */
-.otherInputBox {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+  .option {
+    padding: 11px;
+  }
 
-.textField {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  outline: none;
-  font-size: 14px;
-  min-width: 200px;
-}
+  .card {
+    padding: 22px;
+  }
 
-.textField:focus {
-  border-color: #1e40af;
-}
+  .cardHeading {
+    font-size: 17px;
+  }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 768px) {
   .optionBtn {
     font-size: 13px;
     padding: 7px 12px;
@@ -374,12 +553,100 @@
 
   .textField {
     width: 100%;
+    min-width: 100%;
     font-size: 13px;
-    padding: 8px 10px;
+    padding: 9px 10px;
   }
 }
 
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
 @media (max-width: 480px) {
+  .wrapper {
+    padding: 25px 12px;
+    gap: 20px;
+  }
+
+  .heading {
+    font-size: 21px;
+  }
+
+  .subHeading {
+    font-size: 12px;
+  }
+
+  .features {
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .middle {
+    gap: 18px;
+  }
+
+  .illustration img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .partnersBox {
+    padding: 18px 14px;
+    border-radius: 12px;
+  }
+
+  .partnersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .partner img {
+    max-width: 100px;
+  }
+
+  .card {
+    padding: 19px 15px;
+    border-radius: 14px;
+  }
+
+  .cardHeading {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .businessOptions {
+    gap: 7px;
+  }
+
+  .businessOptions button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .ownerTenant {
+    gap: 10px;
+  }
+
+  .option {
+    padding: 10px;
+  }
+
+  .option p {
+    font-size: 13px;
+  }
+
+  .option small {
+    font-size: 10px;
+  }
+
+  .continueBtn {
+    min-height: 46px;
+    font-size: 14px;
+    padding: 10px;
+  }
+
   .optionBtn {
     font-size: 12px;
     padding: 6px 10px;
@@ -391,5 +658,31 @@
 
   .otherInputBox {
     gap: 8px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 360px) {
+  .wrapper {
+    padding: 22px 10px;
+  }
+
+  .heading {
+    font-size: 20px;
+  }
+
+  .partnersGrid {
+    gap: 10px;
+  }
+
+  .partner img {
+    max-width: 85px;
+  }
+
+  .card {
+    padding: 17px 12px;
   }
 }

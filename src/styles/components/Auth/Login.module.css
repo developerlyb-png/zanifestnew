@@ -1,245 +1,565 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap');
 
+
+/* =========================================================
+   GLOBAL LOGIN LAYOUT
+   ========================================================= */
+
 .cont {
-  display: grid;
+  width: 100%;
   min-height: 100vh;
-  place-items: center;
-  grid-template-columns: 1.25fr 1.5fr;
-  background-repeat: no-repeat;
-  /* background-color: #fa621a; */
+
+  display: grid;
+  place-items: stretch;
+
+  grid-template-columns: 1.15fr 1fr;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
 }
 
+.cont *,
+.cont *::before,
+.cont *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LEFT IMAGE SECTION
+   ========================================================= */
+
 .left {
-  height: 100vh;
   width: 100%;
-  background-color: white;
+  height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  background: #ffffff;
+
+  overflow: hidden;
 }
 
 .leftImage {
-  width: 80%;
+  display: block;
+
+  width: 78%;
+  max-width: 650px;
+
   height: auto;
-  margin-left:7rem;
+
+  margin: 0;
+
+  object-fit: contain;
 }
+
+
+/* =========================================================
+   LOGIN CONTAINER
+   ========================================================= */
 
 .loginCont {
-  display: grid;
-  place-items: center;
+  width: 100%;
+  min-height: 100vh;
 
-  grid-template-rows: 100vh;
-}
-
-.goback {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  background-color: inherit;
-  color: #00233d;
-  border: none;
   display: flex;
   align-items: center;
-  cursor: pointer;
-  font-size: 30px;
-  font-family: "Manrope", sans-serif;
+  justify-content: center;
+
+  padding: 40px 50px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
 }
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.goback {
+  position: fixed;
+
+  top: 24px;
+  left: 24px;
+
+  z-index: 20;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  padding: 0;
+
+  border: 1px solid #d8e8f4;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #14294b;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 24px;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 14px rgba(20, 41, 75, 0.08);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.goback:hover {
+  background: #eef6fd;
+  color: #1878bd;
+  border-color: #bcd9ec;
+
+  transform: translateX(-2px);
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
 
 .formDiv {
-  display: grid;
-  place-items: center;
-  gap: 1rem;
-  padding: 2rem 4rem;
-  border-radius: 1.5rem;
-  background-color: #fff4e2;
+  width: min(430px, 100%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 38px 42px;
+
+  /* background: #eef6fd; */
+
+  border: 1px solid #d8e8f4;
+
+  border-radius: 18px;
+
+  box-shadow: 0 14px 40px rgba(20, 41, 75, 0.10);
+
   z-index: 2;
-  width: 35vw;            /* card width */
 }
+
+
+/* =========================================================
+   LOGIN FORM
+   ========================================================= */
 
 .loginForm {
-  display: grid;
-  grid-template-columns: 1fr;   /* ⬅ Make 1 proper centered column */
-  justify-items: center;        /* ⬅ Center everything */
-  gap: 1.2rem;
   width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 16px;
 }
+
+
+/* =========================================================
+   FORM INPUT GROUP
+   ========================================================= */
 
 .formInput {
   width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 7px;
 }
 
-.input {
-  width: 100%;      /* full width inside card */
-  padding: 1rem;
-  border-radius: 10px;
-}
 
-
-/* .logo {
-} */
+/* =========================================================
+   LOGO
+   ========================================================= */
 
 .logoImage {
-  width: 200px;
+  display: block;
+
+  width: 180px;
+  max-width: 100%;
+
   height: auto;
+
+  object-fit: contain;
 }
+
+
+/* =========================================================
+   HEADING
+   ========================================================= */
 
 .heading {
-  /* color: var(--primary-color); */
+  margin: 0;
+  padding: 0;
 
   color: #1878bd;
+
   font-family: "Libre Baskerville", serif;
+
+  font-size: 28px;
+  line-height: 1.35;
+
+  font-weight: 700;
+
   text-align: center;
-  padding: 0;
-  margin: 0;
 }
+
+
+/* =========================================================
+   HEADING SUBTEXT
+   ========================================================= */
 
 .headingp {
-  color: #61a8db;
-  font-family: "Libre Baskerville", serif;
-  text-align: center;
+  margin: -4px 0 4px;
   padding: 0;
-  margin: 0;
-  font-size: 1.2rem;
+
+  color: #5c8fb4;
+
+  font-family: "Libre Baskerville", serif;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  text-align: center;
 }
 
-.formInput {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
+
+/* =========================================================
+   LABEL
+   ========================================================= */
 
 .label {
-  text-align: left;
-  color: #00233d;
-  font-size: 1.3rem;
+  display: block;
+
+  margin: 0;
+
+  color: #14294b;
+
+  font-size: 13px;
+  line-height: 18px;
+
+  font-weight: 600;
+
   font-family: "Manrope", sans-serif;
+
+  text-align: left;
 }
 
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
 .input {
-  border-style: solid;
-  border-color: rgb(221, 221, 221);
   width: 100%;
-  background-color: white;
-  border-radius: 10px;
-  padding: 1rem;
-  color: var(--Heading-color);
-  transition: all 0.5s;
+  height: 46px;
+
+  padding: 0 14px;
+
+  border: 1px solid #cfe2f1;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #14294b;
+
   font-family: "Manrope", sans-serif;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .input::placeholder {
-  color: grey;
+  color: #91a0af;
+
   font-family: "Manrope", sans-serif;
+}
+
+.input:hover {
+  border-color: #a9cbe3;
 }
 
 .input:focus {
   outline: none;
-  border-color: rgb(221, 221, 221) rgb(221, 221, 221) #00233d rgb(221, 221, 221);
+
+  border-color: #1878bd;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(24, 120, 189, 0.10);
 }
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
 
 .error {
-  color: red;
-  font-family: "Manrope", sans-serif;
-}
+  margin: 0;
 
-.showPasswordDiv {
-  display: flex;
-  gap: 0.2rem;
-  font-family: "Manrope", sans-serif;
-}
+  color: #d34b4b;
 
-.passCheck {
-}
-
-/* .loginButton {
-  background-color: var(--primary-color);
-  color: var(--white);
-  padding: 7px 40px;
-  border-style: none;
-  border-radius: 5px;
-  transition: all 0.5s;
-}
-
-.loginButton:hover {
-  box-shadow: 0 2px 40px 0 white;
-  color: white;
-  background-color: white;
-  color: var(--primary-color);
-  padding: 5px 38px;
-  border-radius: 10px;
-  border-style: solid;
-  border-width: 1px;
-}
-
-.loginButton:active {
-  transform: scale(0.7);
-} */
-
-.loginButton {
-  /* color: #00233d; */
-  color: white;
-  padding: 10px 60px;
-  transition: all 0.5s ease;
-  border-radius: 10px;
-  background-color: #1878bd;
   font-family: "Manrope", sans-serif;
 
-  border: none;
+  font-size: 12px;
+  line-height: 16px;
 }
 
-.loginButton:hover {
-  background-color: #17659d;
-  color: white;
-  transform: translateY(-5px);
-}
 
-.loginButton:active {
-  transform: scale(0.9);
-}
+/* =========================================================
+   PASSWORD
+   ========================================================= */
+
 .passwordWrapper {
   position: relative;
+
   width: 100%;
 }
 
 .passwordWrapper .input {
-  padding-right: 2.8rem;
+  padding-right: 48px;
 }
+
+
+/* =========================================================
+   EYE ICON
+   ========================================================= */
 
 .eyeIcon {
   position: absolute;
-  right: 1rem;
+
+  right: 14px;
   top: 50%;
+
   transform: translateY(-50%);
-  color: #8a8f98;
-  cursor: pointer;
+
   display: flex;
   align-items: center;
-  font-size: 1.1rem;
+
+  color: #7b8998;
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  transition: color 0.2s ease;
 }
 
 .eyeIcon:hover {
   color: #1878bd;
 }
 
+
+/* =========================================================
+   SHOW PASSWORD
+   ========================================================= */
+
+.showPasswordDiv {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  font-family: "Manrope", sans-serif;
+
+  color: #66758a;
+
+  font-size: 12px;
+}
+
+.passCheck {
+  width: 15px;
+  height: 15px;
+
+  margin: 0;
+
+  accent-color: #1878bd;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+   ========================================================= */
+
 .forgotPassword {
   width: 100%;
-  text-align: right;
-  margin: -0.6rem 0 0;
-  font-size: 0.85rem;
+
+  margin: -4px 0 0;
+
   color: #1878bd;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-align: right;
+
   cursor: pointer;
+
   font-family: "Manrope", sans-serif;
+
+  transition: color 0.2s ease;
 }
 
 .forgotPassword:hover {
+  color: #145f9f;
+
   text-decoration: underline;
 }
 
-.signupLink{
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.loginButton {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 24px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #1878bd;
+  color: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 14px;
+  font-weight: 700;
+
   cursor: pointer;
-  color: #1878bd;
-  text-decoration: none;
+
+  box-shadow: 0 5px 14px rgba(24, 120, 189, 0.16);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
 }
+
+.loginButton:hover {
+  background: #145f9f;
+
+  box-shadow: 0 7px 18px rgba(24, 120, 189, 0.22);
+
+  transform: translateY(-1px);
+}
+
+.loginButton:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   SIGNUP
+   ========================================================= */
+
+.signupLink {
+  color: #1878bd;
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.signupLink:hover {
+  color: #145f9f;
+
+  text-decoration: underline;
+}
+
+.signupText {
+  margin: 2px 0 0;
+
+  color: #66758a;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+.signupText .signupLink {
+  color: #1878bd;
+}
+
+
+/* =========================================================
+   LOADER OVERLAY
+   ========================================================= */
+
+.loaderOverlay {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  z-index: 9999;
+
+  font-family: "Manrope", sans-serif;
+
+  color: #1878bd;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pageLoader {
+  margin-bottom: 14px;
+
+  color: #1878bd;
+
+  font-size: 46px;
+
+  animation: spin 1.5s linear infinite;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
 
 @keyframes leftright {
   0%,
@@ -254,107 +574,697 @@
 
 @keyframes glow {
   25% {
-    box-shadow: rgba(255, 255, 255, 0.16) 0px 1px 4px;
+    box-shadow: rgba(24, 120, 189, 0.08) 0 1px 4px;
   }
+
   60% {
-    box-shadow: rgba(255, 255, 255, 0.24) 0px 3px 8px;
+    box-shadow: rgba(24, 120, 189, 0.12) 0 3px 8px;
   }
+
   100% {
-    box-shadow: rgba(255, 255, 255, 0.2) 0px 7px 29px 0px;
+    box-shadow: rgba(24, 120, 189, 0.16) 0 7px 29px;
   }
 }
 
-@media screen and (max-width: 1000px) {
-  .cont {
-    grid-template-columns: 1fr;
-  }
-  .left {
-    display: none;
-  }
-}
-
-/* 🔥 Full-page loader overlay */
-.loaderOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.9); /* light transparent overlay */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  font-family: "Manrope", sans-serif;
-  color: #1878bd;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.pageLoader {
-  font-size: 3rem;
-  color: #1878bd;
-  animation: spin 2s linear infinite;
-  margin-bottom: 1rem;
-}
-
-/* spinner animation */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
-/* MEDIUM PHONES (max-width: 480px) */
-@media screen and (max-width: 480px) {
+
+
+/* =========================================================
+   LARGE TABLET
+   ========================================================= */
+
+@media screen and (max-width: 1100px) {
+
+  .cont {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .loginCont {
+    padding: 30px;
+  }
+
   .formDiv {
-    width: 90vw;
-    padding: 1.8rem;
+    width: min(400px, 100%);
+
+    padding: 34px 32px;
+  }
+
+  .leftImage {
+    width: 82%;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media screen and (max-width: 1000px) {
+
+  .cont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    overflow: visible;
+  }
+
+  /* IMAGE VISIBLE */
+  .left {
+    display: flex;
+
+    width: 100%;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 18px 20px 5px;
+
+    margin: 0;
+
+    background: #ffffff;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+  }
+
+  .leftImage {
+    display: block;
+
+    width: min(72%, 330px);
+    max-width: 330px;
+
+    height: auto;
+
+    margin: 0;
+
+    object-fit: contain;
+  }
+
+  /* LOGIN AREA */
+  .loginCont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    padding: 10px 24px 20px;
+
+    margin: 0;
+
+    background: #ffffff;
+  }
+
+  .formDiv {
+    width: min(440px, 100%);
+
+    gap: 16px;
+
+    padding: 30px 32px;
+
+    margin: 0;
+
+    background: #eef6fd;
+
+    border: 1px solid #d8e8f4;
+
+    border-radius: 16px;
+
+    box-shadow: 0 10px 30px rgba(20, 41, 75, 0.08);
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 768px) {
+
+  .cont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+    padding:20px;
+    gap:20px;
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    overflow: visible;
+  }
+
+  /* IMAGE */
+  .left {
+    display: flex;
+
+    width: 100%;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 8px 16px 0;
+
+    margin: 0;
+
+    background: #ffffff;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+  }
+
+  .leftImage {
+    display: block;
+
+    width: min(68%, 270px);
+    max-width: 270px;
+
+    height: auto;
+
+    margin: 0;
+
+    object-fit: contain;
+  }
+
+  /* LOGIN */
+  .loginCont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+
+    padding: 6px 20px 12px;
+
+    margin: 0;
+
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    background: #ffffff;
+  }
+
+  .goback {
+    top: 14px;
+    left: 14px;
+
+    width: 38px;
+    height: 38px;
+
+    font-size: 21px;
+  }
+
+  .formDiv {
+    width: 100%;
+    max-width: 430px;
+
+    gap: 14px;
+
+    padding: 24px 22px;
+
+    margin: 0;
+
+    border-radius: 15px;
+
+    background: #eef6fd;
+
+    border: 1px solid #d8e8f4;
+
+    box-shadow: 0 8px 25px rgba(20, 41, 75, 0.08);
+  }
+
+  .logoImage {
+    width: 145px;
   }
 
   .heading {
-    font-size: 1.4rem;
+    font-size: 23px;
+
+    line-height: 1.3;
+  }
+
+  .headingp {
+    font-size: 13px;
+
+    line-height: 1.4;
+  }
+
+  .loginForm {
+    gap: 13px;
+  }
+
+  .formInput {
+    gap: 5px;
+  }
+
+  .label {
+    font-size: 12px;
+
+    line-height: 16px;
   }
 
   .input {
-    padding: 0.8rem;
+    width: 100%;
+
+    height: 44px;
+
+    padding: 0 12px;
+
+    font-size: 13px;
+
+    border-radius: 8px;
+  }
+
+  .passwordWrapper .input {
+    padding-right: 44px;
+  }
+
+  .eyeIcon {
+    right: 12px;
+
+    font-size: 16px;
+  }
+
+  .forgotPassword {
+    font-size: 11px;
+  }
+
+  .showPasswordDiv {
+    font-size: 11px;
   }
 
   .loginButton {
     width: 100%;
-    padding: 12px;
+
+    height: 46px;
+
+    padding: 0 15px;
+
+    font-size: 13px;
+  }
+
+  .signupText {
+    margin: 0;
+
+    font-size: 11px;
   }
 }
 
-/* SMALL PHONES (max-width: 360px) */
-@media screen and (max-width: 360px) {
-  .formDiv {
-    width: 95vw;
-    padding: 1.5rem;
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 480px) {
+
+  .cont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+    padding:20px;
+    gap:20px;
+    background: #ffffff;
   }
 
-  .heading {
-    font-size: 1.2rem;
+  .left {
+    display: flex;
+
+    width: 100%;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 5px 14px 0 !important;
+
+    margin: 0 !important;
+
+    background: #ffffff;
+  }
+
+  .leftImage {
+    display: block;
+
+    width: min(62%, 220px);
+    max-width: 220px;
+
+    height: auto;
+
+    margin: 0 !important;
+  }
+
+  .loginCont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+
+    padding: 5px 12px 8px !important;
+
+    margin: 0 !important;
+
+    background: #ffffff;
+  }
+
+  .goback {
+    top: 10px;
+    left: 10px;
+
+    width: 36px;
+    height: 36px;
+
+    font-size: 20px;
+  }
+
+  .formDiv {
+    width: 100%;
+
+    padding: 20px 16px;
+
+    gap: 12px;
+
+    margin: 0 !important;
+
+    border-radius: 13px;
+
+    /* background: #eef6fd; */
+
+    border: 1px solid #d8e8f4;
+
+    box-shadow: 0 7px 22px rgba(20, 41, 75, 0.07);
   }
 
   .logoImage {
-    width: 130px;
+    width: 135px;
+  }
+
+  .heading {
+    font-size: 20px;
+
+    line-height: 1.3;
+  }
+
+  .headingp {
+    font-size: 12px;
+
+    line-height: 1.4;
+  }
+
+  .loginForm {
+    gap: 11px;
+  }
+
+  .formInput {
+    gap: 5px;
+  }
+
+  .label {
+    font-size: 11px;
+
+    line-height: 16px;
   }
 
   .input {
-    padding: 0.7rem;
-    font-size: 0.9rem;
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 11px;
+
+    font-size: 12px;
+
+    border-radius: 8px;
+  }
+
+  .passwordWrapper .input {
+    padding-right: 40px;
+  }
+
+  .eyeIcon {
+    right: 11px;
+
+    font-size: 15px;
+  }
+
+  .forgotPassword {
+    font-size: 10px;
+  }
+
+  .showPasswordDiv {
+    font-size: 10px;
+
+    gap: 5px;
+  }
+
+  .passCheck {
+    width: 14px;
+    height: 14px;
   }
 
   .loginButton {
-    padding: 10px;
-    font-size: 1rem;
+    width: 100%;
+
+    height: 44px;
+
+    padding: 0 12px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+  }
+
+  .signupText {
+    margin: 0;
+
+    font-size: 10px;
+  }
+
+  .loaderOverlay {
+    font-size: 14px;
+  }
+
+  .pageLoader {
+    font-size: 40px;
   }
 }
-.signupText{
-text-decoration: underline;
-color: orangered;
+
+
+/* =========================================================
+   EXTRA SMALL PHONES
+   ========================================================= */
+
+@media screen and (max-width: 360px) {
+
+  .cont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+    padding:20px;
+    gap:20px;
+    background: #ffffff;
+  }
+
+  .left {
+    display: flex;
+
+    width: 100%;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 4px 8px 0 !important;
+
+    margin: 0 !important;
+
+    background: #ffffff;
+  }
+
+  .leftImage {
+    display: block;
+
+    width: 58%;
+    max-width: 190px;
+
+    height: auto;
+
+    margin: 0 !important;
+  }
+
+  .loginCont {
+    width: 100%;
+
+    min-height: auto !important;
+    height: auto !important;
+
+    padding: 4px 8px 0 !important;
+
+    margin: 0 !important;
+
+    background: #ffffff;
+  }
+
+  .formDiv {
+    width: 100%;
+
+    padding: 18px 13px;
+
+    gap: 10px;
+
+    margin: 0 !important;
+
+    border-radius: 12px;
+
+    /* background: #eef6fd; */
+
+    border: 1px solid #d8e8f4;
+  }
+
+  .goback {
+    top: 8px;
+    left: 8px;
+
+    width: 34px;
+    height: 34px;
+
+    font-size: 18px;
+  }
+
+  .logoImage {
+    width: 120px;
+  }
+
+  .heading {
+    font-size: 18px;
+
+    line-height: 1.3;
+  }
+
+  .headingp {
+    font-size: 11px;
+
+    line-height: 1.35;
+  }
+
+  .loginForm {
+    gap: 10px;
+  }
+
+  .formInput {
+    gap: 4px;
+  }
+
+  .label {
+    font-size: 10px;
+
+    line-height: 15px;
+  }
+
+  .input {
+    width: 100%;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    font-size: 11px;
+
+    border-radius: 7px;
+  }
+
+  .passwordWrapper .input {
+    padding-right: 38px;
+  }
+
+  .eyeIcon {
+    right: 10px;
+
+    font-size: 14px;
+  }
+
+  .forgotPassword {
+    font-size: 9px;
+  }
+
+  .showPasswordDiv {
+    font-size: 9px;
+  }
+
+  .passCheck {
+    width: 13px;
+    height: 13px;
+  }
+
+  .loginButton {
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 10px;
+
+    font-size: 11px;
+
+    border-radius: 7px;
+  }
+
+  .signupText {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.goback:focus-visible,
+.input:focus-visible,
+.loginButton:focus-visible,
+.signupLink:focus-visible,
+.forgotPassword:focus-visible,
+.eyeIcon:focus-visible {
+  /* outline: 3px solid rgba(24, 120, 189, 0.20); */
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .cont *,
+  .cont *::before,
+  .cont *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

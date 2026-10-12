@@ -4,8 +4,8 @@
 
 .cont {
   width: 100%;
-
-  padding: 50px 5%;
+ max-width: 1300px;
+  padding: 50px 50px 24px;
 
   display: flex;
   flex-direction: column;

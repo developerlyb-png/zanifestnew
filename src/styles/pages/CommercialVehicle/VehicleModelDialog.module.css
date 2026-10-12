@@ -217,9 +217,9 @@
 
   min-height: 48px;
 
-  background: #ffffff;
+  background: #1876bd;
 
-  color: #14294b;
+  color: #fff;
 
   padding: 0 10px;
 
@@ -250,7 +250,7 @@
 
   white-space: nowrap;
 
-  color: #14294b;
+  color: #fff;
 
   font-size: 18px;
 
@@ -297,13 +297,13 @@
 
   justify-content: center;
 
-  background: #eef7fd;
+  background: #4c97c9;
 
   border: none;
 
   border-radius: 8px;
 
-  color: #1876bd;
+  color: #fff;
 
   font-size: 22px;
 
@@ -321,9 +321,9 @@
 
 .arrowBtn:hover,
 .backBtn:hover {
-  background: #dceeff;
+  background: #61a7e9;
 
-  color: #145f9f;
+  color: #fff;
 
   transform: scale(1.03);
 }

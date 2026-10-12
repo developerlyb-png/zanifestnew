@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -18,81 +19,88 @@ type Item = {
 const INSURANCELIST: Item[] = [
   {
     name: "Family Health Insurance",
-    image: require("@/assets/home/car/1.png"),
+    image: require("@/assets/home/car/family.png"),
     link: "./health/healthinsurance",
   },
   {
     name: "Marine Insurance",
-    image: require("@/assets/ship.png"),
+    image: require("@/assets/home/car/marine.png"),
     link: "./Marine/Marine1",
   },
   {
     name: "Travel Insurance",
-    image: require("@/assets/airplane.png"),
+    image: require("@/assets/home/car/travel.png"),
     link: "./Travel/Travel1",
   },
   {
     name: "Car Insurance",
-    image: require("@/assets/home/car/4.png"),
+    image: require("@/assets/home/car/car.png"),
     link: "./carinsurance/carinsurance",
   },
   {
-    name: "⁠2 wheeler Insurance",
-    image: require("@/assets/home/car/5.png"),
+    name: "\u20602 wheeler Insurance",
+    image: require("@/assets/home/car/two-wheelar.png"),
     link: "./TwoWheeler/bikeinsurance",
   },
   {
     name: "Shop Insurance",
-    image: require("@/assets/shops.png"),
+    image: require("@/assets/home/car/shop-ins.png"),
     link: "./Shop/Shop1",
   },
   {
     name: "Third Party Insurance",
-    image: require("@/assets/home/car/7.png"),
+    image: require("@/assets/home/car/third-party.png"),
     link: "./ThirdParty/Thirdparty1",
   },
   {
     name: "Commercial Vehicle",
-    image: require("@/assets/3d-truck.png"),
+    image: require("@/assets/home/car/commercial.png"),
     link: "./CommercialVehicle/CommercialVehicle1",
   },
   {
     name: "Home Insurance",
-    image: require("@/assets/home/car/9.png"),
+    image: require("@/assets/home/car/home-ins.png"),
     link: "./Home/Homeinsurance",
   },
   {
     name: "Office Package Policy",
-    image: require("@/assets/office-building.png"),
+    image: require("@/assets/home/car/office.png"),
     link: "./officepackagepolicy/officepackagepolicy",
   },
   {
     name: "Doctor Indemnity Insurance",
-    image: require("@/assets/medical-team.png"),
+    image: require("@/assets/home/car/doctor.png"),
     link: "./DoctorInd/DoctorInsurance",
   },
   {
     name: "Director & Officer Liability Insurance",
-    image: require("@/assets/workspace.png"),
+    image: require("@/assets/home/car/director.png"),
     link: "DirectorOfficerLiabilityInsurance/DirectorInsurance1",
   },
 ];
 
-const fetcher = (url: string) =>
-  fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
 
+  if (!response.ok) {
+    throw new Error("Failed to load insurance cards");
+  }
 
-// Parse heading to highlight text inside <>
+  return response.json();
+};
+
+const cleanName = (name: string) =>
+  name.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "").trim();
+
+const normalizeName = (name: string) =>
+  cleanName(name).toLowerCase();
+
 const parseHeading = (text: string) => {
   const regex = /<([^>]+)>/g;
-
-  const parts: {
-    text: string;
-    isTag: boolean;
-  }[] = [];
+  const parts: { text: string; isTag: boolean }[] = [];
 
   let lastIndex = 0;
-  let match;
+  let match: RegExpExecArray | null;
 
   while ((match = regex.exec(text)) !== null) {
     if (match.index > lastIndex) {
@@ -120,7 +128,6 @@ const parseHeading = (text: string) => {
   return parts;
 };
 
-
 export default function CarInsuraceSection({
   initialHeading,
   initialOrder,
@@ -130,126 +137,123 @@ export default function CarInsuraceSection({
 }) {
   const router = useRouter();
 
-  const { data } = useSWR(
-    "/api/carinsuranceapi",
-    fetcher
-  );
+  const { data } = useSWR("/api/carinsuranceapi", fetcher);
 
-
-  // Heading from props / API / default
   const heading =
     initialHeading ??
     data?.heading ??
     "Click to buy an Insurance";
 
-
-  // Automatically make Insurance blue
   const displayHeading = heading.includes("<Insurance>")
     ? heading
     : heading.replace(/Insurance/i, "<Insurance>");
 
-
   const order: string[] =
     initialOrder ??
     data?.order ??
-    INSURANCELIST.map((it) => it.name);
+    INSURANCELIST.map((item) => item.name);
 
+  // Keep the supplied order and append any missing cards.
+  // Invisible characters in card names are normalized for matching.
+  const orderedList: Item[] = (() => {
+    const result: Item[] = [];
+    const addedNames = new Set<string>();
 
-  const orderedList: Item[] = order
-    .map((name) =>
-      INSURANCELIST.find((it) => it.name === name)
-    )
-    .filter(Boolean) as Item[];
+    order.forEach((name) => {
+      const normalized = normalizeName(name);
 
+      const matchedItem = INSURANCELIST.find(
+        (item) => normalizeName(item.name) === normalized
+      );
 
-  // Fade-in animation on scroll
-  const sectionRef =
-    useRef<HTMLDivElement | null>(null);
+      if (matchedItem && !addedNames.has(normalizeName(matchedItem.name))) {
+        result.push(matchedItem);
+        addedNames.add(normalizeName(matchedItem.name));
+      }
+    });
 
-  const [animate, setAnimate] =
-    useState(false);
+    INSURANCELIST.forEach((item) => {
+      const normalized = normalizeName(item.name);
 
+      if (!addedNames.has(normalized)) {
+        result.push(item);
+        addedNames.add(normalized);
+      }
+    });
+
+    return result;
+  })();
+
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setAnimate(true);
-          observer.disconnect();
-        }
-      }
-    );
+    const element = sectionRef.current;
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    if (!element) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        setAnimate(true);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(element);
 
     return () => observer.disconnect();
   }, []);
 
-
   useEffect(() => {
     AOS.init({
-      duration: 1000,
+      duration: 800,
       once: true,
     });
   }, []);
 
-
   return (
     <div
       ref={sectionRef}
-      className={`${styles.cont} ${
-        animate ? styles.animateOnce : ""
-      }`}
+      className={`${styles.cont} ${animate ? styles.animateOnce : ""}`}
     >
-
-      {/* ================= HEADING ================= */}
-
+      {/* ===== Heading ===== */}
       <div
         className={styles.head}
         data-aos="fade-up"
-        data-aos-duration="1000"
-        data-aos-easing="ease-in"
+        data-aos-duration="800"
       >
         <div className={styles.heading}>
-          {parseHeading(displayHeading).map(
-            (part, idx) => (
-              <span
-                key={idx}
-                style={{
-                  color: part.isTag
-                    ? "#1876bd"
-                    : "#17384f",
-                }}
-              >
-                {part.text}
-              </span>
-            )
-          )}
+          {parseHeading(displayHeading).map((part, index) => (
+            <span
+              key={index}
+              className={part.isTag ? styles.highlight : ""}
+            >
+              {part.text}
+            </span>
+          ))}
+        </div>
+
+        <div className={styles.headingDecoration} aria-hidden="true">
+          <span />
+          <i />
+          <i />
+          <i />
+          <span />
         </div>
       </div>
 
-
-      {/* ================= MOBILE ELLIPSIS ================= */}
-
-      <div className={styles.mobileEllipsis}>
-        <FaEllipsisH
-          style={{
-            color: "#1876bd",
-            fontSize: "25px",
-          }}
-        />
+      {/* ===== Mobile Decoration ===== */}
+      <div className={styles.mobileEllipsis} aria-hidden="true">
+        <FaEllipsisH />
       </div>
 
-
-      {/* ================= INSURANCE LIST ================= */}
-
+      {/* ===== All Insurance Cards ===== */}
       <div className={styles.list}>
         {orderedList.map((item, index) => (
-          <div
+          <button
+            type="button"
             className={styles.item}
-            key={index}
+            key={`${normalizeName(item.name)}-${index}`}
             onClick={() => {
               router.push(item.link);
 
@@ -259,23 +263,24 @@ export default function CarInsuraceSection({
               });
             }}
           >
-            <div className={styles.top}>
-              <div className={styles.imageCont}>
+            <span className={styles.top}>
+              <span className={styles.imageCont}>
                 <Image
                   src={item.image}
-                  alt={item.name}
+                  alt={cleanName(item.name)}
                   className={styles.image}
                 />
-              </div>
-            </div>
+              </span>
+            </span>
 
-            <div className={styles.bottom}>
-              {item.name}
-            </div>
-          </div>
+            <span className={styles.bottom}>
+              {cleanName(item.name)}
+            </span>
+
+            <span className={styles.cardAccent} aria-hidden="true" />
+          </button>
         ))}
       </div>
-
     </div>
   );
 }

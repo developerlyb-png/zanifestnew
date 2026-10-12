@@ -135,7 +135,7 @@ const Thirdparty3 = () => {
 
               <p className={styles.terms}>
                 <input type="checkbox" /> I agree to the{" "}
-                <a href="#">terms & conditions</a> and confirm: my car is not a
+                <a href="/Termscondition">terms & conditions</a> and confirm: my car is not a
                 commercial vehicle and my car has a valid PUC certificate.
               </p>
             </div>

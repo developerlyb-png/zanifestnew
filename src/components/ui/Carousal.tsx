@@ -1,4 +1,6 @@
+
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "@/styles/components/ui/Carousal.module.css";
@@ -16,77 +18,103 @@ interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = ({ refresh }) => {
   const [images, setImages] = useState<ImageType[]>([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isHoveredRef = useRef(false);
 
-  // Fetch images dynamically from DB
-  const fetchImages = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/getimage");
-      const data = await res.json();
-      if (data.success) {
-        setImages(data.images);
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchImages = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch("/api/getimage");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch carousel images");
+        }
+
+        const data = await res.json();
+
+        if (isMounted && data.success) {
+          setImages(data.images || []);
+          setCurrent(0);
+        }
+      } catch (error) {
+        console.error("Error fetching images:", error);
+
+        if (isMounted) {
+          setImages([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    } catch (err) {
-      console.error("Error fetching images:", err);
-    } finally {
-      setLoading(false); //  Hide loader after fetch completes
+    };
+
+    fetchImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [refresh]);
+
+  const stopAutoSlide = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   };
 
   useEffect(() => {
-    fetchImages();
-  }, [refresh]);
+    stopAutoSlide();
 
-  const startAutoSlide = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      if (!isHoveredRef.current && images.length > 0) {
-        setDirection(1);
-        setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-      }
-    }, 3000);
-  };
+    if (images.length > 1) {
+      intervalRef.current = setInterval(() => {
+        if (!isHoveredRef.current) {
+          setDirection(1);
 
-  const stopAutoSlide = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
+          setCurrent((prev) =>
+            prev >= images.length - 1 ? 0 : prev + 1
+          );
+        }
+      }, 3000);
+    }
+
+    return () => {
+      stopAutoSlide();
+    };
+  }, [images.length]);
 
   const prevSlide = () => {
+    if (images.length < 2) return;
+
     setDirection(-1);
-    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+
+    setCurrent((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
   };
 
   const nextSlide = () => {
+    if (images.length < 2) return;
+
     setDirection(1);
-    setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+
+    setCurrent((prev) =>
+      prev >= images.length - 1 ? 0 : prev + 1
+    );
   };
 
-  useEffect(() => {
-    if (images.length > 0) {
-      startAutoSlide();
-    }
-    return () => stopAutoSlide();
-  }, [images.length]);
-
-  const handleMouseEnter = () => {
-    isHoveredRef.current = true;
-  };
-
-  const handleMouseLeave = () => {
-    isHoveredRef.current = false;
-  };
-
-  // Show only Zanfest loader while fetching
   if (loading) {
     return <Loader />;
   }
 
-  //  No “Loading images…” text anymore — just skip to carousel
   if (images.length === 0) {
     return null;
   }
@@ -94,51 +122,68 @@ const Carousel: React.FC<CarouselProps> = ({ refresh }) => {
   return (
     <div
       className={styles.carousel}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => {
+        isHoveredRef.current = true;
+      }}
+      onMouseLeave={() => {
+        isHoveredRef.current = false;
+      }}
     >
-      <AnimatePresence initial={false} custom={direction} mode="popLayout">
+      <AnimatePresence
+        initial={false}
+        custom={direction}
+        mode="popLayout"
+      >
         <motion.div
-          key={current}
+          key={images[current]._id || current}
           className={styles.imageWrapper}
           custom={direction}
-          initial={{ x: direction > 0 ? 300 : -300, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: direction < 0 ? 300 : -300, opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          initial={{
+            x: direction > 0 ? 300 : direction < 0 ? -300 : 0,
+            opacity: direction === 0 ? 1 : 0,
+          }}
+          animate={{
+            x: 0,
+            opacity: 1,
+          }}
+          exit={{
+            x: direction < 0 ? 300 : -300,
+            opacity: 0,
+          }}
+          transition={{
+            duration: 0.5,
+            ease: "easeInOut",
+          }}
         >
           <img
             src={images[current].imageUrl}
-            alt={images[current].title || `Slide ${current}`}
+            alt={images[current].title || `Slide ${current + 1}`}
             className={styles.image}
           />
         </motion.div>
       </AnimatePresence>
 
-      {/* <button
-        onClick={prevSlide}
-        className={`${styles.navButton} ${styles.left}`}
-      >
-        ◀
-      </button>
-      <button
-        onClick={nextSlide}
-        className={`${styles.navButton} ${styles.right}`}
-      >
-        ▶
-      </button> */}
-
-      <div className={styles.indicators}>
-        {images.map((_, idx) => (
-          <button
-            key={idx}
-            className={`${styles.dot} ${
-              idx === current ? styles.activeDot : ""
-            }`}
-            onClick={() => setCurrent(idx)}
-          />
-        ))}
-      </div>
+      {images.length > 1 && (
+        <div className={styles.indicators}>
+          {images.map((item, index) => (
+            <button
+              key={item._id || index}
+              type="button"
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={
+                index === current ? "true" : undefined
+              }
+              className={`${styles.dot} ${
+                index === current ? styles.activeDot : ""
+              }`}
+              onClick={() => {
+                setDirection(index > current ? 1 : -1);
+                setCurrent(index);
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

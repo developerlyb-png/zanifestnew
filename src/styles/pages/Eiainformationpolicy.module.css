@@ -1,49 +1,70 @@
 /* Theme wrapper class to hold variables */
 .page {
-  --accent: orangered;
-  --accent-600: #ff4500;
+  --accent: #1876bd;
+  --accent-600: #145f9f;
   --bg: #ffffff;
-  --text-dark: #111;
-  --text-light: #444;
-  --muted: #6b6b6b;
+  --text-dark: #14294b;
+  --text-light: #4f6075;
+  --muted: #66758a;
   --radius: 12px;
-  --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  --heading-blue: #1c75bb;
-  --box-bg: #eef4fb;
-  --box-border: #dbe6f5;
-  --note-bg: #fff8e6;
+  --shadow: 0 6px 20px rgba(20, 41, 75, 0.08);
+
+  --heading-blue: #1876bd;
+  --box-bg: #eef6fd;
+  --box-border: #d8e8f4;
+  --note-bg: #f4f9fe;
 
   min-height: 100vh;
   background: var(--bg);
   color: var(--text-dark);
-  font-family: Inter, system-ui, "Segoe UI", Arial;
+  font-family: "Manrope", sans-serif;
 }
 
 /* ---------------- Header ---------------- */
 .header {
-  background: linear-gradient(90deg, #bfdcff73, #239dff);
-  color: #fff;
+  background: linear-gradient(
+    90deg,
+    #eef6fd 0%,
+    #dceefe 45%,
+    #1876bd 100%
+  );
+
+  color: #14294b;
   padding: 28px 36px;
-  box-shadow: 0 4px 14px rgba(255, 69, 0, 0.25);
+
+  box-shadow: 0 4px 14px rgba(24, 118, 189, 0.12);
+
   margin: 0;
   width: 100%;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .headerInner {
   max-width: 1150px;
   margin: 0 auto;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
+
+  color: #14294b;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .subtitle {
   margin-top: 6px;
   opacity: 0.9;
   font-size: 1rem;
+
+  color: #4f6075;
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* ---------------- Content ---------------- */
@@ -51,11 +72,15 @@
   max-width: 1150px;
   margin: 20px auto;
   padding: 0 16px;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .card {
   background: var(--bg);
   text-align: justify;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .lead {
@@ -63,20 +88,30 @@
   color: var(--text-light);
   line-height: 1.7;
   margin-bottom: 16px;
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Section headings */
 .card h2 {
   margin-top: 28px;
   margin-bottom: 12px;
+
   font-size: 1.15rem;
   font-weight: 700;
+
   color: var(--heading-blue);
+
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  border-left: 4px solid var(--accent-600);
+
+  border-left: 4px solid var(--accent);
+
   padding-left: 12px;
+
   line-height: 1.4;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .card h2:first-child {
@@ -86,9 +121,13 @@
 .subheading {
   margin-top: 18px;
   margin-bottom: 8px;
+
   font-size: 1.05rem;
   font-weight: 700;
+
   color: var(--text-dark);
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Paragraphs */
@@ -96,6 +135,8 @@
   color: var(--text-light);
   line-height: 1.6;
   margin-bottom: 10px;
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Lists */
@@ -109,20 +150,31 @@
   color: var(--text-light);
   line-height: 1.6;
   margin-bottom: 6px;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .link {
-  color: var(--accent-600);
+  color: var(--accent);
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Info / contact detail box */
 .infoBox {
   background: var(--box-bg);
+
   border: 1px solid var(--box-border);
+
   border-radius: 10px;
+
   padding: 18px 22px;
+
   margin: 14px 0 20px;
+
   text-align: left;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .infoBox p {
@@ -135,72 +187,119 @@
 
 .boxLabel {
   color: var(--heading-blue);
+
   font-weight: 700;
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Callout / explanatory note box */
 .noteBox {
   background: var(--note-bg);
-  border-left: 4px solid var(--accent-600);
+
+  border-left: 4px solid var(--accent);
+
   border-radius: 8px;
+
   padding: 14px 18px;
+
   margin: 14px 0;
+
   font-style: italic;
+
   color: var(--text-dark);
+
   text-align: left;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .noteBox p {
   margin: 0;
+
   color: var(--text-dark);
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* Monospace styling for emails / phone / codes */
 .mono {
   font-family: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas,
     monospace;
+
   font-size: 0.95em;
 }
 
 /* Letterhead style footer note */
 .letterheadNote {
   text-align: center;
+
   font-style: italic;
+
   color: var(--muted);
+
   font-size: 0.85rem;
+
   margin-top: 26px;
+
   padding-top: 14px;
-  border-top: 1px solid #eee;
+
+  border-top: 1px solid #d8e8f4;
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* ---------------- Footer ---------------- */
 .footerRow {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-top: 22px;
+
   flex-wrap: wrap;
+
   gap: 12px;
+
+  font-family: "Manrope", sans-serif;
 }
 
 .cta {
   padding: 8px 16px;
-  border: 2px solid var(--accent-600);
-  background: transparent;
-  color: var(--accent-600);
+
+  border: 2px solid var(--accent);
+
+  background: #ffffff;
+
+  color: var(--accent);
+
   border-radius: 8px;
+
   font-weight: 600;
+
+  font-family: "Manrope", sans-serif;
+
   cursor: pointer;
+
   transition: 0.2s ease-in-out;
 }
 
 .cta:hover {
-  background: rgba(255, 68, 0, 0.08);
+  background: var(--box-bg);
+
+  border-color: var(--accent-600);
+
+  color: var(--accent-600);
 }
 
 .smallNote {
   font-size: 0.9rem;
+
   color: var(--muted);
+
+  font-family: "Manrope", sans-serif;
 }
 
 /* ---------------- Responsive ---------------- */
@@ -208,6 +307,7 @@
   .title {
     font-size: 2rem;
   }
+
   .card {
     padding: 30px;
   }
@@ -217,33 +317,48 @@
   .card {
     padding: 36px;
   }
+
   .card p,
   .card li {
     font-size: 1.05rem;
   }
+
   .lead {
     font-size: 1.1rem;
   }
 }
+
 @media screen and (max-width: 768px) {
   .header {
     margin: 0;
     width: 100%;
     padding: 16px 16px;
+
+    font-family: "Manrope", sans-serif;
   }
 
   .headerInner {
     max-width: 100%;
+
+    font-family: "Manrope", sans-serif;
   }
 
   .title {
     font-size: 1.4rem;
     line-height: 1.3;
     word-break: break-word;
+
+    color: #14294b;
+
+    font-family: "Manrope", sans-serif;
   }
 
   .subtitle {
     font-size: 0.95rem;
     line-height: 1.4;
+
+    color: #4f6075;
+
+    font-family: "Manrope", sans-serif;
   }
 }
