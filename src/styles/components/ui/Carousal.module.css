@@ -1,28 +1,75 @@
 
+/* =========================================
+   CAROUSEL CONTAINER
+========================================= */
+
 .carousel {
   display: grid;
   place-items: center;
-  margin: 0;
-  overflow: hidden;
   position: relative;
   width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  z-index: 1;
 }
 
 .imageWrapper {
-  width: 100%;
-  position: relative;
+  grid-area: 1 / 1;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
 .image {
-  border-radius: 16px;
+  display: block;
   width: 100%;
   height: auto;
-  max-height: 100vh;  
-  object-fit: contain; 
+  max-height: 100vh;
+  object-fit: contain;
+  object-position: center;
 }
+
+/* =========================================
+   BLUE CURVE AT SLIDER BOTTOM
+   Center dips down; edges rise upward.
+   Blue matches the section background.
+========================================= */
+
+.carousel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 48px;
+  z-index: 5;
+  pointer-events: none;
+  background: #1765a5;
+
+  clip-path: polygon(
+    0 0,
+    10% 30%,
+    25% 65%,
+    40% 88%,
+    50% 100%,
+    60% 88%,
+    75% 65%,
+    90% 30%,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* =========================================
+   NAVIGATION BUTTONS
+========================================= */
 
 .navButton {
   position: absolute;
@@ -33,13 +80,13 @@
   border: none;
   padding: 20px 10px;
   cursor: pointer;
-  z-index: 2;
+  z-index: 6;
   border-radius: 6px;
 }
 
 .navButton:hover {
   background-color: rgba(246, 246, 246, 0.9);
-  color: black;
+  color: #000;
 }
 
 .left {
@@ -50,21 +97,30 @@
   right: 0;
 }
 
+/* =========================================
+   SLIDER INDICATORS
+========================================= */
+
 .indicators {
   position: absolute;
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
+  z-index: 6;
 }
 
 .dot {
   width: 10px;
   height: 10px;
+  padding: 0;
+  flex-shrink: 0;
   background-color: gray;
-  border-radius: 50%;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
 }
 
@@ -72,32 +128,71 @@
   background-color: white;
 }
 
+/* =========================================
+   LAPTOP
+========================================= */
+
 @media screen and (max-width: 1200px) {
   .image {
     max-height: 80vh;
   }
+
+  .carousel::after {
+    height: 38px;
+  }
 }
+
+/* =========================================
+   TABLET
+========================================= */
 
 @media screen and (max-width: 768px) {
   .image {
     max-height: 60vh;
   }
+
+  .carousel::after {
+    height: 28px;
+  }
+
   .navButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #000;
-  border: none;
-  padding: 5px 5px;
-  cursor: pointer;
-  z-index: 2;
-  border-radius: 6px;
+    padding: 5px;
+  }
+
+  .indicators {
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
 }
-}
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media screen and (max-width: 480px) {
   .image {
     max-height: 50vh;
+  }
+
+  .carousel::after {
+    height: 20px;
+  }
+
+  .indicators {
+    bottom: 10px;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .imageWrapper {
+    transition: none;
   }
 }

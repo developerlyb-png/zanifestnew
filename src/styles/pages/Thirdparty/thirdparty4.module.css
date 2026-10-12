@@ -1,31 +1,35 @@
-/* Wrapper fix */
+
+/* ===== Wrapper ===== */
 .wrapper {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f9fbff;
+  width: 100%;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  background: #f4f8fc;
+  color: #14294b;
   min-height: 100vh;
   box-sizing: border-box;
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 60px;
   overflow-x: hidden;
 }
 
-/* Progress bar wrapper fix */
+/* ===== Progress Bar Wrapper ===== */
 .progressBarWrapper {
-  background: #fff;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
   border-radius: 10px;
   padding: 10px 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
   width: 52%;
   overflow-x: auto;
   margin-left: 11rem;
+  box-sizing: border-box;
 }
 
-/* Progress Bar */
+/* ===== Progress Bar ===== */
 .progressBar {
   display: flex;
   align-items: center;
@@ -36,7 +40,7 @@
   min-width: 300px;
 }
 
-/* Connector line */
+/* Connector Line */
 .progressBar::before {
   content: "";
   position: absolute;
@@ -44,14 +48,54 @@
   left: 30px;
   right: 30px;
   height: 2px;
-  border-top: 2px dotted #ccc;
+  border-top: 2px dotted #cbd9e6;
   z-index: 1;
 }
 
-/* Container layout */
+/* Step */
+.step {
+  position: relative;
+  background: #ffffff;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  color: #8291a3;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+}
+
+/* Circle */
+.circle {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #00a651;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+}
+
+/* Active Step */
+.step.active .circle {
+  background: #00a651;
+  border-color: #00a651;
+  color: #ffffff;
+}
+
+.step.active {
+  color: #00a651;
+  font-weight: 700;
+}
+
+/* ===== Container Layout ===== */
 .container {
   display: grid;
-  grid-template-columns: 2.8fr 1fr;
+  grid-template-columns: minmax(0, 2.8fr) minmax(0, 1fr);
   gap: 20px;
   align-items: flex-start;
   width: 100%;
@@ -60,335 +104,349 @@
   box-sizing: border-box;
 }
 
-/* Sidebar */
+/* ===== Sidebar ===== */
 .sidebar {
   display: flex;
   flex-direction: column;
   width: 170px;
-  background: #ececec;
-  border: 1px solid #eee;
-  border-radius: 8px 0px 0px 8px;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 10px 0 0 10px;
   overflow: hidden;
   flex-shrink: 0;
 }
 
-/* Step wrapper */
-.step {
-  position: relative;
-  background: #fff;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #999;
-}
-
-/* Circle */
-.circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #00a651;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 6px;
-}
-
-/* Active step */
-.step.active .circle {
-  background: #00a651;
-  color: #fff;
-}
-
-.step.active {
-  color: #00a651;
-  font-weight: 600;
-}
-
-/* LEFT SIDE */
+/* ===== Left Side ===== */
 .left {
   display: flex;
+  min-width: 0;
 }
 
 .option {
   padding: 14px 16px;
-  font-size: 14px;
-  border-bottom: 1px solid #c3c0c0;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  border-bottom: 1px solid #edf2f7;
   cursor: pointer;
-  color: #333;
-  transition: background 0.2s, color 0.2s;
+  color: #52677e;
+  background: #ffffff;
+  transition: background 0.2s ease, color 0.2s ease;
 }
+
 .option:last-child {
   border-bottom: none;
 }
-.option.active {
-  background: #f0f5ff;
-  color: #0066ff;
-  font-weight: 600;
-  border-right: 3px solid #0066ff;
+
+.option:hover {
+  background: #f4f9fd;
+  color: #1876bd;
 }
 
+.option.active {
+  background: #eef6fd;
+  color: #1876bd;
+  font-weight: 800;
+  border-right: 3px solid #1876bd;
+}
+
+/* ===== Main Payment Box ===== */
 .mainBox {
   flex: 1;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 0px 8px 8px 0px;
-  padding: 20px;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 0 10px 10px 0;
+  padding: 22px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(20, 41, 75, 0.035);
 }
+
+/* Notice */
 .notice {
-  background: #fff6d9;
-  border: 1px solid #ffe58f;
-  color: #333;
-  font-size: 13px;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-}
-.bankHeading {
-  font-size: 16px;
+  background: #eef6fd;
+  border: 1px solid #d8e8f4;
+  color: #285578;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  margin-bottom: 12px;
+  line-height: 1.7;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
 }
+
+/* Bank Heading */
+.bankHeading {
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  color: #14294b;
+}
+
+/* Bank Grid */
 .bankGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: 15px 0;
 }
+
+/* Bank Button */
 .bankBtn {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 9px;
   padding: 12px;
+  box-sizing: border-box;
+  color: #34465c;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
   cursor: pointer;
-  font-size: 14px;
-  transition: border 0.2s;
-}
-.bankBtn:hover {
-  border-color: #0066ff;
-}
-.dropdown {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin: 15px 0;
-  font-size: 14px;
-}
-.payNow {
-  width: 100%;
-  background: #ff4d00;
-  color: #fff;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.payNow:hover {
-  background: #e63900;
+  transition: border-color 0.2s ease, background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* RIGHT SIDE */
+.bankBtn:hover {
+  border-color: #8bbfe2;
+  background: #f7fbfe;
+  box-shadow: 0 3px 10px rgba(20, 41, 75, 0.05);
+}
+
+/* Dropdown */
+.dropdown {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #d2e2ee;
+  border-radius: 8px;
+  margin: 15px 0;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #34465c;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropdown:focus {
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.08);
+}
+
+/* Pay Now Button */
+.payNow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  background: #1876bd;
+  color: #ffffff;
+  padding: 12px 16px;
+  border: 1px solid #1876bd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.payNow:hover {
+  background: #145f9f;
+  border-color: #145f9f;
+}
+
+.payNow:active {
+  transform: translateY(1px);
+}
+
+/* ===== Right Side ===== */
 .right {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-width: 0;
 }
+
+/* Order Box */
 .orderBox {
-  border-radius: 8px;
-  padding: 15px;
-  border: 1px solid #eee;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #d8e8f4;
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(20, 41, 75, 0.035);
 }
+
+/* Payment Icon */
 .paymentIcon {
   font-size: 20px;
-  color: #519be9;
+  color: #1876bd;
   margin-right: 8px;
   vertical-align: middle;
 }
+
+/* General Icon */
 .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 18px;
-  color: #6c757d;
+  color: #66758a;
   flex-shrink: 0;
   margin-right: 10px;
-  align-items: center;
   text-align: center;
 }
+
 .active .icon {
-  color: #fff;
+  color: #00a651;
 }
 
+/* Order Image */
 .orderimg {
+  display: block;
   width: 100px;
+  max-width: 100%;
   height: auto;
+  object-fit: contain;
 }
+
+/* Order Number */
 .orderNumberRow {
-  background-color: #ead3fc;
-  color: black;
-  padding: 8px 12px;
-  border-radius: 4px;
+  background: #eef6fd;
+  color: #285578;
+  border: 1px solid #d8e8f4;
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
 }
+
+/* Summary Rows */
 .row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 9px;
 }
+
 .orderLabel {
-  font-size: 13px;
-  color: #555;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
+  color: #66758a;
+  line-height: 1.6;
 }
+
 .orderValue {
-  font-size: 13px;
-  font-weight: 500;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #34465c;
+  line-height: 1.6;
+  text-align: right;
 }
+
 .price {
-  font-weight: 600;
-  color: #333;
+  font-weight: 800;
+  color: #14294b;
 }
+
 .bold {
-  font-weight: 600;
-  color: #000;
+  font-weight: 800;
+  color: #14294b;
 }
+
+/* Toggle Box */
 .toggleBox {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 8px;
   padding: 12px;
-  font-size: 14px;
+  box-sizing: border-box;
+  color: #34465c;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
+
 .toggleBox:hover {
-  background: #f9f9f9;
+  background: #f4f9fd;
+  border-color: #b8d7e8;
 }
+
+/* Small Image */
 .img {
   width: 40px;
+  max-width: 100%;
   height: auto;
   object-fit: contain;
   border-radius: 6px;
   display: block;
 }
 
-/* Footer */
+/* ===== Footer ===== */
 .footer {
   margin-top: 20px;
   text-align: left;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
   font-size: 12px;
-  color: #555;
-  margin-left: 116px;
+  line-height: 1.8;
+  color: #66758a;
 }
+
 .footer a {
-  color: #0066ff;
+  color: #1876bd;
   text-decoration: none;
+  font-weight: 700;
 }
 
-/* ---------- MOBILE VIEW ---------- */
-@media (max-width: 720px) {
-  .wrapper {
-    padding: 16px;
-  }
-
-  .progressBarWrapper {
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .container {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .left {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    display: none;
-  }
-
-  .mainBox {
-    border-radius: 0 0 8px 8px;
-  }
-
-  .right {
-    order: 2;
-  }
-
-  .bankGrid {
-    gap: 10px;
-  }
-
-  /* Mobile ProgressBar Wrapper */
-  .progressBarWrapper {
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    margin: 0 auto 16px auto;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-  }
-
-  .progressBar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .step {
-    font-size: 12px;
-    flex: 1;
-    text-align: center;
-  }
-
-  .circle {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    margin-bottom: 4px;
-  }
-
-  .progressBar::before {
-    left: 15%;
-    right: 15%;
-    top: 22%;
-  }
+.footer a:hover {
+  color: #145f9f;
+  text-decoration: underline;
 }
 
-/* ---------- MOBILE TOGGLE ---------- */
+/* ===== Mobile Toggle ===== */
 .mobileToggleWrapper {
   display: none;
   width: 100%;
+  min-width: 0;
 }
 
 .mobileToggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 8px;
   padding: 12px;
-  font-size: 14px;
-  font-weight: 500;
+  color: #34465c;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .mobileToggleLeft {
@@ -396,7 +454,7 @@
   align-items: center;
   gap: 8px;
   flex: 1;
-  min-width: 0; 
+  min-width: 0;
 }
 
 .mobileToggleLeft span {
@@ -404,6 +462,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+  min-width: 0;
 }
 
 .dropdownIcon {
@@ -411,7 +470,7 @@
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #333;
+  color: #1876bd;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -420,9 +479,9 @@
 
 .mobileDropdown {
   margin-top: 8px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 8px;
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
@@ -431,25 +490,151 @@
 .mobileDropdown .option {
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 12px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
+  border-bottom: 1px solid #edf2f7;
+  font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
   cursor: pointer;
-  word-wrap: break-word; /* break long text */
+  overflow-wrap: anywhere;
   white-space: normal;
 }
 
 .mobileDropdown .option span {
-  margin-left: 8px;
+  margin-left: 0;
   flex: 1;
+  min-width: 0;
 }
 
 .mobileDropdown .option:last-child {
   border-bottom: none;
 }
 
-/* Show on mobile only */
+.mobileDropdown .option.active {
+  background: #eef6fd;
+  color: #1876bd;
+  border-right: 3px solid #1876bd;
+}
+
+/* ===== Tablet ===== */
+@media (max-width: 1024px) {
+  .wrapper {
+    padding: 28px 24px;
+  }
+
+  .container {
+    grid-template-columns: minmax(0, 1.8fr) minmax(250px, 1fr);
+    gap: 16px;
+  }
+
+  .mainBox {
+    padding: 18px;
+  }
+
+  .sidebar {
+    width: 150px;
+  }
+}
+
+/* ===== Mobile View ===== */
 @media (max-width: 720px) {
+  .wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  /* Progress bar mobile width fix */
+  .progressBarWrapper {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 16px;
+    padding: 10px 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  .progressBar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    position: relative;
+  }
+
+  .progressBar::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 25%;
+    right: 25%;
+    height: 0;
+    border-top: 2px dotted #cbd9e6;
+    z-index: 1;
+  }
+
+  .progressBar .step {
+    flex: 0 0 50%;
+    min-width: 0;
+    font-size: 11px;
+    text-align: center;
+    line-height: 1.5;
+    gap: 3px;
+  }
+
+  .progressBar .circle {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    margin-bottom: 3px;
+    box-sizing: border-box;
+  }
+
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .mainBox {
+    width: 100%;
+    min-width: 0;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .right {
+    order: 2;
+    width: 100%;
+  }
+
+  .bankGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .bankBtn {
+    padding: 11px;
+    font-size: 12px;
+  }
+
   .mobileToggleWrapper {
     display: block;
     margin-bottom: 12px;
@@ -458,6 +643,126 @@
 
   .mobileToggle,
   .mobileDropdown {
+    width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer {
+    margin: 18px 0 0;
+  }
+}
+
+/* ===== Small Mobile ===== */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 12px;
+  }
+
+  .progressBarWrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 15px;
+    padding: 10px 6px;
+  }
+
+  .progressBar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .progressBar::before {
+    top: 10px;
+    left: 25%;
+    right: 25%;
+  }
+
+  .progressBar .step {
+    flex: 0 0 50%;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .progressBar .circle {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    margin-bottom: 3px;
+  }
+
+  .mainBox {
+    padding: 14px;
+  }
+
+  .notice {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .bankHeading {
+    font-size: 14px;
+  }
+
+  .bankGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .bankBtn {
+    padding: 11px;
+    font-size: 12px;
+  }
+
+  .dropdown {
+    font-size: 12px;
+  }
+
+  .payNow {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .orderBox {
+    padding: 13px;
+  }
+
+  .orderLabel,
+  .orderValue {
+    font-size: 11px;
+  }
+
+  .footer {
+    font-size: 10px;
+  }
+}
+
+/* ===== Extra Small Mobile ===== */
+@media (max-width: 360px) {
+  .wrapper {
+    padding: 8px;
+  }
+
+  .progressBarWrapper {
+    padding: 10px 4px;
+  }
+
+  .progressBar .step {
+    font-size: 9px;
+  }
+
+  .progressBar .circle {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+  }
+
+  .progressBar::before {
+    top: 9px;
+    left: 25%;
+    right: 25%;
+  }
+
+  .mainBox {
+    padding: 12px;
   }
 }

@@ -1,142 +1,382 @@
+/* =========================================================
+   OVERLAY
+========================================================= */
+
 .overlay {
   position: fixed;
+
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+
+  background: rgba(20, 41, 75, 0.35);
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   padding: 30px;
+
   z-index: 9999;
+
   overflow-y: auto;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* =========================================================
+   DIALOG
+========================================================= */
 
 .dialog {
-  background: #fff;
-  border-radius: 12px;
+  background: #ffffff;
+
+  border-radius: 16px;
+
   display: flex;
+
   max-width: 900px;
+
   width: 100%;
+
   min-height: 500px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+
+  box-shadow:
+    0 12px 35px rgba(20, 41, 75, 0.10);
+
   padding: 30px;
+
   gap: 30px;
+
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
 }
 
-/* Left Section */
+
+/* =========================================================
+   LEFT SECTION
+========================================================= */
+
 .selectionBox {
   flex: 1;
-  border-right: 1px solid #eee;
+
+  border-right: 1px solid #d8e8f4;
+
+  box-sizing: border-box;
 }
 
+
+/* =========================================================
+   SELECTION TITLE
+========================================================= */
+
 .selectionTitle {
+  font-family: "Manrope", sans-serif;
+
   font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
+
+  font-weight: 700;
+
+  line-height: 1.3;
+
+  color: #14294b;
+
   margin-bottom: 20px;
 }
 
+
+/* =========================================================
+   SELECTION LIST
+========================================================= */
+
 .selectionList {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid #d8e8f4;
+
+  border-radius: 10px;
+
   padding: 10px 0;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
 }
+
+
+/* =========================================================
+   SELECTION ITEM
+========================================================= */
 
 .selectionItem {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   padding: 12px 16px;
-  font-size: 15px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+
+  color: #14294b;
+
+  border-bottom: 1px solid #edf3f8;
+
+  box-sizing: border-box;
 }
 
 .selectionItem:last-child {
   border-bottom: none;
 }
 
+
+/* =========================================================
+   ICON
+========================================================= */
+
 .icon {
   margin-right: 10px;
-  color: #6b7280;
+
+  color: #1876bd;
+
+  flex-shrink: 0;
 }
 
 
+/* =========================================================
+   RIGHT SECTION
+========================================================= */
 
-/* Right Section */
 .yearBox {
   flex: 2;
+
   display: flex;
+
   flex-direction: column;
+
+  min-width: 0;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* =========================================================
+   YEAR HEADER
+========================================================= */
 
 .yearHeader {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
-  background: #fb6530;
-  color: #fff;
+
+  background: #1876bd;
+
+  color: #ffffff;
+
   padding: 10px 20px;
-  border-radius: 6px;
+
+  border-radius: 8px;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 16px;
-  font-weight: 500;
+
+  font-weight: 700;
+
+  line-height: 1.3;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 5px 14px rgba(24, 118, 189, 0.15);
 }
+
+
+/* =========================================================
+   HEADER ARROW
+========================================================= */
 
 .arrowBtn {
   background: transparent;
+
   border: none;
-  color: #fff;
+
+  color: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 22px;
+
+  font-weight: 600;
+
   cursor: pointer;
+
+  padding: 0;
+
+  line-height: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
+
+.arrowBtn:hover {
+  opacity: 0.8;
+
+  transform: translateX(-2px);
+}
+
+
+/* =========================================================
+   YEAR GRID
+========================================================= */
 
 .yearGrid {
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
+
   gap: 12px;
+
   margin-top: 20px;
+
+  font-family: "Manrope", sans-serif;
 }
+
+
+/* =========================================================
+   YEAR BUTTON
+========================================================= */
 
 .yearButton {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+
+  border: 1px solid #d8e8f4;
+
+  border-radius: 9px;
+
   padding: 12px 16px;
-  font-size: 15px;
-  font-weight: 500;
-  background: #fff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.3;
+
+  color: #14294b;
+
+  background: #ffffff;
+
   cursor: pointer;
-  transition: 0.2s;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+/* =========================================================
+   YEAR BUTTON HOVER
+========================================================= */
 
 .yearButton:hover {
-  border-color: #fb6530;
+  border-color: #1876bd;
+
+  background: #f7fbff;
+
+  color: #1876bd;
+
+  box-shadow:
+    0 4px 12px rgba(24, 118, 189, 0.08);
+
+  transform: translateY(-1px);
 }
+
+
+/* =========================================================
+   ACTIVE YEAR
+========================================================= */
 
 .activeYear {
-  background: #1d9bf0;
-  color: #fff;
-  border-color: #1d9bf0;
+  background: #eef6fd !important;
+
+  color: #1876bd !important;
+
+  border: 1px solid #1876bd !important;
+
+  box-shadow:
+    0 4px 12px rgba(24, 118, 189, 0.10);
 }
+
+
+/* =========================================================
+   YEAR ARROW
+========================================================= */
 
 .arrow {
-  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
   color: inherit;
+
+  line-height: 1;
 }
 
-/* ✅ Responsive Design */
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1024px) {
+
   .dialog {
     flex-direction: column;
+
     padding: 20px;
+
     gap: 20px;
   }
 
   .selectionBox {
     border-right: none;
-    border-bottom: 1px solid #eee;
+
+    border-bottom: 1px solid #d8e8f4;
+
     padding-bottom: 20px;
+
     margin-bottom: 20px;
   }
 
@@ -145,78 +385,55 @@
   }
 }
 
-@media (max-width: 640px) {
-  .overlay {
-    padding: 15px; 
-  }
-  
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: start;
-  justify-content: center;
-  padding: 30px;
-  z-index: 9999;
-  overflow-y: auto;
-}
 
-.selectionBox {
-    display: none; 
-  }
-  .dialog {
-    padding: 15px;
-    gap: 15px;
-    min-height: auto;
-  }
-
-  .selectionTitle {
-    font-size: 16px;
-  }
-
-  .selectionItem {
-    font-size: 13px;
-    padding: 10px 12px;
-  }
-
-  .yearHeader {
-    font-size: 14px;
-    padding: 8px 14px;
-  }
-
-  .yearGrid {
-    grid-template-columns: 1fr; 
-  }
-
-  .yearButton {
-    font-size: 13px;
-    padding: 10px 12px;
-  }
-}
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 640px) {
+
   .overlay {
-    padding: 15px; 
     position: fixed;
+
     inset: 0;
-    background: rgba(0,0,0,0.4);
+
+    background: rgba(20, 41, 75, 0.35);
+
     display: flex;
-    align-items: start;
+
+    align-items: flex-start;
+
     justify-content: center;
+
     padding: 30px;
+
     z-index: 9999;
+
     overflow-y: auto;
+
+    box-sizing: border-box;
   }
 
   .selectionBox {
-    display: none; 
+    display: none;
   }
 
   .dialog {
+    width: 100%;
+
+    max-width: 100%;
+
     padding: 15px;
+
     gap: 15px;
+
     min-height: auto;
+
+    border-radius: 14px;
+  }
+
+  .yearBox {
+    width: 100%;
   }
 
   .selectionTitle {
@@ -225,20 +442,85 @@
 
   .selectionItem {
     font-size: 13px;
+
     padding: 10px 12px;
   }
 
   .yearHeader {
     font-size: 14px;
+
     padding: 8px 14px;
+
+    border-radius: 8px;
   }
 
-  .yearGrid { 
+  .arrowBtn {
+    font-size: 20px;
+  }
+
+  .yearGrid {
     grid-template-columns: repeat(4, 1fr);
+
+    gap: 10px;
+
+    margin-top: 15px;
   }
 
   .yearButton {
     font-size: 13px;
+
     padding: 10px 12px;
+
+    border-radius: 8px;
+  }
+
+  .arrow {
+    font-size: 13px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .overlay {
+    padding: 20px 12px;
+  }
+
+  .dialog {
+    padding: 12px;
+
+    gap: 12px;
+
+    border-radius: 12px;
+  }
+
+  .yearHeader {
+    font-size: 13px;
+
+    padding: 8px 12px;
+  }
+
+  .yearGrid {
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 8px;
+
+    margin-top: 13px;
+  }
+
+  .yearButton {
+    font-size: 12px;
+
+    padding: 9px 7px;
+
+    border-radius: 8px;
+  }
+
+  .arrow {
+    font-size: 12px;
   }
 }

@@ -1,28 +1,50 @@
-/* Theme wrapper class to hold variables */
+
+/* =========================================================
+   REFUND & CANCELLATION POLICY
+   PREMIUM BLUE THEME
+========================================================= */
+
 .page {
-  --accent: orangered;
-  --accent-600: #ff4500;
+  --accent: #1876bd;
+  --accent-600: #145f9f;
   --bg: #ffffff;
-  --text-dark: #111;
-  --text-light: #444;
-  --muted: #6b6b6b;
+  --text-dark: #14294b;
+  --text-light: #4f6075;
+  --muted: #66758a;
+  --light-blue: #eef6fd;
+  --border: #d8e8f4;
   --radius: 12px;
-  --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --shadow: 0 6px 20px rgba(20, 41, 75, 0.08);
 
   min-height: 100vh;
   background: var(--bg);
   color: var(--text-dark);
-  font-family: Inter, system-ui, "Segoe UI", Arial;
+  font-family: "Manrope", sans-serif;
 }
 
-/* ---------------- Header ---------------- */
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .header {
-  background: linear-gradient(90deg, #bfdcff73, #239dff);
-  color: #fff;
+  background: linear-gradient(
+    90deg,
+    #eef6fd 0%,
+    #dceefe 45%,
+    #1876bd 100%
+  );
+
+  color: #14294b;
+
   padding: 28px 36px;
-  box-shadow: 0 4px 14px rgba(255, 69, 0, 0.25);
+
+  box-shadow: 0 4px 14px rgba(24, 118, 189, 0.12);
+
   margin: 0;
   width: 100%;
+
+  box-sizing: border-box;
 }
 
 .headerInner {
@@ -32,122 +54,239 @@
 
 .title {
   margin: 0;
+
   font-size: 1.8rem;
   font-weight: 700;
+
+  color: #14294b;
+
+  line-height: 1.3;
 }
 
 .subtitle {
   margin-top: 6px;
-  opacity: 0.9;
+
+  color: #4f6075;
+
+  opacity: 0.95;
+
   font-size: 1rem;
+
+  line-height: 1.5;
 }
 
-/* ---------------- Content ---------------- */
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
 .container {
   max-width: 1150px;
+
   margin: 20px auto;
+
   padding: 0 16px;
+
+  box-sizing: border-box;
 }
 
 .card {
   background: var(--bg);
-  /* padding: 24px; */
+
   text-align: justify;
 
+  box-sizing: border-box;
 }
 
 .lead {
   font-size: 1rem;
+
   color: var(--text-light);
+
   line-height: 1.7;
+
+  margin-top: 0;
   margin-bottom: 16px;
 }
 
-/* Section headings */
+
+/* =========================================================
+   SECTION HEADINGS
+========================================================= */
+
 .card h2 {
   margin-top: 22px;
   margin-bottom: 10px;
+
   font-size: 1.25rem;
+
   font-weight: 600;
+
   color: var(--text-dark);
+
+  line-height: 1.4;
 }
 
-/* Paragraphs */
+
+/* =========================================================
+   PARAGRAPHS
+========================================================= */
+
 .card p {
   color: var(--text-light);
+
   line-height: 1.6;
+
   margin-bottom: 10px;
 }
 
-/* Lists */
+
+/* =========================================================
+   LISTS
+========================================================= */
+
 .card ul {
   margin-left: 25px;
+
   margin-bottom: 14px;
+
+  padding-left: 8px;
 }
 
 .card li {
   color: var(--text-light);
+
   line-height: 1.6;
+
   margin-bottom: 6px;
 }
 
-/* ---------------- Footer ---------------- */
+
+/* =========================================================
+   FOOTER ROW
+========================================================= */
+
 .footerRow {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-top: 22px;
+
   flex-wrap: wrap;
+
   gap: 12px;
 }
 
+
+/* =========================================================
+   BACK TO TOP BUTTON
+========================================================= */
+
 .cta {
   padding: 8px 16px;
-  border: 2px solid var(--accent-600);
-  background: transparent;
-  color: var(--accent-600);
+
+  border: 2px solid var(--accent);
+
+  background: #ffffff;
+
+  color: var(--accent);
+
   border-radius: 8px;
+
   font-weight: 600;
+
   cursor: pointer;
-  transition: 0.2s ease-in-out;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  font-family: inherit;
 }
 
 .cta:hover {
-  background: rgba(255, 68, 0, 0.08);
+  background: var(--light-blue);
+
+  border-color: var(--accent-600);
+
+  color: var(--accent-600);
+
+  transform: translateY(-1px);
 }
+
+.cta:focus {
+  outline: none;
+
+  border-color: var(--accent);
+}
+
+
+/* =========================================================
+   LAST UPDATED
+========================================================= */
 
 .smallNote {
   font-size: 0.9rem;
+
   color: var(--muted);
+
+  line-height: 1.5;
 }
 
-/* ---------------- Responsive ---------------- */
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media screen and (min-width: 640px) {
   .title {
     font-size: 2rem;
   }
+
   .card {
     padding: 30px;
   }
 }
 
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
 @media screen and (min-width: 1024px) {
   .card {
     padding: 36px;
   }
+
   .card p,
   .card li {
     font-size: 1.05rem;
   }
+
   .lead {
     font-size: 1.1rem;
   }
 }
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media screen and (max-width: 768px) {
   .header {
     margin: 0;
+
     width: 100%;
-    padding: 16px 16px;   /* balanced padding */
+
+    padding: 16px;
+
+    box-sizing: border-box;
   }
 
   .headerInner {
@@ -156,12 +295,135 @@
 
   .title {
     font-size: 1.4rem;
+
     line-height: 1.3;
+
     word-break: break-word;
+
+    color: #14294b;
   }
 
   .subtitle {
     font-size: 0.95rem;
+
     line-height: 1.4;
+
+    color: #4f6075;
+  }
+
+  .container {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin: 16px auto;
+
+    padding: 0 14px;
+  }
+
+  .card {
+    padding: 0;
+
+    text-align: left;
+  }
+
+  .lead {
+    font-size: 0.95rem;
+
+    line-height: 1.65;
+  }
+
+  .card h2 {
+    font-size: 1.15rem;
+
+    line-height: 1.4;
+
+    color: #14294b;
+  }
+
+  .card p,
+  .card li {
+    font-size: 0.95rem;
+
+    line-height: 1.6;
+  }
+
+  .card ul {
+    margin-left: 20px;
+
+    padding-left: 8px;
+  }
+
+  .footerRow {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .cta {
+    padding: 9px 16px;
+
+    border-color: #1876bd;
+
+    color: #1876bd;
+  }
+
+  .smallNote {
+    font-size: 0.82rem;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media screen and (max-width: 480px) {
+  .header {
+    padding: 14px 12px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.88rem;
+  }
+
+  .container {
+    padding: 0 12px;
+
+    margin-top: 14px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+
+    margin-top: 20px;
+  }
+
+  .card p,
+  .card li,
+  .lead {
+    font-size: 0.9rem;
+
+    line-height: 1.6;
+  }
+
+  .card ul {
+    margin-left: 16px;
+
+    padding-left: 8px;
+  }
+
+  .cta {
+    width: auto;
+
+    min-height: 40px;
+
+    padding: 8px 15px;
   }
 }

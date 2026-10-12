@@ -6,7 +6,7 @@
   position: fixed;
   inset: 0;
 
-  background: rgba(15, 35, 60, 0.35);
+  background: rgba(20, 41, 75, 0.35);
 
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@
 
   gap: 0;
 
-  background: #f5f9ff;
+  background: #ffffff;
 
   border-radius: 18px;
 
@@ -48,7 +48,7 @@
   box-sizing: border-box;
 
   box-shadow:
-    0 20px 60px rgba(24, 118, 189, 0.16);
+    0 20px 60px rgba(20, 41, 75, 0.12);
 
   font-family: "Manrope", sans-serif;
 }
@@ -56,6 +56,7 @@
 
 /* =========================================================
    LEFT PANEL
+   LAYOUT SAME
 ========================================================= */
 
 .leftPanel {
@@ -65,16 +66,22 @@
 
   box-sizing: border-box;
 
-  background: #f5f9ff;
+  background: #eef6fd;
 
   flex-shrink: 0;
 }
 
 
+/* =========================================================
+   LEFT HEADING
+========================================================= */
+
 .leftPanel h3 {
   margin: 0 0 22px;
 
   color: #14294b;
+
+  font-family: "Manrope", sans-serif;
 
   font-size: 22px;
 
@@ -97,12 +104,16 @@
 
   overflow: hidden;
 
-  border: 1px solid #e2edf8;
+  border: 1px solid #d8e8f4;
 
   box-shadow:
-    0 5px 18px rgba(24, 118, 189, 0.05);
+    0 5px 18px rgba(20, 41, 75, 0.04);
 }
 
+
+/* =========================================================
+   SELECTION ITEM
+========================================================= */
 
 .selectionItem {
   min-height: 58px;
@@ -121,18 +132,23 @@
 
   color: #14294b;
 
+  font-family: "Manrope", sans-serif;
+
   font-size: 15px;
 
   font-weight: 600;
 
-  border-bottom: 1px solid #edf2f7;
+  border-bottom: 1px solid #edf3f8;
 }
-
 
 .selectionItem:last-child {
   border-bottom: none;
 }
 
+
+/* =========================================================
+   ICON
+========================================================= */
 
 .icon {
   width: 17px;
@@ -145,6 +161,10 @@
 }
 
 
+/* =========================================================
+   CALENDAR ICON
+========================================================= */
+
 .calendarIcon {
   width: 17px;
 
@@ -154,12 +174,15 @@
 
   font-size: 15px;
 
+  color: #1876bd;
+
   flex-shrink: 0;
 }
 
 
 /* =========================================================
    RIGHT PANEL
+   LAYOUT SAME
 ========================================================= */
 
 .rightPanel {
@@ -171,7 +194,7 @@
 
   box-sizing: border-box;
 
-  background: #eaf3ff;
+  background: #ffffff;
 
   display: flex;
 
@@ -202,22 +225,30 @@
 
   box-sizing: border-box;
 
-  background: #ffffff;
+  background: #1876bd;
+
+  border: 1px solid #1876bd;
 
   border-radius: 10px;
 
   margin-bottom: 15px;
 
-  color: #14294b;
+  color: #ffffff;
 
-  font-size: 18px;
+  font-family: "Manrope", sans-serif;
 
-  font-weight: 600;
+  font-size: 16px;
+
+  font-weight: 700;
 
   box-shadow:
-    0 3px 12px rgba(24, 118, 189, 0.04);
+    0 6px 16px rgba(24, 118, 189, 0.16);
 }
 
+
+/* =========================================================
+   HEADER TITLE
+========================================================= */
 
 .header > span {
   flex: 1;
@@ -225,6 +256,14 @@
   text-align: center;
 
   white-space: nowrap;
+
+  color: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 700;
 }
 
 
@@ -241,9 +280,9 @@
 
   border-radius: 8px;
 
-  background: #f3f8fd;
+  background: rgba(255, 255, 255, 0.12);
 
-  color: #1876bd;
+  color: #ffffff;
 
   display: flex;
 
@@ -255,24 +294,24 @@
 
   cursor: pointer;
 
+  font-family: "Manrope", sans-serif;
+
   font-size: 22px;
 
   line-height: 1;
 
-  transition: all 0.25s ease;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
 
   flex-shrink: 0;
 }
 
-
 .arrowBtn:hover:not(:disabled) {
-  background: #1876bd;
+  background: rgba(255, 255, 255, 0.22);
 
   color: #ffffff;
-
-  transform: translateY(-1px);
 }
-
 
 .disabledArrow {
   opacity: 0.35;
@@ -302,32 +341,41 @@
 
   background: #ffffff;
 
-  border: 1px solid #e0eaf3;
+  border: 1px solid #d8e8f4;
 
   border-radius: 9px;
 
   margin-bottom: 18px;
 
-  transition: all 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
-
 
 .searchBox:focus-within {
   border-color: #1876bd;
 
   box-shadow:
-    0 0 0 3px rgba(24, 118, 189, 0.10);
+    0 0 0 3px rgba(24, 118, 189, 0.08);
 }
 
 
+/* =========================================================
+   SEARCH ICON
+========================================================= */
+
 .searchIcon {
-  color: #7b8ba1;
+  color: #7a8da3;
 
   flex-shrink: 0;
 
   margin-right: 9px;
 }
 
+
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
 
 .searchBox input {
   width: 100%;
@@ -345,11 +393,14 @@
   font-family: "Manrope", sans-serif;
 
   font-size: 14px;
+
+  font-weight: 500;
 }
 
-
 .searchBox input::placeholder {
-  color: #8a98a9;
+  color: #91a1b1;
+
+  font-family: "Manrope", sans-serif;
 }
 
 
@@ -358,9 +409,11 @@
 ========================================================= */
 
 .popularTitle {
-  margin-bottom: 14px;
+  margin: 0 0 14px;
 
   color: #14294b;
+
+  font-family: "Manrope", sans-serif;
 
   font-size: 17px;
 
@@ -372,6 +425,7 @@
 
 /* =========================================================
    BRAND GRID
+   LAYOUT SAME
 ========================================================= */
 
 .brandGrid {
@@ -379,8 +433,7 @@
 
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 14px;
 
@@ -398,7 +451,7 @@
 
   scrollbar-width: thin;
 
-  scrollbar-color: #a7c8e4 transparent;
+  scrollbar-color: #b9d5ea transparent;
 }
 
 
@@ -417,64 +470,91 @@
 
   padding: 8px 7px;
 
-  border-radius: 9px;
-
-  border: 1px solid transparent;
-
-  background: #ffffff;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 5px;
-
   box-sizing: border-box;
 
-  cursor: pointer;
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: #ffffff !important;
+
+  border: 1px solid #d8e8f4 !important;
+
+  border-radius: 12px !important;
+
+  display: block;
 
   color: #14294b;
 
   font-family: "Manrope", sans-serif;
 
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    background 0.2s ease;
-}
+  font-size: 12px;
 
+  font-weight: 600;
 
-.brandCard:hover {
-  border-color: #1876bd;
+  line-height: 1.25;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  outline: none !important;
 
   box-shadow:
-    0 5px 16px rgba(24, 118, 189, 0.12);
+    0 2px 8px rgba(20, 41, 75, 0.035);
 
-  transform: translateY(-2px);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 
 /* =========================================================
-   ACTIVE BRAND
+   BRAND BUTTON
 ========================================================= */
 
-.brandCard.active {
-  border: 1.5px solid #1876bd;
+.brandGrid button {
+  width: 100%;
 
-  background: #ffffff;
+  height: 80px;
+
+  min-width: 0;
+
+  min-height: 0;
+
+  padding: 8px 7px;
+
+  box-sizing: border-box;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: #ffffff !important;
+
+  border: 1px solid #d8e8f4 !important;
+
+  border-radius: 12px !important;
+
+  outline: none !important;
 
   box-shadow:
-    0 4px 14px rgba(24, 118, 189, 0.10);
-}
+    0 2px 8px rgba(20, 41, 75, 0.035);
 
+  color: #14294b;
 
-.brandCard.active .brandName {
-  color: #1876bd;
+  font-family: "Manrope", sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-align: center;
+
+  cursor: pointer;
 }
 
 
@@ -494,6 +574,10 @@
   justify-content: center;
 
   overflow: hidden;
+
+  text-align: center;
+
+  margin: 0;
 }
 
 
@@ -510,6 +594,8 @@
 
   display: block;
 
+  margin: 0 auto;
+
   mix-blend-mode: multiply;
 }
 
@@ -519,29 +605,141 @@
 ========================================================= */
 
 .brandName {
-  width: 100%;
+  width: auto !important;
 
-  padding: 0 3px;
+  max-width: 100%;
+
+  margin: 0;
+
+  padding: 0 2px;
 
   box-sizing: border-box;
 
-  color: #14294b;
+  color: inherit;
+
+  font-family: "Manrope", sans-serif;
 
   font-size: 11px;
 
   font-weight: 600;
 
-  line-height: 1.2;
+  line-height: 1.25;
 
   text-align: center;
 
-  white-space: nowrap;
+  display: inline !important;
 
-  overflow: hidden;
+  white-space: nowrap !important;
 
-  text-overflow: ellipsis;
+  overflow: visible !important;
+
+  text-overflow: clip !important;
 
   text-transform: uppercase;
+}
+
+
+/* =========================================================
+   BRAND NAME CHILD
+========================================================= */
+
+.brandName span {
+  display: inline !important;
+
+  width: auto !important;
+
+  height: auto !important;
+
+  margin: 0;
+
+  padding: 0;
+
+  white-space: nowrap !important;
+
+  vertical-align: middle;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   BRAND CARD DIRECT SPAN
+========================================================= */
+
+.brandCard > span {
+  width: auto !important;
+
+  max-width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  white-space: nowrap !important;
+
+  overflow: visible;
+
+  text-overflow: clip;
+
+  vertical-align: middle;
+}
+
+
+/* =========================================================
+   BRAND HOVER
+========================================================= */
+
+.brandCard:hover,
+.brandGrid button:hover {
+  background: #f8fbfe !important;
+
+  border: 1px solid #1876bd !important;
+
+  border-radius: 12px !important;
+
+  color: #1876bd;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 6px 16px rgba(24, 118, 189, 0.10);
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.brandCard:focus,
+.brandCard:focus-visible,
+.brandGrid button:focus,
+.brandGrid button:focus-visible {
+  outline: none !important;
+
+  background: #ffffff !important;
+
+  border-color: #d8e8f4 !important;
+
+  border-radius: 12px !important;
+}
+
+
+/* =========================================================
+   ACTIVE BRAND
+========================================================= */
+
+.brandCard.active,
+.brandGrid button.active {
+  background: #eef6fd !important;
+
+  border: 1.5px solid #1876bd !important;
+
+  border-radius: 12px !important;
+
+  color: #1876bd;
+
+  box-shadow:
+    0 5px 15px rgba(24, 118, 189, 0.10);
 }
 
 
@@ -556,11 +754,15 @@
 
   margin-top: 14px;
 
-  border: 1px solid #1876bd;
+  padding: 10px 14px;
 
-  border-radius: 8px;
+  box-sizing: border-box;
 
-  background: #ffffff;
+  border: 1px solid #d8e8f4;
+
+  border-radius: 10px;
+
+  background: #f8fbfe;
 
   color: #1876bd;
 
@@ -570,14 +772,20 @@
 
   font-weight: 600;
 
+  text-align: center;
+
   cursor: pointer;
 
-  transition: all 0.25s ease;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
 }
-
 
 .otherManufacturer:hover {
   background: #1876bd;
+
+  border-color: #1876bd;
 
   color: #ffffff;
 }
@@ -591,18 +799,15 @@
   width: 5px;
 }
 
-
 .brandGrid::-webkit-scrollbar-track {
   background: transparent;
 }
 
-
 .brandGrid::-webkit-scrollbar-thumb {
-  background: #a7c8e4;
+  background: #b9d5ea;
 
   border-radius: 10px;
 }
-
 
 .brandGrid::-webkit-scrollbar-thumb:hover {
   background: #1876bd;
@@ -611,6 +816,7 @@
 
 /* =========================================================
    TABLET
+   LAYOUT SAME
 ========================================================= */
 
 @media (max-width: 1024px) {
@@ -621,31 +827,32 @@
     max-height: 90vh;
   }
 
-
   .leftPanel {
     width: 28%;
 
     padding: 35px 20px;
   }
 
-
   .leftPanel h3 {
     font-size: 20px;
   }
-
 
   .rightPanel {
     padding: 24px;
   }
 
-
   .brandGrid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 
     gap: 12px;
   }
 
+  .brandCard,
+  .brandGrid button {
+    height: 82px;
+
+    border-radius: 11px !important;
+  }
 }
 
 
@@ -659,7 +866,6 @@
     padding: 10px;
   }
 
-
   .dialog {
     width: 100%;
 
@@ -670,11 +876,9 @@
     border-radius: 14px;
   }
 
-
   .leftPanel {
     display: none;
   }
-
 
   .rightPanel {
     width: 100%;
@@ -683,7 +887,6 @@
 
     overflow: hidden;
   }
-
 
   .header {
     height: 44px;
@@ -695,13 +898,17 @@
     margin-bottom: 12px;
   }
 
+  .header > span {
+    font-size: 14px;
+  }
 
   .arrowBtn {
     width: 32px;
 
     height: 32px;
-  }
 
+    font-size: 20px;
+  }
 
   .searchBox {
     height: 44px;
@@ -711,6 +918,9 @@
     margin-bottom: 15px;
   }
 
+  .searchBox input {
+    font-size: 13px;
+  }
 
   .popularTitle {
     font-size: 16px;
@@ -718,21 +928,30 @@
     margin-bottom: 11px;
   }
 
-
   .brandGrid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 10px;
 
     max-height: 55vh;
   }
 
-
-  .brandCard {
+  .brandCard,
+  .brandGrid button {
     height: 82px;
+
+    padding: 8px 6px;
+
+    background: #ffffff !important;
+
+    border: 1px solid #d8e8f4 !important;
+
+    border-radius: 11px !important;
   }
 
+  .logoBox {
+    height: 38px;
+  }
 
   .brandLogo {
     width: 48px;
@@ -740,16 +959,19 @@
     height: 32px;
   }
 
-
   .brandName {
     font-size: 10px;
-  }
 
+    white-space: nowrap !important;
+  }
 
   .otherManufacturer {
     margin-top: 12px;
-  }
 
+    border-radius: 10px;
+
+    font-size: 13px;
+  }
 }
 
 
@@ -763,18 +985,15 @@
     padding: 7px;
   }
 
-
   .dialog {
     max-height: 96vh;
 
     border-radius: 12px;
   }
 
-
   .rightPanel {
     padding: 14px;
   }
-
 
   .header {
     height: 42px;
@@ -786,6 +1005,9 @@
     padding: 0 8px;
   }
 
+  .header > span {
+    font-size: 13px;
+  }
 
   .arrowBtn {
     width: 30px;
@@ -795,7 +1017,6 @@
     font-size: 19px;
   }
 
-
   .searchBox {
     height: 42px;
 
@@ -804,35 +1025,36 @@
     padding: 0 12px;
   }
 
+  .searchBox input {
+    font-size: 13px;
+  }
 
   .popularTitle {
     font-size: 15px;
   }
 
-
   .brandGrid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    gap: 8px;
+    gap: 9px;
   }
 
-
-  .brandCard {
+  .brandCard,
+  .brandGrid button {
     height: 76px;
 
     padding: 6px 4px;
 
-    gap: 4px;
+    border: 1px solid #d8e8f4 !important;
 
-    border-radius: 8px;
+    border-radius: 10px !important;
+
+    background: #ffffff !important;
   }
-
 
   .logoBox {
     height: 35px;
   }
-
 
   .brandLogo {
     width: 44px;
@@ -840,18 +1062,19 @@
     height: 29px;
   }
 
-
   .brandName {
     font-size: 9px;
-  }
 
+    white-space: nowrap !important;
+  }
 
   .otherManufacturer {
     min-height: 40px;
 
     font-size: 13px;
-  }
 
+    border-radius: 9px;
+  }
 }
 
 
@@ -865,16 +1088,28 @@
     padding: 12px;
   }
 
-
   .brandGrid {
-    gap: 7px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
   }
 
-
-  .brandCard {
+  .brandCard,
+  .brandGrid button {
     height: 72px;
+
+    padding: 5px 4px;
+
+    border: 1px solid #d8e8f4 !important;
+
+    border-radius: 9px !important;
+
+    background: #ffffff !important;
   }
 
+  .logoBox {
+    height: 32px;
+  }
 
   .brandLogo {
     width: 40px;
@@ -882,9 +1117,9 @@
     height: 27px;
   }
 
-
   .brandName {
     font-size: 8px;
-  }
 
+    white-space: nowrap !important;
+  }
 }

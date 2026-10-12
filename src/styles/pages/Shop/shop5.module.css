@@ -1,331 +1,699 @@
-/* ====== Main Layout ====== */
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
 .wrapper {
   display: flex;
   gap: 24px;
+  width: 100%;
   padding: 24px;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f3f6fc;
-  color: #1a1f36;
+  box-sizing: border-box;
+
+  font-family: "Manrope", sans-serif;
+  color: #14294b;
+  background: #f4f8fc;
 }
 
-/* Left side */
+
+/* =========================================================
+   LEFT SIDE / FORM SECTION
+========================================================= */
+
 .formSection {
   flex: 2.5;
+  min-width: 0;
+  width: 100%;
 }
 
 .heading {
+  margin: 0 0 14px;
+
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 14px;
-  color: #0d1b3e;
+  line-height: 1.4;
 }
 
-/* ====== Card ====== */
+
+/* =========================================================
+   CARD
+========================================================= */
+
 .card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 18px;
+  width: 100%;
+  box-sizing: border-box;
+
   margin-bottom: 22px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e9edf7;
+  padding: 18px;
+
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 14px;
+
+  box-shadow: 0 6px 18px rgba(20, 41, 75, 0.07);
 }
 
 .subHeading {
+  margin: 0 0 12px;
+
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
   font-size: 15px;
   font-weight: 700;
-  margin-bottom: 12px;
-  color: #2a3147;
+  line-height: 1.5;
 }
 
-/* ====== Inputs / Selects ====== */
+
+/* =========================================================
+   ROW
+========================================================= */
+
 .row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
   gap: 14px;
   margin-bottom: 12px;
 }
-.input{
+
+
+/* =========================================================
+   INPUTS / SELECT / TEXTAREA
+========================================================= */
+
+.input {
   text-transform: capitalize;
 }
+
 .input,
 .inputFull,
 .inputIcon input,
 select.input,
 textarea.inputFull {
-  background: #fff;
-  border: 1.6px solid #dbe4ff;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  line-height: 1.2;
-  color: #111827;
-  outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-
-  /* 🔑 Fix overflow issue */
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+
   box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  color: #14294b;
+  background: #ffffff;
+
+  border: 1.5px solid #d2e2ee;
+  border-radius: 10px;
+
+  outline: none;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
+
+
+/* Input Focus */
 
 .input:focus,
 .inputFull:focus,
 .inputIcon input:focus,
 select.input:focus,
 textarea.inputFull:focus {
-  border-color: #0d63f3;
-  box-shadow: 0 0 0 4px rgba(13, 99, 243, 0.10);
-  background: #fff;
+  border-color: #1876bd;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 4px rgba(24, 118, 189, 0.1);
 }
+
+
+/* Placeholder */
 
 .input::placeholder,
 .inputFull::placeholder,
 textarea.inputFull::placeholder {
-  color: #9aa4b2;
+  color: #91a1b1;
+  opacity: 1;
 }
+
+
+/* Full Width Input */
 
 .inputFull {
   margin-bottom: 12px;
 }
 
+
+/* Textarea */
+
 textarea.inputFull {
-  min-height: 100px;   /* good for address/loan detail */
-  resize: vertical;    /* only vertical resize */
+  min-height: 100px;
+  resize: vertical;
 }
 
-/* Select dropdown arrow */
+
+/* =========================================================
+   SELECT DROPDOWN
+========================================================= */
+
 select.input {
   -webkit-appearance: none;
   appearance: none;
+
+  padding-right: 40px;
+
+  background-color: #ffffff;
+
   background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 7.5L10 12l4.5-4.5' stroke='%23526796' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
   background-repeat: no-repeat;
   background-position: right 12px center;
-  padding-right: 40px;
+  background-size: 20px 20px;
 }
 
-/* Input with trailing icon */
+
+/* =========================================================
+   INPUT WITH ICON
+========================================================= */
+
 .inputIcon {
   position: relative;
+
   display: flex;
-}
-.inputIcon input {
   width: 100%;
-  padding-right: 40px;
-}
-.icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #0d63f3;
-  font-size: 18px;
-  cursor: pointer;
+  min-width: 0;
 }
 
-/* ====== Addons (tiles) ====== */
+.inputIcon input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.icon {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #1876bd;
+  font-size: 18px;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.icon:hover {
+  color: #145f9f;
+}
+
+
+/* =========================================================
+   ADDON ROW
+========================================================= */
+
 .addonRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
+  width: 100%;
   gap: 12px;
-  background: #edf3ff;
-  border: 1px solid #d9e6ff;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(13, 63, 243, 0.06);
+
   margin-bottom: 12px;
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  background: #eef6fd;
+  border: 1px solid #d8e8f4;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.06);
 }
 
 .addonRow h4 {
+  margin: 0 0 6px;
+
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
   font-size: 14px;
   font-weight: 700;
-  margin-bottom: 6px;
-  color: #1f2437;
+  line-height: 1.4;
 }
 
 .addonRow p {
-  font-size: 13px;
-  color: #5b6279;
   max-width: 60ch;
+
+  margin: 0;
+
+  color: #66758a;
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .sumInsured {
+  align-self: flex-start;
+
+  color: #14294b;
+
+  font-family: "Manrope", sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: #0d1b3e;
+
   white-space: nowrap;
-  align-self: flex-start;
 }
 
-/* ====== Right side - Order Details ====== */
+
+/* =========================================================
+   RIGHT SIDE / ORDER SECTION
+========================================================= */
+
 .orderSection {
   flex: 1;
+
   min-width: 300px;
+
   margin-top: 3.8rem;
 }
 
 .orderCard {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 0;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e9edf7;
   position: sticky;
   top: 24px;
+
+  width: 100%;
+
+  padding: 0;
+
+  box-sizing: border-box;
+
   overflow: hidden;
+
+  background: #ffffff;
+  border: 1px solid #d8e8f4;
+  border-radius: 14px;
+
+  box-shadow: 0 10px 28px rgba(20, 41, 75, 0.09);
 }
+
+
+/* =========================================================
+   ORDER HEADER
+========================================================= */
 
 .orderHeader {
   display: flex;
-  gap: 10px;
   align-items: center;
+
+  gap: 10px;
+
   padding: 14px;
-  background: #edf3ff;
-  border-bottom: 1px solid #e9edf7;
+
+  background: #eef6fd;
+  border-bottom: 1px solid #d8e8f4;
+
+  box-sizing: border-box;
 }
 
 .orderLogo {
   width: 88px;
   height: auto;
+
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .orderHeader h3 {
+  margin: 0;
+
+  color: #14294b;
+
+  font-family: "Manrope", sans-serif;
   font-size: 15px;
   font-weight: 700;
-  color: #1f2437;
-  margin: 0;
+  line-height: 1.4;
 }
+
+
+/* =========================================================
+   ORDER INFORMATION
+========================================================= */
 
 .orderInfo {
   padding: 14px;
+  box-sizing: border-box;
 }
 
 .orderInfo p {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  margin: 0 0 10px;
+
+  color: #46586c;
+
+  font-family: "Manrope", sans-serif;
   font-size: 14px;
-  margin-bottom: 10px;
-  color: #3a415a;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .orderInfo ul {
   margin: 6px 0 12px 18px;
+  padding: 0;
+
+  color: #66758a;
+
+  font-family: "Manrope", sans-serif;
   font-size: 13px;
-  color: #5b6279;
+  font-weight: 500;
+  line-height: 1.6;
 }
+
+
+/* =========================================================
+   TOTAL
+========================================================= */
 
 .total {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  gap: 12px;
+
   margin: 12px 14px 8px;
-  padding-top: 8px;
-  border-top: 1px dashed #dfe6f7;
+  padding-top: 10px;
+
+  border-top: 1px dashed #d8e8f4;
+
+  color: #14294b;
+
+  font-family: "Manrope", sans-serif;
   font-size: 15px;
   font-weight: 700;
-  color: #0d1b3e;
 }
 
 .total h3 {
-  font-size: 18px;
-  color: #0d63f3;
   margin: 0;
+
+  color: #1876bd;
+
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 }
+
+
+/* =========================================================
+   PROCEED BUTTON
+========================================================= */
 
 .proceedBtn {
   width: calc(100% - 28px);
+
   margin: 10px 14px 14px;
-  background: #0d63f3;
-  color: #fff;
-  border: none;
   padding: 12px;
+
+  box-sizing: border-box;
+
+  background: #1876bd;
+  color: #ffffff;
+
+  border: none;
   border-radius: 10px;
+
+  font-family: "Manrope", sans-serif;
   font-size: 15px;
   font-weight: 700;
-  cursor: pointer;
-  transition: filter .2s ease, transform .05s ease;
-  box-shadow: 0 10px 18px rgba(13, 99, 243, 0.25);
-}
-.proceedBtn:hover { filter: brightness(0.97); }
-.proceedBtn:active { transform: translateY(1px); }
+  line-height: 1.2;
 
-/* ====== Responsiveness ====== */
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(24, 118, 189, 0.22);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.05s ease;
+}
+
+.proceedBtn:hover {
+  background: #145f9f;
+
+  box-shadow: 0 10px 22px rgba(24, 118, 189, 0.26);
+}
+
+.proceedBtn:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 1024px) {
   .wrapper {
     flex-direction: column;
+    gap: 24px;
+
+    padding: 22px;
   }
+
+  .formSection {
+    width: 100%;
+    flex: none;
+  }
+
   .orderSection {
-    position: static;
+    width: 100%;
+    min-width: 0;
+
+    margin-top: 0;
+
     order: 2;
   }
+
   .orderCard {
     position: relative;
     top: 0;
   }
 }
 
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 640px) {
-  .wrapper { padding: 14px; }
-  .heading { font-size: 20px; }
-  .card { padding: 14px; border-radius: 12px; }
-  .row { grid-template-columns: 1fr; gap: 10px; }
-  .input, .inputFull, .inputIcon input { padding: 12px; font-size: 15px; }
-  .addonRow { padding: 12px; border-radius: 10px; }
-  .sumInsured { font-size: 12px; }
-  .orderCard { border-radius: 12px; }
-  .orderLogo { width: 80px; }
-  .proceedBtn { width: calc(100% - 24px); margin: 10px 12px 12px; }
+  .wrapper {
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 18px;
+
+    padding: 14px;
+  }
+
+  .formSection {
+    width: 100%;
+  }
+
+  .heading {
+    margin-bottom: 12px;
+
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .card {
+    width: 100%;
+
+    padding: 14px;
+
+    margin-bottom: 16px;
+
+    border-radius: 12px;
+  }
+
+  .subHeading {
+    margin-bottom: 10px;
+
+    font-size: 14px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+  }
+
+  .input,
+  .inputFull,
+  .inputIcon input,
+  select.input,
+  textarea.inputFull {
+    width: 100%;
+    max-width: 100%;
+
+    padding: 12px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+  }
+
+  textarea.inputFull {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .inputIcon {
+    width: 100%;
+  }
+
+  .addonRow {
+    width: 100%;
+
+    padding: 12px;
+
+    gap: 10px;
+
+    border-radius: 10px;
+  }
+
+  .addonRow h4 {
+    font-size: 13px;
+  }
+
+  .addonRow p {
+    font-size: 12px;
+  }
+
+  .sumInsured {
+    font-size: 12px;
+  }
+
+  .orderSection {
+    width: 100%;
+    min-width: 0;
+
+    margin-top: 0;
+  }
+
+  .orderCard {
+    width: 100%;
+
+    border-radius: 12px;
+  }
+
+  .orderHeader {
+    padding: 12px;
+  }
+
+  .orderLogo {
+    width: 80px;
+  }
+
+  .orderHeader h3 {
+    font-size: 14px;
+  }
+
+  .orderInfo {
+    padding: 12px;
+  }
+
+  .orderInfo p {
+    font-size: 13px;
+  }
+
+  .orderInfo ul {
+    font-size: 12px;
+  }
+
+  .total {
+    margin: 10px 12px 8px;
+    padding-top: 8px;
+
+    font-size: 14px;
+  }
+
+  .total h3 {
+    font-size: 17px;
+  }
+
+  .proceedBtn {
+    width: calc(100% - 24px);
+
+    margin: 10px 12px 12px;
+
+    padding: 12px;
+
+    font-size: 14px;
+  }
 }
 
-@media (max-width: 640px) {
-  .wrapper { 
-    flex-direction: column; 
-    padding: 14px; 
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+  .wrapper {
+    padding: 12px 10px;
   }
 
-  .heading { font-size: 20px; }
-
-  .card { 
-    padding: 14px; 
-    border-radius: 12px; 
-    box-sizing: border-box;
+  .heading {
+    font-size: 19px;
   }
 
-  .row { 
-    grid-template-columns: 1fr; 
-    gap: 10px; 
-  }
-
-  .input, 
-  .inputFull, 
-  .inputIcon input, 
-  select.input, 
-  textarea.inputFull {
-    width: 100%;           
-    max-width: 100%;       
-    box-sizing: border-box;
+  .card {
     padding: 12px;
-    font-size: 15px;
   }
 
-  textarea.inputFull {
-    min-height: 100px;   
-    resize: vertical;    
+  .subHeading {
+    font-size: 13px;
   }
 
-  .addonRow { 
-    padding: 12px; 
-    border-radius: 10px; 
+  .addonRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .sumInsured { font-size: 12px; }
+  .sumInsured {
+    align-self: flex-start;
+  }
 
-  .orderCard { border-radius: 12px; }
+  .orderHeader {
+    gap: 8px;
+  }
 
-  .orderLogo { width: 80px; }
+  .orderLogo {
+    width: 72px;
+  }
 
-  .proceedBtn { 
-    width: calc(100% - 24px); 
-    margin: 10px 12px 12px; 
+  .orderHeader h3 {
+    font-size: 13px;
+  }
+
+  .proceedBtn {
+    font-size: 13px;
   }
 }

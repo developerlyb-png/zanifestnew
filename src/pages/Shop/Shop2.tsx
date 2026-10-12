@@ -171,7 +171,7 @@ const Shop2: React.FC = () => {
           <h4 className={styles.subHeading}>Shop Insurance</h4>
           <h2 className={styles.heading}>
             Get <span className={styles.highlight}>₹50 Lakh</span> cover starting at just
-            <span className={styles.price}>₹3,400/year*</span>
+            <span className={styles.price}> ₹3,400/year*</span>
           </h2>
 
           <div className={styles.features}>
