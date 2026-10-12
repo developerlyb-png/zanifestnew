@@ -51,6 +51,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         paymentReceivedDate: 1,
         createdAt: 1,
         vehicle: 1,
+        createdByAgentId: 1,
+        "assignment.pospAgent": 1,
         "customer.fullName": 1,
       })
         .sort({ createdAt: -1 })

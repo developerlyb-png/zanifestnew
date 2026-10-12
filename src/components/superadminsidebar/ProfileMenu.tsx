@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { FiChevronDown, FiEdit3, FiLock, FiKey, FiLogOut } from "react-icons/fi";
+import { FiChevronDown, FiEdit3, FiLock, FiLogOut } from "react-icons/fi";
 import { FaUser } from "react-icons/fa";
 import styles from "@/styles/pages/admindashboard.module.css";
 
@@ -78,10 +78,6 @@ export const ProfileMenu = ({
           <button type="button" className={styles.profileDropdownItem} onClick={() => go("changepassword")}>
             <span className={styles.profileItemIcon}><FiLock size={15} /></span>
             <span className={styles.profileItemLabel}>Change Password</span>
-          </button>
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("resetpassword")}>
-            <span className={styles.profileItemIcon}><FiKey size={15} /></span>
-            <span className={styles.profileItemLabel}>Reset Password</span>
           </button>
 
           <div className={styles.profileDropdownDivider} />

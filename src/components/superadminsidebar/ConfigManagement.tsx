@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import styles from "@/styles/components/superadminsidebar/ConfigManagement.module.css";
 import LineOfBusiness from "./LineOfBusiness";
 import Products from "./Products";
+import BranchConfig from "./BranchConfig";
+import InsuranceCompanyConfig from "./InsuranceCompanyConfig";
 
 type ConfigTab =
   | "lineOfBusiness"
@@ -44,7 +46,9 @@ export default function ConfigManagement() {
 
       {activeTab === "lineOfBusiness" && <LineOfBusiness />}
       {activeTab === "products" && <Products />}
-      {activeTab !== "lineOfBusiness" && activeTab !== "products" && (
+      {activeTab === "branch" && <BranchConfig />}
+      {activeTab === "insuranceCompany" && <InsuranceCompanyConfig />}
+      {!["lineOfBusiness", "products", "branch", "insuranceCompany"].includes(activeTab) && (
         <div className={styles.comingSoon}>
           {TABS.find((t) => t.key === activeTab)?.label} configuration is coming soon.
         </div>

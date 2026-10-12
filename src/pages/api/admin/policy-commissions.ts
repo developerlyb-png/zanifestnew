@@ -55,6 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         paymentReceivedDate: 1,
         createdAt: 1,
         vehicle: 1,
+        createdByAgentId: 1,
         assignment: 1,
         pospPartner: 1,
         createdBy: 1,

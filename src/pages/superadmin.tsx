@@ -39,7 +39,6 @@ import UserList from "@/components/superadminsidebar/userList";
 import ManagerList from "@/components/superadminsidebar/managerlist";
 import AgentList from "@/components/superadminsidebar/agentlist";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
-import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import styles from "@/styles/pages/admindashboard.module.css";
 import HomeSection from "@/components/superadminsidebar/mainpage";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
@@ -58,6 +57,10 @@ import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
 import Commission from "@/components/superadminsidebar/Commission";
 import Claims from "@/components/superadminsidebar/Claims";
+import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
+import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
+import Invoice from "@/components/superadminsidebar/Invoice";
+import ClientManagement from "@/components/superadminsidebar/ClientManagement";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -79,6 +82,7 @@ import {
   FiClipboard,
   FiAward,
   FiFileText,
+  FiDollarSign,
   FiAnchor,
   FiMap,
   FiShoppingBag,
@@ -489,6 +493,70 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Config Seller (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "configSeller" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("configSeller");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBriefcase className={styles.icon} />
+                <span className={styles.label}>Config Seller</span>
+              </span>
+            </li>
+
+            {/* Invoice Clients (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "invoiceClients" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("invoiceClients");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiFileText className={styles.icon} />
+                <span className={styles.label}>Invoice Clients</span>
+              </span>
+            </li>
+
+            {/* Invoice (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "invoice" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("invoice");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiDollarSign className={styles.icon} />
+                <span className={styles.label}>Invoice</span>
+              </span>
+            </li>
+
+            {/* Client Management (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "clientManagement" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("clientManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiUsers className={styles.icon} />
+                <span className={styles.label}>Client Management</span>
+              </span>
+            </li>
+
             {/* Pay In Pay Out (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -890,16 +958,23 @@ const SuperAdminDashboard = () => {
           {activeSection === "payInPayOut" && <PayInPayOut />}
           {activeSection === "commission" && <Commission />}
           {activeSection === "claims" && <Claims />}
+          {activeSection === "configSeller" && <ConfigSeller />}
+          {activeSection === "invoiceClients" && <InvoiceClients />}
+          {activeSection === "invoice" && <Invoice />}
+          {activeSection === "clientManagement" && <ClientManagement />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
-          {activeSection === "resetpassword" && <ResetPassword />}
           {activeSection === "adminlist" && <AdminList />}
           {activeSection === "managerlist" && <ManagerList />}
           {activeSection === "agentlist" && <AgentList />}
           {activeSection === "userList" && <UserList />}
           {activeSection === "profileEdit" && (
-            <CreateAdmin initialData={adminData} mode="edit" />
+            <CreateAdmin
+              initialData={adminData}
+              mode="edit"
+              canAssignSuperAdmin={admin?.role === "superadmin"}
+            />
           )}
           {activeSection === "homeSection" && <HomeSection />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}

@@ -1,0 +1,292 @@
+/* ================= DASHBOARD STAT CARDS ================= */
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+@media (max-width: 1100px) { .statRow { grid-template-columns: repeat(2, 1fr); } }
+
+.statCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  border-radius: 18px;
+  padding: 20px 22px;
+  overflow: hidden;
+  color: #fff;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.statCard:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(17, 24, 39, 0.2); }
+.statCard::after {
+  content: "";
+  position: absolute;
+  right: -26px;
+  bottom: -30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.08;
+}
+.statTop { display: flex; justify-content: flex-end; position: relative; z-index: 1; }
+.statIcon {
+  width: 38px; height: 38px; border-radius: 11px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+  background: rgba(255, 255, 255, 0.22); color: #fff;
+}
+.statValue { font-size: 30px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.02em; position: relative; z-index: 1; }
+.statLabel { font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, 0.85); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 7px; position: relative; z-index: 1; }
+.toneDraft { background: #d97706; }
+.toneIssued { background: #2563eb; }
+.toneSent { background: #7c3aed; }
+.toneSigned { background: #16a34a; }
+.toneCancelled { background: #dc2626; }
+
+/* ---- status pill reused in the invoice table ---- */
+.tablePill { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.invoiceNoLink {
+  color: #1c75bb; font-weight: 700; background: none; border: none; cursor: pointer; padding: 0; font-size: inherit; font-family: inherit;
+}
+.invoiceNoLink:hover { text-decoration: underline; }
+.viewLink {
+  color: #64748b; background: none; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; padding: 5px 12px;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+}
+.viewLink:hover { background: #f8fafc; color: #1c75bb; border-color: #c7d6e5; }
+
+/* ================= WIZARD SHELL ================= */
+.wizard {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #0f172a;
+}
+.wizTop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+.wizTitle { margin: 0; font-size: 1.4rem; font-weight: 700; }
+.wizSub { margin: 4px 0 0; font-size: 0.86rem; color: #64748b; }
+.backLink {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; color: #1c75bb; font-size: 0.84rem; font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 12px;
+}
+.backLink:hover { text-decoration: underline; }
+
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.stepBtn {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid #edf0f5; border-radius: 12px;
+  padding: 12px 14px; cursor: pointer; text-align: left; font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.stepBtn:disabled { cursor: default; opacity: 0.6; }
+.stepDot {
+  width: 30px; height: 30px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #f1f5f9; color: #94a3b8; font-size: 13px; font-weight: 700;
+}
+.stepLabel { font-size: 13px; font-weight: 600; color: #475569; }
+.stepSub { font-size: 11px; color: #94a3b8; }
+.stepActive { border-color: #1c75bb; box-shadow: 0 0 0 3px rgba(28, 117, 187, 0.12); }
+.stepActive .stepDot { background: #1c75bb; color: #fff; }
+.stepActive .stepLabel { color: #1c75bb; }
+.stepDone .stepDot { background: #dcfce7; color: #15803d; }
+.stepDone .stepLabel { color: #15803d; }
+
+.progressTrack { height: 6px; background: #e5e7eb; border-radius: 999px; overflow: hidden; margin-bottom: 22px; }
+.progressFill { height: 100%; background: #1c75bb; border-radius: 999px; transition: width 0.25s ease; }
+
+.card {
+  background: #fff;
+  border: 1px solid #edf0f5;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.04);
+  padding: 18px 20px 20px;
+  margin-bottom: 16px;
+}
+.cardHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.cardTitle { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; }
+.cardHint { font-size: 0.78rem; color: #94a3b8; }
+
+/* ---- search / select seller or client ---- */
+.searchBox {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid #dbe2ea; border-radius: 11px; padding: 10px 14px; margin-bottom: 14px;
+}
+.searchBox input { flex: 1; border: 0; outline: none; font-size: 13.5px; font-family: inherit; color: #0f172a; }
+.searchResults { border: 1px solid #edf0f5; border-radius: 11px; overflow: hidden; margin-bottom: 14px; }
+.searchResultRow {
+  width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 10px 14px; background: #fff; border: 0; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-family: inherit;
+}
+.searchResultRow:last-child { border-bottom: 0; }
+.searchResultRow:hover { background: #f8faff; }
+.searchResultMain { font-size: 13.5px; font-weight: 600; color: #0f172a; }
+.searchResultSub { font-size: 12px; color: #64748b; }
+.searchEmpty { padding: 14px; text-align: center; color: #94a3b8; font-size: 12.5px; }
+
+.selectedPanel {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.selectedMain { font-size: 14px; font-weight: 700; color: #14532d; }
+.selectedSub { font-size: 12.5px; color: #166534; margin-top: 2px; }
+.changeBtn {
+  background: #fff; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px;
+  padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.changeBtn:hover { background: #ecfdf5; }
+
+.infoGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 24px; }
+@media (max-width: 700px) { .infoGrid { grid-template-columns: 1fr; } }
+.infoRow { display: flex; flex-direction: column; gap: 2px; }
+.infoKey { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; }
+.infoVal { font-size: 13.5px; font-weight: 600; color: #1e293b; word-break: break-word; }
+
+/* ---- step 3 fields ---- */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 20px; }
+@media (max-width: 760px) { .grid2, .grid4 { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 12.5px; font-weight: 600; color: #334155; }
+.req { color: #ef4444; margin-left: 2px; }
+.input, .select {
+  width: 100%; box-sizing: border-box; border: 1px solid #dbe2ea; border-radius: 9px;
+  background: #fff; padding: 9px 12px; font-size: 13.5px; color: #0f172a; font-family: inherit;
+}
+.input:focus, .select:focus { outline: none; border-color: #1c75bb; box-shadow: 0 0 0 3px rgba(28, 117, 187, 0.14); }
+.errorInput { border-color: #ef4444 !important; }
+.errorText { color: #ef4444; font-size: 12px; }
+
+/* ---- line items ---- */
+.lineTableWrap { overflow-x: auto; border: 1px solid #edf0f5; border-radius: 12px; }
+.lineTable { width: 100%; border-collapse: collapse; min-width: 760px; }
+.lineTable th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700;
+  color: #94a3b8; background: #f8fafc; padding: 10px 12px; border-bottom: 1px solid #edf0f5; white-space: nowrap;
+}
+.lineTable td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.lineTable tr:last-child td { border-bottom: none; }
+.lineInput {
+  width: 100%; box-sizing: border-box; border: 1px solid #e2e8f0; border-radius: 7px;
+  padding: 6px 8px; font-size: 13px; font-family: inherit; color: #0f172a;
+}
+.lineInput:focus { outline: none; border-color: #1c75bb; }
+.lineAmount { font-weight: 700; color: #0f172a; white-space: nowrap; }
+.lineRemove {
+  background: none; border: 0; color: #dc2626; cursor: pointer; display: inline-flex; padding: 6px; border-radius: 7px;
+}
+.lineRemove:hover { background: #fee2e2; }
+.addLineBtn {
+  display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: #1c75bb; border: 0;
+  border-radius: 9px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; margin-top: 12px;
+}
+.addLineBtn:hover { background: #e0e7ff; }
+
+/* ---- tax calc ---- */
+.taxBox { border: 1px solid #edf0f5; border-radius: 12px; overflow: hidden; margin-top: 16px; }
+.taxRow {
+  display: flex; justify-content: space-between; align-items: center; padding: 11px 16px;
+  font-size: 13.5px; border-bottom: 1px solid #f1f5f9;
+}
+.taxRow:last-child { border-bottom: none; }
+.taxRowLabel { color: #475569; }
+.taxRowValue { font-weight: 700; color: #0f172a; }
+.taxGrandRow { background: #eff6ff; }
+.taxGrandRow .taxRowLabel { font-weight: 700; color: #1e3a8a; }
+.taxGrandRow .taxRowValue { color: #1c75bb; font-size: 15px; }
+.taxRateInput { width: 70px; text-align: right; }
+
+/* ---- footer nav ---- */
+.navRow { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.btnGhost {
+  background: #fff; color: #334155; border: 1px solid #dbe2ea; border-radius: 10px;
+  padding: 10px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.btnGhost:hover { background: #f8fafc; }
+.btnPrimary {
+  background: #1c75bb; color: #fff; border: 0; border-radius: 10px;
+  padding: 10px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.btnPrimary:hover { background: #17649f; }
+.btnPrimary:disabled, .btnGhost:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ================= DETAIL VIEW ================= */
+.detailWrap { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.detailHeader {
+  background: #fff; border: 1px solid #edf0f5; border-radius: 14px; box-shadow: 0 2px 10px rgba(17, 24, 39, 0.04);
+  padding: 18px 22px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;
+}
+.detailHeadLeft { display: flex; align-items: flex-start; gap: 14px; }
+.detailIcon { width: 42px; height: 42px; border-radius: 10px; background: #eef2ff; color: #1c75bb; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+.invoiceNo { font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+.invoiceDate { font-size: 12.5px; color: #94a3b8; margin-top: 2px; }
+.statusRow { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.statusPill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+.taxModePill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: #dcfce7; color: #15803d; }
+
+.detailActions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.editBtn {
+  display: inline-flex; align-items: center; gap: 7px; background: #1c75bb; color: #fff; border: 0;
+  border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.actionsWrap { position: relative; }
+.actionsBtn {
+  display: inline-flex; align-items: center; gap: 7px; background: #0d9488; color: #fff; border: 0;
+  border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.actionsBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.actionsMenu {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 20; background: #fff; border: 1px solid #edf0f5;
+  border-radius: 12px; box-shadow: 0 12px 30px rgba(17, 24, 39, 0.14); min-width: 200px; overflow: hidden;
+}
+.actionsItem {
+  width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: 0; text-align: left;
+  padding: 11px 16px; font-size: 13px; color: #1c75bb; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.actionsItem:hover { background: #f0f6ff; }
+.deleteBtn {
+  display: inline-flex; align-items: center; gap: 7px; background: #fff; color: #dc2626; border: 1px solid #fecaca;
+  border-radius: 9px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.deleteBtn:hover { background: #fef2f2; }
+
+.detailCols { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .detailCols { grid-template-columns: 1fr; } }
+.detailMain, .detailSide { display: flex; flex-direction: column; gap: 16px; }
+
+.sectionCard { background: #fff; border: 1px solid #edf0f5; border-radius: 14px; overflow: hidden; }
+.sectionHead {
+  width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: 0; cursor: pointer;
+  padding: 14px 18px; text-align: left; font-family: inherit;
+}
+.sectionHeadIcon { color: #1c75bb; display: inline-flex; }
+.sectionHeadTitle { font-size: 13.5px; font-weight: 700; color: #0f172a; }
+.sectionHeadSub { font-size: 11.5px; color: #94a3b8; margin-top: 1px; }
+.sectionHeadRight { margin-left: auto; color: #94a3b8; }
+.sectionBody { padding: 4px 18px 16px; border-top: 1px solid #f1f5f9; }
+
+.summaryRow { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+.summaryRow:last-child { border-bottom: none; }
+.summaryRow span { color: #64748b; }
+.summaryRow b { color: #0f172a; font-weight: 700; }
+.summaryGrand { background: #eff6ff; margin: 0 -18px; padding: 12px 18px; border-radius: 0 0 10px 10px; }
+.summaryGrand b { color: #1c75bb; font-size: 15px; }
+
+.miniLineTable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.miniLineTable th { text-align: left; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 10.5px; padding: 6px 4px; border-bottom: 1px solid #edf0f5; }
+.miniLineTable td { padding: 7px 4px; border-bottom: 1px solid #f4f6f9; }
+.miniLineTable tr:last-child td { border-bottom: none; }

@@ -27,6 +27,7 @@ export interface IUser extends Document {
   isGlobal?: boolean;
   subClients?: { name: string; phone: string; email: string }[];
   source?: string;
+  isActive?: boolean;
 }
 
 
@@ -120,6 +121,7 @@ const UserSchema = new Schema<IUser>(
   isGlobal: { type: Boolean, default: false },
   subClients: [SubClientSchema],
   source: { type: String, default: "online" },
+  isActive: { type: Boolean, default: true },
 
 },
 {

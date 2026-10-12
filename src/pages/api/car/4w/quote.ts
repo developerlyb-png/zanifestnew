@@ -39,7 +39,7 @@ export default async function handler(
             body: JSON.stringify(digitBuilt.body),
           }).then((r) => r.json());
 
-    const [zunoResult, sbiResult, digitResult] = await Promise.allSettled([
+    const [zunoResult, sbiResult, digitResult, shriramResult] = await Promise.allSettled([
       fetch(`${baseUrl}/api/zuno/4w/quote`, {
         method: "POST",
         headers: {
@@ -57,6 +57,18 @@ export default async function handler(
       }).then((r) => r.json()),
 
       digitPromise,
+
+      // Off until Shriram whitelists our server IP — an unreachable host
+      // otherwise holds every combined quote for the full connect timeout.
+      process.env.SHRIRAM_ENABLED === "true"
+        ? fetch(`${baseUrl}/api/shriram/4w/quote`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          }).then((r) => r.json())
+        : Promise.resolve({ success: false, message: "Shriram is not enabled" }),
     ]);
 
     const quotes: any[] = [];
@@ -115,6 +127,14 @@ export default async function handler(
         digitResult.status === "fulfilled" && digitResult.value?.success === true,
       response:
         digitResult.status === "fulfilled" ? digitResult.value : digitResult.reason,
+    });
+
+    quotes.push({
+      insurer: "SHRIRAM",
+      success:
+        shriramResult.status === "fulfilled" && shriramResult.value?.success === true,
+      response:
+        shriramResult.status === "fulfilled" ? shriramResult.value : shriramResult.reason,
     });
 
     console.log("FINAL QUOTES >>>", quotes);

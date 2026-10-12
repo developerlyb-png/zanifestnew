@@ -2,24 +2,27 @@ import mongoose, { Schema } from "mongoose";
 
 // A Pay In / Pay Out rule: "when a policy matches these criteria, the insurer
 // pays us payInPercent and we pay the agent payOutPercent". A blank criterion
-// means "any". Motor-only criteria are only ever set when lineOfBusiness is
-// "Motor" — the single Create Rule form shows them conditionally.
+// means "any". Empty `rtos` / `manufacturers` mean all RTOs / all makes.
 const PayInPayOutRuleSchema = new Schema(
   {
     startDate: { type: Date, required: true },
+    lineOfBusiness: { type: String, enum: ["Motor", "Non Motor"] },
+
+    // Optional: when set, the rule applies only to these agents' policies.
+    agentIds: { type: [Schema.Types.ObjectId], ref: "Agent", default: [] },
+    agentNames: { type: [String], default: [] },
 
     insurer: String,
     businessSegment: String,
-    lineOfBusiness: String,
     product: String,
     policyType: String,
     transactionType: String,
     mediumOfInsurance: String,
 
     // Motor-only criteria
+    rtos: { type: [String], default: [] },
+    manufacturers: { type: [String], default: [] },
     fuel: String,
-    rto: String,
-    manufacture: String,
     ncb: String,
     volume: String,
     typeOfPolicy: String,

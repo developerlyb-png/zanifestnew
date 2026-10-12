@@ -3,31 +3,34 @@
 // policy) and the agent My Commission tab (that agent's policies only), so
 // the two always agree on the same number for the same policy.
 //
-// Deliberately NOT written onto IssuedPolicy at creation time — it's
-// recomputed on every read instead, so editing a rule (or a policy's
-// premium) immediately corrects every report that reads it, with nothing to
-// migrate or fall out of sync.
+// Nothing is stored on IssuedPolicy — amounts are recomputed on every read,
+// so editing a rule (or a policy's premium) corrects every report at once.
 //
-// Known limitation: rule fields RTO, Volume, Type of Policy, Capacity,
-// Discount, Body Type, GVW and Vehicle Age have no matching data stored on
-// IssuedPolicy today, so they are not enforced when matching — a rule using
-// them still matches on its other criteria. Only Insurer, Business Segment,
-// Line of Business, Product, Policy Type, Transaction Type, Medium of
-// Insurance, Fuel, Manufacture and NCB are checked against real policy data.
+// Matching rules:
+//  - lineOfBusiness must equal the policy's (Motor / Non Motor).
+//  - agentIds, when non-empty, must contain the policy's agent.
+//  - rtos, when non-empty, must contain the policy's RTO (derived from the
+//    registration number, e.g. UP14FY9367 -> UP-14).
+//  - manufacturers, when non-empty, must contain the policy's vehicle make.
+//  - Every other field set on the rule must equal the policy's value.
+//  - Blank = any.
 
 export interface RuleLike {
   _id: any;
   startDate: string | Date;
   active?: boolean;
+  lineOfBusiness?: string;
+  agentIds?: any[];
+  agentNames?: string[];
   insurer?: string;
   businessSegment?: string;
-  lineOfBusiness?: string;
   product?: string;
   policyType?: string;
   transactionType?: string;
   mediumOfInsurance?: string;
+  rtos?: string[];
+  manufacturers?: string[];
   fuel?: string;
-  manufacture?: string;
   ncb?: string;
   payInPercent: number;
   payOutPercent: number;
@@ -47,24 +50,34 @@ export interface PolicyLike {
   startDate?: string | Date;
   paymentReceivedDate?: string | Date;
   createdAt?: string | Date;
-  vehicle?: { fuelType?: string; make?: string; ncbApplicable?: string };
+  createdByAgentId?: any;
+  assignment?: { pospAgent?: { id?: any } };
+  vehicle?: { number?: string; make?: string; fuelType?: string; ncbApplicable?: string };
 }
 
-// Rule field -> how to read the comparable value off a policy.
+const norm = (v?: string | null) => String(v || "").trim().toLowerCase();
+
+// Single-value criteria -> how to read the same value off a policy.
 const FIELD_READERS: Record<string, (p: PolicyLike) => string | undefined> = {
   insurer: (p) => p.insurer,
   businessSegment: (p) => p.businessSegment,
-  lineOfBusiness: (p) => p.lineOfBusiness,
   product: (p) => p.product,
   policyType: (p) => p.policyTypeStructure,
   transactionType: (p) => p.transactionType,
   mediumOfInsurance: (p) => p.mediumOfIssuance,
   fuel: (p) => p.vehicle?.fuelType,
-  manufacture: (p) => p.vehicle?.make,
   ncb: (p) => p.vehicle?.ncbApplicable,
 };
 
-const norm = (v?: string) => (v || "").trim().toLowerCase();
+// "UP14FY9367" -> "UP-14"; matches the RTO codes in the RTO master.
+export function rtoOf(p: PolicyLike): string {
+  const m = String(p.vehicle?.number || "").toUpperCase().match(/^([A-Z]{2})(\d{1,2})/);
+  return m ? `${m[1]}-${m[2].padStart(2, "0")}` : "";
+}
+
+export function policyAgentId(p: PolicyLike): string {
+  return String(p.createdByAgentId || p.assignment?.pospAgent?.id || "");
+}
 
 export function policyDate(p: PolicyLike): Date {
   const d = p.startDate || p.paymentReceivedDate || p.createdAt;
@@ -72,36 +85,44 @@ export function policyDate(p: PolicyLike): Date {
   return isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
+function matches(rule: RuleLike, p: PolicyLike): boolean {
+  if (rule.lineOfBusiness && norm(rule.lineOfBusiness) !== norm(p.lineOfBusiness)) return false;
+  if (rule.agentIds?.length && !rule.agentIds.map((id) => String(id)).includes(policyAgentId(p))) return false;
+  if (rule.rtos?.length && !rule.rtos.map(norm).includes(norm(rtoOf(p)))) return false;
+  if (rule.manufacturers?.length && !rule.manufacturers.map(norm).includes(norm(p.vehicle?.make))) {
+    return false;
+  }
+  for (const [field, read] of Object.entries(FIELD_READERS)) {
+    const ruleVal = (rule as any)[field];
+    if (!ruleVal) continue;
+    if (norm(ruleVal) !== norm(read(p))) return false;
+  }
+  return true;
+}
+
+// How many criteria the rule actually sets — more specific rules win.
+function specificity(rule: RuleLike): number {
+  let score = 0;
+  if (rule.lineOfBusiness) score++;
+  if (rule.agentIds?.length) score++;
+  if (rule.rtos?.length) score++;
+  if (rule.manufacturers?.length) score++;
+  for (const field of Object.keys(FIELD_READERS)) if ((rule as any)[field]) score++;
+  return score;
+}
+
 // Returns the best-matching rule for a policy, or null if none match.
-// "Best" = most of the rule's own criteria fields are specified (more
-// specific rules win over broader ones); ties go to the rule with the
-// later Start Date, then the more recently created one.
-//
-// Start Date is NOT a hard cutoff — a rule applies to every matching policy
-// regardless of when that policy was issued, not just ones from its Start
-// Date onward. It only acts as a tiebreaker between two otherwise-equal
-// matches (the newer rule wins), so creating one rule always applies it to
-// your existing policies immediately instead of silently excluding them.
+// Ties go to the rule with the later Start Date, then the newer rule.
+// Start Date is never a cutoff — every matching policy gets the rule.
 export function matchRule(policy: PolicyLike, rules: RuleLike[]): RuleLike | null {
   let best: RuleLike | null = null;
   let bestScore = -1;
 
   for (const rule of rules) {
     if (rule.active === false) continue;
+    if (!matches(rule, policy)) continue;
 
-    let score = 0;
-    let ok = true;
-    for (const [field, read] of Object.entries(FIELD_READERS)) {
-      const ruleVal = (rule as any)[field];
-      if (!ruleVal) continue; // blank = "All" = wildcard, doesn't count against match
-      score++;
-      if (norm(ruleVal) !== norm(read(policy))) {
-        ok = false;
-        break;
-      }
-    }
-    if (!ok) continue;
-
+    const score = specificity(rule);
     const better =
       score > bestScore ||
       (score === bestScore &&
@@ -127,8 +148,7 @@ export interface CommissionResult {
 }
 
 // Commission is computed on net Premium Amount (not Gross, which includes
-// GST) — the same base the existing manual commissionPercent-per-row flow
-// (AddPolicyForm/AgentPolicyDashboard) already uses.
+// GST) — the same base the existing manual commissionPercent-per-row flow uses.
 export function computeCommission(policy: PolicyLike, rules: RuleLike[]): CommissionResult {
   const rule = matchRule(policy, rules);
   const baseAmount = policy.premium || 0;
@@ -143,8 +163,14 @@ export function computeCommission(policy: PolicyLike, rules: RuleLike[]): Commis
 
 export function ruleSummary(rule: RuleLike | null): string {
   if (!rule) return "No matching rule";
-  const parts = Object.keys(FIELD_READERS)
-    .map((f) => (rule as any)[f])
-    .filter(Boolean);
-  return parts.length ? parts.join(" · ") : "All Products";
+  const parts: string[] = [];
+  if (rule.lineOfBusiness) parts.push(rule.lineOfBusiness);
+  if (rule.agentNames?.length) parts.push(`Agent: ${rule.agentNames.join(", ")}`);
+  if (rule.rtos?.length) parts.push(`RTO: ${rule.rtos.join(", ")}`);
+  if (rule.manufacturers?.length) parts.push(rule.manufacturers.join(", "));
+  for (const field of Object.keys(FIELD_READERS)) {
+    const v = (rule as any)[field];
+    if (v) parts.push(String(v));
+  }
+  return parts.length ? parts.join(" · ") : "All policies";
 }

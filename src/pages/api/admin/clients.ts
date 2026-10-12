@@ -36,7 +36,14 @@ const toClientShape = (u: any) => ({
   email: u.email || "",
   phone: u.mobile || "",
   address: u.address || "",
+  kycDocumentType: u.kycDocumentType || "",
+  kycFiles: u.kycFiles || [],
+  notifyWhatsapp: !!u.notifyWhatsapp,
+  notifyEmail: !!u.notifyEmail,
+  isGlobal: !!u.isGlobal,
+  isActive: u.isActive !== false,
   subClients: u.subClients || [],
+  createdAt: u.createdAt,
 });
 
 export default async function handler(
@@ -52,7 +59,20 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      const { q } = req.query;
+      const { id, q } = req.query;
+
+      if (id) {
+        if (String(id).startsWith("policy-")) {
+          return res.status(400).json({
+            success: false,
+            message: "This client hasn't been saved to the client directory yet. Edit it via Add Client first.",
+          });
+        }
+        const user = await User.findById(String(id));
+        if (!user) return res.status(404).json({ success: false, message: "Client not found" });
+        return res.status(200).json({ success: true, client: toClientShape(user) });
+      }
+
       const query: any = {};
       if (q) {
         query.userName = { $regex: String(q), $options: "i" };
@@ -90,7 +110,14 @@ export default async function handler(
           email: p.customer?.email || "",
           phone: p.customer?.mobile || "",
           address: p.customer?.address || "",
+          kycDocumentType: "",
+          kycFiles: [],
+          notifyWhatsapp: false,
+          notifyEmail: false,
+          isGlobal: false,
+          isActive: true,
           subClients: [],
+          createdAt: p.createdAt,
         });
       }
 
@@ -136,6 +163,41 @@ export default async function handler(
       return res.status(201).json({ success: true, client: toClientShape(user) });
     } catch (err: any) {
       console.log("ADMIN CLIENTS CREATE ERROR", err);
+      return res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  if (req.method === "PATCH") {
+    try {
+      const body = req.body || {};
+      const { id } = body;
+      if (!id) return res.status(400).json({ success: false, message: "id is required" });
+      if (String(id).startsWith("policy-")) {
+        return res.status(400).json({
+          success: false,
+          message: "This client hasn't been saved to the client directory yet. Use Add Client to save it first.",
+        });
+      }
+
+      const update: any = {};
+      if (body.name !== undefined) update.userName = body.name;
+      if (body.email !== undefined) update.email = String(body.email).toLowerCase();
+      if (body.phone !== undefined) update.mobile = body.phone;
+      if (body.address !== undefined) update.address = body.address;
+      if (body.kycDocumentType !== undefined) update.kycDocumentType = body.kycDocumentType;
+      if (body.kycFiles !== undefined) update.kycFiles = body.kycFiles;
+      if (body.notifyWhatsapp !== undefined) update.notifyWhatsapp = !!body.notifyWhatsapp;
+      if (body.notifyEmail !== undefined) update.notifyEmail = !!body.notifyEmail;
+      if (body.isGlobal !== undefined) update.isGlobal = !!body.isGlobal;
+      if (body.isActive !== undefined) update.isActive = !!body.isActive;
+      if (body.subClients !== undefined) update.subClients = body.subClients;
+
+      const user = await User.findByIdAndUpdate(id, { $set: update }, { new: true });
+      if (!user) return res.status(404).json({ success: false, message: "Client not found" });
+
+      return res.status(200).json({ success: true, client: toClientShape(user) });
+    } catch (err: any) {
+      console.log("ADMIN CLIENTS PATCH ERROR", err);
       return res.status(500).json({ success: false, message: err.message });
     }
   }

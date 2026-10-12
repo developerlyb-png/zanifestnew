@@ -8,12 +8,15 @@ import AgentList from "@/components/superadminsidebar/agentlist";
 import ManagerList from "@/components/superadminsidebar/managerlist";
 import UserList from "@/components/superadminsidebar/userList";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
-import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
 import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
 import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
 import Commission from "@/components/superadminsidebar/Commission";
 import Claims from "@/components/superadminsidebar/Claims";
+import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
+import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
+import Invoice from "@/components/superadminsidebar/Invoice";
+import ClientManagement from "@/components/superadminsidebar/ClientManagement";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -39,6 +42,7 @@ import {
   FiBriefcase,
   FiUser,
   FiFileText,
+  FiDollarSign,
   FiSettings,
   FiChevronDown,
   FiTarget,
@@ -125,22 +129,15 @@ const router = useRouter();
   }, [activeSection]);
 
 
-   const handleLogout = () => {
-    try{
-       axios.post("/api/admin/logout");
-       console.log("logout")
-      localStorage.removeItem("adminToken");
-// 3. Force full page reload
-    window.location.reload();
-
-    // 4. Redirect to home after a short delay (after reload completes)
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 100); // enough time to ensure reload completes first
-    }
-    catch(error){
+   const handleLogout = async () => {
+    try {
+      await axios.post("/api/admin/logout");
+    } catch (error) {
       console.error("Logout failed:", error);
-
+    } finally {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminName");
+      router.replace("/adminlogin");
     }
   };
 
@@ -482,6 +479,58 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "configSeller" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("configSeller");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBriefcase className={styles.icon} />
+                <span className={styles.label}>Config Seller</span>
+              </span>
+            </li>
+
+            <li
+              className={`${styles.menuItem} ${activeSection === "invoiceClients" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("invoiceClients");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiFileText className={styles.icon} />
+                <span className={styles.label}>Invoice Clients</span>
+              </span>
+            </li>
+
+            <li
+              className={`${styles.menuItem} ${activeSection === "invoice" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("invoice");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiDollarSign className={styles.icon} />
+                <span className={styles.label}>Invoice</span>
+              </span>
+            </li>
+
+            <li
+              className={`${styles.menuItem} ${activeSection === "clientManagement" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("clientManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiUsers className={styles.icon} />
+                <span className={styles.label}>Client Management</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("configManagement");
@@ -728,12 +777,17 @@ const router = useRouter();
             </div>
             </>
           )}
-          {activeSection === "createAdmin" && <CreateAdmin />}
+          {activeSection === "createAdmin" && (
+            <CreateAdmin canAssignSuperAdmin={admin?.role === "superadmin"} />
+          )}
           {activeSection === "profileEdit" && (
-            <CreateAdmin initialData={adminData} mode="edit" />
+            <CreateAdmin
+              initialData={adminData}
+              mode="edit"
+              canAssignSuperAdmin={admin?.role === "superadmin"}
+            />
           )}
           {activeSection === "changepassword" && <ChangePassword />}
-          {activeSection === "resetpassword" && <ResetPassword />}
           {activeSection === "userList" && <UserList />}
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}
@@ -744,6 +798,10 @@ const router = useRouter();
           {activeSection === "payInPayOut" && <PayInPayOut />}
           {activeSection === "commission" && <Commission />}
           {activeSection === "claims" && <Claims />}
+          {activeSection === "configSeller" && <ConfigSeller />}
+          {activeSection === "invoiceClients" && <InvoiceClients />}
+          {activeSection === "invoice" && <Invoice />}
+          {activeSection === "clientManagement" && <ClientManagement />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
           {activeSection === "travelinsurancelist" && <TravelInsuranceList />}

@@ -1,25 +1,25 @@
 // Field definitions for Pay In / Pay Out rules, shared by the create-rule
-// pop-up, the rules table and the API so they can never drift apart.
+// pop-up, the rules table, the API and the matcher so they never drift apart.
 export const ANY = "All";
+
+// "All" means no line-of-business restriction and is stored as blank.
+export const LINES_OF_BUSINESS_RULE = ["All", "Motor", "Non Motor"] as const;
 
 export const BUSINESS_SEGMENTS = ["Retail", "Corporate", "SME", "Group"];
 
-// Criteria present on every rule, regardless of Line of Business.
+// Single-value criteria shared by every line of business.
 export const COMMON_FIELDS = [
   "insurer",
   "businessSegment",
-  "lineOfBusiness",
   "product",
   "policyType",
   "transactionType",
   "mediumOfInsurance",
 ] as const;
 
-// Extra criteria shown only when Line of Business = Motor.
-export const MOTOR_FIELDS = [
+// Single-value criteria that only apply to Motor rules.
+export const MOTOR_TEXT_FIELDS = [
   "fuel",
-  "rto",
-  "manufacture",
   "ncb",
   "volume",
   "typeOfPolicy",
@@ -30,10 +30,8 @@ export const MOTOR_FIELDS = [
   "vehicleAge",
 ] as const;
 
-export const MOTOR_FIELD_LABELS: Record<(typeof MOTOR_FIELDS)[number], string> = {
+export const MOTOR_FIELD_LABELS: Record<(typeof MOTOR_TEXT_FIELDS)[number], string> = {
   fuel: "Fuel",
-  rto: "RTO",
-  manufacture: "Manufacture",
   ncb: "NCB",
   volume: "Volume",
   typeOfPolicy: "Type of Policy",
