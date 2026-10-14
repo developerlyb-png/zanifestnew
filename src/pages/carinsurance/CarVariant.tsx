@@ -170,32 +170,32 @@ list
 if(selectedFuel){
 
 
+// Zuno variant names usually don't mention fuel ("MAGNA", "GLS ASTA"),
+// so only drop a variant when its fuel is known to be a different one:
+// an explicit fuel field that doesn't match, or a name naming another fuel.
+const fuelOf = (s:string)=>{
+const t = s.toLowerCase();
+if(/cng|lpg/.test(t)) return "cng";
+if(/electric|\bev\b/.test(t)) return "electric";
+if(/diesel|crdi|\btdi\b|\bdi\b/.test(t)) return "diesel";
+if(/petrol/.test(t)) return "petrol";
+return "";
+};
+
+const wanted = fuelOf(selectedFuel) || selectedFuel.toLowerCase();
+
 list = list.filter(
 (item:any)=>{
 
+const field = String(item.fuelType || item.fuel || "");
 
-const text = String(
+if(field){
+return fuelOf(field) === wanted || field.toLowerCase() === wanted;
+}
 
-item.variant ||
+const nameFuel = fuelOf(String(item.variant || item.variantName || ""));
 
-item.variantName ||
-
-item.fuelType ||
-
-item.fuel ||
-
-""
-
-).toLowerCase();
-
-
-
-return text.includes(
-
-selectedFuel?.toLowerCase() || ""
-
-);
-
+return !nameFuel || nameFuel === wanted;
 
 }
 

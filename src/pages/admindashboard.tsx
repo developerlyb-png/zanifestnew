@@ -17,6 +17,7 @@ import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
 import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
+import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -43,6 +44,7 @@ import {
   FiUser,
   FiFileText,
   FiDollarSign,
+  FiBarChart2,
   FiSettings,
   FiChevronDown,
   FiTarget,
@@ -531,6 +533,19 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "irdaiReports" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("irdaiReports");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBarChart2 className={styles.icon} />
+                <span className={styles.label}>IRDAI Reports</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("configManagement");
@@ -802,6 +817,7 @@ const router = useRouter();
           {activeSection === "invoiceClients" && <InvoiceClients />}
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
+          {activeSection === "irdaiReports" && <IrdaiReports />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
           {activeSection === "travelinsurancelist" && <TravelInsuranceList />}

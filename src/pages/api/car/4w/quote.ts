@@ -39,7 +39,7 @@ export default async function handler(
             body: JSON.stringify(digitBuilt.body),
           }).then((r) => r.json());
 
-    const [zunoResult, sbiResult, digitResult, shriramResult] = await Promise.allSettled([
+    const [zunoResult, sbiResult, digitResult, shriramResult, bajajResult] = await Promise.allSettled([
       fetch(`${baseUrl}/api/zuno/4w/quote`, {
         method: "POST",
         headers: {
@@ -69,6 +69,14 @@ export default async function handler(
             body: JSON.stringify(body),
           }).then((r) => r.json())
         : Promise.resolve({ success: false, message: "Shriram is not enabled" }),
+
+      fetch(`${baseUrl}/api/bajaj/4w/quote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }).then((r) => r.json()),
     ]);
 
     const quotes: any[] = [];
@@ -135,6 +143,14 @@ export default async function handler(
         shriramResult.status === "fulfilled" && shriramResult.value?.success === true,
       response:
         shriramResult.status === "fulfilled" ? shriramResult.value : shriramResult.reason,
+    });
+
+    quotes.push({
+      insurer: "BAJAJ",
+      success:
+        bajajResult.status === "fulfilled" && bajajResult.value?.success === true,
+      response:
+        bajajResult.status === "fulfilled" ? bajajResult.value : bajajResult.reason,
     });
 
     console.log("FINAL QUOTES >>>", quotes);

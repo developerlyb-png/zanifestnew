@@ -61,6 +61,7 @@ import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
 import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
+import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -83,6 +84,7 @@ import {
   FiAward,
   FiFileText,
   FiDollarSign,
+  FiBarChart2,
   FiAnchor,
   FiMap,
   FiShoppingBag,
@@ -557,6 +559,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* IRDAI Reports (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "irdaiReports" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("irdaiReports");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBarChart2 className={styles.icon} />
+                <span className={styles.label}>IRDAI Reports</span>
+              </span>
+            </li>
+
             {/* Pay In Pay Out (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -962,6 +980,7 @@ const SuperAdminDashboard = () => {
           {activeSection === "invoiceClients" && <InvoiceClients />}
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
+          {activeSection === "irdaiReports" && <IrdaiReports />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}

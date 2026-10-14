@@ -510,6 +510,10 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           "selectedQuoteDigit",
           JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "DIGIT") || null)
         );
+        localStorage.setItem(
+          "selectedQuoteBajaj",
+          JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "BAJAJ") || null)
+        );
 
         router.push("/carinsurance/carinsurance3");
       } else {

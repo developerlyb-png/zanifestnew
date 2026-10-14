@@ -29,6 +29,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import zunoLogo from "@/assets/insurance/zuno.png";
 import sbiLogo from "@/assets/insurance/sbi.png";
+import bajajLogo from "@/assets/pageImages/bajaj.png";
 import IdvEditDialog from "./IdvEditDialog";
 import CkycDialog, { CkycResult } from "./CkycDialog";
 import { requoteWithAddons, requoteWithIdv } from "@/lib/zuno4w";
@@ -113,6 +114,12 @@ const CarInsurance3 = () => {
   const [sbiQuote, setSbiQuote] = useState<any>(null);
   // Go Digit quote — read-only display for now (purchase not wired yet).
   const [digitQuote, setDigitQuote] = useState<any>(null);
+  // Bajaj Allianz quote — priced live (IDV re-quotes), purchase not wired yet.
+  const [bajajQuote, setBajajQuote] = useState<any>(null);
+  // Bajaj's own first-quote IDV: re-quotes may only move ±10% from it.
+  const [bajajBaseIdv, setBajajBaseIdv] = useState<number | null>(null);
+  const [bajajIdvError, setBajajIdvError] = useState<string | null>(null);
+  const [showBajajCoverageDetails, setShowBajajCoverageDetails] = useState(false);
 
   // Original Zuno-quoted IDV, fixed as the baseline for the edit range
   const [defaultIdv, setDefaultIdv] = useState<number | null>(null);
@@ -184,6 +191,13 @@ const CarInsurance3 = () => {
       const s = localStorage.getItem("selectedQuoteSbi");
       const dq = localStorage.getItem("selectedQuoteDigit");
       if (dq && dq !== "undefined") setDigitQuote(JSON.parse(dq));
+      const bq = localStorage.getItem("selectedQuoteBajaj");
+      if (bq && bq !== "undefined") {
+        const parsedBajaj = JSON.parse(bq);
+        setBajajQuote(parsedBajaj);
+        const base = parsedBajaj?.response?.baseIdv ?? parsedBajaj?.response?.idv;
+        if (parsedBajaj?.success && base) setBajajBaseIdv(Number(base));
+      }
       const ck = localStorage.getItem("sbiCkycResult");
       if (ck && ck !== "undefined") setCkycResult(JSON.parse(ck));
       if (p && p !== "undefined") {
@@ -237,7 +251,8 @@ const CarInsurance3 = () => {
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
-  const planCount = 1 + (sbiQuote?.success ? 1 : 0) + (digitQuote?.success ? 1 : 0);
+  const planCount =
+    1 + (sbiQuote?.success ? 1 : 0) + (digitQuote?.success ? 1 : 0) + (bajajQuote?.success ? 1 : 0);
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
 
@@ -346,6 +361,9 @@ const CarInsurance3 = () => {
           setSbiIdvError(e.message || "SBI couldn't price this IDV")
         );
       }
+      requoteBajaj(defaultIdv).catch((e: any) =>
+        setBajajIdvError(e.message || "Bajaj couldn't price this IDV")
+      );
     } catch (e: any) {
       setIdvError(e.message || "Failed to switch to the recommended IDV");
     } finally {
@@ -382,6 +400,37 @@ const CarInsurance3 = () => {
     // SBI's own IDV editor) relies on this being current.
     setSbiIdv(data.idv?.user ?? idvOverride);
     return data;
+  };
+
+  // Re-quotes Bajaj at the requested IDV, held inside Bajaj's ±10% band
+  // around its own IDV, passing the last transactionId as Bajaj requires.
+  const requoteBajaj = async (requestedIdv: number) => {
+    if (!quoteInput || !bajajQuote?.success || bajajBaseIdv == null) return;
+    const min = Math.ceil(bajajBaseIdv * 0.9);
+    const max = Math.floor(bajajBaseIdv * 1.1);
+    const idv = Math.min(max, Math.max(min, Math.round(requestedIdv)));
+    setBajajIdvError(null);
+    const res = await fetch("/api/bajaj/4w/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...quoteInput,
+        overrideIdv: idv,
+        transactionId: bajajQuote.response?.transactionId,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success) {
+      // Keep the last good Bajaj price on screen; just explain the failure.
+      setBajajIdvError(data.message || `Bajaj couldn't price IDV ${inr(idv)}`);
+      return;
+    }
+    const updated = { insurer: "BAJAJ", success: true, response: { ...data, baseIdv: bajajBaseIdv } };
+    setBajajQuote(updated);
+    localStorage.setItem("selectedQuoteBajaj", JSON.stringify(updated));
+    if (idv !== Math.round(requestedIdv)) {
+      setBajajIdvError(`Bajaj allows IDV between ${inr(min)} and ${inr(max)} — priced at ${inr(idv)}`);
+    }
   };
 
   const applySbiAddons = async () => {
@@ -821,6 +870,93 @@ const CarInsurance3 = () => {
                 );
               })()}
 
+              {bajajQuote && (() => {
+                const bq = bajajQuote.response || {};
+                // Bajaj returns one summary row per cover; skip zero rows
+                const coverRows = (bq.coverages || []).filter(
+                  (c: any) => c.name && (c.od || c.tp || c.net)
+                );
+                return (
+                  <div className={styles.planCard}>
+                    <div className={styles.planHeader}>
+                      <FaTrophy className={styles.trophy} />
+                      Bajaj Allianz General Insurance
+                      {bajajQuote.success && (
+                        <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 500, color: "#5a5959" }}>
+                          Comprehensive (OD + TP + PA)
+                        </span>
+                      )}
+                    </div>
+                    <div className={styles.planDetails}>
+                      <div className={styles.logoBanner}>
+                        <Image
+                          src={bajajLogo}
+                          alt="Bajaj Allianz General Insurance"
+                          className={styles.logo}
+                        />
+                      </div>
+                      {bajajQuote.success ? (
+                        <>
+                          <div>
+                            <div style={{ color: "#5a5959" }}>
+                              IDV Cover <strong>{inr(bq.idv)}</strong>
+                            </div>
+                            {bajajIdvError && (
+                              <p className={styles.addonError}>{bajajIdvError}</p>
+                            )}
+                            <div className={styles.premiumBreakdown}>
+                              <span>Own Damage {inr(bq.odPremium)}</span>
+                              <span>Third Party {inr(bq.tpPremium)}</span>
+                              <span>GST {inr(bq.gst)}</span>
+                            </div>
+                          </div>
+                          <div className={styles.actions}>
+                            <div className={styles.price} style={{ cursor: "default" }}>
+                              {inr(bq.premium)}
+                            </div>
+                            <div style={{ fontSize: 12, color: "#5a5959" }}>Purchase coming soon</div>
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ color: "#5a5959" }}>
+                          Bajaj quote isn&apos;t available for this vehicle right now.
+                          {bq.message && (
+                            <div style={{ fontSize: 12, marginTop: 4 }}>{bq.message}</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {bajajQuote.success && coverRows.length > 0 && (
+                      <>
+                        <div className={styles.cardFooter}>
+                          <div className={styles.footerLinks}>
+                            <span
+                              className={styles.footerLink}
+                              onClick={() => setShowBajajCoverageDetails((prev) => !prev)}
+                            >
+                              View Coverage{" "}
+                              {showBajajCoverageDetails ? <FaChevronUp /> : <FaChevronDown />}
+                            </span>
+                          </div>
+                        </div>
+
+                        {showBajajCoverageDetails && (
+                          <div className={styles.coverageDetails}>
+                            {coverRows.map((c: any, i: number) => (
+                              <div className={styles.coverageRow} key={`${c.code}-${i}`}>
+                                <strong>{c.name}</strong>
+                                <span>{inr(c.od || c.tp || c.net)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
+
               {sbiQuote && (
                 <div className={styles.planCard}>
                   <div className={styles.planHeader}>
@@ -970,6 +1106,9 @@ const CarInsurance3 = () => {
                 setSbiIdvError(e.message || "SBI couldn't price this IDV")
               );
             }
+            requoteBajaj(newIdv).catch((e: any) =>
+              setBajajIdvError(e.message || "Bajaj couldn't price this IDV")
+            );
           }}
         />
       )}

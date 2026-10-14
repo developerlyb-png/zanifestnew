@@ -281,9 +281,6 @@ export async function runExtractionJob(importId: string) {
 
 const normText = (v: any) => String(v ?? "").trim().toUpperCase().replace(/\s+/g, " ");
 const normPolicy = (v: any) => normText(v).replace(/\s+/g, "");
-const normVehicle = (v: any) => normText(v).replace(/[^A-Z0-9]/g, "");
-const normChassis = (v: any) => normText(v).replace(/[^A-Z0-9]/g, "");
-const normInsurer = (v: any) => normText(v).replace(/[^A-Z0-9]/g, "");
 
 interface DuplicateKey {
   type: string;
@@ -291,7 +288,9 @@ interface DuplicateKey {
   label: string;
 }
 
-/** Same priority order as the reference implementation. */
+/** Duplicate detection is keyed on policy number only — proposal/insurer,
+ * vehicle/insurer/start-date and chassis number are no longer considered,
+ * even though two rows can share any of those by coincidence. */
 function duplicateKeysFor(x: {
   policyNumber?: any;
   proposalNumber?: any;
@@ -303,23 +302,6 @@ function duplicateKeysFor(x: {
   const out: DuplicateKey[] = [];
   if (normPolicy(x.policyNumber)) {
     out.push({ type: "policy_number", key: normPolicy(x.policyNumber), label: `Policy number ${x.policyNumber}` });
-  }
-  if (normText(x.proposalNumber) && normInsurer(x.insurer)) {
-    out.push({
-      type: "proposal_insurer",
-      key: `${normText(x.proposalNumber)}|${normInsurer(x.insurer)}`,
-      label: `Proposal ${x.proposalNumber} with insurer`,
-    });
-  }
-  if (normVehicle(x.registrationNumber) && normInsurer(x.insurer) && x.startDate) {
-    out.push({
-      type: "vehicle_insurer_start",
-      key: `${normVehicle(x.registrationNumber)}|${normInsurer(x.insurer)}|${x.startDate}`,
-      label: `Vehicle ${x.registrationNumber} + insurer + start date`,
-    });
-  }
-  if (normChassis(x.chassisNumber)) {
-    out.push({ type: "chassis_number", key: normChassis(x.chassisNumber), label: `Chassis ${x.chassisNumber}` });
   }
   return out;
 }
@@ -345,25 +327,18 @@ export async function findDuplicatePolicy(x: {
   const keys = duplicateKeysFor(x);
   if (keys.length === 0) return null;
 
-  const orClauses: any[] = [];
-  if (normPolicy(x.policyNumber)) orClauses.push({ policyNumber: { $exists: true, $ne: null } });
-  if (normText(x.proposalNumber)) orClauses.push({ proposalNumber: { $exists: true, $ne: null } });
-  if (normVehicle(x.registrationNumber)) orClauses.push({ "vehicle.number": { $exists: true, $ne: null } });
-  if (normChassis(x.chassisNumber)) orClauses.push({ "vehicle.chassisNumber": { $exists: true, $ne: null } });
-  if (orClauses.length === 0) return null;
+  if (!normPolicy(x.policyNumber)) return null;
 
   // Pull a bounded candidate set rather than the whole collection, then
-  // compare normalized keys in JS (mirrors the reference's in-memory scan).
+  // compare normalized policy numbers in JS (mirrors the reference's
+  // in-memory scan) — mainly to stay resilient to whitespace/case
+  // differences between what the PDF extracted and what's stored.
   const candidates = await IssuedPolicy.find(
-    { $or: orClauses },
+    { policyNumber: { $exists: true, $ne: null } },
     {
       policyNumber: 1,
-      proposalNumber: 1,
-      insurer: 1,
       "customer.fullName": 1,
-      startDate: 1,
       "vehicle.number": 1,
-      "vehicle.chassisNumber": 1,
     }
   )
     .sort({ createdAt: -1 })
@@ -371,14 +346,7 @@ export async function findDuplicatePolicy(x: {
     .lean();
 
   for (const p of candidates as any[]) {
-    const pkeys = duplicateKeysFor({
-      policyNumber: p.policyNumber,
-      proposalNumber: p.proposalNumber,
-      insurer: p.insurer,
-      registrationNumber: p.vehicle?.number,
-      startDate: p.startDate ? new Date(p.startDate).toISOString().slice(0, 10) : undefined,
-      chassisNumber: p.vehicle?.chassisNumber,
-    });
+    const pkeys = duplicateKeysFor({ policyNumber: p.policyNumber });
     const pkeySet = new Set(pkeys.map((k) => `${k.type}:${k.key}`));
     for (const k of keys) {
       if (pkeySet.has(`${k.type}:${k.key}`)) {
