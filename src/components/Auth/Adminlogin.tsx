@@ -61,7 +61,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${styles.adminCont}`}>
       {/* 🔥 Full Page Loader */}
       {loading && (
         <div className={styles.loaderOverlay}>

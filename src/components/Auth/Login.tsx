@@ -47,7 +47,7 @@ export default function Login() {
 };
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${styles.userLogin}`}>
       <div className={styles.left}>
         <Image
           src={require("@/assets/loginbanner.png")}

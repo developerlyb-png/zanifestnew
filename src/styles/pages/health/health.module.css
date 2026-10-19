@@ -6838,7 +6838,7 @@
 .detailsRight h2 {
   margin: 0 0 8px !important;
   font-size: 30px !important;
-  font-weight: 700 !important;
+  /* font-weight: 700 !important; */
   line-height: 1.25 !important;
   color: #14294b !important;
 }

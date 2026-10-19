@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 
 
 /* =========================================================
@@ -212,7 +212,7 @@
 
   color: #1878bd;
 
-  font-family: "Libre Baskerville", serif;
+  font-family: "Manrope", sans-serif;
 
   font-size: 28px;
   line-height: 1.35;
@@ -233,7 +233,7 @@
 
   color: #5c8fb4;
 
-  font-family: "Libre Baskerville", serif;
+  font-family: "Manrope", sans-serif;
 
   font-size: 15px;
   line-height: 1.5;
@@ -1266,5 +1266,421 @@
   .cont *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Admin login composition */
+.adminCont {
+  height: min(620px, calc(100vh - 150px));
+  min-height: 480px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  padding: 0 36px;
+  font-family: "Manrope", sans-serif;
+}
+
+.adminCont .left,
+.adminCont .loginCont {
+  height: 100%;
+  min-height: 0;
+}
+
+.adminCont .leftImage {
+  width: min(88%, 570px);
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.adminCont .loginCont {
+  padding: 16px 24px;
+}
+
+.adminCont .formDiv {
+  width: min(430px, 100%);
+  gap: 14px;
+  padding: 28px 34px;
+  border-color: #dce8f3;
+  border-radius: 20px;
+  box-shadow: 0 16px 42px rgba(20, 41, 75, 0.09);
+}
+
+.adminCont .loginForm {
+  gap: 14px;
+}
+
+.adminCont .heading {
+  font-family: "Manrope", sans-serif !important;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 1000px) {
+  .adminCont {
+    height: auto;
+    min-height: 0;
+    padding: 20px 24px;
+    gap: 12px;
+  }
+
+  .adminCont .left,
+  .adminCont .loginCont {
+    height: auto;
+  }
+
+  .adminCont .leftImage {
+    width: min(76%, 330px);
+    max-height: none;
+  }
+
+  .adminCont .loginCont {
+    padding: 8px 16px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .adminCont {
+    padding: 14px 16px 22px;
+    gap: 8px;
+  }
+
+  .adminCont .leftImage {
+    width: min(64%, 220px);
+  }
+
+  .adminCont .formDiv {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+}
+
+/* Match the regular login page to the compact admin login composition. */
+.userLogin {
+  height: min(620px, calc(100vh - 150px));
+  min-height: 480px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  padding: 0 36px;
+}
+
+.userLogin .left,
+.userLogin .loginCont {
+  height: 100%;
+  min-height: 0;
+}
+
+.userLogin .leftImage {
+  width: min(88%, 570px);
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.userLogin .loginCont {
+  padding: 16px 24px;
+}
+
+.userLogin .formDiv {
+  width: min(430px, 100%);
+  gap: 14px;
+  padding: 28px 34px;
+  border-color: #dce8f3;
+  border-radius: 20px;
+  box-shadow: 0 16px 42px rgba(20, 41, 75, 0.09);
+}
+
+.userLogin .loginForm {
+  gap: 14px;
+}
+
+.userLogin .heading {
+  font-family: "Manrope", sans-serif !important;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 1000px) {
+  .userLogin {
+    height: auto;
+    min-height: 0;
+    padding: 20px 24px;
+    gap: 12px;
+  }
+
+  .userLogin .left,
+  .userLogin .loginCont {
+    height: auto;
+  }
+
+  .userLogin .leftImage {
+    width: min(76%, 330px);
+    max-height: none;
+  }
+
+  .userLogin .loginCont {
+    padding: 8px 16px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .userLogin {
+    padding: 14px 16px 22px;
+    gap: 8px;
+  }
+
+  .userLogin .leftImage {
+    width: min(64%, 220px);
+  }
+
+  .userLogin .formDiv {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+}
+
+/* Signup page uses the same compact layout with room for its extra field. */
+.signupPage {
+  height: min(680px, calc(100vh - 150px));
+  min-height: 520px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  padding: 0 36px;
+}
+
+.signupPage .left,
+.signupPage .loginCont {
+  height: 100%;
+  min-height: 0;
+}
+
+.signupPage .leftImage {
+  width: min(88%, 570px);
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.signupPage .loginCont {
+  padding: 12px 24px;
+}
+
+.signupPage .formDiv {
+  width: min(430px, 100%);
+  gap: 12px;
+  padding: 24px 32px;
+  border-color: #dce8f3;
+  border-radius: 20px;
+  box-shadow: 0 16px 42px rgba(20, 41, 75, 0.09);
+}
+
+.signupPage .loginForm {
+  gap: 12px;
+}
+
+.signupPage .heading {
+  font-family: "Manrope", sans-serif !important;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 1000px) {
+  .signupPage {
+    height: auto;
+    min-height: 0;
+    padding: 20px 24px;
+    gap: 12px;
+  }
+
+  .signupPage .left,
+  .signupPage .loginCont {
+    height: auto;
+  }
+
+  .signupPage .leftImage {
+    width: min(76%, 330px);
+    max-height: none;
+  }
+
+  .signupPage .loginCont {
+    padding: 8px 16px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .signupPage {
+    padding: 14px 16px 22px;
+    gap: 8px;
+  }
+
+  .signupPage .leftImage {
+    width: min(64%, 220px);
+  }
+
+  .signupPage .formDiv {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+}
+
+/* Agent login matches the standard login page proportions. */
+.agentLogin {
+  height: min(620px, calc(100vh - 150px));
+  min-height: 480px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  padding: 0 36px;
+}
+
+.agentLogin .left,
+.agentLogin .loginCont {
+  height: 100%;
+  min-height: 0;
+}
+
+.agentLogin .leftImage {
+  width: min(88%, 570px);
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.agentLogin .loginCont {
+  padding: 16px 24px;
+}
+
+.agentLogin .formDiv {
+  width: min(430px, 100%);
+  gap: 14px;
+  padding: 28px 34px;
+  border-color: #dce8f3;
+  border-radius: 20px;
+  box-shadow: 0 16px 42px rgba(20, 41, 75, 0.09);
+}
+
+.agentLogin .loginForm {
+  gap: 14px;
+}
+
+.agentLogin .heading {
+  font-family: "Manrope", sans-serif !important;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 1000px) {
+  .agentLogin {
+    height: auto;
+    min-height: 0;
+    padding: 20px 24px;
+    gap: 12px;
+  }
+
+  .agentLogin .left,
+  .agentLogin .loginCont {
+    height: auto;
+  }
+
+  .agentLogin .leftImage {
+    width: min(76%, 330px);
+    max-height: none;
+  }
+
+  .agentLogin .loginCont {
+    padding: 8px 16px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .agentLogin {
+    padding: 14px 16px 22px;
+    gap: 8px;
+  }
+
+  .agentLogin .leftImage {
+    width: min(64%, 220px);
+  }
+
+  .agentLogin .formDiv {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+}
+
+/* Agent signup matches the compact agent login composition. */
+.agentSignup {
+  height: min(680px, calc(100vh - 150px));
+  min-height: 520px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+  gap: 28px;
+  padding: 0 36px;
+}
+
+.agentSignup .left,
+.agentSignup .loginCont {
+  height: 100%;
+  min-height: 0;
+}
+
+.agentSignup .leftImage {
+  width: min(88%, 570px);
+  max-height: 92%;
+  object-fit: contain;
+}
+
+.agentSignup .loginCont {
+  padding: 12px 24px;
+}
+
+.agentSignup .formDiv {
+  width: min(430px, 100%);
+  gap: 12px;
+  padding: 24px 32px;
+  border-color: #dce8f3;
+  border-radius: 20px;
+  box-shadow: 0 16px 42px rgba(20, 41, 75, 0.09);
+}
+
+.agentSignup .loginForm {
+  gap: 12px;
+}
+
+.agentSignup .heading {
+  font-family: "Manrope", sans-serif !important;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 1000px) {
+  .agentSignup {
+    height: auto;
+    min-height: 0;
+    padding: 20px 24px;
+    gap: 12px;
+  }
+
+  .agentSignup .left,
+  .agentSignup .loginCont {
+    height: auto;
+  }
+
+  .agentSignup .leftImage {
+    width: min(76%, 330px);
+    max-height: none;
+  }
+
+  .agentSignup .loginCont {
+    padding: 8px 16px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .agentSignup {
+    padding: 14px 16px 22px;
+    gap: 8px;
+  }
+
+  .agentSignup .leftImage {
+    width: min(64%, 220px);
+  }
+
+  .agentSignup .formDiv {
+    padding: 20px 16px;
+    gap: 12px;
   }
 }

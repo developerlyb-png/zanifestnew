@@ -448,3 +448,179 @@ font-size: 15px;
 /* --------- Blur helper ---------- */
 .pageContent { position: relative; z-index: 1; transition: filter .25s ease; }
 .blurred { filter: blur(6px); pointer-events:none; user-select:none; }
+
+/* Premium plan comparison palette, type scale and card layout. */
+.page,
+.page * {
+  font-family: "Manrope", sans-serif;
+}
+
+.page {
+  --bg: #f7faff;
+  --text: #14294b;
+  --white: #ffffff;
+  --border: #d8e8f4;
+  --shadow: 0 8px 24px rgba(20, 41, 75, 0.07);
+  --cta: #1876bd;
+  --cta-arrow: #ffffff;
+  --chip-bg: #eef6fd;
+  --chip-bd: #d8e8f4;
+  background: #f7faff;
+  color: #14294b;
+  padding: 28px clamp(14px, 4vw, 40px) 36px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.filters {
+  width: 100%;
+  max-width: 780px;
+  gap: 14px;
+}
+
+.field > label {
+  width: auto;
+  translate: none;
+  padding: 0 6px;
+  color: #4f6075;
+  font-size: 13px;
+}
+
+.input,
+.searchInputWrap {
+  border-color: #d8e8f4;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(20, 41, 75, 0.04);
+}
+
+.grid {
+  width: 100%;
+  max-width: 1280px;
+  gap: 22px;
+}
+
+.card,
+.expertCard,
+.drawerPanel,
+.centerModal {
+  border: 1px solid #d8e8f4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.07);
+}
+
+.product,
+.coverValue,
+.priceText {
+  color: #14294b;
+}
+
+.product {
+  font-size: 16px;
+}
+
+.coverLabel,
+.compare,
+.reason p {
+  color: #4f6075;
+}
+
+.priceBtn,
+.continueBtn {
+  background: linear-gradient(135deg, #2185ce, #1466aa);
+  box-shadow: 0 7px 16px rgba(24, 118, 189, 0.16);
+  font-family: "Manrope", sans-serif;
+}
+
+.priceBtn:hover,
+.continueBtn:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.ribbon,
+.refBadge {
+  color: #1876bd;
+  background: #eef6fd;
+  border-color: #d8e8f4;
+  box-shadow: none;
+}
+
+.tcTitle,
+.pillMore {
+  color: #1876bd;
+}
+
+.pill {
+  color: #425268;
+  border-color: #d8e8f4;
+  background: #f7faff;
+}
+
+.centerHeader {
+  color: #14294b;
+  background: #eef6fd;
+  border-bottom-color: #d8e8f4;
+}
+
+.optionSelected,
+.optionSelected .radioDot {
+  border-color: #1876bd;
+  background-color: #eef6fd;
+}
+
+.optionSelected .radioDot::after {
+  background: #1876bd;
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 18px 12px 26px;
+  }
+
+  .filters {
+    max-width: none;
+  }
+
+  .grid {
+    gap: 16px;
+  }
+}
+
+/* Keep the specialization and follow-up dialogs above the fixed mobile navbar. */
+.drawerOverlay,
+.centerOverlay {
+  z-index: 11000;
+}
+
+.drawerPanel,
+.centerModal {
+  position: relative;
+  z-index: 1;
+}
+
+/* Keep the benefits panel aligned to the plans and visible while they scroll. */
+.grid {
+  align-items: start;
+}
+
+.right {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  max-height: calc(100vh - 104px);
+  max-height: calc(100dvh - 104px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.priceText {
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .right {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}

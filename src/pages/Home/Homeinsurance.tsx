@@ -246,7 +246,8 @@ const Homeinsurance: React.FC = () => {
 
           <p className={styles.terms}>
             By clicking on “Continue”, you agree to our{" "}
-            <a href="#">Privacy Policy</a> and <a href="#">Terms of Use</a>
+            <a href="https://zanifestinsurance.com/Privacypolicy">Privacy Policy</a> and 
+            <a href="https://zanifestinsurance.com/Termscondition">Terms of Use</a>
           </p>
         </form>
       </div>

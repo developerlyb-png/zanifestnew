@@ -327,3 +327,140 @@ select.input:focus {
   color: white !important;
   border-radius: 50%;
 }
+
+/* Premium payment form and order summary styling. */
+.container,
+.container * {
+  font-family: "Manrope", sans-serif;
+}
+
+.container {
+  --doctor-ink: #14294b;
+  --doctor-muted: #4f6075;
+  --doctor-blue: #1876bd;
+  --doctor-border: #d8e8f4;
+  background: #f7faff;
+  color: var(--doctor-ink);
+  max-width: 1240px;
+  padding: 42px clamp(16px, 4vw, 48px);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.header {
+  margin-bottom: 12px;
+}
+
+.title {
+  color: #14294b;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.stepsWrapper {
+  gap: 12px;
+  margin: 16px 0 22px;
+}
+
+.stepItem {
+  border-color: #d8e8f4;
+  box-shadow: 0 4px 12px rgba(20, 41, 75, 0.05);
+}
+
+.active {
+  border-color: #1876bd;
+  background: #1876bd;
+}
+
+.complete {
+  border-color: #22a06b;
+  background: #22a06b;
+}
+
+.content {
+  gap: 22px;
+}
+
+.formSection,
+.orderSection {
+  border-color: #d8e8f4;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.07);
+}
+
+.subTitle,
+.orderTitle {
+  color: #14294b;
+  font-size: 18px;
+}
+
+.input {
+  min-height: 44px;
+  border-color: #d8e8f4;
+  border-radius: 9px;
+  color: #14294b;
+  font: inherit;
+}
+
+.input:focus,
+select.input:focus {
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.11);
+}
+
+.label,
+.checkboxRow label {
+  color: #425268;
+  font-size: 13px;
+}
+
+.continueBtn,
+.orderSection .continueBtn {
+  min-height: 46px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2185ce, #1466aa);
+  box-shadow: 0 7px 16px rgba(24, 118, 189, 0.16);
+  font: 700 15px "Manrope", sans-serif;
+}
+
+.backBtnNav {
+  min-height: 46px;
+  border-radius: 10px;
+  border-color: #d8e8f4;
+  color: #1876bd;
+  font-family: "Manrope", sans-serif;
+}
+
+.orderDetails {
+  background: #eef6fd;
+  border-color: #d8e8f4;
+}
+
+.orderDetails > div,
+.total {
+  color: #425268;
+}
+
+.value,
+.price {
+  color: #1876bd;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 24px 14px;
+  }
+
+  .stepsWrapper {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .stepItem {
+    flex: 0 0 auto;
+  }
+
+  .formSection {
+    padding: 18px;
+  }
+}

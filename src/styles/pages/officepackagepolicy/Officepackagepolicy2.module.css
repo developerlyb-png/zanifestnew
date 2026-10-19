@@ -540,10 +540,22 @@
   font-size: 16px;
   color: #333;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
-  padding-left: 4rem;    
-  border-left: 1px solid #ddd; 
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0 0 0 16px;
+  border-left: 1px solid #d8e8f4;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.compare input {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #1876bd;
 }
 
 /* ---------------- RIGHT SECTION ---------------- */
@@ -948,4 +960,290 @@
 
 .viewQuotesBtn:hover {
   background-color: orangered;
+}
+
+/* ---------- Shared office package policy theme ---------- */
+.pageContent,
+.pageContent * {
+  font-family: "Manrope", sans-serif;
+}
+
+.pageContent {
+  color: #14294b;
+  background: #f9fbff;
+}
+
+.topBar {
+  background: #eef6fd;
+  border: 1px solid #d8e8f4;
+  box-shadow: 0 4px 14px rgba(20, 41, 75, 0.07);
+  color: #14294b;
+}
+
+.label,
+.coveredLabel,
+.date,
+.desc {
+  color: #4f6075;
+}
+
+.value,
+.policyTitle,
+.coveredValue,
+.title,
+.heading {
+  color: #14294b;
+}
+
+.wrapper {
+  max-width: 1320px;
+  padding: 32px 40px;
+  gap: 28px;
+  background: #f9fbff;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+}
+
+.leftsection,
+.rightsection {
+  gap: 18px;
+}
+
+.card,
+.right {
+  border: 1px solid #d8e8f4;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.07);
+}
+
+.recommended {
+  background: #1876bd;
+}
+
+.policyTitle,
+.coveredValue {
+  font-size: 16px;
+}
+
+.coverLabel {
+  color: #1876bd;
+}
+
+.tick {
+  color: #1876bd;
+}
+
+.tags span {
+  border-color: #d8e8f4;
+  background: #f9fbff;
+  color: #4f6075;
+}
+
+.tags .more {
+  background: #eef6fd;
+  color: #1876bd;
+}
+
+.quoteBtn,
+.editBtn,
+.playBtn {
+  background: #1876bd;
+  border-radius: 9px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.quoteBtn:hover,
+.editBtn:hover,
+.playBtn:hover {
+  background: #1466aa;
+}
+
+.quoteBtn:hover,
+.editBtn:hover {
+  transform: translateY(-1px);
+}
+
+.webinar,
+.link {
+  color: #1876bd;
+}
+
+.thumbnail {
+  background: #eef6fd;
+}
+
+/* Match the same blue and Manrope styling in the page's entry modal. */
+.modalContent {
+  border: 1px solid #d8e8f4;
+  border-radius: 16px;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+  box-shadow: 0 16px 48px rgba(20, 41, 75, 0.18);
+}
+
+.modalTitle,
+.choiceTitle {
+  color: #14294b;
+}
+
+.modalSubtitle,
+.choiceDesc,
+.lossQuestion {
+  color: #4f6075;
+}
+
+.inputLabel {
+  color: #14294b;
+}
+
+.textInput {
+  box-sizing: border-box;
+  border-color: #d8e8f4;
+  border-radius: 8px;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+}
+
+.textInput:focus {
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.11);
+}
+
+.choiceCard {
+  border-color: #d8e8f4;
+  border-radius: 12px;
+}
+
+.choiceCard:hover,
+.activeChoice {
+  border-color: #1876bd;
+  background: #eef6fd;
+  box-shadow: 0 4px 14px rgba(24, 118, 189, 0.1);
+}
+
+.checkmark {
+  background: #1876bd;
+}
+
+.continueBtn,
+.viewQuoteBtn,
+.viewQuotesBtn {
+  background: #1876bd;
+  border: 1px solid #1876bd;
+  border-radius: 9px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgba(24, 118, 189, 0.16);
+}
+
+.continueBtn:hover:not(.disabled),
+.viewQuoteBtn:hover:not(.disabled),
+.viewQuotesBtn:hover:not(.disabled) {
+  background: #1466aa;
+}
+
+.disabled {
+  background: #9bbbd4 !important;
+  border-color: #9bbbd4;
+  color: #fff;
+}
+
+.lossBtn {
+  border-color: #d8e8f4;
+  border-radius: 9px;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+}
+
+.lossBtn:hover,
+.activeLossBtn {
+  border-color: #1876bd;
+  background: #eef6fd;
+  color: #1876bd;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  .rightsection {
+    max-width: 100%;
+  }
+
+  .right {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .info {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 14px 12px;
+  }
+
+  .modalContent {
+    padding: 22px 18px;
+  }
+
+  .modalTitle {
+    font-size: 17px;
+  }
+}
+
+/* Keep the compare control anchored neatly at the end of each mobile card. */
+@media (max-width: 768px) {
+  .tagsRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 10px;
+  }
+
+  .tags {
+    min-width: 0;
+  }
+
+  .compare {
+    justify-self: end;
+    align-self: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 14px;
+  }
+
+  .editBtn {
+    width: 100%;
+    height: auto;
+    min-height: 40px;
+    margin: 4px 0 0;
+    padding: 9px 12px;
+    font-size: 13px;
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    text-align: left;
+  }
+
+  .editBtn {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 40px;
+    font-size: 13px;
+  }
 }

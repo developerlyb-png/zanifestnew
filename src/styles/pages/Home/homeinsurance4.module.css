@@ -1,561 +1,1619 @@
+/* =========================================================
+
+   PREMIUM INSURANCE CHECKOUT / DETAILS FORM
+
+   Matching previous pages: Manrope + #1876bd palette
+
+   Existing class names preserved
+
+\========================================================= */
+
+
+
 .wrapper {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f9fbff;
+
+  --primary: #1876bd;
+
+  --primary-dark: #145f9f;
+
+  --primary-light: #eef6fd;
+
+  --text-dark: #14294b;
+
+  --text: #4f6075;
+
+  --muted: #66758a;
+
+  --border: #d8e8f4;
+
+
+
+  font-family: "Manrope", sans-serif;
+
+  background: #f7faff;
+
+  color: var(--text-dark);
+
   min-height: 80vh;
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  margin-top: 10px;
+
+  padding: 40px 60px;
+
+  /* max-width: 1100px; */
+
+  /* margin: 24px auto; */
+
   box-sizing: border-box;
+
+  border-radius: 18px;
+
 }
+
+
+
+.wrapper *,
+
+.wrapper *::before,
+
+.wrapper *::after {
+
+  box-sizing: border-box;
+
+}
+
+
 
 .backLink {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 12px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  color: var(--primary);
+
+  font-weight: 700;
+
+  margin-bottom: 16px;
+
   cursor: pointer;
+
 }
+
+
+
+.backLink:hover {
+
+  color: var(--primary-dark);
+
+}
+
+
 
 /* ===== Stepper ===== */
+
 .stepWrapper {
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  margin-bottom: 24px;
-  gap: 20px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #eef2ff 0%, #f8f9ff 100%);
-  max-width: 400px;
+
+  margin: 0 auto 24px;
+
+  gap: 16px;
+
+  padding: 13px 18px;
+
+  border: 1px solid #dceaf6;
+
+  border-radius: 12px;
+
+  background: linear-gradient(90deg, #eef6fd 0%, #f8fbff 100%);
+
+  max-width: 460px;
+
+  width: 100%;
+
 }
+
+
+
 .step {
+
   display: flex;
+
   align-items: center;
+
   gap: 8px;
+
+  min-width: 0;
+
 }
+
+
 
 .circle {
-  width: 18px;
-  height: 18px;
+
+  width: 22px;
+
+  height: 22px;
+
+  flex: 0 0 22px;
+
   border-radius: 50%;
-  border: 2px solid #c9cfe6;
+
+  border: 2px solid #c7d9e9;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 11px;
-  color: #fff;
+
+  font-weight: 800;
+
+  color: #ffffff;
+
+  background: #ffffff;
+
 }
+
+
 
 .active {
-  border-color: #5b63ff;
-  background: #5b63ff;
+
+  border-color: var(--primary);
+
+  background: var(--primary);
+
 }
+
+
+
 .complete {
-  border-color: #20c997;
-  background: #20c997;
+
+  border-color: #20aa83;
+
+  background: #20aa83;
+
 }
+
+
 
 .stepDetails {
+
   display: flex;
+
   flex-direction: column;
-  font-size: 12px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
 }
+
+
 
 .stepTitle {
-  font-weight: 600;
-  color: #2a3147;
+
+  font-weight: 800;
+
+  color: var(--text-dark);
+
 }
+
+
 
 .stepSub {
-  color: #5b63ff;
+
+  color: var(--primary);
+
 }
+
+
+
 .stepComplete {
-  color: #20aa83;
+
+  color: #168a6b;
+
 }
+
+
+
 .stepInactive {
-  color: #8a93ad;
+
+  color: #8a98a8;
+
 }
+
+
 
 .line {
+
   flex: 1;
-  height: 3px;
-  background: linear-gradient(90deg, #dfe6f7 0%, #cdd9fb 100%);
+
+  min-width: 14px;
+
+  height: 2px;
+
+  background: linear-gradient(90deg, #d8e8f4 0%, #b8d4e9 100%);
+
 }
 
-/* ===== Layout ===== */
+
+
+/* ===== Main Layout ===== */
+
 .container {
+
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
+
+  align-items: flex-start;
+
+  gap: 22px;
+
+  min-width: 0;
+
 }
 
-/* LEFT FORM */
+
+
+/* Left form */
+
 .left {
-  flex: 2;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  min-width: 280px;
+
+  flex: 1 1 65%;
+
+  min-width: 0;
+
+  background: #ffffff;
+
+  padding: 24px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  box-shadow: 0 10px 28px rgba(20, 41, 75, 0.06);
+
 }
+
+
 
 .heading {
-  font-size: 20px;
-  margin-bottom: 16px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 22px;
+
+  font-weight: 800;
+
+  color: var(--text-dark);
+
+  margin: 0 0 20px;
+
+  line-height: 1.35;
+
+  letter-spacing: -0.02em;
+
 }
+
+
 
 .form {
+
   display: flex;
+
   flex-direction: column;
-  gap: 15px;
-}
-.right {
-  flex: 1;
-  max-width: 320px;
+
+  gap: 16px;
+
+  margin-top: 16px;
+
 }
 
-.row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+
+
+.right {
+
+  flex: 0 1 320px;
+
+  width: 100%;
+
+  max-width: 320px;
+
+  min-width: 0;
+
 }
+
+
+
+.row {
+
+  display: flex;
+
+  gap: 16px;
+
+  flex-wrap: wrap;
+
+}
+
+
 
 .field {
-  flex: 1 1 48%;
+
+  flex: 1 1 calc(50% - 8px);
+
+  min-width: 0;
+
+  display: flex;
+
   flex-direction: column;
+
 }
+
+
 
 .fieldFull {
-  width: 48%;
+
+  flex: 1 1 calc(50% - 8px);
+
+  min-width: 0;
+
   display: flex;
+
   border: none;
+
   flex-direction: column;
+
 }
 
-.field label {
+
+
+.field label,
+
+.fieldFull label {
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 13px;
-  color: #444;
-  margin-bottom: 6px;
+
+  color: var(--text);
+
+  font-weight: 700;
+
+  margin-bottom: 7px;
+
+  line-height: 1.45;
+
 }
+
+
 
 .field input,
+
 .field select,
-.fieldFull input {
+
+.fieldFull input,
+
+.fieldFull select {
+
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+
+  min-height: 46px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d8e8f4;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: var(--text-dark);
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 14px;
-  box-sizing: border-box;
+
+  font-weight: 500;
+
+  outline: none;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
 }
 
-/* Agar inputWithIcon hai toh bhi full width ho */
-.inputWithIcon input {
-  width: 100% !important;
-  padding-right: 28px;
+
+
+.field input::placeholder,
+
+.fieldFull input::placeholder {
+
+  color: #8a98a8;
+
+  opacity: 1;
+
 }
+
+
+
+.field input:focus,
+
+.field select:focus,
+
+.fieldFull input:focus,
+
+.fieldFull select:focus {
+
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.11);
+
+}
+
+
+
+.inputWithIcon {
+
+  position: relative;
+
+  width: 100%;
+
+}
+
+
+
+.inputWithIcon input {
+
+  width: 100% !important;
+
+  padding-right: 38px;
+
+}
+
+
 
 .fieldGroup {
+
   position: relative;
-  margin-bottom: 20px;
+
+  width: 100%;
+
+  margin-bottom: 18px;
+
 }
+
+
 
 .fieldGroup input {
+
   width: 100%;
-  padding: 14px 40px 6px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+
+  min-height: 48px;
+
+  padding: 14px 40px 10px 13px;
+
+  border: 1px solid #d8e8f4;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: var(--text-dark);
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 14px;
+
   outline: none;
+
 }
+
+
+
+.fieldGroup input:focus {
+
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.1);
+
+}
+
+
 
 .fieldGroup label {
+
   position: absolute;
+
   top: -8px;
+
   left: 12px;
-  background: #fff;
-  font-size: 12px;
-  color: #6b7280;
-  padding: 0 4px;
+
+  background: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  color: var(--muted);
+
+  padding: 0 5px;
+
   pointer-events: none;
+
 }
+
+
 
 .field small {
+
+  font-family: "Manrope", sans-serif;
+
   font-size: 11px;
-  color: #666;
-  margin-top: 4px;
-  margin-bottom: 15px;
+
+  color: var(--muted);
+
+  margin-top: 5px;
+
+  margin-bottom: 12px;
+
+  line-height: 1.5;
+
 }
+
+
 
 .contentBox {
-  border: 1px solid #e5e7eb;
-  padding: 12px;
-  border-radius: 8px;
+
+  border: 1px solid var(--border);
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  background: #f8fbff;
+
 }
+
+
 
 .infoIcon {
+
   font-size: 12px;
-  color: #777;
+
+  color: var(--muted);
+
   margin-left: 6px;
+
 }
 
-/* Input with icon */
-.inputWithIcon {
-  position: relative;
-}
+
+
 .lockIcon {
+
   position: absolute;
-  right: 8px;
+
+  right: 12px;
+
   top: 50%;
+
   transform: translateY(-50%);
-  font-size: 12px;
-  color: #777;
+
+  font-size: 13px;
+
+  color: var(--primary);
+
+  pointer-events: none;
+
 }
 
+
+
 .continueBtn {
-  margin-top: 20px;
-  background: #f4511e;
-  color: #fff;
-  font-weight: bold;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  width: 48%;
+
   display: block;
-  margin-bottom: 20px;
-}
 
-/* RIGHT SUMMARY */
-.summaryCard {
-  width: 90%;
-  background: #fff;
-  padding: 18px;
+  width: 100%;
+
+  max-width: 280px;
+
+  min-height: 48px;
+
+  margin: 8px 0 12px;
+
+  padding: 13px 18px;
+
+  background: linear-gradient(135deg, #2185ce 0%, #1466aa 100%);
+
+  color: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-weight: 800;
+
+  font-size: 14px;
+
+  border: 1px solid var(--primary);
+
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  align-self: center;
-}
 
-.logoBox {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-.summaryHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.logo {
-  width: 150px;
-  height: auto;
-}
-.right {
-  flex: 1;
-}
-
-/* ===== Heading ===== */
-.summarytext {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1f36;
-  background-color: #faf7f7;
-  padding: 10px 5px;
-  border-radius: 5px;
-  margin: 0 0 10px 0;
-}
-
-.summaryContent h4 {
-  font-size: 12px;
-  margin: 0 0 6px 0;
-}
-.policyTitle {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.amount {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  margin-left: 70px;
-}
-
-.link {
-  font-size: 13px;
-  color: #5b63ff;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 10px;
-}
-
-.breakup {
-  font-size: 13px;
-  margin-bottom: 10px;
-}
-
-.breakup .row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.totalRow {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  margin-bottom: 0;
-}
-
-.total {
-  color: #000;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 1024px) {
-  .container {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 768px) {
-  .wrapper {
-    padding: 12px;
-    max-width: 100%;
-  }
-.logo {
-  width: 100px;
-  height: auto;
-}
-  .container {
-    flex-direction: column;
-    gap: 16px;
-    justify-content: center;
-    align-items: center; /* center contents */
-  }
-
-.summaryHeader {
-  display: flex;
-  align-items: center;
-  gap: 60px;
-  margin-bottom: 15px;
-}
-
-  .row {
-    gap: 12px;
-  }
-
-  .field,
-  .fieldFull {
-    width: 100% !important;
-  }
-
-  .stepWrapper {
-    gap: 12px;
-    max-width: 100%;
-  }
-
-  .continueBtn {
-    width: 100%;
-  }
-
-  .summaryCard {
-    width: auto;        /* let width adjust naturally */
-    max-width: 400px;   /* same design size as desktop */
-    margin: 0 auto;     /* center horizontally */
-    padding: 18px;      /* keep desktop padding */
-    box-sizing: border-box;
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .wrapper {
-    padding: 10px;
-  }
-.summaryHeader {
-  display: flex;
-  align-items: center;
-  gap: 60px;
-  margin-bottom: 15px;
-}
-.logo {
-  width: 100px;
-  height: auto;
-}
-  .heading {
-    font-size: 18px;
-  }
-
-  .stepTitle {
-    font-size: 12px;
-  }
-
-  .stepSub,
-  .stepComplete,
-  .stepInactive {
-    font-size: 11px;
-  }
-
-  .summarytext {
-    font-size: 14px;
-  }
-
-  .amount {
-    font-size: 18px;
-    margin-left: 5rem;
-    text-align: right;
-  }
-
-  .continueBtn {
-    font-size: 13px;
-    padding: 10px;
-  }
-}
-
-/* ===== Modal ===== */
-.modal {
-  margin-top: 20px;
-  background: #f9fbff;
-  padding: 24px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-
-.modalContent h3 {
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: #1a1f36;
-}
-
-.modalContent p {
-  font-size: 14px;
-  margin-bottom: 16px;
-  color: #444;
-}
-
-.closeBtn {
-  padding: 10px 14px;
-  background: #ff3b00;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
+
+  box-shadow: 0 7px 16px rgba(24, 118, 189, 0.18);
+
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
 }
 
-.closeBtn:hover {
-  background: #e63600;
-}
 
-/* ===== Property Address Form ===== */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-top: 16px;
-}
-
-/* Row with 2 inputs side by side */
-.row {
-  display: flex;
-  gap: 16px;
-}
-
-.row input,
-.row select {
-  flex: 1;
-  padding: 12px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  background: #fff;
-}
-
-/* Placeholder */
-.row input::placeholder,
-.row select {
-  color: #6b7280;
-}
-
-/* Focus effect */
-.row input:focus,
-.row select:focus {
-  border-color: #ff5b2e;
-  box-shadow: 0 0 0 2px rgba(255, 91, 46, 0.2);
-  outline: none;
-}
-
-/* Helper text */
-.helper {
-  font-size: 13px;
-  color: #374151;
-}
-
-.helper a {
-  color: #2563eb;
-  margin-left: 6px;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.helper a:hover {
-  text-decoration: underline;
-}
-
-/* Checkbox style */
-.checkbox {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #374151;
-  gap: 8px;
-}
-
-.checkbox input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #ff5b2e; /* modern browsers */
-  cursor: pointer;
-}
-
-/* Continue button */
-.continueBtn {
-  width: 50%;
-  margin-top: 20px;
-  padding: 14px;
-  background: #ff5b2e;
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  
-}
 
 .continueBtn:hover {
-  background: #e14d23;
-}
-@media (max-width: 768px) {
-  .continueBtn {
-    width: 50%;
-    margin: 20px auto;   /* center horizontally */
-    display: block;      /* ensures auto margin works */
-  }
+
+  background: linear-gradient(135deg, #1876bd 0%, #104f88 100%);
+
+  box-shadow: 0 10px 20px rgba(24, 118, 189, 0.23);
+
+  transform: translateY(-1px);
+
 }
 
-@media (max-width: 480px) {
+
+
+/* Right summary */
+
+.summaryCard {
+
+  width: 100%;
+
+  background: #ffffff;
+
+  padding: 18px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  box-shadow: 0 8px 22px rgba(20, 41, 75, 0.06);
+
+  align-self: flex-start;
+
+}
+
+
+
+.logoBox {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+
+  margin-bottom: 16px;
+
+}
+
+
+
+.summaryHeader {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 15px;
+
+}
+
+
+
+.logo {
+
+  display: block;
+
+  width: 130px;
+
+  max-width: 100%;
+
+  height: auto;
+
+  object-fit: contain;
+
+}
+
+
+
+.summarytext {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  color: var(--text-dark);
+
+  background-color: #eef6fd;
+
+  padding: 11px 12px;
+
+  border: 1px solid #dceaf6;
+
+  border-radius: 8px;
+
+  margin: 0 0 12px;
+
+  line-height: 1.45;
+
+}
+
+
+
+.summaryContent h4 {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  color: var(--muted);
+
+  margin: 0 0 7px;
+
+}
+
+
+
+.policyTitle {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  color: var(--text-dark);
+
+  line-height: 1.5;
+
+}
+
+
+
+.amount {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 21px;
+
+  font-weight: 800;
+
+  color: var(--primary-dark);
+
+  margin: 8px 0 10px;
+
+  text-align: left;
+
+}
+
+
+
+.link {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 12px;
+
+  color: var(--primary);
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  display: inline-block;
+
+  margin-bottom: 12px;
+
+}
+
+
+
+.link:hover {
+
+  color: var(--primary-dark);
+
+  text-decoration: underline;
+
+}
+
+
+
+.breakup {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 12px;
+
+  color: var(--text);
+
+  margin-bottom: 12px;
+
+  line-height: 1.6;
+
+}
+
+
+
+.breakup .row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+}
+
+
+
+.totalRow {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  color: var(--text-dark);
+
+  margin-bottom: 0;
+
+  padding-top: 10px;
+
+  border-top: 1px solid #e6eff7;
+
+}
+
+
+
+.total {
+
+  color: var(--text-dark);
+
+}
+
+
+
+/* ===== Responsive ===== */
+
+@media (max-width: 1024px) {
+
+  .wrapper {
+
+    max-width: 900px;
+
+  }
+
+
+
+  .container {
+
+    flex-direction: column;
+
+    gap: 18px;
+
+  }
+
+
+
+  .left,
+
+  .right {
+
+    width: 100%;
+
+    max-width: none;
+
+    flex: 1 1 auto;
+
+  }
+
+
+
+  .summaryCard {
+
+    max-width: none;
+
+  }
+
+}
+
+
+
+@media (max-width: 768px) {
+
+  .wrapper {
+
+    padding: 16px;
+
+    max-width: 100%;
+
+    margin: 16px auto;
+
+    border-radius: 14px;
+
+  }
+
+
+
+  .container {
+
+    flex-direction: column;
+
+    gap: 15px;
+
+    align-items: stretch;
+
+  }
+
+
+
+  .left {
+
+    padding: 18px;
+
+  }
+
+
+
+  .heading {
+
+    font-size: 20px;
+
+    margin-bottom: 17px;
+
+  }
+
+
+
+  .summaryHeader {
+
+    gap: 12px;
+
+  }
+
+
+
+  .logo {
+
+    width: 105px;
+
+  }
+
+
+
+  .row {
+
+    gap: 12px;
+
+  }
+
+
+
+  .field,
+
+  .fieldFull {
+
+    flex: 1 1 100%;
+
+    width: 100%;
+
+  }
+
+
+
+  .stepWrapper {
+
+    gap: 10px;
+
+    max-width: 100%;
+
+    padding: 11px 12px;
+
+  }
+
+
+
+  .step {
+
+    gap: 6px;
+
+  }
+
+
+
+  .stepDetails {
+
+    font-size: 10px;
+
+  }
+
+
+
   .continueBtn {
-    width: 50%;
-    margin: 20px auto;   /* center horizontally */
-    display: block;
+
+    max-width: none;
+
+    width: 100%;
+
+  }
+
+
+
+  .summaryCard {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    padding: 16px;
+
+  }
+
+}
+
+
+
+/* ===== Property Address Form ===== */
+
+@media (max-width: 480px) {
+
+  .wrapper {
+
+    padding: 11px;
+
+    margin: 12px auto;
+
+    min-height: auto;
+
+  }
+
+
+
+  .backLink {
+
+    font-size: 12px;
+
+    margin-bottom: 12px;
+
+  }
+
+
+
+  .stepWrapper {
+
+    gap: 7px;
+
+    padding: 10px 8px;
+
+    margin-bottom: 17px;
+
+  }
+
+
+
+  .circle {
+
+    width: 20px;
+
+    height: 20px;
+
+    flex-basis: 20px;
+
+    font-size: 10px;
+
+  }
+
+
+
+  .step {
+
+    gap: 5px;
+
+  }
+
+
+
+  .stepTitle {
+
+    font-size: 10px;
+
+  }
+
+
+
+  .stepSub,
+
+  .stepComplete,
+
+  .stepInactive {
+
+    font-size: 9px;
+
+  }
+
+
+
+  .line {
+
+    min-width: 8px;
+
+  }
+
+
+
+  .left {
+
+    padding: 15px 12px;
+
+    border-radius: 12px;
+
+  }
+
+
+
+  .heading {
+
+    font-size: 18px;
+
+    margin-bottom: 15px;
+
+  }
+
+
+
+  .form {
+
+    gap: 13px;
+
+    margin-top: 12px;
+
+  }
+
+
+
+  .field label,
+
+  .fieldFull label {
+
+    font-size: 12px;
+
+  }
+
+
+
+  .field input,
+
+  .field select,
+
+  .fieldFull input,
+
+  .fieldFull select,
+
+  .row input,
+
+  .row select {
+
+    min-height: 43px;
+
+    padding: 10px 11px;
+
     font-size: 13px;
-    padding: 10px;
+
+  }
+
+
+
+  .fieldGroup input {
+
+    min-height: 44px;
+
+    font-size: 13px;
+
+  }
+
+
+
+  .summaryHeader {
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+
+  }
+
+
+
+  .logo {
+
+    width: 95px;
+
+  }
+
+
+
+  .summarytext {
+
+    font-size: 13px;
+
+    padding: 9px 10px;
+
+  }
+
+
+
+  .amount {
+
+    font-size: 19px;
+
+    margin: 8px 0;
+
+    text-align: left;
+
+  }
+
+
+
+  .continueBtn {
+
+    width: 100%;
+
+    margin: 10px 0 12px;
+
+    font-size: 13px;
+
+    padding: 11px 12px;
+
+  }
+
+
+
+  .modal {
+
+    margin-top: 15px;
+
+    padding: 16px;
+
+    border-radius: 10px;
+
+  }
+
+
+
+  .modalContent h3 {
+
+    font-size: 16px;
+
+  }
+
+
+
+  .modalContent p {
+
+    font-size: 13px;
+
+  }
+
+
+
+  .closeBtn {
+
+    font-family: "Manrope", sans-serif;
+
+    font-size: 13px;
+
+  }
+
+}
+
+
+
+/* Modal */
+
+.modal {
+
+  margin-top: 20px;
+
+  background: #f8fbff;
+
+  padding: 22px;
+
+  border-radius: 12px;
+
+  border: 1px solid var(--border);
+
+}
+
+
+
+.modalContent h3 {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  margin: 0 0 12px;
+
+  color: var(--text-dark);
+
+}
+
+
+
+.modalContent p {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 14px;
+
+  margin-bottom: 16px;
+
+  color: var(--text);
+
+  line-height: 1.6;
+
+}
+
+
+
+.closeBtn {
+
+  padding: 10px 14px;
+
+  background: var(--primary);
+
+  color: #ffffff;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+
+}
+
+
+
+.closeBtn:hover {
+
+  background: var(--primary-dark);
+
+}
+
+
+
+/* Property form rows: shared inputs */
+
+.row input,
+
+.row select {
+
+  flex: 1 1 0;
+
+  min-width: 0;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d8e8f4;
+
+  border-radius: 9px;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 14px;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  background: #ffffff;
+
+  color: var(--text-dark);
+
+}
+
+
+
+.row input::placeholder,
+
+.row select {
+
+  color: #66758a;
+
+}
+
+
+
+.row input:focus,
+
+.row select:focus {
+
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.1);
+
+  outline: none;
+
+}
+
+
+
+.helper {
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 12px;
+
+  color: var(--text);
+
+  line-height: 1.6;
+
+}
+
+
+
+.helper a {
+
+  color: var(--primary);
+
+  margin-left: 6px;
+
+  font-weight: 700;
+
+  text-decoration: none;
+
+}
+
+
+
+.helper a:hover {
+
+  text-decoration: underline;
+
+}
+
+
+
+.checkbox {
+
+  display: flex;
+
+  align-items: center;
+
+  font-family: "Manrope", sans-serif;
+
+  font-size: 13px;
+
+  color: var(--text);
+
+  gap: 8px;
+
+}
+
+
+
+.checkbox input[type="checkbox"] {
+
+  width: 16px;
+
+  height: 16px;
+
+  accent-color: var(--primary);
+
+  cursor: pointer;
+
+}
+
+
+
+
+/* ===== Content Bifurcation layout fix ===== */
+.wrapper .contentBox {
+  display: block;
+  padding: 14px;
+}
+
+/* Keep the heading on its own line and prevent grid items from shifting */
+.wrapper .contentBox > label,
+.wrapper .contentBox > .contentHeading,
+.wrapper .contentBox > .title {
+  display: block;
+  margin: 0 0 10px;
+}
+
+/* Fields inside Content Bifurcation */
+.wrapper .contentBox .row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 10px 16px;
+  margin: 0;
+}
+
+.wrapper .contentBox .field,
+.wrapper .contentBox .fieldFull,
+.wrapper .contentBox .fieldGroup,
+.wrapper .contentBox .inputWithIcon {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  align-self: start;
+}
+
+.wrapper .contentBox input,
+.wrapper .contentBox select,
+.wrapper .contentBox textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  min-height: 46px;
+  max-height: 46px;
+  margin: 0;
+  padding: 11px 13px;
+  box-sizing: border-box;
+  border: 1px solid #d8e8f4;
+  border-radius: 9px;
+  background: #fff;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.wrapper .contentBox .field small,
+.wrapper .contentBox small {
+  display: block;
+  margin: 5px 0 0;
+  line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+  .wrapper .contentBox .row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

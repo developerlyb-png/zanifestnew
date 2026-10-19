@@ -36,7 +36,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${styles.signupPage}`}>
       <div className={styles.left}>
         <Image
           src={loginBanner}

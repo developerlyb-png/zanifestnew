@@ -37,145 +37,309 @@ const CATEGORYLIST: Category[] = [
   { name: "Fire Insurance", icon: img3 },
 ];
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = (url: string) =>
+  fetch(url).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to fetch partners");
+    }
+    return res.json();
+  });
 
-const Partners: React.FC<PartnersProps> = ({ liveHeading, liveImages }) => {
-  const { data } = useSWR<PartnersApiResponse>("/api/partnersApi", fetcher);
+const Partners: React.FC<PartnersProps> = ({
+  liveHeading,
+  liveImages,
+}) => {
+  const { data } = useSWR<PartnersApiResponse>(
+    "/api/partnersApi",
+    fetcher
+  );
 
-  const [selectedCategory, setSelectedCategory] = useState<Category>(CATEGORYLIST[0]);
+  const [selectedCategory, setSelectedCategory] =
+    useState<Category>(CATEGORYLIST[0]);
 
-  // ✅ DEFAULT HEADING — kabhi gayab nahi hogi
   const [heading, setHeading] = useState<string>("Insurance Partner");
-
   const [partners, setPartners] = useState<string[]>([]);
   const [animate, setAnimate] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
 
-  // ================= HEADING LOGIC (FINAL & SAFE) =================
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  // ================= HEADING LOGIC =================
+
   useEffect(() => {
-    // 1️⃣ Admin live preview (highest priority)
-    if (liveHeading && liveHeading.trim() !== "") {
+    if (liveHeading?.trim()) {
       setHeading(liveHeading);
       return;
     }
 
-    // 2️⃣ From API (category-wise)
     if (data) {
-      const catData = data.categories.find(
-        c => c.category === selectedCategory.name
+      const catData = data.categories?.find(
+        (item) => item.category === selectedCategory.name
       );
 
-      // ⚠️ Empty ho to overwrite mat karo
-      if (catData?.heading && catData.heading.trim() !== "") {
+      if (catData?.heading?.trim()) {
         setHeading(catData.heading);
+      } else {
+        setHeading("Insurance Partner");
       }
     }
-    // else → default heading rehne do
-
   }, [data, selectedCategory, liveHeading]);
 
   // ================= PARTNER IMAGES =================
+
   useEffect(() => {
     if (liveImages !== undefined) {
       setPartners(liveImages);
-    } else if (data) {
-      const catData = data.categories.find(
-        c => c.category === selectedCategory.name
+      return;
+    }
+
+    if (data) {
+      const catData = data.categories?.find(
+        (item) => item.category === selectedCategory.name
       );
+
       setPartners(catData?.images ?? []);
     }
   }, [liveImages, selectedCategory, data]);
 
-  // ================= ANIMATION =================
+  // ================= SECTION ANIMATION =================
+
   useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setAnimate(true);
-          observer.unobserve(entry.target);
-        }
-      });
-    });
+    const section = sectionRef.current;
 
+    if (!section) return;
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setAnimate(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
+    observer.observe(section);
+
     return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
+      observer.disconnect();
     };
   }, []);
 
-  // ================= AOS INIT =================
+  // ================= AOS INITIALIZATION =================
 
   useEffect(() => {
-    AOS.init({ duration: 1000, once: true });
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
   }, []);
+
+  // ================= MOBILE AUTO SLIDER =================
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+
+    if (!slider || partners.length <= 1) return;
+
+    let interval: ReturnType<typeof setInterval> | undefined;
+    let resumeTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    const isMobile = () => window.innerWidth <= 768;
+
+    const stopSlider = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = undefined;
+      }
+    };
+
+    const startSlider = () => {
+      stopSlider();
+
+      if (!isMobile()) return;
+
+      interval = setInterval(() => {
+        if (!slider || slider.scrollWidth <= slider.clientWidth) {
+          return;
+        }
+
+        const maxScroll =
+          slider.scrollWidth - slider.clientWidth;
+
+        const nextScroll = slider.scrollLeft + 105;
+
+        if (nextScroll >= maxScroll - 5) {
+          slider.scrollTo({
+            left: 0,
+            behavior: "smooth",
+          });
+        } else {
+          slider.scrollTo({
+            left: nextScroll,
+            behavior: "smooth",
+          });
+        }
+      }, 2200);
+    };
+
+    const handleInteraction = () => {
+      stopSlider();
+
+      if (resumeTimeout) {
+        clearTimeout(resumeTimeout);
+      }
+
+      resumeTimeout = setTimeout(() => {
+        startSlider();
+      }, 3000);
+    };
+
+    slider.addEventListener("touchstart", handleInteraction, {
+      passive: true,
+    });
+    slider.addEventListener("pointerdown", handleInteraction);
+    slider.addEventListener("mouseenter", stopSlider);
+    slider.addEventListener("mouseleave", startSlider);
+
+    startSlider();
+
+    window.addEventListener("resize", startSlider);
+
+    return () => {
+      stopSlider();
+
+      if (resumeTimeout) {
+        clearTimeout(resumeTimeout);
+      }
+
+      slider.removeEventListener("touchstart", handleInteraction);
+      slider.removeEventListener("pointerdown", handleInteraction);
+      slider.removeEventListener("mouseenter", stopSlider);
+      slider.removeEventListener("mouseleave", startSlider);
+
+      window.removeEventListener("resize", startSlider);
+    };
+  }, [partners, selectedCategory]);
+
+  // ================= HEADING TEXT =================
+
+  const headingWords = heading.trim().split(/\s+/);
+  const headingMain = headingWords.slice(0, -1).join(" ");
+  const headingLast = headingWords.slice(-1).join("");
 
   return (
     <div ref={sectionRef} className={styles.cont}>
       {/* ================= HEADING ================= */}
+
       <div className={styles.head} data-aos="fade-up">
-        <p className={`${styles.heading} ${animate ? styles.animate : ""}`}>
-          {heading.split(" ").slice(0, -1).join(" ")}{" "}
-          <span className={styles.orange}>
-            {heading.split(" ").slice(-1)}
-          </span>
+        <p
+          className={`${styles.heading} ${
+            animate ? styles.animate : ""
+          }`}
+        >
+          {headingMain}{" "}
+          <span className={styles.orange}>{headingLast}</span>
         </p>
       </div>
 
       {/* ================= CONTENT ================= */}
+
       <div className={styles.bottom}>
-        {/* Categories */}
+        {/* DESKTOP CATEGORY LIST */}
+
         <div className={styles.catList}>
-          {CATEGORYLIST.map((item, index) => (
+          {CATEGORYLIST.map((item) => (
             <div
-              key={index}
+              key={item.name}
               className={styles.catItem}
               onClick={() => setSelectedCategory(item)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={selectedCategory.name === item.name}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" ||
+                  event.key === " "
+                ) {
+                  event.preventDefault();
+                  setSelectedCategory(item);
+                }
+              }}
               style={{
                 backgroundColor:
-                  selectedCategory.name === item.name ? "#dcf1ff" : "",
+                  selectedCategory.name === item.name
+                    ? "#dcf1ff"
+                    : "",
                 borderLeft:
                   selectedCategory.name === item.name
                     ? "4px solid #4991c9"
                     : "none",
               }}
             >
-              <Image src={item.icon} alt={item.name} width={40} height={40} />
+              <Image
+                src={item.icon}
+                alt={item.name}
+                width={40}
+                height={40}
+              />
+
               <p className={styles.catName}>{item.name}</p>
             </div>
           ))}
         </div>
-        {/* ===== MOBILE TABS (ONLY MOBILE) ===== */}
-<div className={styles.mobileTabs}>
-  {CATEGORYLIST.map((item, index) => (
-    <button
-      key={index}
-      className={`${styles.mobileTab} ${
-        selectedCategory.name === item.name ? styles.active : ""
-      }`}
-      onClick={() => setSelectedCategory(item)}
-    >
-      {item.name.replace(" Insurance", "")}
-    </button>
-  ))}
-</div>
-       {/* Partners */}
-        <div className={styles.partList}>
+
+        {/* ================= MOBILE CATEGORY TABS ================= */}
+
+        <div className={styles.mobileTabs}>
+          {CATEGORYLIST.map((item) => (
+            <button
+              key={item.name}
+              type="button"
+              className={`${styles.mobileTab} ${
+                selectedCategory.name === item.name
+                  ? styles.active
+                  : ""
+              }`}
+              onClick={() => setSelectedCategory(item)}
+              aria-pressed={selectedCategory.name === item.name}
+            >
+              {item.name.replace(" Insurance", "")}
+            </button>
+          ))}
+        </div>
+
+        {/* ================= PARTNER LOGOS ================= */}
+
+        <div
+          ref={sliderRef}
+          className={styles.partList}
+          aria-label={`${selectedCategory.name} partners`}
+        >
           {partners.length > 0 ? (
             partners.map((img, index) => (
-              <div key={index} className={styles.partItem}>
+              <div
+                key={`${selectedCategory.name}-${index}-${img}`}
+                className={styles.partItem}
+              >
                 <Image
                   src={img}
-                  alt={`partner-${index}`}
+                  alt={`${selectedCategory.name} partner ${index + 1}`}
                   width={120}
                   height={80}
                   className={styles.imagePartner}
+                  unoptimized={
+                    typeof img === "string" &&
+                    (img.startsWith("http://") ||
+                      img.startsWith("https://"))
+                  }
                 />
               </div>
             ))
           ) : (
-            <p style={{ padding: "20px", color: "#999" }}>
+            <p className={styles.empty}>
               No partners added yet.
             </p>
           )}
