@@ -123,6 +123,10 @@ function AllInsuranceSection({
       <h2 className={styles.name}>{item.name}</h2>
 
       <h6 className={styles.desc}>{item.desc}</h6>
+
+      <span className={styles.getQuote}>
+        Get quote <span aria-hidden="true">→</span>
+      </span>
     </>
   );
 

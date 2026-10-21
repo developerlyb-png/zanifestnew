@@ -78,6 +78,27 @@
   font-family: "Manrope", sans-serif;
 }
 
+.getQuote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+  color: #1876bd;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "Manrope", sans-serif;
+}
+
+.getQuote span {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.serviceItem:hover .getQuote span {
+  transform: translateX(4px);
+}
+
 .arrow {
   font-size: 20px;
   transition: all 0.3s;
