@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import styles from "@/styles/components/superadminsidebar/changepassword.module.css"; 
 import { toast } from 'react-hot-toast';
 
-const CreateUser = () => {
+const CreateUser = ({ onSuccess }: { onSuccess?: () => void } = {}) => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -35,11 +35,13 @@ const CreateUser = () => {
 
       if (!res.ok) {
         toast.error(data.message || "Failed to create user");
+        return;
       }
 
       toast.success("Email send to the user for password creation");
       setUserName("");
       setEmail("");
+      onSuccess?.();
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     }

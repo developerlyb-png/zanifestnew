@@ -61,7 +61,21 @@ const IssuedPolicySchema =
 
       caseType: String,
 
+      riskStartDateTP: Date,
+
+      riskEndDateTP: Date,
+
+      chassisNumber: String,
+
+      engineNumber: String,
+
     },
+
+    sumInsured: Number,
+
+    idv: Number,
+
+    nominee: String,
 
     businessSegment: String,
 
@@ -167,11 +181,32 @@ const IssuedPolicySchema =
       default: "online",
     },
 
+    // Set when this policy was created via the AI "Import from policy
+    // document" flow — points back at the PolicyImport record holding the
+    // original PDF and raw extraction for audit purposes.
+    aiImportId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PolicyImport",
+    },
+
+    aiExtractionConfidence: Number,
+
     premium: Number,
 
     grossPremium: Number,
 
     status: String,
+
+    // Renewal outreach tracking — surfaced on the Policy Renewals
+    // dashboard. Separate from `status` (the policy's own lifecycle
+    // state), this tracks where the renewal follow-up itself stands.
+    renewalStatus: {
+      type: String,
+      enum: ["Not Started", "Initiated", "Pending", "Renewed", "Lost"],
+      default: "Not Started",
+    },
+
+    nextFollowUpDate: Date,
 
     subInsured: String,
 
@@ -212,10 +247,34 @@ const IssuedPolicySchema =
       default: "",
     },
 
+    previousPolicyNo: String,
+
+    additionalRemarks: String,
+
     reconcile: {
       type: String,
       default: "No",
     },
+
+    // Admin review of an agent-submitted policy. Defaults to "Pending" so
+    // every newly created policy starts unreviewed. Policies with no
+    // createdByAgentId (i.e. added directly by an admin) are never gated by
+    // this status in the Customer Dashboard list — only agent submissions
+    // are held back until reviewed.
+    adminApprovalStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+
+    adminApprovalRemark: {
+      type: String,
+      default: "",
+    },
+
+    adminApprovalReviewedBy: String,
+
+    adminApprovalReviewedAt: Date,
 
     // ADD THESE
 
@@ -255,6 +314,22 @@ const IssuedPolicySchema =
     },
 
   });
+
+// No indexes existed on this collection at all — every list/filter query
+// (the admin & agent Policy Dashboards' `.sort({ createdAt: -1 })`, the
+// agent dashboard's `{ createdByAgentId }` filter, the policyNumber
+// uniqueness check on create, and the AI-import/bulk-upload duplicate
+// lookups by policyNumber/proposalNumber/vehicle.number/vehicle.chassisNumber)
+// was doing a full collection scan + in-memory sort. That's the real cause
+// behind both "Policy Dashboard loads slowly" and "policy import save/view
+// takes too long" (its duplicate check runs one of these scans on every
+// save) — these indexes let MongoDB satisfy each of those queries directly.
+IssuedPolicySchema.index({ createdAt: -1 });
+IssuedPolicySchema.index({ createdByAgentId: 1, createdAt: -1 });
+IssuedPolicySchema.index({ policyNumber: 1 }, { sparse: true });
+IssuedPolicySchema.index({ proposalNumber: 1 }, { sparse: true });
+IssuedPolicySchema.index({ "vehicle.number": 1 }, { sparse: true });
+IssuedPolicySchema.index({ "vehicle.chassisNumber": 1 }, { sparse: true });
 
 export default
 

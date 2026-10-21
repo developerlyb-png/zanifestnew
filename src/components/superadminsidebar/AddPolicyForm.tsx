@@ -89,6 +89,8 @@ interface FormDataType {
   policyRemark: string;
   startDate: string;
   endDate: string;
+  riskStartDateTP: string;
+  riskEndDateTP: string;
 
   branchName: string;
   reportingManagerId: string;
@@ -141,6 +143,8 @@ const EMPTY_FORM: FormDataType = {
   policyRemark: "",
   startDate: "",
   endDate: "",
+  riskStartDateTP: "",
+  riskEndDateTP: "",
 
   branchName: "",
   reportingManagerId: "",
@@ -189,6 +193,109 @@ interface AddPolicyFormProps {
   // List / agent-search sub-flow is replaced with a fixed, read-only value
   // instead of asking them to pick themselves out of a list.
   fixedAgent?: { id: string; name: string };
+  // When set, the form opens pre-filled with this existing policy and saves
+  // via PUT /api/admin/policies/{editPolicy._id} instead of POSTing a new
+  // one — every field the create flow can set is editable here too.
+  editPolicy?: any;
+}
+
+const dateInput = (v: any) => (v ? new Date(v).toISOString().slice(0, 10) : "");
+
+// Reverses buildPayload()'s shape back into this form's flat fields, so an
+// existing policy can be opened for editing. Field-for-field mirror of what
+// buildPayload() below writes, kept next to it on purpose.
+function toFormData(policy: any): FormDataType {
+  const isDirect = policy.assignment?.agentType === "direct";
+  return {
+    transactionType: policy.transactionType || "",
+    lineOfBusiness: policy.lineOfBusiness || policy.policyType || "",
+    product: policy.product || "",
+    paymentReceivedDate: dateInput(policy.paymentReceivedDate),
+    subInsuredName: policy.subInsured || policy.customer?.subClientName || "",
+    insuredMobile: policy.customer?.mobile || "",
+    insuredEmail: policy.customer?.email || "",
+    address: policy.customer?.address || "",
+
+    vehicleType: policy.vehicle?.vehicleType || "",
+    fuelType: policy.vehicle?.fuelType || "",
+    modelYear: policy.vehicle?.modelYear || "",
+    motorMake: policy.vehicle?.make || "",
+    itemsCovered: policy.vehicle?.itemsCovered || "",
+    registrationNumber: policy.vehicle?.number || "",
+    ncbApplicable: policy.vehicle?.ncbApplicable || "",
+
+    policyTypeStructure: policy.policyTypeStructure || "",
+    caseType: policy.vehicle?.caseType || "",
+    policyNumber: policy.policyNumber || "",
+    previousPolicyNo: policy.previousPolicyNo || "",
+    insurer: policy.insurer || "",
+    policyRemark: policy.policyRemark || "",
+    startDate: dateInput(policy.startDate),
+    endDate: dateInput(policy.endDate),
+    riskStartDateTP: dateInput(policy.vehicle?.riskStartDateTP),
+    riskEndDateTP: dateInput(policy.vehicle?.riskEndDateTP),
+
+    branchName: policy.assignment?.branchName || "",
+    reportingManagerId: policy.assignment?.reportingManager?.id
+      ? String(policy.assignment.reportingManager.id)
+      : "",
+    agentType: policy.assignment?.agentType || "",
+    pospPartner: policy.assignment?.pospAgent?.id ? String(policy.assignment.pospAgent.id) : "",
+    directAgentName: isDirect ? policy.assignment?.pospPartner || policy.pospPartner || "" : "",
+    bqp: policy.assignment?.bqp || "",
+    caseBookedUnderPosp: policy.assignment?.caseBookedUnderPosp || "",
+
+    mediumOfIssuance: policy.mediumOfIssuance || "",
+    additionalRemarks: policy.additionalRemarks || "",
+
+    taxRate: policy.taxRate !== undefined && policy.taxRate !== null ? String(policy.taxRate) : "18",
+    gstAmount: policy.gstAmount !== undefined && policy.gstAmount !== null ? String(policy.gstAmount) : "",
+    paymentMode: policy.paymentDetails?.mode || policy.paymentMode || "",
+    transactionId: policy.paymentDetails?.transactionId || "",
+    transactionDate: dateInput(policy.paymentDetails?.transactionDate),
+    transactionAmount:
+      policy.paymentDetails?.transactionAmount !== undefined && policy.paymentDetails?.transactionAmount !== null
+        ? String(policy.paymentDetails.transactionAmount)
+        : "",
+    partiallyPaid: policy.paymentDetails?.partiallyPaid ? "yes" : "",
+    amountPaid:
+      policy.paymentDetails?.amountPaid !== undefined && policy.paymentDetails?.amountPaid !== null
+        ? String(policy.paymentDetails.amountPaid)
+        : "",
+    partialPaymentRemarks: policy.paymentDetails?.partialPaymentRemarks || "",
+
+    rewardStatus: policy.rewardStatus || "",
+    commissionRemark: policy.commissionRemark || "",
+  };
+}
+
+function toPremiumRows(policy: any): PremiumRow[] {
+  const byLabel = new Map(
+    (policy.premiumBreakdown || []).map((r: any) => [r.label, r])
+  );
+  return PREMIUM_ROW_LABELS.map((label) => {
+    const r: any = byLabel.get(label);
+    return {
+      label,
+      sumInsured: r?.sumInsured ? String(r.sumInsured) : "",
+      premiumAmount: r?.premiumAmount ? String(r.premiumAmount) : "",
+      commissionPercent: r?.commissionPercent ? String(r.commissionPercent) : "",
+    };
+  });
+}
+
+function toSelectedClient(policy: any): ClientRecord | null {
+  if (!policy?.customer) return null;
+  return {
+    // "policy-" prefix marks this as a synthetic record, not a real saved
+    // client — buildPayload() already special-cases this prefix to avoid
+    // sending it back as a clientId reference.
+    _id: `policy-${policy._id}`,
+    name: policy.customer.fullName || "",
+    email: policy.customer.email || "",
+    phone: policy.customer.mobile || "",
+    address: policy.customer.address || "",
+  };
 }
 
 const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
@@ -196,23 +303,35 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   onSuccess,
   submitEndpoint = "/api/admin/policies",
   fixedAgent,
+  editPolicy,
 }) => {
+  const isEdit = !!editPolicy?._id;
   const [step, setStep] = useState(1);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     wrapperRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [step]);
-  const [formData, setFormData] = useState<FormDataType>(EMPTY_FORM);
+  const [formData, setFormData] = useState<FormDataType>(() =>
+    editPolicy ? toFormData(editPolicy) : EMPTY_FORM
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedClient, setSelectedClient] = useState<ClientRecord | null>(null);
+  const [selectedClient, setSelectedClient] = useState<ClientRecord | null>(() =>
+    editPolicy ? toSelectedClient(editPolicy) : null
+  );
   const [managers, setManagers] = useState<Manager[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [premiumRows, setPremiumRows] = useState<PremiumRow[]>(EMPTY_PREMIUM_ROWS);
-  const [rewardAmount, setRewardAmount] = useState("");
-  const [gstManuallyEdited, setGstManuallyEdited] = useState(false);
-  const [transactionProof, setTransactionProof] = useState<FileEntry | null>(null);
-  const [policyDocuments, setPolicyDocuments] = useState<FileEntry[]>([]);
+  const [premiumRows, setPremiumRows] = useState<PremiumRow[]>(() =>
+    editPolicy ? toPremiumRows(editPolicy) : EMPTY_PREMIUM_ROWS
+  );
+  const [rewardAmount, setRewardAmount] = useState(
+    editPolicy?.rewardAmount ? String(editPolicy.rewardAmount) : ""
+  );
+  const [gstManuallyEdited, setGstManuallyEdited] = useState(!!editPolicy);
+  const [transactionProof, setTransactionProof] = useState<FileEntry | null>(
+    editPolicy?.paymentDetails?.transactionProof?.data ? editPolicy.paymentDetails.transactionProof : null
+  );
+  const [policyDocuments, setPolicyDocuments] = useState<FileEntry[]>(editPolicy?.policyDocuments || []);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   const [customBranches, setCustomBranches] = useState<string[]>([]);
@@ -259,6 +378,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     setFormData((p) => ({ ...p, [key]: value }));
 
   const isMotor = formData.lineOfBusiness === "Motor";
+  const showTPDates =
+    isMotor && (formData.caseType === "1+3 Cover" || formData.caseType === "1+5 Cover");
 
   const monthLabel = formData.paymentReceivedDate
     ? MONTH_NAMES[new Date(formData.paymentReceivedDate).getMonth()]
@@ -371,6 +492,10 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
       if (!formData.insurer) e.insurer = "Required";
       if (!formData.startDate) e.startDate = "Required";
       if (!formData.endDate) e.endDate = "Required";
+      if (showTPDates) {
+        if (!formData.riskStartDateTP) e.riskStartDateTP = "Required";
+        if (!formData.riskEndDateTP) e.riskEndDateTP = "Required";
+      }
       if (!formData.branchName) e.branchName = "Required";
       if (!formData.reportingManagerId) e.reportingManagerId = "Required";
       if (!fixedAgent) {
@@ -564,6 +689,8 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
             itemsCovered: formData.itemsCovered,
             ncbApplicable: formData.ncbApplicable,
             caseType: formData.caseType,
+            riskStartDateTP: showTPDates ? formData.riskStartDateTP || undefined : undefined,
+            riskEndDateTP: showTPDates ? formData.riskEndDateTP || undefined : undefined,
           }
         : undefined,
       assignment: {
@@ -618,12 +745,15 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
     setSubmitting(true);
     setFormError("");
     try {
-      const res = await fetch(submitEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        isEdit ? `/api/admin/policies/${editPolicy._id}` : submitEndpoint,
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(isEdit ? { payload } : payload),
+        }
+      );
       const data = await res.json();
       if (!res.ok || !data.success) {
         setFormError(data.message || "Failed to save policy");
@@ -654,10 +784,10 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Add New Policy</h2>
+        <h2 className={styles.title}>{isEdit ? "Edit Policy" : "Add New Policy"}</h2>
         <div className={styles.headerRight}>
           <button type="button" className={styles.viewDraftsBtn} disabled>
-            View Drafts ‹
+            View Drafts ›
           </button>
           <button type="button" className={styles.closeBtn} onClick={onCancel}>
             <FiX size={20} />
@@ -1035,6 +1165,36 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
                   />
                   {errors.endDate && <span className={styles.errorText}>{errors.endDate}</span>}
                 </div>
+
+                {showTPDates && (
+                  <>
+                    <div className={styles.field}>
+                      <Label text="Risk Start Date TP" required />
+                      <input
+                        type="date"
+                        className={`${styles.input} ${errors.riskStartDateTP ? styles.errorInput : ""}`}
+                        value={formData.riskStartDateTP}
+                        onChange={(e) => setField("riskStartDateTP", e.target.value)}
+                      />
+                      {errors.riskStartDateTP && (
+                        <span className={styles.errorText}>{errors.riskStartDateTP}</span>
+                      )}
+                    </div>
+
+                    <div className={styles.field}>
+                      <Label text="Risk End Date TP" required />
+                      <input
+                        type="date"
+                        className={`${styles.input} ${errors.riskEndDateTP ? styles.errorInput : ""}`}
+                        value={formData.riskEndDateTP}
+                        onChange={(e) => setField("riskEndDateTP", e.target.value)}
+                      />
+                      {errors.riskEndDateTP && (
+                        <span className={styles.errorText}>{errors.riskEndDateTP}</span>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -1501,16 +1661,18 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
             )}
           </div>
           <div className={styles.actionsRight}>
-            <button type="button" className={styles.draftBtn} onClick={handleSaveDraft} disabled={submitting}>
-              Save as Draft
-            </button>
+            {!isEdit && (
+              <button type="button" className={styles.draftBtn} onClick={handleSaveDraft} disabled={submitting}>
+                Save as Draft
+              </button>
+            )}
             {step < TOTAL_STEPS ? (
               <button type="button" className={styles.nextBtn} onClick={handleNext}>
                 Next
               </button>
             ) : (
               <button type="submit" className={styles.nextBtn} disabled={submitting}>
-                {submitting ? "Saving..." : "Save Policy"}
+                {submitting ? "Saving..." : isEdit ? "Save Changes" : "Save Policy"}
               </button>
             )}
           </div>

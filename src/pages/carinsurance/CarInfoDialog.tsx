@@ -129,7 +129,9 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   const [showExpiryDialog, setShowExpiryDialog] = useState(false);
 
   const [showClaimDialog, setShowClaimDialog] = useState(false);
-
+  const [pincode, setPincode] = useState("");
+  // RC owner address normally carries the pincode, so ask only when it's missing.
+  const effectivePincode = () => rcDetails?.pincode || pincode;
   const [policyExpiryDate, setPolicyExpiryDate] = useState<string | null>(
     null
   );
@@ -456,7 +458,7 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
         ...quoteInput,
 
         previousPolicyExpiryDate: expiryDate || "",
-
+        pincode: effectivePincode(),
         claimDeclaration:
           claim === "Yes"
             ? "Yes"
@@ -501,19 +503,16 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           JSON.stringify(plan)
         );
 
+        // SBI is stored as-is (success or failure) so carinsurance3 can show
+        // it alongside Zuno's plan, or a friendly "unavailable" state.
+        localStorage.setItem("selectedQuoteSbi", JSON.stringify(sbiEntry || null));
         localStorage.setItem(
-          "carQuoteInput",
-          JSON.stringify(enrichedInput)
+          "selectedQuoteDigit",
+          JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "DIGIT") || null)
         );
-
         localStorage.setItem(
-          "carRcDetails",
-          JSON.stringify(rcDetails)
-        );
-
-        localStorage.setItem(
-          "selectedQuoteSbi",
-          JSON.stringify(sbiEntry || null)
+          "selectedQuoteBajaj",
+          JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "BAJAJ") || null)
         );
 
         router.push("/carinsurance/carinsurance3");
@@ -837,25 +836,36 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
           =================================================== */}
 
           {emailVerified && (
-            <button
-              className={styles.viewBtn}
-              onClick={() => {
-                if (
-                  !rcDetails ||
-                  (!rcDetails.reg_no && !vehicleNumber)
-                ) {
-                  alert(
-                    "Vehicle data not found — please search your car number again"
-                  );
-
-                  return;
-                }
-
-                setShowExpiryDialog(true);
-              }}
-            >
-              View prices
-            </button>
+            <>
+              {!rcDetails?.pincode && (
+                <input
+                  className={styles.input}
+                  placeholder="Pincode (6 digits)"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                />
+              )}
+              <button
+                className={styles.viewBtn}
+                onClick={() => {
+                  if (!rcDetails || (!rcDetails.reg_no && !vehicleNumber)) {
+                    alert(
+                      "Vehicle data not found — please search your car number again"
+                    );
+                    return;
+                  }
+                  if (!/^\d{6}$/.test(effectivePincode())) {
+                    alert("Enter your 6-digit pincode");
+                    return;
+                  }
+                  setShowExpiryDialog(true);
+                }}
+              >
+                View prices
+              </button>
+            </>
           )}
 
 

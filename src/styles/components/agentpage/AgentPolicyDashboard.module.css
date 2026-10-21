@@ -38,12 +38,12 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #fff;
+
+    background: linear-gradient(135deg, #14b8a6, #0d9488);  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 9px 18px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
@@ -62,9 +62,9 @@
   background: #fff;
   color: #007bff;
   border: 1.5px solid #cfe0f8;
-  border-radius: 8px;
-  padding: 8.5px 16px;
-  font-size: 13.5px;
+     border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -76,119 +76,317 @@
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
 }
 
-/* Summary cards */
-.summaryRow {
-  display: flex;
+/* ================= STAT CARDS ================= */
+.statCardsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 16px;
-  flex-wrap: wrap;
 }
 
-.card {
+.statCard {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #e7eaf0;
-  padding: 10px 14px;
+  padding: 16px 18px;
   box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
-  flex: 1 1 260px;
-  max-width: 360px;
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
-.card:hover {
+.statCard:hover {
   box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
   transform: translateY(-2px);
 }
 
-.iconBadge {
+.statCardTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.statCardLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #12172a;
+}
+
+.statCardIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.cardTitle {
+.rupeeIcon {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statIconBlue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.statIconTeal {
+  background: #ccfbf1;
+  color: #0e9488;
+}
+
+.statIconGreen {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statIconPurple {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.statCardSubtitle {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  color: #9aa2b4;
+}
+
+.statCardValueRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13.5px;
-  color: #1f2937;
-  font-weight: 500;
-  margin: 0 0 18px;
+  flex-wrap: wrap;
 }
 
-.cardBody {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.cardValue {
-  font-size: 23px;
-  font-weight: 600;
+.statCardValue {
+  font-size: 21px;
+  font-weight: 700;
+  color: #12172a;
+  letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.changePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.changePillUp {
+  background: #dcfce7;
+  color: #16803c;
+}
+
+.changePillDown {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@media screen and (max-width: 980px) {
+  .statCardsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .statCardsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================= MAIN GRID: sales chart + approval status ================= */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.salesCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e7eaf0;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
+}
+
+.salesCardHeader {
+  margin-bottom: 6px;
+}
+
+.salesCardTitle {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #12172a;
+}
+
+.salesCardValueRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.salesCardValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: #12172a;
   letter-spacing: -0.01em;
 }
 
-.cardBreakdown {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 12px 26px;
-  font-size: 12.5px;
-  text-align: right;
+.salesChartBox {
+  height: 240px;
+  margin: 8px 0 4px;
 }
 
-.breakdownItem {
+.chartTooltip {
+  background: #fff;
+  border: 1px solid #eef1f6;
+  border-radius: 10px;
+  padding: 9px 13px;
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.14);
+  font-size: 12.5px;
+}
+
+.chartTooltipDate {
+  color: #9aa2b4;
+  margin-bottom: 3px;
+}
+
+.chartTooltipValue {
+  font-weight: 700;
+  color: #12172a;
+}
+
+.productLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eef1f6;
+}
+
+.productLegendEmpty {
+  margin: 0;
+  font-size: 12.5px;
+  color: #9aa2b4;
+}
+
+.productLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+}
+
+.productLegendDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.productLegendName {
+  color: #5b6577;
+  font-weight: 500;
+}
+
+.productLegendCount {
+  color: #12172a;
+  font-weight: 700;
+}
+
+.approvalCard {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e7eaf0;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  gap: 14px;
 }
 
-.breakdownLabel {
-  font-weight: 500;
-  color: #8a93a6;
+.approvalCardTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #12172a;
 }
 
-.breakdownValue {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
+.approvalStatRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f9fb;
 }
 
-/* Tones — header icon/label stay neutral; only the big value is tinted */
-.toneBlue .cardValue {
-  color: #007bff;
-}
-.toneBlue:hover {
-  border-color: #cfe0ff;
-}
-
-.toneTeal .cardValue {
-  color: #0e9488;
-}
-.toneTeal:hover {
-  border-color: #bcebe5;
+.approvalStatIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.toneGreen .cardValue {
+.approvalStatIconGreen {
+  background: #dcfce7;
   color: #16a34a;
 }
-.toneGreen:hover {
-  border-color: #bfe9d3;
+
+.approvalStatIconAmber {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.tonePurple .cardValue {
-  color: #6d5bd0;
+.approvalStatIconRed {
+  background: #fee2e2;
+  color: #b91c1c;
 }
-.tonePurple:hover {
-  border-color: #d9d0fb;
+
+.approvalStatText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.approvalStatLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #12172a;
+}
+
+.approvalStatSub {
+  font-size: 11px;
+  color: #9aa2b4;
+}
+
+.approvalStatValue {
+  font-size: 20px;
+  font-weight: 800;
+  color: #12172a;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 980px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Filters */
@@ -218,9 +416,10 @@
   background: #fff;
   border: 1px solid #d6dde6;
   color: #333c4d;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 11px;
+  border-radius: 10px;
+    padding: 4px 12px;
+    font-size: 11px;
+    /* font-weight: 500; */
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
@@ -252,13 +451,14 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
   color: #fff;
   border: none;
-  border-radius: 20px;
-  padding: 8px 18px;
-  font-size: 13.5px;
-  font-weight: 600;
+     border-radius: 10px;
+    padding: 4px 13px;
+    font-size: 11.5px;
+    font-weight: 600;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -335,7 +535,7 @@
   background: transparent;
   border: none;
   color: #5b6577;
-  border-radius: 999px;
+  border-radius: 10px;
   padding: 7px 14px;
   font-size: 11px;
   font-weight: 600;
@@ -377,7 +577,7 @@
   border-collapse: collapse;
   width: 100%;
   min-width: 1900px;
-  font-size: 13.5px;
+  font-size: 12px;
 }
 
 .table th {
@@ -421,6 +621,17 @@
 
 .filterHeaderRow .stickyCol {
   background: #fafbfc;
+}
+
+.linkCell {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* Per-column filter row (in thead) */
@@ -475,8 +686,9 @@
 
 .badgeTeal {
   display: inline-block;
-  background: #0e9488;
-  color: #fff;
+  background: #fef3c7;
+  color: #92400e;
+  text-transform: uppercase;
   font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
@@ -491,6 +703,220 @@
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 12px;
+}
+
+.pdfActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: #eef1f6;
+  color: #3d7ce8;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.pdfActionBtn:hover {
+  background: #dbe6fb;
+}
+
+.pdfActionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.approvalBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.approvalPending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.approvalApproved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.approvalRejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pendingCountBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ---- Pending Policies panel ---- */
+.pendingPanel {
+  animation: pendingPanelIn 0.15s ease;
+}
+
+@keyframes pendingPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #007bff;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.pendingPanelTitleRow {
+  margin-bottom: 16px;
+}
+
+.pendingPanelTitle {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #12172a;
+}
+
+.pendingPanelHint {
+  margin: 0;
+  font-size: 13px;
+  color: #8a93a6;
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.pendingTableWrapper {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #eef1f6;
+  overflow: hidden;
+}
+
+.pendingTable {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13.5px;
+}
+
+.pendingTable th {
+  text-align: left;
+  background: #f5f8fc;
+  color: #5b6577;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 13px 16px;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.pendingTable td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #eef1f6;
+  color: #262b3d;
+  vertical-align: middle;
+}
+
+.pendingTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pendingTable tbody tr:hover td {
+  background: #fafbfd;
+}
+
+.remarkCell {
+  max-width: 260px;
+  color: #5b6577;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pendingRowActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pendingActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: #eef2ff;
+  color: #3d4fe0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.pendingActionBtn:hover:not(:disabled) {
+  background: #dfe4ff;
+}
+
+.pendingActionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pendingActionBtnDanger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pendingActionBtnDanger:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.pendingEmptyState {
+  text-align: center;
+  padding: 44px 20px;
+  color: #9aa2b4;
+}
+
+.pendingEmptyState svg {
+  display: block;
+  margin: 0 auto 10px;
+  color: #c3cadb;
 }
 
 @media screen and (max-width: 600px) {

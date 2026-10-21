@@ -50,5 +50,69 @@ export const BULK_UPLOAD_COLUMNS: BulkUploadColumn[] = [
   { header: "Model Name", key: "itemsCovered", example: "" },
   { header: "Case Type (Motor only)", key: "caseType", example: "" },
   { header: "Registration Number", key: "registrationNumber", example: "" },
-  { header: "NCB Applicable", key: "ncbApplicable", example: "" },
+  { header: "NCB Applicable", key: "ncbApplicable", example: "0%" },
+];
+
+// Reference list of every dropdown/format-restricted column and its accepted
+// values, exported into a second sheet on the downloadable template so
+// uploaders know exactly what each column will accept before they fill it
+// in. Kept in sync by hand with the validation in src/utils/policyBulkMapping.ts.
+export const BULK_UPLOAD_ALLOWED_VALUES: { field: string; allowedValues: string }[] = [
+  { field: "Business Type", allowedValues: "New, Rollover, Endorsement, Renewal, Used" },
+  { field: "Line of Business", allowedValues: "Motor, Non Motor" },
+  {
+    field: "Product (when Line of Business = Motor)",
+    allowedValues: "Pvt Car, 2W, GCV, PCV, 3W, Misc D, Others",
+  },
+  {
+    field: "Product (when Line of Business = Non Motor)",
+    allowedValues:
+      "Health, Travel, PA, GMC, GPA, Fire, Marine, Liability, Home, Pet Insurance, WC, Others",
+  },
+  {
+    field: "Policy Type (when Line of Business = Motor)",
+    allowedValues: "Comprehensive, TP only, SAOD",
+  },
+  {
+    field: "Policy Type (when Line of Business = Non Motor)",
+    allowedValues:
+      "Family Health, Critical Illness, Top Up, Single Transit, Open Policy, Structure only, Structure+Contents, Professional Indemnity, Single Trip, Multi Trip, Others",
+  },
+  {
+    field: "Insurance Company",
+    allowedValues: "A company already available in the policy form's Insurance Company list",
+  },
+  {
+    field: "Policy Remark",
+    allowedValues: "Policy Received, Policy Pending, Endorsement Received, Endorsement Pending",
+  },
+  { field: "Medium of Issuance", allowedValues: "Online, Offline" },
+  { field: "Agent Type", allowedValues: "Direct, POSP" },
+  { field: "Reward Status", allowedValues: "Pending, Received, Not Applicable" },
+  { field: "Vehicle Type (Motor only)", allowedValues: "New, Old" },
+  { field: "Fuel Type (Motor only)", allowedValues: "Petrol, Diesel, CNG, Electric" },
+  { field: "NCB Applicable (Motor only)", allowedValues: "0%, 20%, 25%, 35%, 45%, 50%" },
+  {
+    field: "Case Type (Motor only)",
+    allowedValues: "1+1 Cover, 1+3 Cover, 3+3 Cover, 1+5 Cover, 5+5 Cover, Standalone, Short Term, Others",
+  },
+  {
+    field: "Motor Make (Motor only)",
+    allowedValues: "A make already available in the policy form's Motor Make list",
+  },
+  {
+    field: "Branch Name",
+    allowedValues: "A branch already available in the policy form's Branch Name list",
+  },
+  { field: "Model Year (Motor only)", allowedValues: "A 4-digit year, e.g. 2024" },
+  {
+    field: "Payment Received Date / Risk Start Date / Risk End Date",
+    allowedValues: "YYYY-MM-DD, e.g. 2026-07-01",
+  },
+  {
+    field: "Premium Amount, Tax Rate, GST Amount, Gross Premium, Commission Amount, Payout Amount",
+    allowedValues: "Numbers only",
+  },
+  { field: "Insured Mobile Number", allowedValues: "10-digit number" },
+  { field: "Insured Email Address", allowedValues: "A valid email address" },
 ];

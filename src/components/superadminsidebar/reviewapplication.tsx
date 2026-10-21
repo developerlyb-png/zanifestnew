@@ -213,8 +213,8 @@ const handleUpdateAgent = async () => {
 
     if (!selected) return;
 
-    if (action === "accept" && !irdaiVerified) {
-      alert("Please complete IRDAI verification before approving.");
+    if (action === "accept" && !(irdaiVerified && iibVerified)) {
+      alert("Please complete both IRDAI and IIB verification before approving.");
       return;
     }
 
@@ -893,7 +893,7 @@ const handleUpdateAgent = async () => {
       value: m.managerId,
       label: `${m.firstName ?? ""} ${m.lastName ?? ""} (${m.managerId})`,
     }))}
-    isDisabled={!irdaiVerified}
+    isDisabled={!(irdaiVerified && iibVerified)}
     placeholder="Search & Select District Manager..."
     value={
       managerList
@@ -928,7 +928,7 @@ const handleUpdateAgent = async () => {
   Open IIB Verification
 </button>
                     <div className={styles.irdaiStatus}>
-                      {irdaiVerified ? "Done" : "Not Verified"}
+                      {irdaiVerified && iibVerified ? "Done" : "Not Verified"}
                     </div>
                   </div>
                 </div>

@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import styles from "@/styles/components/superadminsidebar/BulkUploadModal.module.css";
 import { FiDownload, FiFile, FiUpload, FiX } from "react-icons/fi";
-import { BULK_UPLOAD_COLUMNS } from "@/constants/bulkUploadColumns";
+import { BULK_UPLOAD_COLUMNS, BULK_UPLOAD_ALLOWED_VALUES } from "@/constants/bulkUploadColumns";
 
 interface HistoryEntry {
   fileName: string;
@@ -48,6 +48,14 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
     return XLSX.utils.aoa_to_sheet([headers, exampleRow]);
   };
 
+  const buildAllowedValuesSheet = () => {
+    const rows = [
+      ["Field", "Allowed Values"],
+      ...BULK_UPLOAD_ALLOWED_VALUES.map((v) => [v.field, v.allowedValues]),
+    ];
+    return XLSX.utils.aoa_to_sheet(rows);
+  };
+
   const downloadTemplate = () => {
     const worksheet = buildTemplateSheet();
     if (templateFormat === "csv") {
@@ -56,6 +64,9 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
     } else {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Policies");
+      // A second, reference-only sheet — the parser only ever reads the
+      // first sheet, so this is safe to include without affecting uploads.
+      XLSX.utils.book_append_sheet(workbook, buildAllowedValuesSheet(), "Allowed Values");
       const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
@@ -167,7 +178,10 @@ const BulkUploadModal: React.FC<BulkUploadModalProps> = ({
                   <FiFile /> Download Template
                 </div>
                 <p className={styles.sectionHint}>
-                  Download the Policies bulk upload template to see required columns
+                  Download the Policies bulk upload template to see required columns. The Excel
+                  version includes an "Allowed Values" sheet listing the exact values accepted for
+                  each dropdown field (Line of Business, Product, dates, etc.) — rows with values
+                  outside these lists will be skipped with an error instead of being imported.
                 </p>
                 <div className={styles.templateRow}>
                   <select

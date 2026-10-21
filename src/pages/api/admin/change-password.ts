@@ -1,39 +1,56 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
-import Manager from "@/models/Manager";
-import Agent from "@/models/Agent";
+import Admin from "@/models/Admin";
+import jwt from "jsonwebtoken";
+import { parse } from "cookie";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { email, newPassword } = req.body;
-  console.log("Change password API called:", req.body);
-
-  if (!email || !newPassword) {
-    return res.status(400).json({ message: "Email and new password are required." });
-  }
-
   try {
     await dbConnect();
 
-    const person = (await Agent.findOne({ email })) || (await Manager.findOne({email})) ;
-
-    if (!person) {
-      console.log("Admin/Agent/Manager not found with email:", email);
-      return res.status(404).json({ message: "Admin/Agent/Manager not found." });
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.adminToken;
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized" });
     }
 
-    person.password = newPassword;
-    await person.save();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    if (!decoded?.id) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new password are required." });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters." });
+    }
+
+    // The target is always the logged-in admin's own account, taken from the
+    // auth cookie — never from the request body — so one admin can never
+    // change another admin's (or superadmin's) password.
+    const admin = await Admin.findById(decoded.id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect." });
+    }
+
+    admin.password = newPassword; // hashed by the Admin model's pre-save hook
+    await admin.save();
 
     return res.status(200).json({ message: "Password updated successfully." });
-  } 
-  
-  catch (error) {
-    console.error("Password change error:", error);
+  } catch (error) {
+    console.error("Change password error:", error);
     return res.status(500).json({ message: "Server error. Try again later." });
   }
 }

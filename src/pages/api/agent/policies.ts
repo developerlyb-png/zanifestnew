@@ -47,7 +47,16 @@ export default async function handler(
         if (to) query[field].$lte = new Date(String(to));
       }
 
-      const policies = await IssuedPolicy.find(query).sort({ createdAt: -1 });
+      // Same fix as /api/admin/policies: exclude the embedded base64 PDF/
+      // transaction-proof bytes from the list response (they made this
+      // endpoint slow) — the full document is fetched on demand instead,
+      // via /api/agent/policies/[id], only when actually viewed.
+      const policies = await IssuedPolicy.find(query, {
+        "policyDocuments.data": 0,
+        "paymentDetails.transactionProof.data": 0,
+      })
+        .sort({ createdAt: -1 })
+        .lean();
       return res.status(200).json({ success: true, policies });
     } catch (err: any) {
       console.log("AGENT POLICIES ERROR", err);

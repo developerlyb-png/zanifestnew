@@ -1,100 +1,117 @@
 "use client";
 import React, { useState } from "react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
-import styles from '@/styles/components/superadminsidebar/changepassword.module.css';
-
+import { FiEye, FiEyeOff, FiLock } from "react-icons/fi";
+import { toast } from "react-hot-toast";
+import styles from "@/styles/components/superadminsidebar/changepassword.module.css";
 
 const ChangePassword = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleTogglePassword = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try{
 
-      const res = await fetch("api/admin/change-password",  {
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New password and confirmation do not match");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/change-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          newPassword: password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
-
-       console.log("response from change password ->", res);
-
       const data = await res.json();
-      console.log("change password response:", data);
-
       if (!res.ok) throw new Error(data.message || "Failed to change password");
 
-      alert("Password reset successful");
-
-    }
-    catch (err: any) {
-      alert(err.message || "Something went wrong");
+      toast.success("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        {/* <div className={styles.logoContainer}>
-          <Image src={logo} alt=" Logo" width={100}  />
-        </div> */} 
-
+        <div className={styles.iconBadge}>
+          <FiLock size={20} />
+        </div>
         <h2 className={styles.title}>Change Password</h2>
+        <p className={styles.subtitle}>Update the password for your own account.</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="email" className={styles.label}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email"
-              className={styles.input}
-              required
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="password" className={styles.label}>
-              Password
+            <label htmlFor="currentPassword" className={styles.label}>
+              Current Password
             </label>
             <div className={styles.passwordWrapper}>
               <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type={showCurrent ? "text" : "password"}
+                id="currentPassword"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
                 className={styles.input}
                 required
               />
-              <span
-                className={styles.eyeIcon}
-                onClick={handleTogglePassword}
-              >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
+              <span className={styles.eyeIcon} onClick={() => setShowCurrent((v) => !v)}>
+                {showCurrent ? <FiEyeOff /> : <FiEye />}
               </span>
             </div>
           </div>
 
-         
+          <div className={styles.formGroup}>
+            <label htmlFor="newPassword" className={styles.label}>
+              New Password
+            </label>
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showNew ? "text" : "password"}
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className={styles.input}
+                required
+                minLength={6}
+              />
+              <span className={styles.eyeIcon} onClick={() => setShowNew((v) => !v)}>
+                {showNew ? <FiEyeOff /> : <FiEye />}
+              </span>
+            </div>
+          </div>
 
-          <button type="submit" className={styles.loginBtn}>
-            Change Password
+          <div className={styles.formGroup}>
+            <label htmlFor="confirmPassword" className={styles.label}>
+              Confirm New Password
+            </label>
+            <input
+              type={showNew ? "text" : "password"}
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={styles.input}
+              required
+              minLength={6}
+            />
+          </div>
+
+          <button type="submit" className={styles.loginBtn} disabled={submitting}>
+            {submitting ? "Updating..." : "Change Password"}
           </button>
         </form>
       </div>

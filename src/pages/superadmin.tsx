@@ -29,9 +29,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/logowhite.png";
+import logo from "@/assets/logowhite1.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
 import CreateAgent from "@/components/superadminsidebar/createagent";
 import AdminList from "@/components/superadminsidebar/adminlist";
@@ -39,7 +39,6 @@ import UserList from "@/components/superadminsidebar/userList";
 import ManagerList from "@/components/superadminsidebar/managerlist";
 import AgentList from "@/components/superadminsidebar/agentlist";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
-import ResetPassword from "@/components/superadminsidebar/resetpassword";
 import styles from "@/styles/pages/admindashboard.module.css";
 import HomeSection from "@/components/superadminsidebar/mainpage";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
@@ -52,7 +51,19 @@ import Officepackagepolicylist from "@/components/superadminsidebar/Officepackag
 import Directorlist from "@/components/superadminsidebar/Directorlist";
 import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
 import ShowResult from "@/components/superadminsidebar/showresult";
+import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
+import PolicyRenewals from "@/components/superadminsidebar/PolicyRenewals";
+import PayInPayOut from "@/components/superadminsidebar/PayInPayOut";
+import Commission from "@/components/superadminsidebar/Commission";
+import Claims from "@/components/superadminsidebar/Claims";
+import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
+import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
+import Invoice from "@/components/superadminsidebar/Invoice";
+import ClientManagement from "@/components/superadminsidebar/ClientManagement";
+import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
+import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
+import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
 
 
@@ -62,19 +73,18 @@ import axios from "axios";
 import {
   FiUsers,
   FiUserPlus,
-  FiLock,
   FiMenu,
   FiX,
   FiGrid,
   FiShield,
   FiUser,
   FiBriefcase,
-  FiKey,
-  FiEdit3,
   FiSettings,
   FiClipboard,
   FiAward,
   FiFileText,
+  FiDollarSign,
+  FiBarChart2,
   FiAnchor,
   FiMap,
   FiShoppingBag,
@@ -83,10 +93,13 @@ import {
   FiActivity,
   FiPackage,
   FiBookOpen,
-  FiLogOut,
   FiChevronDown,
   FiTarget,
   FiLayers,
+  FiTrendingUp,
+  FiSliders,
+  FiRefreshCw,
+  FiPercent,
 } from "react-icons/fi";
 import { useRouter } from "next/router";  // ✅ CORRECT
  // ✅ FIXED import
@@ -103,6 +116,7 @@ const SIDEBAR_GROUP_OF: Record<string, string> = {
   agentlist: "posp",
   reviewApplication: "posp",
   showResult: "posp",
+  pospManagement: "posp",
   adminlist: "admin",
   managerlist: "admin",
 };
@@ -113,105 +127,6 @@ const statusTone = (status?: string) => {
   if (s === "draft" || s === "pending") return "draft";
   if (s === "expired" || s === "cancelled") return "danger";
   return "other";
-};
-
-type ProfileMenuAdmin = {
-  userFirstName?: string;
-  userLastName?: string;
-  email?: string;
-} | null;
-
-const ProfileMenu = ({
-  admin,
-  onNavigate,
-  onLogout,
-}: {
-  admin: ProfileMenuAdmin;
-  onNavigate: (section: string) => void;
-  onLogout: () => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const initials = `${(admin?.userFirstName || "A").charAt(0)}${(
-    admin?.userLastName || ""
-  ).charAt(0)}`.toUpperCase();
-
-  const go = (section: string) => {
-    onNavigate(section);
-    setOpen(false);
-  };
-
-  return (
-    <div className={styles.profileMenuWrapper} ref={wrapperRef}>
-      <button
-        type="button"
-        className={styles.profileTrigger}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className={styles.profileAvatar}>{initials}</span>
-        <FiChevronDown
-          size={14}
-          className={`${styles.profileChevron} ${open ? styles.profileChevronOpen : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div className={styles.profileDropdown}>
-          <div className={styles.profileDropdownHeader}>
-            <span className={styles.profileAvatar}>{initials}</span>
-            <div className={styles.profileDropdownIdentity}>
-              <span className={styles.profileDropdownName}>
-                {admin?.userFirstName ?? "SuperAdmin"} {admin?.userLastName ?? ""}
-              </span>
-              {admin?.email && (
-                <span className={styles.profileDropdownEmail}>{admin.email}</span>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.profileDropdownDivider} />
-
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("profileEdit")}>
-            <span className={styles.profileItemIcon}><FiEdit3 size={15} /></span>
-            <span className={styles.profileItemLabel}>Edit Profile</span>
-          </button>
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("changepassword")}>
-            <span className={styles.profileItemIcon}><FiLock size={15} /></span>
-            <span className={styles.profileItemLabel}>Change Password</span>
-          </button>
-          <button type="button" className={styles.profileDropdownItem} onClick={() => go("resetpassword")}>
-            <span className={styles.profileItemIcon}><FiKey size={15} /></span>
-            <span className={styles.profileItemLabel}>Reset Password</span>
-          </button>
-
-          <div className={styles.profileDropdownDivider} />
-
-          <button
-            type="button"
-            className={`${styles.profileDropdownItem} ${styles.profileDropdownLogout}`}
-            onClick={() => {
-              setOpen(false);
-              onLogout();
-            }}
-          >
-            <span className={styles.profileItemIcon}><FiLogOut size={15} /></span>
-            <span className={styles.profileItemLabel}>Logout</span>
-          </button>
-        </div>
-      )}
-    </div>
-  );
 };
 
 const SuperAdminDashboard = () => {
@@ -544,7 +459,167 @@ const SuperAdminDashboard = () => {
             >
               <span className={styles.iconLabel}>
                 <FiFileText className={styles.icon} />
-                <span className={styles.label}>Policy Data</span>
+                <span className={styles.label}>Customer</span>
+              </span>
+            </li>
+
+            {/* Policy Renewals (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "policyRenewals" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("policyRenewals");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Policy Renewals</span>
+              </span>
+            </li>
+
+            {/* Claims (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "claims" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("claims");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiShield className={styles.icon} />
+                <span className={styles.label}>Claims</span>
+              </span>
+            </li>
+
+            {/* Config Seller (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "configSeller" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("configSeller");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBriefcase className={styles.icon} />
+                <span className={styles.label}>Config Seller</span>
+              </span>
+            </li>
+
+            {/* Invoice Clients (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "invoiceClients" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("invoiceClients");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiFileText className={styles.icon} />
+                <span className={styles.label}>Invoice Clients</span>
+              </span>
+            </li>
+
+            {/* Invoice (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "invoice" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("invoice");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiDollarSign className={styles.icon} />
+                <span className={styles.label}>Invoice</span>
+              </span>
+            </li>
+
+            {/* Client Management (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "clientManagement" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("clientManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiUsers className={styles.icon} />
+                <span className={styles.label}>Client Management</span>
+              </span>
+            </li>
+
+            {/* IRDAI Reports (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "irdaiReports" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("irdaiReports");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiBarChart2 className={styles.icon} />
+                <span className={styles.label}>IRDAI Reports</span>
+              </span>
+            </li>
+
+            {/* Pay In Pay Out (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "payInPayOut" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("payInPayOut");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Pay In Pay Out</span>
+              </span>
+            </li>
+
+            {/* Commission (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "commission" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("commission");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiPercent className={styles.icon} />
+                <span className={styles.label}>Commission</span>
+              </span>
+            </li>
+
+            {/* Config Management (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "configManagement" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("configManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiSliders className={styles.icon} />
+                <span className={styles.label}>Configuration</span>
               </span>
             </li>
 
@@ -580,20 +655,25 @@ const SuperAdminDashboard = () => {
             </button>
             {openSections.posp && (
               <>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${
-                    activeSection === "agentlist" ? styles.activeMenu : ""
-                  }`}
-                  onClick={() => {
-                    setActiveSection("agentlist");
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiBriefcase className={styles.icon} />
-                    <span className={styles.label}>Agents</span>
-                  </span>
-                </li>
+                {/* Agents — hidden from the sidebar now that POSP Management
+                    (Assigned To / Lifetime Sales / Status / Delete / +Add Agent)
+                    covers everything this list did. Feature kept intact. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${
+                      activeSection === "agentlist" ? styles.activeMenu : ""
+                    }`}
+                    onClick={() => {
+                      setActiveSection("agentlist");
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiBriefcase className={styles.icon} />
+                      <span className={styles.label}>Agents</span>
+                    </span>
+                  </li>
+                )}
                 <li
                   className={`${styles.menuItem} ${styles.subMenuItem} ${
                     activeSection === "reviewApplication" ? styles.activeMenu : ""
@@ -605,15 +685,33 @@ const SuperAdminDashboard = () => {
                     <span className={styles.label}>Review Application</span>
                   </span>
                 </li>
+                {/* Certificate — hidden from the sidebar for now (per request),
+                    feature kept intact for later re-enabling. */}
+                {false && (
+                  <li
+                    className={`${styles.menuItem} ${styles.subMenuItem} ${
+                      activeSection === "showResult" ? styles.activeMenu : ""
+                    }`}
+                    onClick={() => setActiveSection("showResult")}
+                  >
+                    <span className={styles.iconLabel}>
+                      <FiAward className={styles.icon} />
+                      <span className={styles.label}>Certificate</span>
+                    </span>
+                  </li>
+                )}
                 <li
                   className={`${styles.menuItem} ${styles.subMenuItem} ${
-                    activeSection === "showResult" ? styles.activeMenu : ""
+                    activeSection === "pospManagement" ? styles.activeMenu : ""
                   }`}
-                  onClick={() => setActiveSection("showResult")}
+                  onClick={() => {
+                    setActiveSection("pospManagement");
+                    setSidebarOpen(false);
+                  }}
                 >
                   <span className={styles.iconLabel}>
-                    <FiAward className={styles.icon} />
-                    <span className={styles.label}>Certificate</span>
+                    <FiTrendingUp className={styles.icon} />
+                    <span className={styles.label}>POSP Management</span>
                   </span>
                 </li>
               </>
@@ -871,16 +969,31 @@ const SuperAdminDashboard = () => {
             </>
           )}
 
-          {activeSection === "policyDashboard" && <PolicyDashboard />}
+          {activeSection === "policyDashboard" && (
+            <PolicyDashboard canEditPolicy={admin?.role === "superadmin"} />
+          )}
+          {activeSection === "policyRenewals" && <PolicyRenewals />}
+          {activeSection === "payInPayOut" && <PayInPayOut />}
+          {activeSection === "commission" && <Commission />}
+          {activeSection === "claims" && <Claims />}
+          {activeSection === "configSeller" && <ConfigSeller />}
+          {activeSection === "invoiceClients" && <InvoiceClients />}
+          {activeSection === "invoice" && <Invoice />}
+          {activeSection === "clientManagement" && <ClientManagement />}
+          {activeSection === "irdaiReports" && <IrdaiReports />}
+          {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
-          {activeSection === "resetpassword" && <ResetPassword />}
           {activeSection === "adminlist" && <AdminList />}
           {activeSection === "managerlist" && <ManagerList />}
           {activeSection === "agentlist" && <AgentList />}
           {activeSection === "userList" && <UserList />}
           {activeSection === "profileEdit" && (
-            <CreateAdmin initialData={adminData} mode="edit" />
+            <CreateAdmin
+              initialData={adminData}
+              mode="edit"
+              canAssignSuperAdmin={admin?.role === "superadmin"}
+            />
           )}
           {activeSection === "homeSection" && <HomeSection />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
@@ -894,6 +1007,7 @@ const SuperAdminDashboard = () => {
 {activeSection === "directorlist" && <Directorlist />}
 {activeSection === "reviewApplication" && <ReviewApplication />}
 {activeSection === "showResult" && <ShowResult />}
+{activeSection === "pospManagement" && <PospManagement />}
 
 
         </main>

@@ -3,7 +3,14 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import Manager from "@/models/Manager";
-import { REQUIRED_KEYS, mapRow, rowIsBlank, str } from "@/utils/policyBulkMapping";
+import {
+  REQUIRED_KEYS,
+  mapRow,
+  rowIsBlank,
+  str,
+  loadReferenceLists,
+  validateAndNormalizeRow,
+} from "@/utils/policyBulkMapping";
 
 export const config = {
   api: {
@@ -71,6 +78,7 @@ export default async function handler(
     );
     const existingPolicyNumbers = new Set(existingPolicies.map((p: any) => p.policyNumber));
     const seenInFile = new Set<string>();
+    const refs = await loadReferenceLists();
 
     const docs: any[] = [];
     const skipped: { row: number; reason: string }[] = [];
@@ -99,7 +107,13 @@ export default async function handler(
       }
       seenInFile.add(policyNumber);
 
-      docs.push({ ...mapRow(row, managersByName), createdBy: adminName });
+      const { errors, row: normalizedRow } = validateAndNormalizeRow(row, refs);
+      if (errors.length) {
+        skipped.push({ row: rowNumber, reason: errors.join("; ") });
+        return;
+      }
+
+      docs.push({ ...mapRow(normalizedRow, managersByName), createdBy: adminName });
     });
 
     let inserted = 0;

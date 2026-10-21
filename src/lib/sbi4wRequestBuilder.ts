@@ -115,17 +115,32 @@ function matchVehicleAndLocation(quoteInput: any) {
     return { make: make.makeId, model: model.modelId, variant: variant.variantId };
   })();
 
-  const rtoCodes = matchRtoLocation(rc.rto_code || registrationNumber.slice(0, 4));
+  // Prefer the RTO the user actually selected in the quote flow
+  // (quoteInput.rtoLocationName, e.g. "DL-01") over rc.rto_code (frequently
+  // blank in RC data) or slicing the registration number itself — that
+  // slice assumes chars[2:4] are always the 2-digit RTO number, which
+  // breaks for registration numbers that don't follow that exact shape
+  // (e.g. a single-digit RTO number before the series letters), silently
+  // failing the master-table lookup and falling through to the
+  // "Zone=NA"-style rate-table errors from SBI.
+  const rtoCodes = matchRtoLocation(
+    quoteInput?.rtoLocationName || rc.rto_code || registrationNumber.slice(0, 4)
+  );
 
   const addressStateAbbrev = rc?.split_present_address?.state?.[0]?.[1] || stateCode2;
-  const districtCode = matchDistrict(
-    addressStateAbbrev,
-    rc?.split_present_address?.district?.[0] || ""
-  );
-  const cityCode = matchCity(
-    addressStateAbbrev,
-    rc?.split_present_address?.city?.[0] || ""
-  );
+  // split_present_address's district/city arrays come back empty for some RC
+  // records (seen with real DigiLocker data, not just test input) — when
+  // that happens, fall back to the RTO's own city/district
+  // (quoteInput.rtoCityOrDistrict, e.g. "GHAZIABAD") rather than leaving the
+  // match target blank, since a blank target always fails matchDistrict/
+  // matchCity and falls through to PLACEHOLDER_CITY_CODE/
+  // PLACEHOLDER_DISTRICT_CODE — which trips the "usesPlaceholderData" guard
+  // in quickquote.ts/full-quote.ts and reports the whole quote as unreal
+  // even when SBI otherwise priced it against fully real vehicle/RTO codes.
+  const districtName = rc?.split_present_address?.district?.[0] || quoteInput?.rtoCityOrDistrict || "";
+  const cityName = rc?.split_present_address?.city?.[0] || quoteInput?.rtoCityOrDistrict || "";
+  const districtCode = matchDistrict(addressStateAbbrev, districtName);
+  const cityCode = matchCity(addressStateAbbrev, cityName);
 
   return { rc, registrationNumber, stateCode2, vehicleCodes, rtoCodes, addressStateAbbrev, districtCode, cityCode };
 }

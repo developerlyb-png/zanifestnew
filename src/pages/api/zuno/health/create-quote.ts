@@ -1,6 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
+// Confirmed live: Retail Health rejects x-api-key-only requests with a
+// plain 401 — it also needs an OAuth Bearer token from the same
+// client-credentials flow the motor (2W/4W) APIs already use.
+async function getZunoToken() {
+  const basic = Buffer.from(
+    `${process.env.ZUNO_CLIENT_ID}:${process.env.ZUNO_CLIENT_SECRET}`,
+  ).toString("base64");
+
+  const tokenResponse = await axios.post(
+    process.env.ZUNO_TOKEN_URL!,
+    new URLSearchParams({ grant_type: "client_credentials" }),
+    {
+      headers: {
+        Authorization: `Basic ${basic}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "x-api-key": process.env.ZUNO_X_API_KEY!,
+      },
+    },
+  );
+
+  return tokenResponse.data.access_token;
+}
+
 // Maps your React relations to Zuno's lowercase values.
 // CONFIRM the full accepted list with Zuno — the sample only proves "self" and "spouse".
 const relationMap: Record<string, string> = {
@@ -65,8 +88,11 @@ export default async function handler(
     const url = `${process.env.ZUNO_HEALTH_URL}/create-quote`;
     console.log("CALLING ZUNO URL", url);
 
+    const token = await getZunoToken();
+
     const response = await axios.post(url, payload, {
       headers: {
+        Authorization: `Bearer ${token}`,
         "x-api-key": process.env.ZUNO_HEALTH_API_KEY!,
         "Content-Type": "application/json",
       },

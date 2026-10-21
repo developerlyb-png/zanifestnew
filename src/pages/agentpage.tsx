@@ -15,6 +15,7 @@ import AgentSale from "@/components/agentpage/agentsale";
 import LeadSection from "@/components/agentpage/leadsection";
 import ListOfPolicy from "@/pages/listofpolicy";
 import DownloadCertificate from "@/components/agentpage/download";
+import MyCommission from "@/components/agentpage/MyCommission";
 
 
 const AgentDashboard = () => {
@@ -32,6 +33,7 @@ const AgentDashboard = () => {
     firstName?: string;
     lastName?: string;
     email?: string;
+    profileImage?: string;
   } | null>(null);
 
   /* ---------------------------------------
@@ -53,7 +55,7 @@ const AgentDashboard = () => {
           setAgentProfile(res.data.agent);
         }
         if (!res.data?.agent?.trainingCompleted) {
-          router.replace("/videolectures");
+          router.replace("/assessmenttraining");
         }
       })
       .catch(() => {
@@ -142,6 +144,7 @@ const AgentDashboard = () => {
             {activeSection === "addsale" && <AgentSale />}
             {activeSection === "profileEdit" && <CreateAgent />}
             {activeSection === "downloadCertificate" && <DownloadCertificate />}
+            {activeSection === "mycommission" && <MyCommission />}
           </div>
         </main>
 

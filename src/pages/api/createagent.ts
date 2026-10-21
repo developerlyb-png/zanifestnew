@@ -6,7 +6,10 @@ import AgentLogin from "@/models/AgentLogin";
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: "10mb", 
+      // Up to 8 document attachments at 2MB each (base64 inflates that by
+      // ~1.37x) plus the rest of the form — 10mb was too tight once the
+      // per-file cap went from 200/500KB to 2MB.
+      sizeLimit: "30mb",
     },
   },
 };
