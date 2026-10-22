@@ -62,6 +62,7 @@ import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
 import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
+import Reconcile from "@/components/superadminsidebar/Reconcile";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -575,6 +576,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Reconciliation (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "reconcile" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("reconcile");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Reconciliation</span>
+              </span>
+            </li>
+
             {/* Pay In Pay Out (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -981,6 +998,7 @@ const SuperAdminDashboard = () => {
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
           {activeSection === "irdaiReports" && <IrdaiReports />}
+          {activeSection === "reconcile" && <Reconcile />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}

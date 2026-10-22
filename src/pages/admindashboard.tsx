@@ -18,6 +18,7 @@ import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
 import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
+import Reconcile from "@/components/superadminsidebar/Reconcile";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -546,6 +547,19 @@ const router = useRouter();
             </li>
 
             <li
+              className={`${styles.menuItem} ${activeSection === "reconcile" ? styles.activeMenuItem : ""}`}
+              onClick={() => {
+                setActiveSection("reconcile");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Reconciliation</span>
+              </span>
+            </li>
+
+            <li
               className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("configManagement");
@@ -818,6 +832,7 @@ const router = useRouter();
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
           {activeSection === "irdaiReports" && <IrdaiReports />}
+          {activeSection === "reconcile" && <Reconcile />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "marineinsurancelist" && <MarineInsuranceList />}
           {activeSection === "travelinsurancelist" && <TravelInsuranceList />}

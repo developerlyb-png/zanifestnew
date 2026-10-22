@@ -6,22 +6,16 @@ import LineOfBusiness from "./LineOfBusiness";
 import Products from "./Products";
 import BranchConfig from "./BranchConfig";
 import InsuranceCompanyConfig from "./InsuranceCompanyConfig";
+import ReconcileMapping from "./ReconcileMapping";
 
-type ConfigTab =
-  | "lineOfBusiness"
-  | "products"
-  | "branch"
-  | "insuranceCompany"
-  | "documents"
-  | "expenseCategories";
+type ConfigTab = "lineOfBusiness" | "products" | "branch" | "insuranceCompany" | "mapping";
 
 const TABS: { key: ConfigTab; label: string }[] = [
   { key: "lineOfBusiness", label: "Line of Business" },
   { key: "products", label: "Products" },
   { key: "branch", label: "Branch" },
   { key: "insuranceCompany", label: "Insurance Company" },
-  { key: "documents", label: "Documents" },
-  { key: "expenseCategories", label: "Expense Categories" },
+  { key: "mapping", label: "Mapping" },
 ];
 
 export default function ConfigManagement() {
@@ -48,11 +42,7 @@ export default function ConfigManagement() {
       {activeTab === "products" && <Products />}
       {activeTab === "branch" && <BranchConfig />}
       {activeTab === "insuranceCompany" && <InsuranceCompanyConfig />}
-      {!["lineOfBusiness", "products", "branch", "insuranceCompany"].includes(activeTab) && (
-        <div className={styles.comingSoon}>
-          {TABS.find((t) => t.key === activeTab)?.label} configuration is coming soon.
-        </div>
-      )}
+      {activeTab === "mapping" && <ReconcileMapping />}
     </div>
   );
 }
