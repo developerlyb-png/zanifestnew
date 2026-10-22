@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 .wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: #f4f6fb;
 }
 
@@ -974,5 +974,162 @@ display: flex;
 @media screen and (max-width: 420px) {
   .sidebarMobile {
     width: 300px;
+  }
+}
+
+/* Refined dashboard surfaces retain the original summary card colors. */
+.mainContent {
+  background: #f5f8fc;
+}
+
+.panelCard,
+.quickActionsCard {
+  border: 1px solid #e7edf5;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.06);
+}
+
+/* Dashboard overview: Manrope typography with Zanifest blue and orange accents. */
+.panelCard,
+.quickActionsCard {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.panelCard {
+  border-color: #e5edf6;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.06);
+}
+
+.panelTitle,
+.statusBigPct,
+.statTileValue {
+  color: #142b4a;
+}
+
+.recentTable th {
+  color: #637b96;
+  border-bottom-color: #dfe9f3;
+}
+
+.recentTable td {
+  color: #34465d;
+  border-bottom-color: #edf2f7;
+}
+
+.recentTable tbody tr:hover td {
+  background: #f4f9fd;
+}
+
+.statusTone_active {
+  background: #fff0df;
+  color: #bd570c;
+}
+
+.statusTone_draft {
+  background: #fff7e7;
+  color: #9b6a14;
+}
+
+.viewAllLink {
+  color: #1876bd;
+  border-top-color: #e7edf5;
+}
+
+.statusBar {
+  background: #eaf0f6;
+}
+
+.statusSegActive {
+  background: #1876bd;
+}
+
+.statusSegDraft {
+  background: #78b6e4;
+}
+
+.statusTone_active {
+  background: #e7f2fb;
+  color: #176eaa;
+}
+
+.statTile {
+  background: #f4f8fc;
+  border: 1px solid #edf2f7;
+}
+
+.statTileLabel,
+.statusBigPct span {
+  color: #718198;
+}
+
+.quickActionsCard {
+  border-color: transparent;
+  background: linear-gradient(135deg, #2588cc 0%, #176eaa 100%);
+  box-shadow: 0 12px 26px rgba(24, 118, 189, 0.2);
+}
+
+.quickActionsBtn {
+  color: #176eaa;
+}
+
+.quickActionsBtn:hover {
+  box-shadow: 0 6px 16px rgba(9, 49, 82, 0.2);
+}
+
+@media screen and (max-width: 768px) {
+  .mainContent {
+    padding: 0.75rem;
+  }
+
+  .dashboardGrid {
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .panelCard,
+  .quickActionsCard {
+    padding: 1.1rem;
+    border-radius: 14px;
+    min-width: 0;
+  }
+
+  .tableScroll {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .recentTable {
+    min-width: 560px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mainContent {
+    padding: 0.6rem;
+  }
+
+  .panelCard,
+  .quickActionsCard {
+    padding: 0.95rem;
+  }
+
+  .panelTitle {
+    font-size: 0.95rem;
+  }
+
+  .statusBigPct {
+    font-size: 1.65rem;
+  }
+
+  .statTileRow {
+    gap: 7px;
+  }
+
+  .statTile {
+    padding: 9px 5px;
+  }
+
+  .quickActionsBtn {
+    max-width: 100%;
+    white-space: normal;
   }
 }

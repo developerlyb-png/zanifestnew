@@ -32,12 +32,12 @@ const renderHeading = (heading: string) => {
   return parts.map((part, idx) => {
     if (part.startsWith("<") && part.endsWith(">")) {
       return (
-        <span key={idx} style={{ color: "orangered" }}>
+          <span key={idx} style={{ color: "#176eaa" }}>
           {part.replace(/[<>]/g, "")}
         </span>
       );
     }
-    return <span key={idx} style={{ color: "black" }}>{part}</span>;
+      return <span key={idx} style={{ color: "#142b4a" }}>{part}</span>;
   });
 };
 
@@ -153,10 +153,10 @@ const FeedbackAdmin: React.FC = () => {
         <FeedBackSection liveHeading={heading} liveFeedbackList={feedbackList} />
       </div>
 
-      <div className={styles.cont} style={{ padding: '40px', backgroundColor: '#f9f9f9' }}>
+      <div className={styles.cont}>
         <h2>Feedback Admin Panel</h2>
 
-        <div style={{ marginBottom: '30px', padding: '15px', borderRadius: '4px' }}>
+        <div className={styles.headingSection}>
           {isEditingHeading ? (
             <div>
               <input
@@ -169,8 +169,8 @@ const FeedbackAdmin: React.FC = () => {
               <button onClick={() => { setHeading("What Our <Customers> Are Saying?"); setIsEditingHeading(false); }}>Cancel</button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', flexDirection:"column" }}>
-              <p style={{ fontWeight: 'bold', marginRight: '10px' }}>
+            <div className={styles.headingDisplay}>
+              <p className={styles.headingText}>
                 {renderHeading(heading)}
               </p>
               <button onClick={() => setIsEditingHeading(true)}><FaEdit /> Edit Heading</button>
@@ -182,14 +182,14 @@ const FeedbackAdmin: React.FC = () => {
           <FaPlus /> Add New Card
         </button>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+        <div className={styles.feedbackGrid}>
           {feedbackList.map((item, index) => (
-            <div key={String(item._id ?? index)} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '6px', width: '300px' }}>
+            <div key={String(item._id ?? index)} className={styles.feedbackCard}>
               <Image src={item.image} alt={item.name} width={50} height={50} style={{ borderRadius: '50%' }} unoptimized />
               <strong>{item.name}</strong> - {item.post}
               <p>{item.desc}</p>
-              <button onClick={() => openEditModal(item)}><FaEdit /> Edit</button>
-              <button onClick={() => handleDelete(String(item._id))}><FaTrashAlt /> Delete</button>
+              <button className={styles.editCardButton} onClick={() => openEditModal(item)}><FaEdit /> Edit</button>
+              <button className={styles.deleteCardButton} onClick={() => handleDelete(String(item._id))}><FaTrashAlt /> Delete</button>
             </div>
           ))}
         </div>

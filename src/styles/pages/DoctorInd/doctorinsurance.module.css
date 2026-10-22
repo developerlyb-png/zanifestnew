@@ -378,3 +378,287 @@
     box-sizing: border-box; /* ensure padding stays inside width */
   }
 }
+
+/* Premium DoctorInd landing page theme and responsive hero layout. */
+.wrapper,
+.wrapper * {
+  font-family: "Manrope", sans-serif;
+}
+
+.wrapper {
+  background: #f7faff;
+  color: #14294b;
+  padding: clamp(28px, 5vw, 64px) 20px;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1200px;
+  align-items: center;
+  gap: clamp(28px, 5vw, 64px);
+}
+
+.textBlock {
+  max-width: 650px;
+}
+
+.subHeading {
+  color: #4f6075;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.title {
+  color: #14294b;
+  font-size: clamp(30px, 3.4vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.highlight,
+.price {
+  color: #1876bd;
+}
+
+.price {
+  font-size: clamp(24px, 2.7vw, 32px);
+}
+
+.form {
+  width: 100%;
+  max-width: 560px;
+  box-sizing: border-box;
+  gap: 12px;
+  margin: 20px 0 14px;
+  padding: 20px;
+  border: 1px solid #d5e5f3;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(20, 57, 92, 0.09);
+}
+
+.input {
+  display: block;
+  min-height: 48px;
+  box-sizing: border-box;
+  background: #fff;
+  border-color: #d8e8f4;
+  border-radius: 9px;
+  color: #14294b;
+  font: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12);
+}
+
+.btn {
+  min-height: 48px;
+  margin-top: 2px;/*  */
+  border-radius: 9px;
+  background: linear-gradient(135deg, #2185ce, #1466aa);
+  box-shadow: 0 8px 18px rgba(24, 118, 189, 0.2);
+  font: 700 15px "Manrope", sans-serif;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #1876bd, #104f88);
+  box-shadow: 0 11px 22px rgba(24, 118, 189, 0.24);
+  transform: translateY(-1px);
+}
+
+.check {
+  color: #16a36a;
+}
+
+.checkbox {
+  accent-color: #1876bd;
+}
+
+.terms,
+.inlineSmall {
+  color: #4f6075;
+  font-size: 13px;
+}
+
+.terms a {
+  color: #1876bd;
+}
+
+.features {
+  gap: 12px 20px;
+}
+
+.featureItem {
+  color: #35465c;
+  font-size: 14px;
+}
+
+.featureIcon {
+  color: #1876bd;
+}
+
+.imageBlock {
+  align-items: center;
+}
+
+.stethoscopeImg {
+  max-width: min(320px, 100%);
+  filter: drop-shadow(0 16px 24px rgba(20, 41, 75, 0.1));
+}
+
+@media (max-width: 768px) {
+  .inner {
+    gap: 0;
+  }
+
+  .imageBlock {
+    display: none;
+  }
+
+  .form {
+    max-width: none;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 14px;
+  }
+}
+
+/* Compact, aligned hero details and authentic WhatsApp mark. */
+.wrapper {
+  padding: 24px 20px;
+}
+
+.inner {
+  align-items: center;
+  gap: clamp(24px, 4vw, 52px);
+}
+
+.textBlock {
+  flex: 1 1 560px;
+  max-width: 650px;
+}
+
+.title {
+  margin-bottom: 6px;
+}
+
+.priceRow {
+  margin-bottom: 12px;
+}
+
+.form {
+  gap: 8px;
+  margin: 12px 0 10px;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.input {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.btn {
+  min-height: 46px;
+}
+
+.inlineSmall {
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.whatsappLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.whatsIcon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: #25d366;
+  font-size: 18px;
+}
+
+.terms {
+  margin: 8px 0 14px;
+  line-height: 1.45;
+}
+
+.features {
+  align-items: center;
+  gap: 10px 18px;
+}
+
+.featureItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.featureText {
+  margin: 0;
+  line-height: 1.35;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 20px 14px;
+  }
+
+  .inner {
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .textBlock {
+    flex-basis: 100%;
+    align-self: stretch;
+    text-align: left;
+  }
+
+  .form {
+    margin-top: 12px;
+    padding: 14px;
+  }
+
+  .features {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px 14px;
+  }
+
+  .inlineSmall,
+  .features,
+  .featureItem,
+  .terms {
+    text-align: left;
+  }
+
+  .inlineSmall {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .featureItem {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
+  .featureText {
+    text-align: left;
+  }
+}

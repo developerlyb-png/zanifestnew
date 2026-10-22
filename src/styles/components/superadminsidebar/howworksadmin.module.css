@@ -191,3 +191,22 @@
     padding: 14px;
   }
 }
+
+/* Premium dashboard styling */
+.container { padding: 22px; gap: 20px; font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1b2f49; }
+.pageTitle { color: #142b4a; font-size: 1.42rem; font-weight: 750; letter-spacing: -0.025em; text-align: left; }
+.headingBox { width: 100%; max-width: 760px; box-sizing: border-box; padding: 22px; border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 8px 24px rgba(25,54,88,.06); }
+.headingBox h3 { color: #142b4a; font-size: .95rem; }
+.headingInput { width: 100%; min-height: 44px; box-sizing: border-box; border: 1px solid #d7e3ef; border-radius: 10px; padding: 10px 12px; color: #233b58; font-family: inherit; font-size: 14px; }
+.headingInput:focus, .card input:focus, .card textarea:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24,118,189,.12); }
+.headingBox button, .card button { border-radius: 10px; background: linear-gradient(135deg,#2588cc,#176eaa); box-shadow: 0 5px 14px rgba(24,118,189,.18); font-family: inherit; font-weight: 700; }
+.headingBox button:hover, .card button:hover { background: linear-gradient(135deg,#207dbb,#125d92); }
+.cardsGrid { grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 16px; }
+.card { border-color: #e2eaf2; border-radius: 15px; padding: 19px; box-shadow: 0 7px 22px rgba(25,54,88,.055); }
+.card:hover { box-shadow: 0 12px 26px rgba(25,54,88,.1); }
+.card h4 { color: #176eaa; font-size: .9rem; }
+.card input, .card textarea { box-sizing: border-box; border-color: #d7e3ef; border-radius: 9px; color: #233b58; font-family: inherit; font-size: 14px; }
+.imagePreview { max-width: 100%; height: auto; border-color: #e2eaf2; border-radius: 10px; }
+.livePreview { display: block; border: 1px solid #e2eaf2; border-radius: 15px; padding: 18px; background: #fff; box-shadow: 0 8px 24px rgba(25,54,88,.06); }
+.livePreview h2 { color: #142b4a; font-size: 1.08rem; }
+@media (max-width: 600px) { .container { padding: 14px; gap: 15px; } .pageTitle { font-size: 1.2rem; } .headingBox { padding: 16px; } .cardsGrid { grid-template-columns: 1fr; } .card { padding: 15px; } .card input, .card textarea { font-size: 16px; } .livePreview { padding: 14px; } }

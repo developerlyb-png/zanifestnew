@@ -13,6 +13,7 @@
   padding: 5vw 0;
 
   box-sizing: border-box;
+  font-family: "Manrope", sans-serif;
 }
 
 /* =========================================
@@ -267,6 +268,251 @@
   line-height: 1.5;
 
   color: #4d5964;
+}
+
+/* Match the two wheeler hero to the car insurance page. */
+.cont {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  justify-items: stretch;
+  width: min(90%, 1100px);
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: clamp(30px, 5vw, 64px) 0;
+  gap: clamp(28px, 5vw, 68px);
+}
+
+.imageCont {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  justify-content: center;
+}
+
+.image {
+  display: block;
+  width: min(80%, 400px);
+  max-height: none;
+  object-fit: contain;
+}
+
+.cont > div:last-child {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+}
+
+.headings {
+  margin: 0 0 14px;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.bottom {
+  width: 100%;
+  max-width: 400px;
+  gap: 0;
+  margin: 0;
+  padding: 32px 24px 26px;
+  border: 1px solid rgba(24, 118, 189, 0.13);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #f5f9ff 0%, #eaf3ff 100%);
+  box-shadow: 0 15px 40px rgba(24, 118, 189, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  font-family: "Manrope", sans-serif;
+}
+
+.heading {
+  margin: 0 0 12px;
+  padding: 0;
+  color: #14294b;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.bold {
+  color: #1876bd;
+  font-family: "Manrope", sans-serif;
+  font-size: 1.35em;
+  font-weight: 600;
+}
+
+.path {
+  gap: clamp(6px, 1vw, 12px);
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+}
+
+.path section p {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+}
+
+.path section svg {
+  flex-shrink: 0;
+}
+
+.form {
+  gap: 14px;
+}
+
+.input {
+  min-height: 54px;
+  padding: 15px 16px;
+  border-color: #d5e3f0;
+  border-radius: 12px;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.9rem;
+}
+
+.button {
+  min-height: 54px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1876bd, #145f9f);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.bottom > p:last-of-type {
+  margin: 12px 0 0;
+  color: #52657b;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.policy {
+  font-family: "Manrope", sans-serif;
+}
+
+.transparentButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 1024px) {
+  .cont {
+    width: min(92%, 800px);
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 36px 0 42px;
+  }
+
+  .imageCont {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+  }
+
+  .image {
+    width: min(80%, 400px);
+    max-height: none;
+  }
+
+  .cont > div:last-child {
+    grid-column: 1;
+    grid-row: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .headings,
+  .bottom {
+    width: min(100%, 520px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cont {
+    width: 92%;
+    gap: 18px;
+    padding: 28px 0 36px;
+  }
+
+  .image {
+    width: min(78%, 350px);
+    max-height: 280px;
+  }
+
+  .headings {
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+  }
+
+  .bottom {
+    padding: 26px 22px;
+    border-radius: 18px;
+  }
+
+  .path {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .path::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .cont {
+    width: 94%;
+    gap: 14px;
+    padding: 22px 0 30px;
+  }
+
+  .image {
+    width: min(72%, 280px);
+    max-height: 230px;
+  }
+
+  .headings {
+    font-size: 1.15rem;
+  }
+
+  .bottom {
+    padding: 22px 16px;
+    border-radius: 16px;
+  }
+
+  .heading {
+    font-size: 1rem;
+  }
+
+  .bold {
+    font-size: 1.2em;
+  }
+
+  .path {
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .path section p {
+    font-size: 0.7rem;
+  }
+
+  .input,
+  .button {
+    min-height: 48px;
+    padding: 13px;
+    font-size: 0.84rem;
+  }
 }
 
 .policy {

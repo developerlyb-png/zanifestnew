@@ -185,7 +185,7 @@ export default function ClientManagement() {
 
   if (view === "add") {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cm.clientManagementPage}`}>
         <ClientForm
           onCancel={() => setView("list")}
           onSaved={(id) => {
@@ -200,7 +200,7 @@ export default function ClientManagement() {
 
   if (view === "edit" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cm.clientManagementPage}`}>
         <ClientForm
           editId={activeId}
           onCancel={() => setView("detail")}
@@ -216,7 +216,7 @@ export default function ClientManagement() {
 
   if (view === "detail" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cm.clientManagementPage}`}>
         <ClientDetailView
           clientId={activeId}
           onBack={() => {
@@ -230,14 +230,14 @@ export default function ClientManagement() {
   }
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${cm.clientManagementPage}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Client Management</h2>
+        <h2 className={`${styles.heading} ${cm.clientPageHeading}`}>Client Management</h2>
         <div className={styles.headerActions}>
           <button className={styles.outlineBtn} onClick={() => toast("Bulk upload is coming soon.")}>
             <FiUploadCloud /> Bulk Upload
           </button>
-          <button className={styles.primaryBtn} onClick={() => setView("add")}>
+          <button className={`${styles.primaryBtn} ${cm.clientAddButton}`} onClick={() => setView("add")}>
             <FiPlus /> Add Client
           </button>
         </div>
@@ -282,20 +282,20 @@ export default function ClientManagement() {
         </div>
       </div>
 
-      <div className={styles.filterRow}>
+      <div className={`${styles.filterRow} ${cm.clientFilters}`}>
         <div />
-        <div className={styles.filterRowRight}>
-          <button className={styles.exportSolidBtn} onClick={exportCsv}>
+        <div className={`${styles.filterRowRight} ${cm.clientFilterActions}`}>
+          <button className={`${styles.exportSolidBtn} ${cm.clientExportButton}`} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
-          <div className={styles.columnPickerWrapper} ref={pickerRef}>
-            <button className={styles.outlineBtn} onClick={() => setShowColumnPicker((v) => !v)}>
+          <div className={`${styles.columnPickerWrapper} ${cm.clientColumnPicker}`} ref={pickerRef}>
+            <button className={`${styles.outlineBtn} ${cm.clientColumnButton}`} onClick={() => setShowColumnPicker((v) => !v)}>
               <FiColumns /> Filter Columns
             </button>
             {showColumnPicker && (
-              <div className={styles.columnPickerDropdown}>
+              <div className={`${styles.columnPickerDropdown} ${cm.clientColumnDropdown}`}>
                 {COLUMNS.map((c) => (
-                  <label key={c.key} className={styles.columnPickerItem}>
+                  <label key={c.key} className={`${styles.columnPickerItem} ${cm.clientColumnItem}`}>
                     <input
                       type="checkbox"
                       checked={visibleColumns[c.key]}
@@ -314,7 +314,7 @@ export default function ClientManagement() {
         {filtered.length} of {clients.length} clients
       </p>
 
-      <div className={styles.tableWrapper}>
+      <div className={`${styles.tableWrapper} ${cm.clientTableWrapper}`}>
         <table className={`${styles.table} ${cm.clientTable}`} style={{ minWidth: 1100 }}>
           <thead>
             <tr>

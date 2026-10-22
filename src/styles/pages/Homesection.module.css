@@ -206,3 +206,240 @@
     transform: translateY(-10px);
   }
 }
+
+/* Premium home dashboard section navigation */
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.homeDashboard { padding: 20px; }
+.homeDashboard .heading {
+  margin: 0 0 20px;
+  color: #142b4a;
+  font-size: 1.65rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+.listDiv {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  margin-top: 12px;
+  padding: 15px 48px 15px 18px;
+  border: 1px solid #e1eaf3;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #fff, #fbfdff);
+  box-shadow: 0 4px 14px rgba(25, 54, 88, 0.04);
+  color: #344b65;
+  cursor: pointer;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+.listDiv::after {
+  content: "→";
+  position: absolute;
+  right: 17px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  background: #eaf4fc;
+  color: #176eaa;
+  font-size: 17px;
+  transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+.listDiv:hover {
+  transform: translateY(-2px);
+  border-color: #bdd8ed;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(25, 79, 122, 0.09);
+  color: #176eaa;
+}
+.listDiv:hover::after { transform: translateX(2px); background: #1876bd; color: #fff; }
+.listDiv:focus-visible, .backButton:focus-visible, .btnOrange:focus-visible, .btnDelete:focus-visible {
+  outline: 3px solid rgba(24, 118, 189, 0.24);
+  outline-offset: 2px;
+}
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin: 0 0 18px 4px;
+  padding: 0 15px;
+  border: 1px solid #d7e3ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #176eaa;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+.backButton:hover { transform: translateY(-1px); border-color: #bdd8ed; background: #f3f8fc; }
+
+/* Shared visual system for every Home dashboard section editor. */
+.sectionEditor {
+  min-width: 0;
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.sectionEditor :global(*) { font-family: inherit !important; }
+.sectionEditor :global(h1),
+.sectionEditor :global(h2),
+.sectionEditor :global(h3),
+.sectionEditor :global(h4) {
+  color: #142b4a;
+  letter-spacing: -0.02em;
+}
+.sectionEditor :global(h1) { font-size: 1.5rem; }
+.sectionEditor :global(h2) { font-size: 1.3rem; }
+.sectionEditor :global(h3) { font-size: 1.08rem; }
+.sectionEditor :global(h4) { font-size: 0.96rem; }
+.sectionEditor :global(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"])),
+.sectionEditor :global(select),
+.sectionEditor :global(textarea) {
+  box-sizing: border-box;
+  border-color: #d7e3ef !important;
+  border-radius: 10px !important;
+  color: #233b58;
+}
+.sectionEditor :global(input:focus),
+.sectionEditor :global(select:focus),
+.sectionEditor :global(textarea:focus) {
+  border-color: #1876bd !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12) !important;
+}
+.sectionEditor :global(button) { border-radius: 10px; }
+.sectionEditor :global(button[class*="save"]),
+.sectionEditor :global(button[class*="Save"]),
+.sectionEditor :global(button[class*="btnOrange"]),
+.sectionEditor :global(button[class*="headingBtn"]),
+.sectionEditor :global(button[class*="saveHeadingBtn"]),
+.sectionEditor :global(button[class*="saveOrderBtn"]) {
+  background: linear-gradient(135deg, #2588cc, #176eaa) !important;
+  border-color: #176eaa !important;
+  color: #fff !important;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, 0.18);
+}
+.sectionEditor :global(button[class*="save"]:hover),
+.sectionEditor :global(button[class*="Save"]:hover),
+.sectionEditor :global(button[class*="btnOrange"]:hover),
+.sectionEditor :global(button[class*="headingBtn"]:hover),
+.sectionEditor :global(button[class*="saveHeadingBtn"]:hover),
+.sectionEditor :global(button[class*="saveOrderBtn"]:hover) {
+  background: linear-gradient(135deg, #207dbb, #125d92) !important;
+}
+.sectionEditor :global(img) { max-width: 100%; height: auto; }
+
+/* Carousel editor, preview and uploaded image cards */
+.carouselAdmin { padding: 4px 4px 20px; }
+.formSection, .previewSection, .carouselSection, .uploadedSection {
+  border: 1px solid #e2eaf2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.06);
+}
+.formSection {
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  padding: 24px 26px;
+  margin: 0 auto 22px;
+  text-align: left;
+}
+.carouselAdmin .heading {
+  margin: 0 0 18px;
+  color: #142b4a;
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.carouselAdmin .input {
+  box-sizing: border-box;
+  min-height: 46px;
+  margin-bottom: 12px;
+  padding: 10px 13px;
+  border-color: #d7e3ef;
+  border-radius: 10px;
+  color: #233b58;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.carouselAdmin .input:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.carouselAdmin .input[type="file"] { padding: 8px; background: #fbfdff; }
+.btnOrange {
+  min-height: 43px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+.btnOrange:hover { transform: translateY(-1px); background: linear-gradient(135deg, #207dbb, #125d92); box-shadow: 0 9px 20px rgba(24, 118, 189, 0.24); }
+.carouselSection, .uploadedSection { max-width: 100%; padding: 20px; margin: 0 0 20px; }
+.carouselAdmin .subHeading {
+  margin: 0 0 15px;
+  color: #142b4a;
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.carouselWrapper { overflow: hidden; border-radius: 12px; }
+.imageGrid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.card {
+  max-width: none;
+  overflow: hidden;
+  border-color: #e2eaf2;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(25, 54, 88, 0.045);
+  text-align: left;
+}
+.cardImage { width: 100%; aspect-ratio: 16 / 8; object-fit: cover; border-radius: 9px; }
+.cardTitle { color: #344b65; font-size: 14px; font-weight: 650; }
+.cardActions { justify-content: flex-end; }
+.btnDelete { padding: 8px 12px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 650; }
+.toast { border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px; background: #14385a; font-family: inherit; }
+
+@media (max-width: 760px) {
+  .homeDashboard { padding: 16px; }
+  .homeDashboard .heading { font-size: 1.45rem; }
+  .listDiv { min-height: 58px; font-size: 0.9rem; }
+  .carouselAdmin { padding: 2px 0 16px; }
+  .formSection { padding: 20px; }
+}
+@media (max-width: 600px) {
+  .homeDashboard { padding: 12px; }
+  .homeDashboard .heading { margin-bottom: 16px; font-size: 1.28rem; }
+  .listDiv { min-height: 54px; margin-top: 10px; padding: 13px 46px 13px 14px; border-radius: 11px; font-size: 0.85rem; }
+  .listDiv::after { right: 12px; width: 28px; height: 28px; }
+  .backButton { margin: 0 0 14px; }
+  .formSection { padding: 17px 15px; margin-bottom: 16px; border-radius: 14px; }
+  .carouselAdmin .heading { font-size: 1.18rem; }
+  .carouselAdmin .input { min-height: 46px; font-size: 16px; }
+  .carouselSection, .uploadedSection { padding: 15px; margin-bottom: 15px; border-radius: 14px; }
+  .carouselAdmin .subHeading { font-size: 1.05rem; }
+  .imageGrid { grid-template-columns: 1fr; }
+  .toast { top: 12px; right: 12px; left: 12px; text-align: center; }
+  .sectionEditor :global(h1) { font-size: 1.28rem; }
+  .sectionEditor :global(h2) { font-size: 1.15rem; }
+  .sectionEditor :global(h3) { font-size: 1rem; }
+  .sectionEditor :global(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"])),
+  .sectionEditor :global(select),
+  .sectionEditor :global(textarea) { font-size: 16px !important; }
+}

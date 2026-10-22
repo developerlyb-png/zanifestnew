@@ -404,8 +404,13 @@
 }
 
 .pageNumberActive {
-  background: #f97316;
+  background: linear-gradient(135deg, #2588cc, #176eaa);
   color: #fff;
+  box-shadow: 0 4px 10px rgba(24, 118, 189, 0.22);
+}
+
+.pageNumberActive:hover {
+  background: linear-gradient(135deg, #207dbb, #125d92);
 }
 
 /* ---------- Inline create-form panel (embedded above the list) ---------- */

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/sharedTable.module.css";
+import adminStyles from "@/styles/components/superadminsidebar/AdminList.module.css";
 import { message } from "antd";
 import { FiDownload, FiPlus, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import CreateAdmin from "./createadmin";
@@ -114,14 +115,14 @@ export default function AdminList() {
   const currentAdmins = filteredAdmins.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${adminStyles.adminListPage}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.title}>Admins</h2>
-        <div className={styles.headerActions}>
-          <button className={styles.primaryBtn} onClick={() => setShowCreate((v) => !v)}>
+        <h2 className={`${styles.title} ${adminStyles.adminTitle}`}>Admins</h2>
+        <div className={`${styles.headerActions} ${adminStyles.adminHeaderActions}`}>
+          <button className={`${styles.primaryBtn} ${adminStyles.addAdminButton}`} onClick={() => setShowCreate((v) => !v)}>
             {showCreate ? <FiX /> : <FiPlus />} {showCreate ? "Close" : "Add Admin"}
           </button>
-          <button className={styles.exportBtn} onClick={exportCsv}>
+          <button className={`${styles.exportBtn} ${adminStyles.exportButton}`} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
         </div>
@@ -140,9 +141,9 @@ export default function AdminList() {
         </div>
       )}
 
-      <div className={styles.card}>
-        <div className={styles.toolbar}>
-          <div className={styles.pillGroup}>
+      <div className={`${styles.card} ${adminStyles.adminListCard}`}>
+        <div className={`${styles.toolbar} ${adminStyles.adminToolbar}`}>
+          <div className={`${styles.pillGroup} ${adminStyles.roleFilters}`}>
             {[
               { key: "all", label: "All" },
               { key: "admin", label: "Admin" },
@@ -150,7 +151,7 @@ export default function AdminList() {
             ].map((f) => (
               <button
                 key={f.key}
-                className={`${styles.pill} ${roleFilter === f.key ? styles.pillActive : ""}`}
+                className={`${styles.pill} ${adminStyles.rolePill} ${roleFilter === f.key ? adminStyles.rolePillActive : ""}`}
                 onClick={() => {
                   setRoleFilter(f.key);
                   setCurrentPage(1);
@@ -160,8 +161,8 @@ export default function AdminList() {
               </button>
             ))}
           </div>
-          <div className={styles.toolbarRight}>
-            <div className={styles.searchBox}>
+          <div className={`${styles.toolbarRight} ${adminStyles.adminSearchArea}`}>
+            <div className={`${styles.searchBox} ${adminStyles.adminSearch}`}>
               <FiSearch size={14} />
               <input
                 placeholder="Search by name, email, or role"
@@ -181,8 +182,8 @@ export default function AdminList() {
           <div className={styles.emptyState}>No admins found.</div>
         ) : (
           <>
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
+            <div className={`${styles.tableWrapper} ${adminStyles.adminTableWrapper}`}>
+              <table className={`${styles.table} ${adminStyles.adminTable}`}>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -234,20 +235,20 @@ export default function AdminList() {
               </table>
             </div>
 
-            <div className={styles.pagination}>
+            <div className={`${styles.pagination} ${adminStyles.adminPagination}`}>
               <button
-                className={styles.pageNavBtn}
+                className={`${styles.pageNavBtn} ${adminStyles.adminPageNav}`}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 ← Previous
               </button>
-              <div className={styles.pageNumbers}>
+              <div className={`${styles.pageNumbers} ${adminStyles.adminPageNumbers}`}>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                   <button
                     key={n}
-                    className={`${styles.pageNumberBtn} ${
-                      currentPage === n ? styles.pageNumberActive : ""
+                    className={`${styles.pageNumberBtn} ${adminStyles.adminPageNumber} ${
+                      currentPage === n ? `${styles.pageNumberActive} ${adminStyles.adminPageNumberActive}` : ""
                     }`}
                     onClick={() => setCurrentPage(n)}
                   >
@@ -256,7 +257,7 @@ export default function AdminList() {
                 ))}
               </div>
               <button
-                className={styles.pageNavBtn}
+                className={`${styles.pageNavBtn} ${adminStyles.adminPageNav}`}
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
               >

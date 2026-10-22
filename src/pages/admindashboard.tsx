@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/logowhite.png";
+import logo from "@/assets/logowhite1.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 import AgentList from "@/components/superadminsidebar/agentlist";

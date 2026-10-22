@@ -69,7 +69,7 @@ export default function AgentsignUp() {
   };
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${styles.agentSignup}`}>
       <div className={styles.left}>
         <Image
           src={loginBanner}

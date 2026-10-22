@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/sharedTable.module.css";
+import adminStyles from "@/styles/components/superadminsidebar/AdminList.module.css";
 import { toast } from "react-hot-toast";
 import { FiDownload, FiPlus, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
@@ -174,14 +175,14 @@ export default function ManagersTable() {
   );
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${adminStyles.adminListPage}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.title}>Managers</h2>
-        <div className={styles.headerActions}>
-          <button className={styles.primaryBtn} onClick={() => setShowCreate((v) => !v)}>
+        <h2 className={`${styles.title} ${adminStyles.adminTitle}`}>Managers</h2>
+        <div className={`${styles.headerActions} ${adminStyles.adminHeaderActions}`}>
+          <button className={`${styles.primaryBtn} ${adminStyles.addAdminButton}`} onClick={() => setShowCreate((v) => !v)}>
             {showCreate ? <FiX /> : <FiPlus />} {showCreate ? "Close" : "Add Manager"}
           </button>
-          <button className={styles.exportBtn} onClick={exportCsv}>
+          <button className={`${styles.exportBtn} ${adminStyles.exportButton}`} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
         </div>
@@ -200,9 +201,9 @@ export default function ManagersTable() {
         </div>
       )}
 
-      <div className={styles.card}>
-        <div className={styles.toolbar}>
-          <div className={styles.pillGroup}>
+      <div className={`${styles.card} ${adminStyles.adminListCard}`}>
+        <div className={`${styles.toolbar} ${adminStyles.adminToolbar}`}>
+          <div className={`${styles.pillGroup} ${adminStyles.roleFilters}`}>
             {[
               { key: "all", label: "All" },
               { key: "district", label: "District" },
@@ -211,7 +212,7 @@ export default function ManagersTable() {
             ].map((f) => (
               <button
                 key={f.key}
-                className={`${styles.pill} ${categoryFilter === f.key ? styles.pillActive : ""}`}
+                className={`${styles.pill} ${adminStyles.rolePill} ${categoryFilter === f.key ? adminStyles.rolePillActive : ""}`}
                 onClick={() => {
                   setCategoryFilter(f.key);
                   setCurrentPage(1);
@@ -221,8 +222,8 @@ export default function ManagersTable() {
               </button>
             ))}
           </div>
-          <div className={styles.toolbarRight}>
-            <div className={styles.searchBox}>
+          <div className={`${styles.toolbarRight} ${adminStyles.adminSearchArea}`}>
+            <div className={`${styles.searchBox} ${adminStyles.adminSearch}`}>
               <FiSearch size={14} />
               <input
                 placeholder="Search by name, email, or code"
@@ -242,8 +243,8 @@ export default function ManagersTable() {
           <div className={styles.emptyState}>No managers found.</div>
         ) : (
           <>
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
+            <div className={`${styles.tableWrapper} ${adminStyles.adminTableWrapper}`}>
+              <table className={`${styles.table} ${adminStyles.adminTable}`}>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -346,20 +347,20 @@ export default function ManagersTable() {
               </table>
             </div>
 
-            <div className={styles.pagination}>
+            <div className={`${styles.pagination} ${adminStyles.adminPagination}`}>
               <button
-                className={styles.pageNavBtn}
+                className={`${styles.pageNavBtn} ${adminStyles.adminPageNav}`}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 ← Previous
               </button>
-              <div className={styles.pageNumbers}>
+              <div className={`${styles.pageNumbers} ${adminStyles.adminPageNumbers}`}>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                   <button
                     key={n}
-                    className={`${styles.pageNumberBtn} ${
-                      currentPage === n ? styles.pageNumberActive : ""
+                    className={`${styles.pageNumberBtn} ${adminStyles.adminPageNumber} ${
+                      currentPage === n ? `${styles.pageNumberActive} ${adminStyles.adminPageNumberActive}` : ""
                     }`}
                     onClick={() => setCurrentPage(n)}
                   >
@@ -368,7 +369,7 @@ export default function ManagersTable() {
                 ))}
               </div>
               <button
-                className={styles.pageNavBtn}
+                className={`${styles.pageNavBtn} ${adminStyles.adminPageNav}`}
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
               >

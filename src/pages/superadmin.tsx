@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/logowhite.png";
+import logo from "@/assets/logowhite1.png";
 import CreateAdmin from "@/components/superadminsidebar/createadmin";
 import CreateAgent from "@/components/superadminsidebar/createagent";
 import AdminList from "@/components/superadminsidebar/adminlist";

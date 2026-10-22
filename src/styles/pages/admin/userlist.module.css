@@ -291,3 +291,94 @@
   font-size: 1rem;
   color: #374151;
 }
+
+/* Premium Registered Users list styling. */
+.container {
+  padding: 22px;
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.heading {
+  margin: 0;
+  color: #142b4a;
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  text-align: left;
+}
+
+.tableWrapper {
+  border: 1px solid #e2eaf2;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.06);
+  overflow-x: auto;
+}
+
+.table {
+  min-width: 520px;
+  font-family: inherit;
+}
+
+.th {
+  padding: 14px 16px;
+  background: #f2f7fc;
+  color: #526b86;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #e2eaf2;
+}
+
+.td {
+  padding: 14px 16px;
+  color: #2d435d;
+  font-size: 14px;
+  border-bottom-color: #edf2f7;
+}
+
+.row { transition: background-color 0.16s ease; }
+.row:hover { background: #f5f9fd; }
+
+.addUserBtn {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 0.7rem 1.15rem;
+}
+
+.addUserBtn:hover {
+  background: linear-gradient(135deg, #207dbb, #125d92);
+  box-shadow: 0 9px 20px rgba(24, 118, 189, 0.25);
+}
+
+.pagination { gap: 12px; }
+.pageButton {
+  background: #176eaa;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  padding: 9px 16px;
+}
+.pageButton:hover:not(:disabled) { background: #125d92; }
+.pageInfo { color: #637b96; font-size: 13px; }
+
+@media screen and (max-width: 640px) {
+  .container { padding: 14px; }
+  .heading { font-size: 21px; }
+  .tableWrapper { border-radius: 12px; }
+  .th,
+  .td { padding: 12px; }
+  .td { font-size: 13px; }
+  .pagination { justify-content: space-between; gap: 8px; }
+  .pageInfo { font-size: 12px; }
+}
+
+@media screen and (max-width: 380px) {
+  .container { padding: 10px; }
+  .heading { font-size: 19px; }
+  .addUserBtn { padding: 0.6rem 0.8rem; font-size: 12px; }
+}

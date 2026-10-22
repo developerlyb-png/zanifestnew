@@ -220,11 +220,11 @@ const Officepackagepolicy: React.FC = () => {
               <p className={styles.disclaimer}>
                 By clicking <span className={styles.bold}>“View quotes”</span>,
                 you agree to our
-                <a href="#" className={styles.link}>
+                <a href="/Privacypolicy" className={styles.link}>
                   Privacy Policy
                 </a>
                 ,
-                <a href="#" className={styles.link}>
+                <a href="/Termscondition" className={styles.link}>
                   Terms of Use
                 </a>{" "}
                 &

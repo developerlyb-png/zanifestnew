@@ -329,3 +329,133 @@
   font-size: 0.84rem;
   margin-bottom: 16px;
 }
+
+/* Config Seller dashboard and profile editor premium styling. */
+.sellerDashboard,
+.formWrap {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.sellerDashboard { padding: 4px 2px; }
+.pageTitle,
+.formTitle { color: #142b4a; font-size: 1.65rem; letter-spacing: -0.025em; }
+.pageSub,
+.formSub { color: #718198; font-size: 0.9rem; line-height: 1.6; }
+
+.addBtn,
+.saveBtn {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.addBtn:hover,
+.saveBtn:hover { transform: translateY(-1px); box-shadow: 0 9px 20px rgba(24, 118, 189, 0.25); }
+
+.tableCard,
+.section {
+  border-color: #e2eaf2;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.06);
+}
+.tableCard { overflow-x: auto; }
+.table { min-width: 760px; font-family: inherit; }
+.table th {
+  color: #637b96;
+  background: #f3f8fc;
+  border-bottom-color: #e2eaf2;
+  font-size: 0.74rem;
+  padding: 13px 18px;
+}
+.table td { color: #344b65; border-bottom-color: #edf2f7; font-size: 0.88rem; padding: 14px 18px; }
+.table tbody tr:hover td { background: #f5f9fd; }
+.nameCell { color: #142b4a; font-weight: 700; }
+.editBtn { color: #176eaa; border-radius: 8px; font: inherit; font-weight: 650; }
+.editBtn:hover { background: #eaf4fc; }
+.defaultBadge { background: #eaf7f2; color: #16765f; font-size: 0.75rem; }
+.emptyIcon { background: #eaf4fc; color: #1876bd; }
+.emptyTitle { color: #142b4a; font-size: 1.1rem; }
+.emptyText { color: #718198; line-height: 1.65; }
+
+.formWrap { padding-bottom: 100px; }
+.backLink { color: #176eaa; font-family: inherit; font-size: 0.88rem; }
+.backLink:hover { color: #125d92; }
+.formTitle { font-size: 1.55rem; }
+.section {
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.sectionHead { border-bottom-color: #eaf0f6; padding: 18px 22px; }
+.sectionIconWrap { background: #eaf4fc; color: #1876bd; border-radius: 11px; }
+.sectionTitle { color: #142b4a; font-size: 1rem; }
+.sectionSub { color: #718198; font-size: 0.82rem; }
+.sectionBody { padding: 22px; }
+.grid2,
+.grid3 { gap: 18px 22px; }
+.label { color: #344b65; font-size: 0.86rem; }
+.input,
+.select {
+  border-color: #d7e3ef;
+  border-radius: 10px;
+  color: #233b58;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 11px 14px;
+}
+.input:focus,
+.select:focus { border-color: #2588cc; box-shadow: 0 0 0 3px rgba(37, 136, 204, 0.13); }
+.toggleRow { color: #344b65; font-size: 0.9rem; }
+.toggleRow input[type="checkbox"] { accent-color: #1876bd; }
+.dropzone { border-color: #c9dbea; border-radius: 13px; background: #fbfdff; }
+.dropzone:hover { border-color: #2588cc; background: #f2f8fd; }
+.dropzoneIcon { color: #2588cc; }
+.dropzoneText { color: #344b65; font-size: 0.88rem; }
+.fileFilled { border-color: #e2eaf2; border-radius: 12px; background: #f8fbfe; }
+.fileName { color: #233b58; }
+.fileActionBtn:hover { color: #176eaa; }
+.stickyBar {
+  border-color: #e2eaf2;
+  border-radius: 14px;
+  box-shadow: 0 -8px 24px rgba(25, 54, 88, 0.1);
+  font-family: inherit;
+}
+.clearBtn { border-color: #d7e3ef; color: #526b86; font-family: inherit; }
+.clearBtn:hover { background: #f2f7fc; }
+.saveBtn { font-family: inherit; }
+
+@media (max-width: 760px) {
+  .sellerDashboard { padding: 0; }
+  .pageTitle { font-size: 1.4rem; }
+  .formWrap { padding-bottom: 150px; }
+  .formTitle { font-size: 1.35rem; }
+  .sectionHead { padding: 15px 16px; }
+  .sectionBody { padding: 17px 16px; }
+  .grid2,
+  .grid3 { grid-template-columns: 1fr; gap: 14px; }
+  .fileGrid { grid-template-columns: 1fr; gap: 14px; }
+  .stickyBar { align-items: stretch; padding: 12px 14px; gap: 10px; }
+  .stickyLeft { width: 100%; }
+  .stickyRight { justify-content: flex-end; }
+}
+
+@media (max-width: 480px) {
+  .listHeader { align-items: stretch; }
+  .listHeader > div { width: 100%; }
+  .pageTitle { font-size: 1.25rem; }
+  .pageSub { font-size: 0.82rem; }
+  .addBtn { justify-content: center; }
+  .formTitle { font-size: 1.2rem; }
+  .formSub { font-size: 0.84rem; margin-bottom: 16px; }
+  .section { border-radius: 13px; }
+  .sectionHead { gap: 10px; }
+  .sectionIconWrap { width: 34px; height: 34px; }
+  .sectionTitle { font-size: 0.94rem; }
+  .sectionSub { font-size: 0.76rem; }
+  .stickyBar { position: sticky; bottom: 0; margin-left: -6px; margin-right: -6px; }
+  .stickyRight { width: 100%; }
+  .stickyRight button { flex: 1; }
+  .toggleRow { align-items: flex-start; font-size: 0.84rem; }
+  .emptyState { padding: 42px 18px; }
+}

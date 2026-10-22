@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { FaWhatsapp } from "react-icons/fa";
 import styles from "@/styles/pages/DoctorInd/doctorinsurance.module.css";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
@@ -130,18 +131,18 @@ const DoctorInsurance: React.FC = () => {
                   onChange={(e) => setWhatsapp(e.target.checked)}
                   className={styles.checkbox}
                 />
-                <span>Get Updates on WhatsApp</span>
+                <span> Get Updates on WhatsApp</span>
               </label>
-              <span className={styles.whatsIcon}>💬</span>
+              <FaWhatsapp className={styles.whatsIcon} aria-label="WhatsApp" />
             </div>
 
             <p className={styles.terms}>
               By clicking on "View plans" you agree to our{" "}
-              <a href="#" className={styles.link}>
+              <a href="/Privacypolicy" className={styles.link}>
                 Privacy Policy
               </a>{" "}
               &{" "}
-              <a href="#" className={styles.link}>
+              <a href="/Termscondition" className={styles.link}>
                 Terms Of Use
               </a>
             </p>

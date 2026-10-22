@@ -110,7 +110,7 @@ if (!title || (!preview && !editId)) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${styles.carouselAdmin}`}>
       {toast && <div className={styles.toast}>{toast}</div>}
 
       {/* 1️⃣ Upload Form Section */}

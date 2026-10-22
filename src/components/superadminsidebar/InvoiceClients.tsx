@@ -242,14 +242,14 @@ function AddInvoiceClientForm({
 
   if (loadingClient) {
     return (
-      <div className={cs.wizard}>
+      <div className={`${cs.wizard} ${cs.invoiceClientForm}`}>
         <p className={cs.hint}>Loading client...</p>
       </div>
     );
   }
 
   return (
-    <div className={cs.wizard}>
+    <div className={`${cs.wizard} ${cs.invoiceClientForm}`}>
       <h1 className={cs.wizTitle}>{isEdit ? "Edit Client" : "Add Client"}</h1>
       <p className={cs.wizSub}>{isEdit ? "Update this invoice client's details." : "Add a new invoice client."}</p>
 
@@ -323,7 +323,7 @@ function AddInvoiceClientForm({
         </div>
       </div>
 
-      <div className={styles.rightActions}>
+      <div className={`${styles.rightActions} ${cs.invoiceFormActions}`}>
         {!isEdit && (
           <button type="button" className={styles.exportSolidBtn} onClick={clearForm} disabled={submitting}>
             Clear
@@ -567,7 +567,7 @@ export default function InvoiceClients() {
 
   if (view === "add") {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceClientsPage}`}>
         <AddInvoiceClientForm
           onCancel={() => setView("list")}
           onCreated={() => {
@@ -581,7 +581,7 @@ export default function InvoiceClients() {
 
   if (view === "edit" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceClientsPage}`}>
         <AddInvoiceClientForm
           editId={activeId}
           onCancel={() => setView("detail")}
@@ -597,7 +597,7 @@ export default function InvoiceClients() {
 
   if (view === "detail" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceClientsPage}`}>
         <InvoiceClientDetail
           clientId={activeId}
           onBack={() => {
@@ -615,25 +615,25 @@ export default function InvoiceClients() {
   }
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${cs.invoiceClientsPage}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Invoice Clients</h2>
+        <h2 className={`${styles.heading} ${cs.invoicePageHeading}`}>Invoice Clients</h2>
         <div className={styles.headerActions}>
           <button className={styles.outlineBtn} onClick={() => toast("Bulk upload is coming soon.")}>
             <FiUploadCloud /> Bulk Upload
           </button>
-          <button className={styles.primaryBtn} onClick={() => setView("add")}>
+          <button className={`${styles.primaryBtn} ${cs.invoiceAddButton}`} onClick={() => setView("add")}>
             <FiPlus /> Add New
           </button>
         </div>
       </div>
 
-      <div className={styles.filterRow}>
-        <div className={styles.presets}>
+      <div className={`${styles.filterRow} ${cs.invoiceFilters}`}>
+        <div className={`${styles.presets} ${cs.invoicePresetGroup}`}>
           {PRESETS.map((p) => (
             <button
               key={p.key}
-              className={`${styles.presetBtn} ${preset === p.key ? styles.presetBtnActive : ""}`}
+              className={`${styles.presetBtn} ${cs.invoiceDateBtn} ${preset === p.key ? `${styles.presetBtnActive} ${cs.invoiceDateBtnActive}` : ""}`}
               onClick={() => setPreset(p.key)}
             >
               {p.key === "custom" && <FiCalendar style={{ marginRight: 6 }} />}
@@ -642,23 +642,23 @@ export default function InvoiceClients() {
           ))}
           {preset === "custom" && (
             <>
-              <input type="date" className={styles.dateInput} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
-              <input type="date" className={styles.dateInput} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.invoiceDateInput}`} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.invoiceDateInput}`} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
             </>
           )}
         </div>
-        <div className={styles.filterRowRight}>
+        <div className={`${styles.filterRowRight} ${cs.invoiceFilterActions}`}>
           <button className={styles.exportSolidBtn} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
-          <div className={styles.columnPickerWrapper} ref={pickerRef}>
-            <button className={styles.outlineBtn} onClick={() => setShowColumnPicker((v) => !v)}>
+          <div className={`${styles.columnPickerWrapper} ${cs.invoiceColumnPicker}`} ref={pickerRef}>
+            <button className={`${styles.outlineBtn} ${cs.invoiceColumnButton}`} onClick={() => setShowColumnPicker((v) => !v)}>
               <FiColumns /> Filter Columns
             </button>
             {showColumnPicker && (
-              <div className={styles.columnPickerDropdown}>
+              <div className={`${styles.columnPickerDropdown} ${cs.invoiceColumnDropdown}`}>
                 {COLUMNS.map((c) => (
-                  <label key={c.key} className={styles.columnPickerItem}>
+                  <label key={c.key} className={`${styles.columnPickerItem} ${cs.invoiceColumnItem}`}>
                     <input
                       type="checkbox"
                       checked={visibleColumns[c.key]}
@@ -678,7 +678,7 @@ export default function InvoiceClients() {
         <b style={{ color: "#111827" }}>{fmtDate(range.to)}</b>
       </p>
 
-      <div className={styles.tableWrapper}>
+      <div className={`${styles.tableWrapper} ${cs.invoiceTableWrapper}`}>
         <table className={styles.table} style={{ minWidth: 1100 }}>
           <thead>
             <tr>

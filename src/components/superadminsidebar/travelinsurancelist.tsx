@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/travelinsurancelist.module.css";
+import leadsStyles from "@/styles/components/superadminsidebar/LeadLists.module.css";
 import { FiDownload, FiSearch } from "react-icons/fi";
 
 const TravelInsuranceList = () => {
@@ -103,7 +104,7 @@ const TravelInsuranceList = () => {
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${leadsStyles.leadListPage}`}>
       {/* HEADER */}
       <div className={styles.header}>
         <h2 className={styles.title}>Travel Insurance List</h2>

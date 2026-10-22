@@ -225,3 +225,150 @@ table.clientTable tbody tr:hover {
 }
 .subClientName { font-size: 13px; font-weight: 700; color: #0f172a; }
 .subClientMeta { font-size: 12px; color: #64748b; }
+
+/* Client Management premium theme and responsive refinements. */
+.clientManagementPage {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.clientPageHeading { color: #142b4a; font-size: 1.6rem; letter-spacing: -0.025em; }
+.clientAddButton {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+}
+.clientAddButton:hover { background: linear-gradient(135deg, #207dbb, #125d92); }
+
+/* Keep the existing blue, green, amber and slate metric color coding. */
+.statChipRow { gap: 16px; }
+.statChip { border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 7px 22px rgba(25, 54, 88, 0.055); }
+.statChip:hover { box-shadow: 0 12px 26px rgba(25, 54, 88, 0.1); }
+.statChipValue { color: #142b4a; font-size: 28px; }
+.statChipLabel { color: #718198; font-size: 11.5px; }
+
+.clientTable th {
+  color: #637b96;
+  background: #f3f8fc;
+  border-bottom-color: #e2eaf2;
+  font-family: inherit;
+  font-size: 11.5px;
+  padding: 13px 16px;
+}
+.clientTable td { color: #344b65; border-bottom-color: #edf2f7; font-family: inherit; font-size: 13px; }
+.clientTable .contactLine,
+.clientTable .kycText {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.clientTable tbody tr:nth-child(even) { background: #fbfdff; }
+.clientTable tbody tr:hover { background: #f1f8fd; }
+.nameLink { color: #176eaa; }
+.pillSelect { border-color: #d7e3ef; color: #344b65; font-family: inherit; }
+.pillSelect:focus { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.pillGlobal { background: #eaf4fc; color: #176eaa; }
+
+.clientFilters { align-items: center; }
+.clientExportButton {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+}
+.clientColumnButton { border-color: #cfe0ee; border-radius: 10px; color: #176eaa; font-family: inherit; }
+.clientColumnButton:hover { background: #edf6fc; }
+.clientColumnDropdown { border-color: #e2eaf2; border-radius: 14px; box-shadow: 0 16px 38px rgba(25, 54, 88, 0.16); padding: 8px; }
+.clientColumnItem { border-radius: 8px; color: #344b65; font-family: inherit; font-size: 13px; padding: 9px 8px; }
+.clientColumnItem:hover { background: #edf6fc; }
+.clientColumnItem input { accent-color: #1876bd; }
+.clientTableWrapper { max-width: 100%; -webkit-overflow-scrolling: touch; }
+
+.formWrap {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.clientFormPanel {
+  padding: 22px 24px 30px;
+  border: 1px solid #e3ebf3;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(25, 54, 88, 0.07);
+}
+.formTitle { color: #142b4a; font-size: 1.5rem; letter-spacing: -0.025em; }
+.formSub { color: #718198; font-size: 0.9rem; line-height: 1.6; }
+.formIcon { background: #eaf4fc; color: #1876bd; }
+.formCard { border-color: #e2eaf2; border-radius: 14px; box-shadow: 0 6px 20px rgba(25, 54, 88, 0.05); }
+.formCardTitle { color: #142b4a; font-size: 1rem; }
+.clientFormPanel label { color: #344b65; font-family: inherit; font-size: 13px; }
+.clientFormPanel input,
+.clientFormPanel select,
+.clientFormPanel textarea {
+  border-color: #d7e3ef;
+  border-radius: 9px;
+  color: #233b58;
+  font-family: inherit;
+  font-size: 14px;
+}
+.clientFormPanel input:focus,
+.clientFormPanel select:focus,
+.clientFormPanel textarea:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.clientFormPanel input[type="checkbox"] { accent-color: #1876bd; }
+.clientFormPanel .dropzone { border-color: #c9dbea; border-radius: 12px; background: #fbfdff; }
+.clientFormPanel .dropzone:hover { border-color: #2588cc; background: #f2f8fd; }
+.clientFormPanel .dropzoneTitle { color: #344b65; }
+.clientFormPanel .dropzoneHint { color: #718198; }
+.clientFormPanel .fileChip { background: #eaf4fc; color: #176eaa; }
+.clientFormPanel .addSubClientBtn { background: #eaf4fc; color: #176eaa; border-color: #cfe0ee; }
+.clientFormPanel .addSubClientBtn:hover { background: #dceefa; }
+.stickyBar { border-color: #e2eaf2; box-shadow: 0 -8px 24px rgba(25, 54, 88, 0.09); }
+.btnGhost { border-color: #d7e3ef; color: #526b86; font-family: inherit; }
+.btnPrimary { background: linear-gradient(135deg, #2588cc, #176eaa); font-family: inherit; box-shadow: 0 5px 14px rgba(24, 118, 189, 0.2); }
+.btnPrimary:hover { background: #176eaa; }
+
+@media (max-width: 900px) {
+  .statChipRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .clientPageHeading { font-size: 1.4rem; }
+  .clientFilters { align-items: flex-start; }
+  .clientFilterActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .clientFormPanel { padding: 18px; }
+  .formCard { padding: 17px; }
+  .stickyBar { align-items: stretch; padding: 12px 14px; }
+}
+@media (max-width: 600px) {
+  .clientManagementPage { padding: 14px; }
+  .clientPageHeading { font-size: 1.25rem; }
+  .statChipRow { gap: 10px; }
+  .statChip { padding: 13px 14px; border-radius: 13px; gap: 10px; }
+  .statChipIcon { width: 38px; height: 38px; font-size: 16px; }
+  .statChipValue { font-size: 24px; }
+  .statChipLabel { font-size: 10px; }
+  .clientColumnDropdown { position: fixed; top: 132px; right: 12px; width: min(290px, calc(100vw - 24px)); max-height: calc(100dvh - 150px); z-index: 1000; }
+  .clientFormPanel { padding: 15px 13px 22px; border-radius: 14px; }
+  .formTitle { font-size: 1.25rem; }
+  .clientFormPanel input,
+  .clientFormPanel select,
+  .clientFormPanel textarea { font-size: 16px; }
+  .formCard { margin-bottom: 14px; padding: 15px; }
+  .stickyBar { position: sticky; bottom: 0; flex-wrap: wrap; }
+  .btnGhost,
+  .btnPrimary { flex: 1; justify-content: center; }
+  .clientTableWrapper { overflow-x: auto; }
+}
+@media (max-width: 420px) {
+  .clientManagementPage { padding: 11px; }
+  .clientPageHeading { font-size: 1.15rem; }
+  .statChipRow { grid-template-columns: 1fr; }
+  .clientFilterActions { gap: 7px; }
+  .clientColumnPicker { flex: 1 1 100%; }
+  .clientColumnButton { width: 100%; }
+  .clientFormPanel { padding: 13px; }
+  .formHeader { align-items: flex-start; gap: 10px; }
+  .formIcon { width: 40px; height: 40px; }
+  .stickyBar { gap: 8px; }
+  .btnGhost,
+  .btnPrimary { width: 100%; }
+}

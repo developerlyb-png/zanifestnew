@@ -787,7 +787,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
         <h2 className={styles.title}>{isEdit ? "Edit Policy" : "Add New Policy"}</h2>
         <div className={styles.headerRight}>
           <button type="button" className={styles.viewDraftsBtn} disabled>
-            View Drafts ‹
+            View Drafts ›
           </button>
           <button type="button" className={styles.closeBtn} onClick={onCancel}>
             <FiX size={20} />

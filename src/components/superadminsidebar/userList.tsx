@@ -154,7 +154,7 @@ function UsersPage() {
       <div className={sharedStyles.headerRow}>
         <h1 className={styles.heading}>Registered Users</h1>
         <div className={sharedStyles.headerActions}>
-          <button className={sharedStyles.primaryBtn} onClick={() => setShowCreate((v) => !v)}>
+          <button className={`${sharedStyles.primaryBtn} ${styles.addUserBtn}`} onClick={() => setShowCreate((v) => !v)}>
             {showCreate ? <FiX /> : <FiPlus />} {showCreate ? "Close" : "Add User"}
           </button>
         </div>

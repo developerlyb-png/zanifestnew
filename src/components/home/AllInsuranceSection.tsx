@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import useSWR from "swr";
 import Image from "next/image";
+import Link from "next/link";
 import { FaEllipsisH } from "react-icons/fa";
 import SingleHtmlCarousal from "../ui/SingleIHtmlCarousal";
 import styles from "@/styles/components/home/AllInsuranceSection.module.css";
@@ -16,19 +17,19 @@ const FALLBACK_SERVICES = [
     name: "Family Insurance",
     desc: "Protect your loved ones with comprehensive family coverage designed to secure health, future, and peace of mind.",
     image: "/assets/home/services/1.png",
-    link: "#",
+    link: "/health/healthinsurance",
   },
   {
     name: "Travel Insurance",
     desc: "Stay worry-free on your journeys with travel insurance that covers medical emergencies, delays, and unexpected cancellations.",
     image: "/assets/home/services/2.png",
-    link: "#",
+    link: "/Travel/Travel1",
   },
   {
     name: "Home Insurance",
     desc: "Safeguard your home and belongings from natural disasters, theft, and unforeseen events with our reliable home insurance plans.",
     image: "/assets/home/services/3.png",
-    link: "#",
+    link: "/Home/Homeinsurance",
   },
 ];
 
@@ -63,6 +64,10 @@ function AllInsuranceSection({
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
+    const element = headingRef.current;
+
+    if (!element) return;
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -72,9 +77,7 @@ function AllInsuranceSection({
       });
     });
 
-    if (headingRef.current) {
-      observer.observe(headingRef.current);
-    }
+    observer.observe(element);
 
     return () => observer.disconnect();
   }, []);
@@ -88,16 +91,8 @@ function AllInsuranceSection({
 
   const animationMap = ["fade-right", "fade-up", "fade-left"];
 
-  // ==========================================
-  // HEADING RENDER
-  // <Insurance> OR normal Insurance
-  // dono cases me orange hoga
-  // ==========================================
   const renderHeading = (text: string) => {
-    // <Insurance> remove karke Insurance ko highlight karenge
     const cleanText = text.replace(/<([^>]+)>/g, "$1");
-
-    // Insurance word split
     const parts = cleanText.split(/(insurance)/gi);
 
     return parts.map((part, index) => {
@@ -112,6 +107,28 @@ function AllInsuranceSection({
       return <React.Fragment key={index}>{part}</React.Fragment>;
     });
   };
+
+  // Existing card content and CSS classes remain unchanged.
+  // Only the card content is wrapped in Next.js Link.
+  const renderServiceContent = (item: any) => (
+    <>
+      <Image
+        src={item.image}
+        alt={item.name}
+        width={100}
+        height={100}
+        className={styles.image}
+      />
+
+      <h2 className={styles.name}>{item.name}</h2>
+
+      <h6 className={styles.desc}>{item.desc}</h6>
+
+      <span className={styles.getQuote}>
+        Get quote <span aria-hidden="true">→</span>
+      </span>
+    </>
+  );
 
   return (
     <div className={styles.cont}>
@@ -164,21 +181,12 @@ function AllInsuranceSection({
                 : undefined
             }
           >
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={100}
-              height={100}
-              className={styles.image}
-            />
-
-            <h2 className={styles.name}>
-              {item.name}
-            </h2>
-
-            <h6 className={styles.desc}>
-              {item.desc}
-            </h6>
+            <Link
+              href={item.link || "/"}
+              className={styles.serviceLink}
+            >
+              {renderServiceContent(item)}
+            </Link>
           </div>
         ))}
       </div>
@@ -193,21 +201,12 @@ function AllInsuranceSection({
               key={index}
               data-aos={animationMap[index] || "fade-up"}
             >
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={100}
-                height={100}
-                className={styles.image}
-              />
-
-              <h2 className={styles.name}>
-                {item.name}
-              </h2>
-
-              <h6 className={styles.desc}>
-                {item.desc}
-              </h6>
+              <Link
+                href={item.link || "/"}
+                className={styles.serviceLink}
+              >
+                {renderServiceContent(item)}
+              </Link>
             </div>
           ))}
         />

@@ -345,7 +345,7 @@ function PolicyRenewals() {
 
   if (selectedPolicyId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${styles.renewalsPage}`}>
         <PolicyDetailView
           policyId={selectedPolicyId}
           onBack={() => setSelectedPolicyId(null)}
@@ -359,7 +359,7 @@ function PolicyRenewals() {
   }
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${styles.renewalsPage}`}>
       <div className={styles.headerRow}>
         <h2 className={styles.heading}>Policy Renewals Dashboard</h2>
         <div className={styles.notifWrapper} ref={notifRef}>

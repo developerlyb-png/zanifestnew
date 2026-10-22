@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/marineinsurancelist.module.css";
+import leadsStyles from "@/styles/components/superadminsidebar/LeadLists.module.css";
 import { FiDownload, FiSearch } from "react-icons/fi";
 
 interface MarineRecord {
@@ -128,7 +129,7 @@ const MarineInsuranceList = () => {
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
-    <div className={styles.miContainer}>
+    <div className={`${styles.miContainer} ${leadsStyles.leadListPage}`}>
       <div className={styles.miHeader}>
         <h2 className={styles.miTitle}>Marine Insurance List</h2>
         <button className={styles.miExportBtn} onClick={exportCsv}>

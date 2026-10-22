@@ -290,3 +290,160 @@
 .miniLineTable th { text-align: left; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 10.5px; padding: 6px 4px; border-bottom: 1px solid #edf0f5; }
 .miniLineTable td { padding: 7px 4px; border-bottom: 1px solid #f4f6f9; }
 .miniLineTable tr:last-child td { border-bottom: none; }
+
+/* Premium Invoices workspace, matching the Zanifest admin styling. */
+.invoiceWorkspace {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.invoiceHeading { color: #142b4a; font-size: 1.65rem; letter-spacing: -0.025em; }
+.invoiceNewButton {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+}
+.invoiceNewButton:hover { background: linear-gradient(135deg, #207dbb, #125d92); }
+
+.statCard {
+  border: 1px solid #e3ebf3;
+  border-radius: 15px;
+  padding: 17px 19px;
+  box-shadow: 0 7px 22px rgba(25, 54, 88, 0.055);
+}
+.statCard:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(25, 54, 88, 0.1); }
+.statValue { font-size: 28px; }
+.statLabel { font-size: 12px; }
+
+.invoiceFilters { align-items: center; gap: 10px; }
+.invoicePresetGroup { gap: 8px; }
+.invoiceDateBtn {
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid #d7e3ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #526b86;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.invoiceDateBtn:hover { background: #edf6fc; border-color: #b9d7ed; color: #176eaa; }
+.invoiceDateBtnActive,
+.invoiceDateBtnActive:hover { background: #1876bd; border-color: #1876bd; color: #fff; box-shadow: 0 4px 12px rgba(24, 118, 189, 0.2); }
+.invoiceDateInput { min-height: 36px; padding: 6px 10px; border: 1px solid #d7e3ef; border-radius: 9px; color: #344b65; font-family: inherit; font-size: 12px; }
+.invoiceDateInput:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.invoiceColumnButton { border-color: #cfe0ee; border-radius: 10px; color: #176eaa; font-family: inherit; }
+.invoiceColumnButton:hover { background: #edf6fc; }
+.invoiceColumnDropdown { border-color: #e2eaf2; border-radius: 14px; box-shadow: 0 16px 38px rgba(25, 54, 88, 0.16); padding: 8px; }
+.invoiceColumnItem { border-radius: 8px; color: #344b65; font-family: inherit; font-size: 13px; padding: 9px 8px; }
+.invoiceColumnItem:hover { background: #edf6fc; }
+.invoiceColumnItem input { accent-color: #1876bd; }
+.invoiceTableWrapper { max-width: 100%; -webkit-overflow-scrolling: touch; }
+
+.wizard {
+  padding: 24px 26px 34px;
+  border: 1px solid #e3ebf3;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(25, 54, 88, 0.07);
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.wizTitle { color: #142b4a; font-size: 25px; letter-spacing: -0.025em; }
+.wizSub { color: #718198; font-size: 14px; }
+.backLink { color: #176eaa; font-family: inherit; font-size: 13px; }
+.stepBtn { border-color: #e2eaf2; border-radius: 13px; }
+.stepLabel { color: #526b86; font-size: 13px; }
+.stepSub { color: #8191a5; font-size: 11.5px; }
+.stepActive { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.11); }
+.stepActive .stepDot { background: #1876bd; }
+.stepActive .stepLabel { color: #176eaa; }
+.stepDone .stepDot { background: #eaf7f2; color: #168b70; }
+.stepDone .stepLabel { color: #168b70; }
+.progressFill { background: linear-gradient(90deg, #176eaa, #43a0dc); }
+.card { border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 6px 20px rgba(25, 54, 88, 0.05); }
+.cardTitle { color: #142b4a; font-size: 1rem; }
+.cardHint { color: #718198; font-size: 0.84rem; }
+.label { color: #344b65; font-size: 13px; }
+.input,
+.select { border-color: #d7e3ef; border-radius: 9px; color: #233b58; font-family: inherit; font-size: 14px; padding: 10px 13px; }
+.input:focus,
+.select:focus { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.selectedPanel { background: #f0f8fd; border-color: #d5e8f5; border-radius: 13px; }
+.selectedMain { color: #17446a; }
+.selectedSub { color: #526f89; }
+.changeBtn { border-color: #cfe0ee; color: #176eaa; }
+.infoKey { color: #718198; }
+.infoVal { color: #233b58; }
+.btnPrimary { background: linear-gradient(135deg, #2588cc, #176eaa); font-family: inherit; box-shadow: 0 5px 14px rgba(24, 118, 189, 0.2); }
+.btnPrimary:hover { background: #176eaa; }
+.btnGhost { border-color: #d7e3ef; color: #526b86; font-family: inherit; }
+.taxGrandRow { background: #edf6fc; }
+.taxGrandRow .taxRowLabel,
+.taxGrandRow .taxRowValue { color: #176eaa; }
+
+.detailWrap { color: #1b2f49; font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.detailHeader,
+.sectionCard { border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 7px 22px rgba(25, 54, 88, 0.055); }
+.detailHeader { padding: 20px 22px; }
+.detailIcon { background: #eaf4fc; color: #1876bd; }
+.invoiceNo { color: #142b4a; }
+.invoiceDate { color: #718198; }
+.editBtn { background: linear-gradient(135deg, #2588cc, #176eaa); font-family: inherit; }
+.actionsBtn { background: #176eaa; font-family: inherit; }
+.actionsMenu { border-color: #e2eaf2; border-radius: 13px; box-shadow: 0 14px 34px rgba(25, 54, 88, 0.15); }
+.actionsItem { color: #176eaa; font-family: inherit; }
+.actionsItem:hover { background: #edf6fc; }
+.deleteBtn { border-color: #f4cfd2; border-radius: 9px; }
+.sectionHead { font-family: inherit; }
+.sectionHeadTitle { color: #142b4a; font-size: 14px; }
+.sectionHeadSub { color: #718198; font-size: 12px; }
+.sectionHeadIcon { color: #1876bd; }
+.sectionBody { border-top-color: #eaf0f6; }
+.summaryRow { border-bottom-color: #edf2f7; }
+.summaryRow span { color: #637b96; }
+.summaryRow b { color: #233b58; }
+.summaryGrand { background: #edf6fc; }
+.summaryGrand b { color: #176eaa; }
+
+@media (max-width: 900px) {
+  .statRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .invoiceHeading { font-size: 1.4rem; }
+  .invoiceFilters { align-items: flex-start; }
+  .invoicePresetGroup { row-gap: 8px; }
+  .invoiceFilterActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .wizard { padding: 19px; }
+  .detailHeader { padding: 16px; }
+  .detailActions { width: 100%; }
+}
+@media (max-width: 600px) {
+  .invoiceHeading { font-size: 1.25rem; }
+  .statRow { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .statCard { padding: 14px; border-radius: 13px; gap: 16px; }
+  .statValue { font-size: 24px; }
+  .statLabel { font-size: 10.5px; }
+  .invoiceDateBtn { min-height: 38px; padding: 8px 12px; }
+  .invoiceColumnDropdown { position: fixed; top: 132px; right: 12px; width: min(290px, calc(100vw - 24px)); max-height: calc(100dvh - 150px); z-index: 1000; }
+  .wizard { padding: 16px 14px 24px; border-radius: 14px; }
+  .wizTitle { font-size: 21px; }
+  .stepper { grid-template-columns: 1fr; }
+  .stepBtn { width: 100%; }
+  .card { padding: 15px; }
+  .grid2,
+  .grid4 { grid-template-columns: 1fr; }
+  .detailHeader { gap: 12px; }
+  .detailActions { display: grid; grid-template-columns: 1fr; }
+  .invoiceTableWrapper { max-width: 100%; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 400px) {
+  .statRow { grid-template-columns: 1fr; }
+  .invoiceFilterActions { gap: 7px; }
+  .invoiceFilterActions > button,
+  .invoiceColumnPicker { flex: 1 1 calc(50% - 8px); }
+  .invoiceColumnPicker > button { width: 100%; }
+  .detailHeadLeft { gap: 10px; }
+}

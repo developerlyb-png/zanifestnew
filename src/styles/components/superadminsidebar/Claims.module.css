@@ -481,3 +481,394 @@
 .dKey { text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
 .tlStatus { font-size: 13.5px; font-weight: 600; }
 .tlTime { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+/* Claims experience: consistent premium blue palette and responsive surfaces. */
+.statRow { gap: 16px; margin-bottom: 20px; }
+.statCard {
+  border-color: #e3ebf3;
+  border-radius: 14px;
+  padding: 16px 18px 16px 20px;
+  box-shadow: 0 6px 20px rgba(25, 54, 88, 0.055);
+}
+.statCard::before { background: #1876bd; }
+.statLabel { color: #637b96; font-size: 13px; }
+.statValue { font-size: 25px; font-weight: 750; }
+.statIcon { border-radius: 8px; }
+.toneBlue { color: #1876bd; }
+.toneGreen { color: #168b70; }
+.toneRed { color: #d94855; }
+.toneGray { color: #718198; }
+
+.wizard {
+  padding: 22px 26px 36px;
+  border: 1px solid #e3ebf3;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(25, 54, 88, 0.07);
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.wizTitle { color: #142b4a; font-size: 25px; letter-spacing: -0.025em; }
+.wizSub { color: #718198; font-size: 14px; }
+.stepItem { color: #637b96; font-size: 13px; }
+.stepActive { color: #176eaa; }
+.stepActive .stepCircle { background: #1876bd; box-shadow: 0 0 0 5px rgba(24, 118, 189, 0.13); }
+.stepDone { color: #168b70; }
+.stepDone .stepCircle { background: #168b70; }
+.progressPct { color: #176eaa; }
+.progressFill { background: linear-gradient(90deg, #176eaa, #43a0dc); }
+.stepHeading { color: #142b4a; font-size: 19px; font-weight: 700; }
+.stepSub { color: #718198; font-size: 14px; }
+.formCard,
+.reviewCard,
+.notifyBox {
+  border-color: #e3ebf3;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(25, 54, 88, 0.05);
+}
+.cardTitle { color: #142b4a; font-size: 16px; font-weight: 700; }
+.label { color: #34465d; font-size: 13px; }
+.input,
+.select,
+.textarea,
+.ssBox { border-color: #d8e3ee; border-radius: 9px; color: #233b58; font-family: inherit; font-size: 14px; }
+.input:focus,
+.select:focus,
+.textarea:focus,
+.ssBoxOpen { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.ssOption:hover,
+.ssOptionActive { background: #edf6fc; }
+.ssOptionMain,
+.ssClear,
+.ssOptionSub,
+.ssOptionRightSub { color: #176eaa; }
+.btnPrev { color: #176eaa; border-color: #cfe0ee; border-radius: 9px; font-family: inherit; }
+.btnNext { background: linear-gradient(135deg, #2588cc, #176eaa); border-radius: 9px; font-family: inherit; box-shadow: 0 5px 14px rgba(24, 118, 189, 0.2); }
+.btnCancel { font-family: inherit; }
+.reviewIcon { background: #eaf4fc; color: #1876bd; }
+.reviewTitle { color: #142b4a; font-size: 14px; font-weight: 700; }
+.reviewSub { color: #718198; font-size: 12px; }
+.reviewRow { border-bottom-color: #edf2f7; font-size: 13px; }
+.reviewKey { color: #637b96; }
+.reviewVal { color: #233b58; }
+.notifyBox { background: #f8fbfe; }
+.notifyRow { font-size: 14px; }
+.notifyRow input { accent-color: #1876bd; }
+
+.dWrap {
+  gap: 18px;
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.dBack { color: #176eaa; border-color: #d7e5f1; border-radius: 9px; font-family: inherit; font-size: 13px; }
+.dHeader,
+.dCard {
+  border-color: #e3ebf3;
+  border-radius: 15px;
+  box-shadow: 0 7px 22px rgba(25, 54, 88, 0.055);
+}
+.dHeader { padding: 18px 20px; }
+.dFileIcon { background: #eaf4fc; color: #1876bd; border-radius: 12px; }
+.dClaimNo { color: #142b4a; font-size: 18px; font-weight: 700; }
+.dHeaderSub { color: #718198; font-size: 13px; }
+.dEditBtn,
+.dUploadBtn { background: linear-gradient(135deg, #2588cc, #176eaa); border-radius: 9px; font-family: inherit; font-size: 13px; }
+.dOutlineBtn { border-color: #d7e5f1; color: #176eaa; border-radius: 9px; font-family: inherit; font-size: 13px; }
+.dCardHead { color: #34465d; padding: 15px 18px; font-family: inherit; }
+.dCardBody { border-top-color: #eaf0f6; padding: 8px 20px 20px; }
+.reviewHeadText { gap: 2px; }
+.dKey { color: #718198; font-size: 12px; }
+.dVal { color: #233b58; font-size: 13px; font-weight: 600; }
+.dSummary { background: #f2f7fc; color: #34465d; border-radius: 10px; }
+.dSummaryLabel,
+.dFinTitle { color: #637b96; }
+.finBlue { background: #eaf4fc; color: #176eaa; }
+.finGreen { background: #eaf7f2; color: #16765f; }
+.finGrey { background: #f2f5f8; color: #465b72; }
+.tlNote { background: #f3f8fc; color: #34465d; }
+.docRow { background: #f8fbfe; border-color: #e3ebf3; border-radius: 12px; }
+.docTile { background: #eaf4fc; border-color: #d8e8f5; color: #1876bd; border-radius: 10px; }
+.docName { color: #233b58; font-weight: 650; }
+.docAct { color: #176eaa; }
+.uploadDocBtn { color: #176eaa; border-color: #cfe0ee; border-radius: 9px; font-family: inherit; }
+
+@media (max-width: 900px) {
+  .statRow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wizard { padding: 20px; }
+  .dGrid { gap: 14px 20px; }
+}
+
+@media (max-width: 640px) {
+  .statRow { gap: 10px; margin-bottom: 16px; }
+  .statCard { padding: 13px 14px 13px 17px; border-radius: 12px; }
+  .statLabel { font-size: 12px; }
+  .statValue { font-size: 22px; }
+  .wizard { padding: 16px 14px 24px; border-radius: 14px; }
+  .wizTitle { font-size: 21px; }
+  .stepper { gap: 8px; }
+  .stepItem { font-size: 11px; }
+  .stepCircle { width: 32px; height: 32px; }
+  .formCard { margin: 0 0 18px; padding: 15px; }
+  .stepHeading,
+  .stepSub { padding-left: 0; padding-right: 0; }
+  .navRow { margin: 0; gap: 10px; }
+  .btnPrev,
+  .btnNext { padding: 10px 14px; }
+  .dWrap { gap: 14px; }
+  .dHeader { padding: 15px; }
+  .dClaimNo { font-size: 16px; overflow-wrap: anywhere; }
+  .dHeaderActions { width: 100%; flex-wrap: wrap; }
+  .dHeaderActions button { flex: 1 1 auto; justify-content: center; }
+  .dCardHead { padding: 13px 14px; }
+  .dCardBody { padding: 8px 14px 16px; }
+  .tlUpdate { gap: 8px; }
+  .docRow { gap: 9px; padding: 10px; }
+  .docAct { margin-left: 2px; }
+}
+
+@media (max-width: 420px) {
+  .statRow { grid-template-columns: 1fr; }
+  .dHeaderLeft { align-items: flex-start; }
+  .dHeaderActions { flex-direction: column; }
+  .dHeaderActions button { width: 100%; }
+  .navRow { align-items: stretch; flex-direction: column-reverse; }
+  .navRow button { justify-content: center; }
+  .stepItem { font-size: 10px; }
+}
+
+/* Claims dashboard filters match the Policy Renewals control styling. */
+.claimsDashboard {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.claimsDashboard .claimDateFilters {
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 12px;
+}
+.claimsDashboard .claimPresets { gap: 8px; }
+.claimsDashboard .claimDateBtn {
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid #d7e3ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #526b86;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+.claimsDashboard .claimDateBtn:hover {
+  border-color: #b9d7ed;
+  background: #edf6fc;
+  color: #176eaa;
+}
+.claimsDashboard .claimDateBtnActive,
+.claimsDashboard .claimDateBtnActive:hover {
+  border-color: #1876bd;
+  background: #1876bd;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.2);
+}
+.claimsDashboard .claimDateInput {
+  min-height: 36px;
+  border: 1px solid #d7e3ef;
+  border-radius: 9px;
+  padding: 6px 10px;
+  color: #344b65;
+  background: #fff;
+  font-family: inherit;
+  font-size: 12px;
+}
+.claimsDashboard .claimDateInput:focus {
+  outline: none;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12);
+}
+.claimsDashboard .claimColumnButton {
+  min-height: 36px;
+  border-color: #cfe0ee;
+  border-radius: 10px;
+  color: #176eaa;
+  font-family: inherit;
+  font-size: 12px;
+}
+.claimsDashboard .claimColumnButton:hover {
+  background: #edf6fc;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.12);
+}
+.claimsDashboard .claimColumnDropdown {
+  border-color: #e2eaf2;
+  border-radius: 14px;
+  box-shadow: 0 16px 38px rgba(25, 54, 88, 0.16);
+  padding: 8px;
+}
+.claimsDashboard .claimColumnItem {
+  border-radius: 8px;
+  color: #344b65;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 9px 8px;
+}
+.claimsDashboard .claimColumnItem:hover { background: #edf6fc; }
+.claimsDashboard .claimColumnItem input { accent-color: #1876bd; }
+
+@media (max-width: 768px) {
+  .claimsDashboard .claimDateFilters { align-items: flex-start; }
+  .claimsDashboard .claimPresets { row-gap: 8px; }
+}
+
+@media (max-width: 600px) {
+  .claimsDashboard .claimDateFilters { margin-bottom: 10px; }
+  .claimsDashboard .claimDateBtn { min-height: 38px; padding: 8px 12px; }
+  .claimsDashboard .claimColumnDropdown {
+    position: fixed;
+    top: 132px;
+    right: 12px;
+    width: min(290px, calc(100vw - 24px));
+    max-height: calc(100dvh - 150px);
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 420px) {
+  .claimsDashboard .claimPresets { gap: 6px; }
+  .claimsDashboard .claimDateBtn { flex: 1 1 auto; padding-inline: 10px; font-size: 11px; }
+}
+
+/* Invoice Clients list and edit form use the same premium admin system. */
+.invoiceClientsPage {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.invoiceClientsPage .heading { color: #142b4a; font-size: 1.6rem; letter-spacing: -0.025em; }
+.invoiceClientsPage .invoiceAddButton {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+}
+.invoiceClientsPage .invoiceAddButton:hover { background: linear-gradient(135deg, #207dbb, #125d92); }
+.invoiceClientsPage .invoiceFilters { align-items: center; gap: 10px; }
+.invoiceClientsPage .invoiceDateBtn {
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid #d7e3ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #526b86;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.invoiceClientsPage .invoiceDateBtn:hover { background: #edf6fc; border-color: #b9d7ed; color: #176eaa; }
+.invoiceClientsPage .invoiceDateBtnActive,
+.invoiceClientsPage .invoiceDateBtnActive:hover {
+  background: #1876bd;
+  border-color: #1876bd;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.2);
+}
+.invoiceClientsPage .invoiceDateInput {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #d7e3ef;
+  border-radius: 9px;
+  color: #344b65;
+  font-family: inherit;
+  font-size: 12px;
+}
+.invoiceClientsPage .invoiceDateInput:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.invoiceClientsPage .invoiceColumnButton { border-color: #cfe0ee; border-radius: 10px; color: #176eaa; font-family: inherit; }
+.invoiceClientsPage .invoiceColumnButton:hover { background: #edf6fc; }
+.invoiceClientsPage .invoiceColumnDropdown { border-color: #e2eaf2; border-radius: 14px; box-shadow: 0 16px 38px rgba(25, 54, 88, 0.16); padding: 8px; }
+.invoiceClientsPage .invoiceColumnItem { border-radius: 8px; color: #344b65; font-family: inherit; font-size: 13px; padding: 9px 8px; }
+.invoiceClientsPage .invoiceColumnItem:hover { background: #edf6fc; }
+.invoiceClientsPage .invoiceColumnItem input { accent-color: #1876bd; }
+.invoiceClientsPage .invoiceTableWrapper { max-width: 100%; -webkit-overflow-scrolling: touch; }
+.invoiceClientsPage .rowCount { color: #637b96; font-size: 12.5px; }
+.invoiceClientsPage .dWrap { font-family: inherit; }
+.invoiceClientsPage .dHeader,
+.invoiceClientsPage .dCard { border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 7px 22px rgba(25, 54, 88, 0.055); }
+
+.invoiceClientForm {
+  padding: 24px 26px 36px;
+  border: 1px solid #e3ebf3;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(25, 54, 88, 0.07);
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.invoiceClientForm .wizTitle { color: #142b4a; font-size: 25px; letter-spacing: -0.025em; }
+.invoiceClientForm .wizSub { color: #718198; font-size: 14px; }
+.invoiceClientForm .formCard { border-color: #e3ebf3; border-radius: 14px; box-shadow: 0 6px 20px rgba(25, 54, 88, 0.05); padding: 20px 22px; }
+.invoiceClientForm .cardTitle { color: #142b4a; font-size: 16px; font-weight: 700; }
+.invoiceClientForm .label { color: #344b65; font-size: 13px; }
+.invoiceClientForm .input { border-color: #d7e3ef; border-radius: 9px; color: #233b58; font-family: inherit; font-size: 14px; padding: 11px 13px; }
+.invoiceClientForm .input:focus { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.invoiceClientForm .btnCancel { color: #526b86; font-family: inherit; font-size: 13px; }
+
+@media (max-width: 768px) {
+  .invoiceClientsPage .invoiceFilters { align-items: flex-start; }
+  .invoiceClientsPage .presets { row-gap: 8px; }
+  .invoiceClientsPage .filterRowRight { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .invoiceClientForm { padding: 19px; }
+}
+
+@media (max-width: 600px) {
+  .invoiceClientsPage .heading { font-size: 1.35rem; }
+  .invoiceClientsPage .invoiceDateBtn { min-height: 38px; padding: 8px 12px; }
+  .invoiceClientsPage .invoiceColumnDropdown { position: fixed; top: 132px; right: 12px; width: min(290px, calc(100vw - 24px)); max-height: calc(100dvh - 150px); z-index: 1000; }
+  .invoiceClientForm { padding: 16px 14px 24px; border-radius: 14px; }
+  .invoiceClientForm .wizTitle { font-size: 21px; }
+  .invoiceClientForm .formCard { margin: 0 0 16px; padding: 16px; }
+  .invoiceClientForm .input { font-size: 16px; }
+  .invoiceClientForm .grid2,
+  .invoiceClientForm .grid3 { grid-template-columns: 1fr; gap: 14px; }
+  .invoiceClientsPage .rightActions { width: 100%; flex-wrap: wrap; }
+  .invoiceClientsPage .rightActions button { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 420px) {
+  .invoiceClientsPage .heading { font-size: 1.2rem; }
+  .invoiceClientsPage .filterRowRight { gap: 7px; }
+  .invoiceClientsPage .filterRowRight > button,
+  .invoiceClientsPage .invoiceColumnPicker { flex: 1 1 calc(50% - 8px); }
+  .invoiceClientsPage .invoiceColumnPicker > button { width: 100%; }
+  .invoiceClientForm { padding: 13px; }
+  .invoiceClientForm .formCard { padding: 14px; }
+}
+
+/* Local modifiers for shared PolicyDashboard controls on the Invoice Clients page. */
+.invoicePageHeading { color: #142b4a; font-size: 1.6rem; letter-spacing: -0.025em; }
+.invoicePresetGroup { gap: 8px; }
+.invoiceFilterActions { width: auto; }
+.invoiceClientsPage .invoiceDateBtn { font-family: inherit; }
+.invoiceClientsPage .invoiceDateInput { font-family: inherit; }
+.invoiceClientsPage .invoiceColumnDropdown { border-color: #e2eaf2; border-radius: 14px; box-shadow: 0 16px 38px rgba(25, 54, 88, 0.16); padding: 8px; }
+.invoiceClientsPage .invoiceColumnItem { border-radius: 8px; color: #344b65; font-family: inherit; font-size: 13px; padding: 9px 8px; }
+.invoiceClientsPage .invoiceColumnItem:hover { background: #edf6fc; }
+.invoiceClientsPage .invoiceColumnItem input { accent-color: #1876bd; }
+.invoiceFormActions { display: flex; justify-content: flex-end; gap: 12px; }
+
+@media (max-width: 768px) {
+  .invoicePageHeading { font-size: 1.35rem; }
+  .invoicePresetGroup { row-gap: 8px; }
+  .invoiceFilterActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+}
+
+@media (max-width: 600px) {
+  .invoicePageHeading { font-size: 1.2rem; }
+  .invoiceClientsPage .invoiceColumnDropdown { position: fixed; top: 132px; right: 12px; width: min(290px, calc(100vw - 24px)); max-height: calc(100dvh - 150px); z-index: 1000; }
+  .invoiceFormActions { width: 100%; flex-wrap: wrap; }
+  .invoiceFormActions button { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 420px) {
+  .invoiceFilterActions { gap: 7px; }
+  .invoiceFilterActions > button,
+  .invoiceClientsPage .invoiceColumnPicker { flex: 1 1 calc(50% - 8px); }
+  .invoiceClientsPage .invoiceColumnPicker > button { width: 100%; }
+}

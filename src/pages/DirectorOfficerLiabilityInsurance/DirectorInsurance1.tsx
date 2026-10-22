@@ -136,7 +136,7 @@ const DirectorInsurance1: React.FC = () => {
           <h4 className={styles.title}>Office Package Policy</h4>
           <h1 className={styles.mainHeading}>
             Get <span>₹50 Lakh</span> cover for just
-            <span>₹4,000/year</span>+
+            <span> ₹4,000/year</span>+
           </h1>
 
           <div className={styles.features}>
@@ -189,7 +189,7 @@ const DirectorInsurance1: React.FC = () => {
               <div className={styles.inputWrap}>
                 <input
                   type="text"
-                  placeholder="enter mobile number"
+                  placeholder="Enter mobile number"
                   maxLength={10}
                   value={mobileNumber}
                   onChange={(e) => {
@@ -242,8 +242,8 @@ const DirectorInsurance1: React.FC = () => {
               <p className={styles.disclaimer}>
                 By clicking on <span className={styles.bold}>"View quotes"</span>,
                 you agree to our{" "}
-                <a href="#" className={styles.link}>Privacy Policy</a>,
-                <a href="#" className={styles.link}> Terms of Use</a> &
+                <a href="/Privacypolicy" className={styles.link}>Privacy Policy</a>,
+                <a href="/Termscondition" className={styles.link}> Terms of Use</a> &
                 <a href="#" className={styles.link}> Disclaimer</a>
               </p>
             </div>

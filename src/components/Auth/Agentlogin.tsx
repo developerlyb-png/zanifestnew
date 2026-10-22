@@ -84,7 +84,7 @@ export default function Agentlogin() {
         </div>
       )}
 
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${styles.agentLogin}`}>
         {/* LEFT IMAGE */}
         <div className={styles.left}>
           <Image
