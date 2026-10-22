@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/sharedTable.module.css";
-import adminStyles from "@/styles/components/superadminsidebar/AdminList.module.css";
+import adminStyles from "@/styles/components/superadminsidebar/adminlist.module.css";
 import { toast } from "react-hot-toast";
 import { FiDownload, FiPlus, FiSearch, FiTrash2, FiX } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
