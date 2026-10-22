@@ -236,7 +236,7 @@ export default function Claims() {
   }
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${cs.claimsDashboard}`}>
       <div className={styles.headerRow}>
         <h2 className={styles.heading}>Claims Dashboard</h2>
         <div className={styles.filterRowRight}>
@@ -246,14 +246,14 @@ export default function Claims() {
           <button className={styles.exportSolidBtn} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
-          <div className={styles.columnPickerWrapper} ref={pickerRef}>
-            <button className={styles.outlineBtn} onClick={() => setShowColumnPicker((v) => !v)}>
+          <div className={`${styles.columnPickerWrapper} ${cs.claimColumnPicker}`} ref={pickerRef}>
+            <button className={`${styles.outlineBtn} ${cs.claimColumnButton}`} onClick={() => setShowColumnPicker((v) => !v)}>
               <FiColumns /> Filter Columns
             </button>
             {showColumnPicker && (
-              <div className={styles.columnPickerDropdown}>
+              <div className={`${styles.columnPickerDropdown} ${cs.claimColumnDropdown}`}>
                 {COLUMNS.map((c) => (
-                  <label key={c.key} className={styles.columnPickerItem}>
+                  <label key={c.key} className={`${styles.columnPickerItem} ${cs.claimColumnItem}`}>
                     <input
                       type="checkbox"
                       checked={visibleColumns[c.key]}
@@ -305,12 +305,12 @@ export default function Claims() {
         </div>
       </div>
 
-      <div className={styles.filterRow}>
-        <div className={styles.presets}>
+      <div className={`${styles.filterRow} ${cs.claimDateFilters}`}>
+        <div className={`${styles.presets} ${cs.claimPresets}`}>
           {PRESETS.map((p) => (
             <button
               key={p.key}
-              className={`${styles.presetBtn} ${preset === p.key ? styles.presetBtnActive : ""}`}
+              className={`${styles.presetBtn} ${cs.claimDateBtn} ${preset === p.key ? `${styles.presetBtnActive} ${cs.claimDateBtnActive}` : ""}`}
               onClick={() => setPreset(p.key)}
             >
               {p.key === "custom" && <FiCalendar style={{ marginRight: 6 }} />}
@@ -319,8 +319,8 @@ export default function Claims() {
           ))}
           {preset === "custom" && (
             <>
-              <input type="date" className={styles.dateInput} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
-              <input type="date" className={styles.dateInput} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.claimDateInput}`} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.claimDateInput}`} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
             </>
           )}
         </div>

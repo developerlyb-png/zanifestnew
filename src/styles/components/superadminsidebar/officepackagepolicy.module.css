@@ -304,6 +304,83 @@
   background: #dc2626;
 }
 
+/* Shared premium blue/slate dashboard styling */
+.wrapper {
+  background: #f3f7fb;
+  color: #263e59;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.title,
+.modal h3 { color: #142b4a; letter-spacing: -0.025em; }
+.title { font-size: 1.55rem; font-weight: 750; }
+.exportBtn {
+  border: 1px solid #cfe0ee;
+  border-radius: 10px;
+  color: #176eaa;
+  font-weight: 700;
+}
+.exportBtn:hover { background: #edf6fc; box-shadow: 0 5px 14px rgba(24, 118, 189, .12); }
+.pill { color: #526b86; background: #edf3f8; }
+.pill:hover { background: #e3edf6; }
+.pillActive { color: #176eaa; background: #e5f2fc; }
+.searchBox {
+  background: #fff;
+  border: 1px solid #d7e3ef;
+  border-radius: 10px;
+  color: #7690aa;
+}
+.searchBox:focus-within {
+  background: #fff;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, .12);
+}
+.searchBox input,
+.searchBox input:focus {
+  min-width: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: #233b58;
+  font: inherit;
+  font-size: 14px;
+}
+.tableWrapper {
+  border: 1px solid #e2eaf2;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, .055);
+}
+.table thead tr { background: #f3f8fc; }
+.table th { color: #637b96; font-size: 11px; letter-spacing: .04em; }
+.table td { color: #344b65; border-color: #edf2f7; font-size: 13px; }
+.table tbody tr:hover { background: #f1f8fd; }
+.showBtn,
+.assignBtn {
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  border-radius: 10px;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, .19);
+}
+.showBtn:hover,
+.assignBtn:hover { background: linear-gradient(135deg, #207dbb, #125d92); }
+.modalOverlay { padding: 18px; background: rgba(13, 27, 48, .58); backdrop-filter: blur(4px); }
+.modal { border: 1px solid #e2eaf2; box-shadow: 0 26px 70px rgba(12, 31, 54, .28); }
+.modal h3 { border-color: #e2eaf2; font-size: 1.35rem; }
+.modalContent { background: #f7fafd; }
+.modalContent strong,
+.assignLabel { color: #526b86; }
+.modalContent span,
+.agentDropdown { border-color: #e2eaf2; border-radius: 10px; color: #233b58; }
+.modalFooter { border-color: #e2eaf2; }
+
+@media (max-width: 640px) {
+  .wrapper { padding: 16px; }
+  .header { align-items: flex-start; flex-direction: column; }
+  .title { font-size: 1.35rem; }
+  .searchBox { width: 100%; min-width: 0; }
+  .searchBox input { font-size: 16px; }
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   .modalOverlay {

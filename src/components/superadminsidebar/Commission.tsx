@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/PolicyDashboard.module.css";
 import cs from "@/styles/components/superadminsidebar/Claims.module.css";
+import cc from "@/styles/components/superadminsidebar/Commission.module.css";
 import { FiDownload, FiSearch, FiTrendingUp, FiTrendingDown, FiPercent, FiAlertCircle } from "react-icons/fi";
 
 interface CommissionRow {
@@ -76,17 +77,17 @@ export default function Commission() {
   };
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${cc.commissionPage}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Commission</h2>
+        <h2 className={`${styles.heading} ${cc.commissionHeading}`}>Commission</h2>
         <div className={styles.headerActions}>
-          <button className={styles.exportSolidBtn} onClick={exportCsv}>
+          <button className={`${styles.exportSolidBtn} ${cc.exportButton}`} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
         </div>
       </div>
 
-      <div className={cs.statRow}>
+      <div className={`${cs.statRow} ${cc.commissionStats}`}>
         <div className={cs.statCard}>
           <span className={cs.statLabel}>
             <span className={`${cs.statIcon} ${cs.toneBlue}`}><FiTrendingUp /></span> Total PayIn (from Insurers)
@@ -115,25 +116,25 @@ export default function Commission() {
         </div>
       </div>
 
-      <div className={styles.filterRow}>
-        <div className={styles.searchInput}>
+      <div className={`${styles.filterRow} ${cc.commissionFilters}`}>
+        <div className={`${styles.searchInput} ${cc.commissionSearch}`}>
           <FiSearch size={12} />
           <input placeholder="Search policy no" value={policySearch} onChange={(e) => setPolicySearch(e.target.value)} />
         </div>
-        <div className={styles.searchInput}>
+        <div className={`${styles.searchInput} ${cc.commissionSearch}`}>
           <FiSearch size={12} />
           <input placeholder="Search agent name" value={agentSearch} onChange={(e) => setAgentSearch(e.target.value)} />
         </div>
       </div>
 
-      <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 14px" }}>
+      <p className={cc.commissionNote}>
         Amounts are computed live from your saved Pay In Pay Out rules and each policy&apos;s Premium
         Amount — editing a rule updates this report immediately. Unmatched policies had no saved rule
         that fit their criteria.
       </p>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table} style={{ minWidth: 1400 }}>
+      <div className={`${styles.tableWrapper} ${cc.commissionTableWrapper}`}>
+        <table className={`${styles.table} ${cc.commissionTable}`} style={{ minWidth: 1400 }}>
           <thead>
             <tr>
               <th>Policy No</th>

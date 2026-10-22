@@ -156,7 +156,7 @@ export default function ClientForm({
 
   if (loadingClient) {
     return (
-      <div className={cm.formWrap}>
+      <div className={`${cm.formWrap} ${cm.clientFormPanel}`}>
         <button type="button" className={cm.backLink} onClick={onCancel}>
           <FiArrowLeft /> Back to clients
         </button>
@@ -166,7 +166,7 @@ export default function ClientForm({
   }
 
   return (
-    <div className={cm.formWrap}>
+    <div className={`${cm.formWrap} ${cm.clientFormPanel}`}>
       <button type="button" className={cm.backLink} onClick={onCancel}>
         <FiArrowLeft /> Back to clients
       </button>

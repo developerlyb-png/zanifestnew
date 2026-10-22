@@ -189,3 +189,87 @@
   padding: 4px; border-radius: 6px; display: inline-flex;
 }
 .rowDelete:hover { background: #fdecec; }
+
+/* Premium Pay In / Pay Out dashboard */
+.page {
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.pageHeading { color: #142b4a; font-size: 1.6rem; letter-spacing: -0.025em; }
+.createRuleButton {
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  box-shadow: 0 6px 16px rgba(24, 118, 189, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+}
+.createRuleButton:hover { background: linear-gradient(135deg, #207dbb, #125d92); }
+.rulesTableWrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e2eaf2;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.055);
+}
+.rulesTable th {
+  background: #f3f8fc;
+  color: #637b96;
+  border-color: #e2eaf2;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 13px 15px;
+}
+.rulesTable td {
+  color: #344b65;
+  border-color: #edf2f7;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.rulesTable tbody tr:nth-child(even) { background: #fbfdff; }
+.rulesTable tbody tr:hover { background: #f1f8fd; }
+.rowDelete { width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 9px; }
+.rowDelete:hover { background: #fff0f0; }
+
+/* Apply the same typography and blue treatment inside the rule dialog. */
+.overlay { font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.modal { border: 1px solid #e2eaf2; border-radius: 18px; box-shadow: 0 26px 70px rgba(15, 35, 60, 0.24); }
+.modalHead { padding: 22px 26px 14px; }
+.modalTitle { color: #142b4a; font-size: 19px; letter-spacing: -0.02em; }
+.modalSub { color: #718198; line-height: 1.5; }
+.active .stepDot { background: #1876bd; }
+.input:focus, .addInput:focus { border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12); }
+.more summary { color: #176eaa; }
+.primaryBtn { background: linear-gradient(135deg, #2588cc, #176eaa); border-radius: 10px; }
+.primaryBtn:hover { background: #176eaa; }
+.addBtn { background: #1876bd; border-radius: 9px; }
+.addBtn:hover { background: #176eaa; }
+
+@media (max-width: 760px) {
+  .pageHeading { font-size: 1.4rem; }
+  .rulesTableWrapper { border-radius: 12px; }
+}
+@media (max-width: 600px) {
+  .page { padding: 14px; }
+  .pageHeading { font-size: 1.25rem; }
+  .createRuleButton { min-height: 42px; }
+  .rulesTable th, .rulesTable td { padding: 11px 12px; }
+  .overlay { align-items: flex-end; padding: 0; }
+  .modal { width: 100%; max-width: none; max-height: 94dvh; border-radius: 18px 18px 0 0; }
+  .modalHead { padding: 18px 18px 12px; }
+  .stepper { padding: 4px 14px 12px; }
+  .modalBody { padding: 16px 18px 8px; }
+  .modalFoot { padding: 12px 18px max(12px, env(safe-area-inset-bottom)); }
+  .input, .addInput { min-height: 42px; font-size: 16px; }
+}
+@media (max-width: 420px) {
+  .page { padding: 11px; }
+  .pageHeading { font-size: 1.15rem; }
+  .modalHead { padding: 16px 15px 10px; }
+  .modalBody { padding: 14px 15px 8px; }
+  .modalFoot { padding: 11px 15px max(11px, env(safe-area-inset-bottom)); }
+  .ghostBtn, .primaryBtn { justify-content: center; padding: 0 12px; }
+}

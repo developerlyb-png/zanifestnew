@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/doctorinsurancelist.module.css";
+import leadsStyles from "@/styles/components/superadminsidebar/LeadLists.module.css";
 import { FiDownload, FiSearch } from "react-icons/fi";
 
 interface DoctorData {
@@ -114,7 +115,7 @@ const Doctorinsurancelist = () => {
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${leadsStyles.leadListPage}`}>
       <div className={styles.header}>
         <h2 className={styles.title}>Doctor Insurance List</h2>
         <button className={styles.exportBtn} onClick={exportCsv}>

@@ -214,7 +214,7 @@ export default function Invoice() {
 
   if (view === "create") {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
         <CreateInvoice
           onCancel={() => setView("list")}
           onCreated={(id) => {
@@ -229,7 +229,7 @@ export default function Invoice() {
 
   if (view === "edit" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
         <CreateInvoice
           editInvoiceId={activeId}
           onCancel={() => setView("detail")}
@@ -245,7 +245,7 @@ export default function Invoice() {
 
   if (view === "detail" && activeId) {
     return (
-      <div className={styles.cont}>
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
         <InvoiceDetailView
           invoiceId={activeId}
           onBack={() => {
@@ -259,11 +259,11 @@ export default function Invoice() {
   }
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Invoices</h2>
+        <h2 className={`${styles.heading} ${cs.invoiceHeading}`}>Invoices</h2>
         <div className={styles.headerActions}>
-          <button className={styles.primaryBtn} onClick={() => setView("create")}>
+          <button className={`${styles.primaryBtn} ${cs.invoiceNewButton}`} onClick={() => setView("create")}>
             <FiPlus /> New Invoice
           </button>
         </div>
@@ -283,12 +283,12 @@ export default function Invoice() {
         ))}
       </div>
 
-      <div className={styles.filterRow}>
-        <div className={styles.presets}>
+      <div className={`${styles.filterRow} ${cs.invoiceFilters}`}>
+        <div className={`${styles.presets} ${cs.invoicePresetGroup}`}>
           {PRESETS.map((p) => (
             <button
               key={p.key}
-              className={`${styles.presetBtn} ${preset === p.key ? styles.presetBtnActive : ""}`}
+              className={`${styles.presetBtn} ${cs.invoiceDateBtn} ${preset === p.key ? `${styles.presetBtnActive} ${cs.invoiceDateBtnActive}` : ""}`}
               onClick={() => setPreset(p.key)}
             >
               {p.key === "custom" && <FiCalendar style={{ marginRight: 6 }} />}
@@ -297,23 +297,23 @@ export default function Invoice() {
           ))}
           {preset === "custom" && (
             <>
-              <input type="date" className={styles.dateInput} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
-              <input type="date" className={styles.dateInput} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.invoiceDateInput}`} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
+              <input type="date" className={`${styles.dateInput} ${cs.invoiceDateInput}`} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
             </>
           )}
         </div>
-        <div className={styles.filterRowRight}>
+        <div className={`${styles.filterRowRight} ${cs.invoiceFilterActions}`}>
           <button className={styles.exportSolidBtn} onClick={exportCsv}>
             <FiDownload /> Export
           </button>
-          <div className={styles.columnPickerWrapper} ref={pickerRef}>
-            <button className={styles.outlineBtn} onClick={() => setShowColumnPicker((v) => !v)}>
+          <div className={`${styles.columnPickerWrapper} ${cs.invoiceColumnPicker}`} ref={pickerRef}>
+            <button className={`${styles.outlineBtn} ${cs.invoiceColumnButton}`} onClick={() => setShowColumnPicker((v) => !v)}>
               <FiColumns /> Filter Columns
             </button>
             {showColumnPicker && (
-              <div className={styles.columnPickerDropdown}>
+              <div className={`${styles.columnPickerDropdown} ${cs.invoiceColumnDropdown}`}>
                 {COLUMNS.map((c) => (
-                  <label key={c.key} className={styles.columnPickerItem}>
+                  <label key={c.key} className={`${styles.columnPickerItem} ${cs.invoiceColumnItem}`}>
                     <input
                       type="checkbox"
                       checked={visibleColumns[c.key]}
@@ -333,7 +333,7 @@ export default function Invoice() {
         <b style={{ color: "#111827" }}>{fmtDate(range.to)}</b>
       </p>
 
-      <div className={styles.tableWrapper}>
+      <div className={`${styles.tableWrapper} ${cs.invoiceTableWrapper}`}>
         <table className={styles.table} style={{ minWidth: 1200 }}>
           <thead>
             <tr>

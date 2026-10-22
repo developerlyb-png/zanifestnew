@@ -1,0 +1,178 @@
+.leadListPage {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  color: #1b2f49;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.leadListPage :global(*) { box-sizing: border-box; font-family: inherit !important; }
+
+.leadListPage :global(h1),
+.leadListPage :global(h2),
+.leadListPage :global(h3) {
+  color: #142b4a;
+  letter-spacing: -0.025em;
+}
+.leadListPage :global(h1), .leadListPage :global(h2) { font-size: 1.55rem; font-weight: 750; }
+.leadListPage :global(h3) { font-size: 1.25rem; font-weight: 700; }
+
+.leadListPage :global(input:not([type="checkbox"]):not([type="radio"]):not([type="file"])),
+.leadListPage :global(select),
+.leadListPage :global(textarea) {
+  border-color: #d7e3ef !important;
+  border-radius: 10px !important;
+  color: #233b58;
+}
+.leadListPage :global(input:focus),
+.leadListPage :global(select:focus),
+.leadListPage :global(textarea:focus) {
+  border-color: #1876bd !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12) !important;
+}
+
+.leadListPage :global([class*="header"]),
+.leadListPage :global([class*="Header"]) { gap: 14px; }
+.leadListPage :global([class*="Title"]),
+.leadListPage :global([class*="title"]) { color: #142b4a !important; }
+.leadListPage :global([class*="ExportBtn"]),
+.leadListPage :global([class*="exportBtn"]) {
+  border: 1px solid #cfe0ee !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #176eaa !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+.leadListPage :global([class*="ExportBtn"]:hover),
+.leadListPage :global([class*="exportBtn"]:hover) { background: #edf6fc !important; }
+.leadListPage :global([class*="refreshBtn"]),
+.leadListPage :global([class*="showBtn"]),
+.leadListPage :global([class*="assignBtn"]) {
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #2588cc, #176eaa) !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, 0.19);
+}
+.leadListPage :global([class*="refreshBtn"]:hover),
+.leadListPage :global([class*="showBtn"]:hover),
+.leadListPage :global([class*="assignBtn"]:hover) { background: linear-gradient(135deg, #207dbb, #125d92) !important; }
+.leadListPage :global([class*="closeBtn"]) { border-radius: 10px !important; }
+
+.leadListPage :global([class*="pillActive"]),
+.leadListPage :global([class*="PillActive"]) {
+  background: #eaf4fc !important;
+  color: #176eaa !important;
+}
+.leadListPage :global([class*="searchBox"]),
+.leadListPage :global([class*="SearchBox"]) {
+  border-color: #d7e3ef !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+}
+.leadListPage :global([class*="searchBox"]:focus-within),
+.leadListPage :global([class*="SearchBox"]:focus-within) { border-color: #1876bd !important; }
+.leadListPage :global([class*="searchBox"] input:focus),
+.leadListPage :global([class*="SearchBox"] input:focus),
+.leadListPage :global([class*="searchInput"]:focus),
+.leadListPage :global([class*="SearchInput"]:focus) {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.leadListPage :global([class*="tableWrapper"]),
+.leadListPage :global([class*="TableWrapper"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e2eaf2;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(25, 54, 88, 0.055);
+}
+.leadListPage :global(table) { border-collapse: collapse; font-family: inherit; }
+.leadListPage :global(thead tr) { background: #f3f8fc !important; }
+.leadListPage :global(th) {
+  padding: 13px 15px !important;
+  border-bottom: 1px solid #e2eaf2;
+  color: #637b96 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em;
+}
+.leadListPage :global(td) {
+  padding: 13px 15px !important;
+  border-top: 1px solid #edf2f7 !important;
+  color: #344b65 !important;
+  font-size: 13px !important;
+  line-height: 1.5;
+}
+.leadListPage :global(tbody tr:nth-child(even)) { background: #fbfdff; }
+.leadListPage :global(tbody tr:hover) { background: #f1f8fd !important; }
+
+.leadListPage :global([class*="modalOverlay"]) {
+  padding: 18px;
+  background: rgba(13, 27, 48, 0.58);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.leadListPage :global([class*="modalBox"]),
+.leadListPage :global([class*="modal"]:not([class*="Overlay"]):not([class*="Content"]):not([class*="Footer"]):not([class*="Title"])) {
+  border: 1px solid #e2eaf2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 26px 70px rgba(12, 31, 54, 0.28);
+  font-family: inherit;
+}
+.leadListPage :global([class*="modalContent"]) {
+  background: #f7fafd;
+  gap: 16px 20px;
+}
+.leadListPage :global([class*="modalContent"] p strong) { color: #526b86; font-size: 13px; }
+.leadListPage :global([class*="modalContent"] p > :last-child) {
+  border-color: #e2eaf2;
+  border-radius: 10px;
+  background: #fff;
+  color: #233b58;
+  font-size: 14px;
+}
+.leadListPage :global([class*="agentSelectBox"]),
+.leadListPage :global([class*="assignBox"]) { border-color: #e2eaf2; background: #fff; }
+
+@media (max-width: 760px) {
+  .leadListPage :global(h1), .leadListPage :global(h2) { font-size: 1.35rem; }
+  .leadListPage :global(h3) { font-size: 1.15rem; }
+  .leadListPage :global([class*="modalOverlay"]) { align-items: flex-end; overflow-y: auto; padding: 10px; }
+  .leadListPage :global([class*="modalBox"]),
+  .leadListPage :global([class*="modal"]:not([class*="Overlay"]):not([class*="Content"]):not([class*="Footer"]):not([class*="Title"])) {
+    width: 100%;
+    max-width: 100%;
+    max-height: 94dvh;
+    height: auto;
+    border-radius: 18px 18px 0 0;
+  }
+  .leadListPage :global([class*="modalContent"]) { grid-template-columns: 1fr; padding: 18px; overflow-y: auto; }
+  .leadListPage :global([class*="modalFooter"]) { flex-direction: column; padding: 16px; }
+  .leadListPage :global([class*="assignBtn"]), .leadListPage :global([class*="closeBtn"]) { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .leadListPage :global([class*="header"]),
+  .leadListPage :global([class*="Header"]) { align-items: flex-start; flex-direction: column; }
+  .leadListPage :global([class*="toolbar"]),
+  .leadListPage :global([class*="Toolbar"]) { align-items: stretch; flex-direction: column; }
+  .leadListPage :global([class*="searchBox"]),
+  .leadListPage :global([class*="SearchBox"]) { min-width: 0; width: 100%; }
+  .leadListPage :global([class*="searchBox"] input),
+  .leadListPage :global([class*="SearchBox"] input) { min-width: 0; font-size: 16px !important; }
+  .leadListPage :global([class*="tableWrapper"]), .leadListPage :global([class*="TableWrapper"]) { border-radius: 12px; }
+  .leadListPage :global(table) { min-width: 760px; }
+  .leadListPage :global(th), .leadListPage :global(td) { padding: 11px 12px !important; }
+  .leadListPage :global([class*="modalContent"] p > :last-child) { font-size: 14px; }
+}

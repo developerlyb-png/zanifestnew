@@ -273,3 +273,31 @@
     flex: 1;
   }
 }
+
+/* Premium customer testimonial editor */
+.cont { max-width: 1200px; color: #1b2f49; font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.cont h2 { margin: 0 0 20px; color: #142b4a; font-size: 1.45rem; font-weight: 750; letter-spacing: -0.025em; text-align: left; }
+.cont button { border-radius: 10px; background: linear-gradient(135deg,#2588cc,#176eaa); color: #fff; font-family: inherit; font-size: 13px; font-weight: 650; }
+.cont button:hover { background: linear-gradient(135deg,#207dbb,#125d92); }
+.headingSection { margin: 0 0 20px; padding: 17px; border: 1px solid #e2eaf2; border-radius: 14px; background: #fff; box-shadow: 0 6px 20px rgba(25,54,88,.05); }
+.headingDisplay { display: flex; align-items: center; flex-direction: column; gap: 10px; }
+.headingText { margin: 0; color: #142b4a; font-weight: 700; text-align: center; }
+.feedbackGrid { display: grid !important; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 15px; justify-content: stretch !important; }
+.feedbackCard { width: auto !important; max-width: none !important; min-width: 0; box-sizing: border-box; border: 1px solid #e2eaf2 !important; padding: 17px !important; border-radius: 14px !important; background: #fff !important; box-shadow: 0 7px 22px rgba(25,54,88,.055) !important; text-align: left !important; }
+.feedbackCard:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(25,54,88,.1) !important; }
+.feedbackCard strong { color: #142b4a; font-size: 1rem; }
+.feedbackCard p { color: #60748b; font-size: .88rem; line-height: 1.6; }
+.cont .editCardButton { margin: 4px 6px 0 0; }
+.cont .deleteCardButton { margin: 4px 0 0; background: #fff1f1; color: #c43f46; border: 1px solid #f5d1d3; }
+.cont .deleteCardButton:hover { background: #ffe4e5; color: #aa3037; }
+.modalBackdrop { padding: 16px; background: rgba(13,27,48,.58); backdrop-filter: blur(4px); }
+.modalContent { width: min(520px,100%); max-height: min(90vh,800px); overflow-y: auto; box-sizing: border-box; border: 1px solid #e2eaf2; border-radius: 18px; box-shadow: 0 26px 70px rgba(12,31,54,.28); font-family: inherit; }
+.modalContent h3 { color: #142b4a; font-size: 1.2rem; }
+.modalContent form { gap: 12px; }
+.modalContent input, .modalContent textarea { box-sizing: border-box; border-color: #d7e3ef; border-radius: 10px; color: #233b58; font-family: inherit; font-size: 14px; }
+.modalContent input:focus, .modalContent textarea:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24,118,189,.12); }
+.modalContent button[type="submit"] { background: linear-gradient(135deg,#2588cc,#176eaa); border-radius: 10px; font-family: inherit; font-weight: 700; }
+.modalContent button[type="submit"]:hover { background: linear-gradient(135deg,#207dbb,#125d92); }
+.previewBox { margin: 0 0 20px; padding: 18px; border: 1px solid #e2eaf2; border-radius: 15px; box-shadow: 0 8px 24px rgba(25,54,88,.06); }
+.previewBox h3 { color: #142b4a; font-size: 1.08rem; }
+@media (max-width: 600px) { .cont h2 { font-size: 1.22rem; } .feedbackGrid { grid-template-columns: 1fr; } .feedbackCard { width: 100% !important; } .modalBackdrop { align-items: flex-end; padding: 0; } .modalContent { width: 100%; max-width: none; max-height: 94dvh; padding: 21px 17px; border-radius: 18px 18px 0 0; } .modalContent input, .modalContent textarea { font-size: 16px; } .previewBox { margin-bottom: 15px; padding: 14px; } }

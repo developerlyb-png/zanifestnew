@@ -625,11 +625,11 @@ export default function PayInPayOut() {
   const listOrAll = (list?: string[]) => (list && list.length ? list.join(", ") : "All");
 
   return (
-    <div className={styles.cont}>
+    <div className={`${styles.cont} ${ps.page}`}>
       <div className={styles.headerRow}>
-        <h2 className={styles.heading}>Pay In Pay Out</h2>
+        <h2 className={`${styles.heading} ${ps.pageHeading}`}>Pay In Pay Out</h2>
         <div className={styles.headerActions}>
-          <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+          <button className={`${styles.primaryBtn} ${ps.createRuleButton}`} onClick={() => setShowModal(true)}>
             <FiPercent /> Create Rule
           </button>
         </div>
@@ -645,8 +645,8 @@ export default function PayInPayOut() {
         />
       )}
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table} style={{ minWidth: 1300 }}>
+      <div className={`${styles.tableWrapper} ${ps.rulesTableWrapper}`}>
+        <table className={`${styles.table} ${ps.rulesTable}`} style={{ minWidth: 1300 }}>
           <thead>
             <tr>
               <th>Start Date</th>

@@ -784,7 +784,7 @@ export default function ConfigSeller() {
   }
 
   return (
-    <div>
+    <div className={styles.sellerDashboard}>
       <div className={styles.listHeader}>
         <div>
           <h1 className={styles.pageTitle}>Config Seller</h1>

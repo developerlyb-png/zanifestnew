@@ -179,3 +179,22 @@
     padding: 14px;
   }
 }
+
+/* Premium dashboard styling */
+.container { padding: 22px; gap: 20px; font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1b2f49; }
+.pageTitle { color: #142b4a; font-size: 1.45rem; font-weight: 750; letter-spacing: -0.025em; text-align: left; }
+.headingBox { width: 100%; max-width: 760px; box-sizing: border-box; padding: 22px; border-color: #e2eaf2; border-radius: 15px; box-shadow: 0 8px 24px rgba(25,54,88,.06); text-align: left; }
+.headingBox h3 { color: #142b4a; font-size: 1rem; }
+.headingInput { width: 100%; min-height: 44px; box-sizing: border-box; border: 1px solid #d7e3ef; border-radius: 10px; padding: 10px 12px; color: #233b58; font-family: inherit; font-size: 14px; }
+.headingInput:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24,118,189,.12); }
+.headingBox button, .serviceCard button { margin: 0; border-radius: 10px; background: linear-gradient(135deg,#2588cc,#176eaa); box-shadow: 0 5px 14px rgba(24,118,189,.18); font-family: inherit; font-weight: 700; }
+.headingBox button:hover, .serviceCard button:hover { background: linear-gradient(135deg,#207dbb,#125d92); }
+.servicesGrid { grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 16px; }
+.serviceCard { border-color: #e2eaf2; border-radius: 15px; padding: 19px; box-shadow: 0 7px 22px rgba(25,54,88,.055); }
+.serviceCard:hover { box-shadow: 0 12px 26px rgba(25,54,88,.1); }
+.serviceCard h4 { color: #176eaa; font-size: .88rem; letter-spacing: .045em; }
+.serviceCard input, .serviceCard textarea { box-sizing: border-box; border-color: #d7e3ef; border-radius: 9px; color: #233b58; font-family: inherit; font-size: 14px; }
+.serviceCard input:focus, .serviceCard textarea:focus { outline: none; border-color: #1876bd; box-shadow: 0 0 0 3px rgba(24,118,189,.11); }
+.previewBox { display: block; border: 1px solid #e2eaf2; border-radius: 15px; background: #fff; box-shadow: 0 8px 24px rgba(25,54,88,.06); padding: 18px; }
+.previewBox h3 { margin: 0 0 14px; color: #142b4a; font-size: 1.08rem; }
+@media (max-width: 600px) { .container { padding: 14px; gap: 15px; } .pageTitle { font-size: 1.22rem; } .headingBox { padding: 16px; } .servicesGrid { grid-template-columns: 1fr; } .serviceCard { padding: 15px; } .serviceCard input, .serviceCard textarea { font-size: 16px; } .previewBox { padding: 14px; } }

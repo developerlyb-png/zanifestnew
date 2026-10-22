@@ -28,7 +28,7 @@ export default function ConfigManagement() {
   const [activeTab, setActiveTab] = useState<ConfigTab>("lineOfBusiness");
 
   return (
-    <div>
+    <div className={styles.configurationPage}>
       <h1 className={styles.pageTitle}>Configuration Management</h1>
 
       <div className={styles.tabBar}>
