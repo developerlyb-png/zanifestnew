@@ -53,6 +53,8 @@ export default async function handler(
       existingAgent.status = "pending";
       existingAgent.rejectedFields = [];
       existingAgent.rejectionRemark = "";
+      // show as "New" again in Review Application
+      existingAgent.adminSeenAt = null;
 
       await existingAgent.save();
 

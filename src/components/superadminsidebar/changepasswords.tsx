@@ -4,7 +4,9 @@ import { FiEye, FiEyeOff, FiLock } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import styles from "@/styles/components/superadminsidebar/changepassword.module.css";
 
-const ChangePassword = () => {
+// mode "reset": logged-in admin sets a new password without the current one
+const ChangePassword = ({ mode = "change" }: { mode?: "change" | "reset" }) => {
+  const isReset = mode === "reset";
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -26,16 +28,16 @@ const ChangePassword = () => {
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/admin/change-password", {
+      const res = await fetch(isReset ? "/api/admin/set-password" : "/api/admin/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify(isReset ? { newPassword } : { currentPassword, newPassword }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to change password");
+      if (!res.ok) throw new Error(data.message || "Failed to update password");
 
-      toast.success("Password updated successfully");
+      toast.success(isReset ? "Password reset successfully" : "Password updated successfully");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -52,10 +54,15 @@ const ChangePassword = () => {
         <div className={styles.iconBadge}>
           <FiLock size={20} />
         </div>
-        <h2 className={styles.title}>Change Password</h2>
-        <p className={styles.subtitle}>Update the password for your own account.</p>
+        <h2 className={styles.title}>{isReset ? "Reset Password" : "Change Password"}</h2>
+        <p className={styles.subtitle}>
+          {isReset
+            ? "Set a new password for your own account."
+            : "Update the password for your own account."}
+        </p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
+          {!isReset && (
           <div className={styles.formGroup}>
             <label htmlFor="currentPassword" className={styles.label}>
               Current Password
@@ -74,6 +81,7 @@ const ChangePassword = () => {
               </span>
             </div>
           </div>
+          )}
 
           <div className={styles.formGroup}>
             <label htmlFor="newPassword" className={styles.label}>
@@ -111,7 +119,7 @@ const ChangePassword = () => {
           </div>
 
           <button type="submit" className={styles.loginBtn} disabled={submitting}>
-            {submitting ? "Updating..." : "Change Password"}
+            {submitting ? "Updating..." : isReset ? "Reset Password" : "Change Password"}
           </button>
         </form>
       </div>

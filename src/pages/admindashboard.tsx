@@ -29,6 +29,7 @@ import Doctorinsurancelist from "@/components/superadminsidebar/Doctorinsurancel
 import Officepackagepolicylist from "@/components/superadminsidebar/Officepackagepolicylist";
 import Directorlist from "@/components/superadminsidebar/Directorlist";
 import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
+import ReviewApplicationBadge from "@/components/superadminsidebar/ReviewApplicationBadge";
 import styles from "@/styles/pages/admindashboard.module.css";
 import { useRouter } from "next/router";
 // import withAuth from "@/lib/withAuth";
@@ -93,7 +94,14 @@ const statusTone = (status?: string) => {
 };
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSectionState] = useState("dashboard");
+  // Bumped on every menu click so the section remounts on its main view,
+  // even when clicking the section that is already open (e.g. Customer > Import -> Customer)
+  const [navKey, setNavKey] = useState(0);
+  const setActiveSection = (section: string) => {
+    setActiveSectionState(section);
+    setNavKey((k) => k + 1);
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
@@ -612,6 +620,7 @@ const router = useRouter();
                   <span className={styles.iconLabel}>
                     <FiClipboard className={styles.icon} />
                     <span className={styles.label}>Review Application</span>
+                    <ReviewApplicationBadge />
                   </span>
                 </li>
               </>
@@ -631,7 +640,7 @@ const router = useRouter();
         </aside>
 
         {/* Main Content */}
-        <main className={styles.mainContent}>
+        <main key={navKey} className={styles.mainContent}>
         
              {activeSection === "dashboard" && (
             <>
@@ -817,6 +826,7 @@ const router = useRouter();
             />
           )}
           {activeSection === "changepassword" && <ChangePassword />}
+          {activeSection === "resetpassword" && <ChangePassword mode="reset" />}
           {activeSection === "userList" && <UserList />}
           {activeSection === "managerList" && <ManagerList />}
           {activeSection === "agentList" && <AgentList />}

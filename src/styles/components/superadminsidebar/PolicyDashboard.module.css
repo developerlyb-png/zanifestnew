@@ -520,6 +520,27 @@
 
 .filterHeaderRow .stickyCol {
   background: #ffffff;
+  /* Above the body rows' sticky cells so the Insured Name dropdown isn't covered */
+  z-index: 5;
+}
+
+/* Insured Name searchable dropdown — match the other filter selects */
+.filterHeaderRow .insuredNameTrigger {
+  min-width: 150px;
+  border: 1px solid #cdd9ec;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: #4b5568;
+}
+
+.filterHeaderRow .insuredNameTrigger span {
+  color: #4b5568;
+}
+
+.filterHeaderRow .insuredNameTrigger:focus {
+  border-color: #93a9d6;
+  box-shadow: none;
 }
 
 .linkCell {

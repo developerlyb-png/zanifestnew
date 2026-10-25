@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { FiSearch, FiInbox, FiClock, FiCheckCircle, FiXCircle, FiUsers, FiRefreshCw } from "react-icons/fi";
 import axios from "axios";
 import Select from "react-select";
 
@@ -45,13 +46,68 @@ adhaarBackAttachment?: string;
 
   assignedTo?: string;
   status?: string;
+
+  trainingCompleted?: boolean;
+  rejectionRemark?: string;
+  adminSeenAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+type ApplicationCounts = {
+  total: number;
+  new: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+};
+
+type ApplicationTab = "all" | "new" | "pending" | "approved" | "rejected";
+
+const EMPTY_COUNTS: ApplicationCounts = { total: 0, new: 0, pending: 0, approved: 0, rejected: 0 };
+
+// Lets the sidebar "Review Application" badge refresh right after a change here
+export const APPLICATIONS_CHANGED_EVENT = "reviewApplications:changed";
+const notifyApplicationsChanged = () => {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(APPLICATIONS_CHANGED_EVENT));
+};
+
+const isNewApplication = (a: AgentData) => a.status === "pending" && !a.adminSeenAt;
+
+// "reviewed" = approved by admin (agent now in training); "approved" = certified
+const statusInfo = (a: AgentData): { label: string; stage: string; tone: string } => {
+  switch (a.status) {
+    case "pending":
+      return { label: "Pending", stage: "Awaiting review", tone: "pending" };
+    case "reviewed":
+      return {
+        label: "Approved",
+        stage: a.trainingCompleted ? "Training completed" : "In training",
+        tone: "approved",
+      };
+    case "approved":
+      return { label: "Approved", stage: "Certified", tone: "approved" };
+    case "rejected":
+      return { label: "Rejected", stage: "Awaiting resubmission", tone: "rejected" };
+    default:
+      return { label: a.status || "-", stage: "", tone: "pending" };
+  }
+};
+
+const formatDate = (d?: string) =>
+  d
+    ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+    : "-";
 
 type VerificationState = "pending" | "approved" | "rejected";
 
 export default function ReviewApplications() {
   const [managerSearch, setManagerSearch] = useState("");
   const [applications, setApplications] = useState<AgentData[]>([]);
+  const [counts, setCounts] = useState<ApplicationCounts>(EMPTY_COUNTS);
+  const [tab, setTab] = useState<ApplicationTab>("all");
+  const [search, setSearch] = useState("");
+  const [listLoading, setListLoading] = useState(true);
   const [selected, setSelected] = useState<AgentData | null>(null);
   const [managerList, setManagerList] = useState<any[]>([]);
   const [assignManager, setAssignManager] = useState("");
@@ -82,10 +138,49 @@ const [editMode, setEditMode] = useState(false);
 
   const load = async () => {
     try {
-      const res = await axios.get("/api/admin/getPendingAgents");
-      setApplications(res.data || []);
+      const res = await axios.get("/api/admin/agentApplications");
+      setApplications(res.data?.applications || []);
+      setCounts(res.data?.counts || EMPTY_COUNTS);
     } catch (err) {
-      console.error("Failed to load pending agents", err);
+      console.error("Failed to load applications", err);
+    } finally {
+      setListLoading(false);
+    }
+  };
+
+  const filteredApplications = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return applications.filter((a) => {
+      if (tab === "new" && !isNewApplication(a)) return false;
+      if (tab === "pending" && a.status !== "pending") return false;
+      if (tab === "approved" && a.status !== "reviewed" && a.status !== "approved") return false;
+      if (tab === "rejected" && a.status !== "rejected") return false;
+      if (!q) return true;
+      return [
+        `${a.firstName || ""} ${a.lastName || ""}`,
+        a.email,
+        a.phone,
+        a.agentCode,
+        a.city,
+        a.district,
+        a.state,
+      ]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [applications, tab, search]);
+
+  // Opening a "New" application marks it as seen
+  const markSeen = async (agent: AgentData) => {
+    if (!isNewApplication(agent)) return;
+    const seenAt = new Date().toISOString();
+    setApplications((prev) => prev.map((a) => (a._id === agent._id ? { ...a, adminSeenAt: seenAt } : a)));
+    setCounts((c) => ({ ...c, new: Math.max(0, c.new - 1) }));
+    try {
+      await axios.post("/api/admin/markApplicationSeen", { agentId: agent._id });
+      notifyApplicationsChanged();
+    } catch (err) {
+      console.error("markApplicationSeen error", err);
     }
   };
 
@@ -113,6 +208,7 @@ const handleUpdateAgent = async () => {
   }
 };
   const openReview = async (agent: AgentData) => {
+    markSeen(agent);
     try {
       setLoading(true);
       const res = await axios.get(`/api/admin/getAgentById?id=${agent._id}`);
@@ -251,6 +347,7 @@ const handleUpdateAgent = async () => {
       setAssignManager("");
       setRemark("");
       load();
+      notifyApplicationsChanged();
     } catch (err) {
       console.error("handleReview error", err);
       alert("Something went wrong while submitting review.");
@@ -309,52 +406,152 @@ const handleUpdateAgent = async () => {
   const setAadhaarApproved = () => setAadhaarStatus("approved");
   const setAadhaarRejected = () => setAadhaarStatus("rejected");
 
+  const statCards: { key: ApplicationTab; label: string; value: number; icon: React.ReactNode; tone: string }[] = [
+    { key: "all", label: "Total Applications", value: counts.total, icon: <FiUsers />, tone: "total" },
+    { key: "new", label: "New", value: counts.new, icon: <FiInbox />, tone: "new" },
+    { key: "pending", label: "Pending Approval", value: counts.pending, icon: <FiClock />, tone: "pending" },
+    { key: "approved", label: "Approved", value: counts.approved, icon: <FiCheckCircle />, tone: "approved" },
+    { key: "rejected", label: "Rejected", value: counts.rejected, icon: <FiXCircle />, tone: "rejected" },
+  ];
+
   return (
     <div className={styles.pageWrapper}>
-      <h2 className={styles.title}>Review Applications</h2>
+      <div className={styles.dashHeader}>
+        <div>
+          <h2 className={styles.title}>Review Applications</h2>
+          <p className={styles.dashSubtitle}>
+            {counts.new > 0
+              ? `${counts.new} new application${counts.new > 1 ? "s" : ""} waiting for review`
+              : "All agent applications at a glance"}
+          </p>
+        </div>
+        <button
+          type="button"
+          className={styles.refreshBtn}
+          onClick={() => {
+            load();
+            notifyApplicationsChanged();
+          }}
+        >
+          <FiRefreshCw size={14} /> Refresh
+        </button>
+      </div>
 
-      {applications.length === 0 ? (
-        <p>No pending applications</p>
-      ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Review</th>
-            </tr>
-          </thead>
+      <div className={styles.statGrid}>
+        {statCards.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            className={`${styles.statCard} ${styles[`stat_${c.tone}`]} ${tab === c.key ? styles.statCardActive : ""}`}
+            onClick={() => setTab(c.key)}
+          >
+            <span className={styles.statIcon}>{c.icon}</span>
+            <span className={styles.statBody}>
+              <span className={styles.statValue}>{c.value}</span>
+              <span className={styles.statLabel}>{c.label}</span>
+            </span>
+          </button>
+        ))}
+      </div>
 
-          <tbody>
-            {applications.map((a, index) => (
-              <tr
-                key={a._id}
-                className={styles.tableRow}
-                onClick={() => openReview(a)}
-              >
-                <td>{index + 1}</td>
-                <td>
-                  {a.firstName} {a.lastName}
-                </td>
-                <td>{a.email}</td>
+      <div className={styles.toolbar}>
+        <div className={styles.tabs}>
+          {statCards.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              className={`${styles.tab} ${tab === c.key ? styles.tabActive : ""}`}
+              onClick={() => setTab(c.key)}
+            >
+              {c.key === "all" ? "All" : c.label}
+              <span className={styles.tabCount}>{c.value}</span>
+            </button>
+          ))}
+        </div>
 
-                <td>
-                  <button
-                    className={styles.reviewBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openReview(a);
-                    }}
-                  >
-                    Review
-                  </button>
-                </td>
+        <div className={styles.searchBox}>
+          <FiSearch size={14} />
+          <input
+            placeholder="Search name, email, phone, city..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className={styles.tableCard}>
+        {listLoading ? (
+          <p className={styles.emptyState}>Loading applications...</p>
+        ) : filteredApplications.length === 0 ? (
+          <p className={styles.emptyState}>No applications found</p>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Applicant</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Applied On</th>
+                <th>Last Updated</th>
+                <th>Status</th>
+                <th>Assigned Manager</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+
+            <tbody>
+              {filteredApplications.map((a, index) => {
+                const info = statusInfo(a);
+                const isNew = isNewApplication(a);
+                const isPending = a.status === "pending";
+                return (
+                  <tr
+                    key={a._id}
+                    className={`${isPending ? styles.tableRow : ""} ${isNew ? styles.newRow : ""}`}
+                    onClick={isPending ? () => openReview(a) : undefined}
+                  >
+                    <td>{index + 1}</td>
+                    <td>
+                      <div className={styles.applicantName}>
+                        {a.firstName} {a.lastName}
+                        {isNew && <span className={styles.newBadge}>NEW</span>}
+                      </div>
+                      <div className={styles.applicantEmail}>{a.email}</div>
+                    </td>
+                    <td>{a.phone || "-"}</td>
+                    <td>{[a.city || a.district, a.state].filter(Boolean).join(", ") || "-"}</td>
+                    <td>{formatDate(a.createdAt)}</td>
+                    <td>{formatDate(a.updatedAt)}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[`status_${info.tone}`]}`}>
+                        {info.label}
+                      </span>
+                      {info.stage && <div className={styles.statusStage}>{info.stage}</div>}
+                    </td>
+                    <td>{a.assignedTo || "-"}</td>
+                    <td>
+                      {isPending ? (
+                        <button
+                          className={styles.reviewBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openReview(a);
+                          }}
+                        >
+                          Review
+                        </button>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {/* ---------- Modal ---------- */}
       {selected && (
@@ -956,22 +1153,27 @@ const handleUpdateAgent = async () => {
                     missing remark) is instead explained via handleReview's own
                     alert() when clicked, so the admin always gets feedback
                     instead of a silently inert button. */}
-                <button
-                  className={styles.finalRejectBtn}
-                  onClick={() => handleReview("reject")}
-                  disabled={rejectLoading}
-                >
-                  {rejectLoading ? "Processing..." : "Reject Application"}
-                </button>
+                {/* Final decision only for applications still awaiting review */}
+                {selected.status === "pending" && (
+                  <>
+                    <button
+                      className={styles.finalRejectBtn}
+                      onClick={() => handleReview("reject")}
+                      disabled={rejectLoading}
+                    >
+                      {rejectLoading ? "Processing..." : "Reject Application"}
+                    </button>
 
-                <button
-                  className={styles.finalAcceptBtn}
-                  onClick={() => handleReview("accept")}
-                  disabled={approveLoading || anyRejected}
-                  title={anyRejected ? "Cannot approve — a document was rejected" : undefined}
-                >
-                  {approveLoading ? "Processing..." : "Approve Application"}
-                </button>
+                    <button
+                      className={styles.finalAcceptBtn}
+                      onClick={() => handleReview("accept")}
+                      disabled={approveLoading || anyRejected}
+                      title={anyRejected ? "Cannot approve — a document was rejected" : undefined}
+                    >
+                      {approveLoading ? "Processing..." : "Approve Application"}
+                    </button>
+                  </>
+                )}
 
                 <button
                   className={styles.closeBtn}
