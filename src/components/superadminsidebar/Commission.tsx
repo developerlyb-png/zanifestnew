@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/components/superadminsidebar/PolicyDashboard.module.css";
 import cs from "@/styles/components/superadminsidebar/Claims.module.css";
 import cc from "@/styles/components/superadminsidebar/Commission.module.css";
-import { FiDownload, FiSearch, FiTrendingUp, FiTrendingDown, FiPercent, FiAlertCircle } from "react-icons/fi";
+import { FiCalendar, FiDownload, FiSearch, FiTrendingUp, FiTrendingDown, FiPercent, FiAlertCircle } from "react-icons/fi";
 
 interface CommissionRow {
   _id: string;
@@ -23,9 +23,53 @@ interface CommissionRow {
   matchedRule: string | null;
 }
 
+type Preset = "today" | "thisMonth" | "lastMonth" | "thisYear" | "lastYear" | "custom";
+
 const fmtInr = (n?: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 const fmtDate = (d?: string) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }) : "—";
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const fmtRangeDate = (d: Date) => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+
+function financialYearRange() {
+  const today = new Date();
+  let fy = today.getFullYear();
+  if (today.getMonth() < 3) fy -= 1;
+  return { from: new Date(fy, 3, 1), to: new Date(fy + 1, 2, 31, 23, 59, 59) };
+}
+
+function presetRange(preset: Preset): { from: Date; to: Date } {
+  const now = new Date();
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  switch (preset) {
+    case "today":
+      return { from: startOfToday, to: endOfToday };
+    case "thisMonth":
+      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfToday };
+    case "lastMonth":
+      return {
+        from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+        to: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59),
+      };
+    case "lastYear": {
+      const { from } = financialYearRange();
+      return { from: new Date(from.getFullYear() - 1, 3, 1), to: new Date(from.getFullYear(), 2, 31, 23, 59, 59) };
+    }
+    default:
+      return financialYearRange();
+  }
+}
+
+const PRESETS: { key: Preset; label: string }[] = [
+  { key: "today", label: "Today" },
+  { key: "thisMonth", label: "This Month" },
+  { key: "lastMonth", label: "Last Month" },
+  { key: "thisYear", label: "This Year" },
+  { key: "lastYear", label: "Last Year" },
+  { key: "custom", label: "Custom Range" },
+];
 
 export default function Commission() {
   const [rows, setRows] = useState<CommissionRow[]>([]);
@@ -34,9 +78,26 @@ export default function Commission() {
   const [policySearch, setPolicySearch] = useState("");
   const [agentSearch, setAgentSearch] = useState("");
 
+  const [preset, setPreset] = useState<Preset>("thisYear");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+
+  const [payInMin, setPayInMin] = useState("");
+  const [payInMax, setPayInMax] = useState("");
+  const [payOutMin, setPayOutMin] = useState("");
+  const [payOutMax, setPayOutMax] = useState("");
+
+  const range = useMemo(() => {
+    if (preset === "custom" && customFrom && customTo) {
+      return { from: new Date(customFrom), to: new Date(`${customTo}T23:59:59`) };
+    }
+    return presetRange(preset);
+  }, [preset, customFrom, customTo]);
+
   useEffect(() => {
     setLoading(true);
-    fetch("/api/admin/policy-commissions", { credentials: "include" })
+    const params = new URLSearchParams({ from: range.from.toISOString(), to: range.to.toISOString() });
+    fetch(`/api/admin/policy-commissions?${params.toString()}`, { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
         setRows(d.rows || []);
@@ -44,16 +105,20 @@ export default function Commission() {
       })
       .catch(() => setRows([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [range]);
 
   const filtered = useMemo(
     () =>
       rows.filter((r) => {
         if (policySearch && !r.policyNumber?.toLowerCase().includes(policySearch.toLowerCase())) return false;
         if (agentSearch && !(r.agentName || "").toLowerCase().includes(agentSearch.toLowerCase())) return false;
+        if (payInMin && r.payInAmount < Number(payInMin)) return false;
+        if (payInMax && r.payInAmount > Number(payInMax)) return false;
+        if (payOutMin && r.payOutAmount < Number(payOutMin)) return false;
+        if (payOutMax && r.payOutAmount > Number(payOutMax)) return false;
         return true;
       }),
-    [rows, policySearch, agentSearch]
+    [rows, policySearch, agentSearch, payInMin, payInMax, payOutMin, payOutMax]
   );
 
   const exportCsv = () => {
@@ -71,7 +136,7 @@ export default function Commission() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
     const a = document.createElement("a");
     a.href = url;
-    a.download = "commission_report.csv";
+    a.download = `commission_report_${fmtRangeDate(range.from)}_to_${fmtRangeDate(range.to)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -116,6 +181,27 @@ export default function Commission() {
         </div>
       </div>
 
+      <div className={styles.filterRow}>
+        <div className={styles.presets}>
+          {PRESETS.map((p) => (
+            <button
+              key={p.key}
+              className={`${styles.presetBtn} ${preset === p.key ? styles.presetBtnActive : ""}`}
+              onClick={() => setPreset(p.key)}
+            >
+              {p.key === "custom" && <FiCalendar style={{ marginRight: 6 }} />}
+              {p.label}
+            </button>
+          ))}
+          {preset === "custom" && (
+            <>
+              <input type="date" className={styles.dateInput} value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
+              <input type="date" className={styles.dateInput} value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
+            </>
+          )}
+        </div>
+      </div>
+
       <div className={`${styles.filterRow} ${cc.commissionFilters}`}>
         <div className={`${styles.searchInput} ${cc.commissionSearch}`}>
           <FiSearch size={12} />
@@ -125,6 +211,34 @@ export default function Commission() {
           <FiSearch size={12} />
           <input placeholder="Search agent name" value={agentSearch} onChange={(e) => setAgentSearch(e.target.value)} />
         </div>
+        <input
+          type="number"
+          className={styles.dateInput}
+          placeholder="Min PayIn (Inward)"
+          value={payInMin}
+          onChange={(e) => setPayInMin(e.target.value)}
+        />
+        <input
+          type="number"
+          className={styles.dateInput}
+          placeholder="Max PayIn (Inward)"
+          value={payInMax}
+          onChange={(e) => setPayInMax(e.target.value)}
+        />
+        <input
+          type="number"
+          className={styles.dateInput}
+          placeholder="Min PayOut (Outward)"
+          value={payOutMin}
+          onChange={(e) => setPayOutMin(e.target.value)}
+        />
+        <input
+          type="number"
+          className={styles.dateInput}
+          placeholder="Max PayOut (Outward)"
+          value={payOutMax}
+          onChange={(e) => setPayOutMax(e.target.value)}
+        />
       </div>
 
       <p className={cc.commissionNote}>

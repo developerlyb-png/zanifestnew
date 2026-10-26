@@ -16,6 +16,7 @@ import BulkUploadModal from "./BulkUploadModal";
 import PolicyDetailView from "./PolicyDetailView";
 import AgentPolicyReview from "./AgentPolicyReview";
 import PolicyDocumentImport from "./PolicyDocumentImport";
+import SearchableSelect from "./SearchableSelect";
 
 export interface Policy {
   _id: string;
@@ -855,18 +856,14 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                 <tr className={styles.filterHeaderRow}>
                   {visibleColumns.insuredName && (
                     <td className={styles.stickyCol}>
-                      <select
-                        className={styles.selectInput}
+                      <SearchableSelect
+                        className={styles.insuredNameTrigger}
                         value={filters.insuredName}
-                        onChange={(e) => setFilter("insuredName", e.target.value)}
-                      >
-                        <option value="">Select</option>
-                        {uniqueNames().map((n) => (
-                          <option key={n} value={n}>
-                            {n}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(v) => setFilter("insuredName", v)}
+                        options={uniqueNames().map((n) => ({ value: n, label: n }))}
+                        placeholder="Select"
+                        searchPlaceholder="Search insured name..."
+                      />
                     </td>
                   )}
                   {visibleColumns.subInsured && <td className={styles.dashCell}>—</td>}

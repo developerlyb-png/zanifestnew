@@ -62,10 +62,14 @@ function InsuranceCompanyForm({
   onClose: () => void;
   onSaved: (item: InsuranceCompanyItem) => void;
 }) {
+  // An existing company whose name isn't in the fixed list was itself added
+  // via "Other" — reopen the form with "Other" selected and its real name
+  // pre-filled in the free-text box, not literally showing "Other" as the name.
+  const initialIsCustom = !!initial && !INSURANCE_COMPANIES.includes(initial.name);
   const [form, setForm] = useState<FormState>(
     initial
       ? {
-          name: initial.name,
+          name: initialIsCustom ? "Other" : initial.name,
           branch: initial.branch,
           salesRmEmail: initial.salesRmEmail || "",
           salesRmPhone: initial.salesRmPhone || "",
@@ -76,6 +80,7 @@ function InsuranceCompanyForm({
         }
       : EMPTY_FORM
   );
+  const [otherName, setOtherName] = useState(initialIsCustom ? initial!.name : "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -86,7 +91,9 @@ function InsuranceCompanyForm({
   const fieldError = (key: keyof FormState, label: string) =>
     touched[key] && !form[key].trim() ? `${label} is required` : "";
 
+  const isOther = form.name === "Other";
   const nameError = fieldError("name", "Insurance company name");
+  const otherNameError = touched.otherName && isOther && !otherName.trim() ? "Enter the insurance company name" : "";
   const branchError = fieldError("branch", "Insurance company branch");
   const opsEmailError = fieldError("opsRmEmail", "Operation RM email");
   const opsPhoneError = fieldError("opsRmPhone", "Operation RM phone number");
@@ -96,8 +103,11 @@ function InsuranceCompanyForm({
   const REQUIRED: (keyof FormState)[] = ["name", "branch", "opsRmEmail", "opsRmPhone", "claimsRmEmail", "claimsRmPhone"];
 
   const handleSubmit = async () => {
-    setTouched(REQUIRED.reduce((acc, k) => ({ ...acc, [k]: true }), {}));
+    setTouched((t) => ({ ...t, ...REQUIRED.reduce((acc, k) => ({ ...acc, [k]: true }), {} as Record<string, boolean>), otherName: true }));
     if (REQUIRED.some((k) => !form[k].trim())) return;
+    if (isOther && !otherName.trim()) return;
+
+    const finalName = isOther ? otherName.trim() : form.name;
 
     setError("");
     setSaving(true);
@@ -106,7 +116,7 @@ function InsuranceCompanyForm({
         method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ id: initial?._id, ...form }),
+        body: JSON.stringify({ id: initial?._id, ...form, name: finalName }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -160,6 +170,24 @@ function InsuranceCompanyForm({
               <span className={styles.fieldError}>
                 <FiAlertCircle size={12} /> {nameError}
               </span>
+            )}
+            {isOther && (
+              <>
+                <input
+                  className={`${styles.input} ${otherNameError ? styles.inputError : ""}`}
+                  style={{ marginTop: 8 }}
+                  value={otherName}
+                  onChange={(e) => setOtherName(e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, otherName: true }))}
+                  placeholder="Enter the insurance company name"
+                  autoFocus
+                />
+                {otherNameError && (
+                  <span className={styles.fieldError}>
+                    <FiAlertCircle size={12} /> {otherNameError}
+                  </span>
+                )}
+              </>
             )}
           </div>
 

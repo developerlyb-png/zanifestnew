@@ -50,6 +50,7 @@ import Doctorinsurancelist from "@/components/superadminsidebar/Doctorinsurancel
 import Officepackagepolicylist from "@/components/superadminsidebar/Officepackagepolicylist";
 import Directorlist from "@/components/superadminsidebar/Directorlist";
 import ReviewApplication from "@/components/superadminsidebar/reviewapplication";
+import ReviewApplicationBadge from "@/components/superadminsidebar/ReviewApplicationBadge";
 import ShowResult from "@/components/superadminsidebar/showresult";
 import PospManagement from "@/components/superadminsidebar/pospmanagement";
 import PolicyDashboard from "@/components/superadminsidebar/PolicyDashboard";
@@ -62,6 +63,7 @@ import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
 import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
+import Reconcile from "@/components/superadminsidebar/Reconcile";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
 import { ProfileMenu } from "@/components/superadminsidebar/ProfileMenu";
 
@@ -130,7 +132,14 @@ const statusTone = (status?: string) => {
 };
 
 const SuperAdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSectionState] = useState("dashboard");
+  // Bumped on every menu click so the section remounts on its main view,
+  // even when clicking the section that is already open (e.g. Customer > Import -> Customer)
+  const [navKey, setNavKey] = useState(0);
+  const setActiveSection = (section: string) => {
+    setActiveSectionState(section);
+    setNavKey((k) => k + 1);
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [adminCount, setAdminCount] = useState(0);
   const [adminData, setAdminData] = useState<any>(null);
@@ -575,6 +584,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* Reconciliation (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "reconcile" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("reconcile");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiRefreshCw className={styles.icon} />
+                <span className={styles.label}>Reconciliation</span>
+              </span>
+            </li>
+
             {/* Pay In Pay Out (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -683,6 +708,7 @@ const SuperAdminDashboard = () => {
                   <span className={styles.iconLabel}>
                     <FiClipboard className={styles.icon} />
                     <span className={styles.label}>Review Application</span>
+                    <ReviewApplicationBadge />
                   </span>
                 </li>
                 {/* Certificate — hidden from the sidebar for now (per request),
@@ -794,7 +820,7 @@ const SuperAdminDashboard = () => {
         </aside>
 
         {/* Main Content */}
-        <main className={styles.mainContent}>
+        <main key={navKey} className={styles.mainContent}>
           {activeSection === "dashboard" && (
             <>
             <div className={styles.dashboardCards}>
@@ -981,9 +1007,11 @@ const SuperAdminDashboard = () => {
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
           {activeSection === "irdaiReports" && <IrdaiReports />}
+          {activeSection === "reconcile" && <Reconcile />}
           {activeSection === "configManagement" && <ConfigManagement />}
           {activeSection === "createAgent" && <CreateAgent />}
           {activeSection === "changepassword" && <ChangePassword />}
+          {activeSection === "resetpassword" && <ChangePassword mode="reset" />}
           {activeSection === "adminlist" && <AdminList />}
           {activeSection === "managerlist" && <ManagerList />}
           {activeSection === "agentlist" && <AgentList />}

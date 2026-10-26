@@ -1,0 +1,142 @@
+/* ================= shared page chrome ================= */
+.wrap {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #0f172a;
+}
+.backLink {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; color: #1c75bb; font-size: 0.84rem; font-weight: 600; cursor: pointer; padding: 0; margin-bottom: 14px;
+}
+.backLink:hover { text-decoration: underline; }
+
+.pageHead { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.pageIcon {
+  width: 46px; height: 46px; border-radius: 13px; background: #e8f1fb; color: #1c75bb;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex: none;
+}
+.pageTitle { font-size: 1.25rem; font-weight: 800; margin: 0; color: #0f172a; }
+.pageSub { font-size: 0.85rem; color: #64748b; margin: 2px 0 0; }
+
+.card {
+  background: #fff; border: 1px solid #edf0f5; border-radius: 16px; padding: 20px 22px; margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.04);
+}
+.cardTitleRow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.cardTitleIcon { color: #1c75bb; display: inline-flex; }
+.cardTitle { font-size: 0.98rem; font-weight: 700; color: #0f172a; margin: 0; }
+.cardHint { font-size: 0.8rem; color: #94a3b8; margin: 2px 0 16px; }
+
+/* ================= status pills ================= */
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pillMatched { background: #dcfce7; color: #15803d; }
+.pillMismatched { background: #fee2e2; color: #b91c1c; }
+.pillMissingMis { background: #fef3c7; color: #b45309; }
+.pillMissingCs { background: #ffedd5; color: #c2410c; }
+
+/* ================= new reconciliation form ================= */
+.formGrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 760px) { .formGrid2 { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 12.5px; font-weight: 600; color: #334155; }
+.input, .select {
+  width: 100%; box-sizing: border-box; border: 1px solid #dbe2ea; border-radius: 9px;
+  background: #fff; padding: 9px 12px; font-size: 13.5px; color: #0f172a; font-family: inherit;
+}
+.input:focus, .select:focus { outline: none; border-color: #1c75bb; box-shadow: 0 0 0 3px rgba(28, 117, 187, 0.14); }
+
+.dropzone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border: 2px dashed #c7d6e5; border-radius: 12px; padding: 30px; cursor: pointer; text-align: center; background: #fafcff;
+}
+.dropzone:hover { background: #f0f6ff; border-color: #1c75bb; }
+.dropzoneTitle { font-size: 14px; font-weight: 600; color: #334155; }
+.dropzoneHint { font-size: 12px; color: #94a3b8; }
+.fileChosen {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border: 1px solid #bbf7d0; background: #f0fdf4; border-radius: 12px; padding: 14px 16px;
+}
+.fileChosenInfo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.fileIcon { width: 36px; height: 36px; border-radius: 9px; background: #fff; border: 1px solid #bbf7d0; color: #15803d; display: flex; align-items: center; justify-content: center; flex: none; }
+.fileName { font-size: 13px; font-weight: 600; color: #14532d; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fileMeta { font-size: 11.5px; color: #166534; margin-top: 2px; }
+.fileRemoveBtn { background: none; border: none; color: #dc2626; cursor: pointer; display: inline-flex; padding: 6px; border-radius: 7px; flex: none; }
+.fileRemoveBtn:hover { background: #fee2e2; }
+
+.checkboxRow { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #334155; margin-top: 18px; }
+.checkboxRow input { margin-top: 2px; width: 16px; height: 16px; accent-color: #1c75bb; cursor: pointer; }
+
+.navRow { display: flex; justify-content: flex-end; margin-top: 22px; }
+.btnPrimary {
+  background: #1c75bb; color: #fff; border: 0; border-radius: 10px;
+  padding: 10px 22px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.btnPrimary:hover { background: #17649f; }
+.btnPrimary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ================= detail view ================= */
+.metaRow { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 13px; color: #475569; margin-top: 6px; }
+.metaRow b { color: #0f172a; }
+.metaDivider { color: #cbd5e1; }
+.metaLink { color: #1c75bb; font-weight: 600; text-decoration: none; }
+.metaLink:hover { text-decoration: underline; }
+
+.fileCard {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  border: 1px solid #edf0f5; border-radius: 12px; padding: 14px 16px; background: #f8fafc;
+}
+.fileCardLeft { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.fileTile { width: 38px; height: 38px; border-radius: 10px; background: #fff; border: 1px solid #e2e8f0; color: #1c75bb; display: flex; align-items: center; justify-content: center; flex: none; }
+.fileCardName { font-size: 13.5px; font-weight: 700; color: #0f172a; }
+.fileCardMeta { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
+.fileActions { display: flex; gap: 6px; }
+.fileActionBtn {
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; color: #1c75bb; cursor: pointer;
+}
+.fileActionBtn:hover { background: #eef2ff; }
+
+/* ================= summary stat chips ================= */
+.statChipRow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 760px) { .statChipRow { grid-template-columns: repeat(2, 1fr); } }
+.statChip { border-radius: 13px; padding: 16px 18px; text-align: center; }
+.statChipValue { font-size: 26px; font-weight: 800; line-height: 1; }
+.statChipLabel { font-size: 12px; font-weight: 600; margin-top: 6px; }
+.statChipGreen { background: #ecfdf3; }
+.statChipGreen .statChipValue { color: #15803d; }
+.statChipGreen .statChipLabel { color: #166534; }
+.statChipRed { background: #fef2f2; }
+.statChipRed .statChipValue { color: #b91c1c; }
+.statChipRed .statChipLabel { color: #991b1b; }
+.statChipAmber { background: #fffbeb; }
+.statChipAmber .statChipValue { color: #b45309; }
+.statChipAmber .statChipLabel { color: #92400e; }
+.statChipOrange { background: #fff7ed; }
+.statChipOrange .statChipValue { color: #c2410c; }
+.statChipOrange .statChipLabel { color: #9a3412; }
+
+/* ================= results tabs + table ================= */
+.tabBar { display: flex; border-bottom: 1px solid #edf0f5; margin-bottom: 16px; gap: 4px; flex-wrap: wrap; }
+.tabBtn {
+  background: none; border: none; padding: 10px 18px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tabBtn:hover { color: #1c75bb; }
+.tabBtnActive { color: #1c75bb; border-bottom-color: #1c75bb; background: #f0f6ff; border-radius: 8px 8px 0 0; }
+
+.resultsTableWrap { overflow-x: auto; border: 1px solid #edf0f5; border-radius: 12px; }
+.resultsTable { width: 100%; border-collapse: collapse; min-width: 760px; }
+.resultsTable th {
+  text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700;
+  color: #94a3b8; background: #f8fafc; padding: 9px 12px; border-bottom: 1px solid #edf0f5; white-space: nowrap;
+}
+.resultsTable td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; color: #334155; white-space: nowrap; }
+.resultsTable tbody tr:hover { background: #f8fafc; }
+.diffCell { color: #b91c1c; font-weight: 700; }
+.emptyResults { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 13.5px; }
+.resultsFooter { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 12.5px; color: #64748b; }
+.exportBtn {
+  background: #fff; color: #1c75bb; border: 1px solid #c7d6e5; border-radius: 9px; padding: 8px 16px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+}
+.exportBtn:hover { background: #f0f6ff; }
+.exportBtn:disabled { opacity: 0.5; cursor: not-allowed; }

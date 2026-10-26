@@ -269,7 +269,7 @@ const QUESTION_SETS = [
       {
         id: 25,
         q: "POSP training duration as per IRDAI is:",
-        choices: ["100 hours", "15 hours", "3 hours", "50 hours"],
+        choices: ["100 hours", "12 hours", "3 hours", "50 hours"],
         answer: 1,
       },
       {
@@ -469,12 +469,7 @@ const QUESTION_SETS = [
         ],
         answer: 0,
       },
-      {
-        id: 46,
-        q: "POSP appointment is given by:",
-        choices: ["IRDAI", "Insurance Broker/Insurer", "Surveyor", "TPA"],
-        answer: 2,
-      },
+     
       {
         id: 47,
         q: "Claim repudiation means:",
@@ -2661,9 +2656,25 @@ const QUESTION_BANK = [
   ...NEW_QUESTIONS,
 ].map((question, i) => ({ ...question, id: i + 1 }));
 
+const QUESTIONS_PER_TEST = 50;
+const PASSING_PERCENT = 0.7; // 70% — 35 correct out of 50
+
+// Most questions in the bank happen to have their correct choice sitting in
+// position B or C — shuffling each question's own choice order (and
+// remapping which index is now correct) breaks that pattern instead of
+// handing it to anyone who notices.
+function shuffleChoiceOrder(q: (typeof QUESTION_BANK)[number]) {
+  const order = q.choices.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { ...q, choices: order.map((i) => q.choices[i]), answer: order.indexOf(q.answer) };
+}
+
 function sampleQuestions(pool: typeof QUESTION_BANK, count: number) {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  return shuffled.slice(0, count).map(shuffleChoiceOrder);
 }
 
 /* ======================================================
@@ -2729,7 +2740,7 @@ useEffect(() => {
      RANDOM 50-QUESTION DRAW FROM THE FULL BANK
   =============================== */
   useEffect(() => {
-    setCurrentSet({ questions: sampleQuestions(QUESTION_BANK, 50) });
+    setCurrentSet({ questions: sampleQuestions(QUESTION_BANK, QUESTIONS_PER_TEST) });
 
     fetch("/api/agent/save-training-progress", {
       method: "POST",
@@ -2819,7 +2830,7 @@ useEffect(() => {
               <div>
                 <p className={m1.stepLabel}>Step 3: Assessment</p>
                 <p className={m1.muted}>
-                  Passing Marks: {Math.ceil(questions.length * 0.4)} · Question {index + 1} of {questions.length} · Mandatory
+                  Passing Marks: {Math.ceil(questions.length * PASSING_PERCENT)} · Question {index + 1} of {questions.length} · Mandatory
                 </p>
               </div>
               <span className={m1.statusPill}>⏱ {formatTime(timeLeft)}</span>
@@ -2840,7 +2851,7 @@ useEffect(() => {
               <p>IRDAI POSP Certification Practice Test</p>
               <small>
                 {questions.length} Questions · Time limit: 60 minutes · Passing marks:{" "}
-                {Math.ceil(questions.length * 0.4)}
+                {Math.ceil(questions.length * PASSING_PERCENT)}
               </small>
             </section>
 
@@ -2916,7 +2927,7 @@ function Result({
   onResultVisible: (v: boolean) => void;
 }) {
 
-  const pass = score >= total * 0.4; // 40% passing threshold (e.g. 20/50)
+  const pass = score >= total * PASSING_PERCENT; // 70% passing threshold (35/50)
 
   async function handlePass() {
     await fetch("/api/agent/complete-training", {

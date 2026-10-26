@@ -73,6 +73,9 @@ export interface IAgent extends Document {
   // Status
   status: "pending" | "reviewed" | "approved" | "rejected";
   accountStatus: "active" | "inactive";
+  // When an admin first opened this application in Review Application.
+  // null = not opened yet, shown as "New" (reset on resubmission).
+  adminSeenAt?: Date | null;
 
   // 🔥 ADD BELOW status fields (NO REMOVAL)
 
@@ -213,6 +216,11 @@ rejectedFields: {
 
 rejectionRemark: {
   type: String,
+},
+
+adminSeenAt: {
+  type: Date,
+  default: null,
 },
 
     accountStatus: {
