@@ -97,7 +97,11 @@ const CarPolicySuccess = () => {
 
         <h2 style={{ margin: "0 0 8px" }}>Your Car Insurance Policy</h2>
         <p style={{ color: "#666", marginBottom: 24 }}>
-          {policy?.insurer === "SBI" ? "SBI General Insurance" : "Zuno General Insurance"}
+          {policy?.insurer === "SBI"
+            ? "SBI General Insurance"
+            : policy?.insurer === "SHRIRAM"
+            ? "Shriram General Insurance"
+            : "Zuno General Insurance"}
         </p>
 
         <div
@@ -195,6 +199,28 @@ const CarPolicySuccess = () => {
             {pdfError && (
               <p style={{ color: "#e74c3c", fontSize: 13, marginTop: 8 }}>{pdfError}</p>
             )}
+          </div>
+        )}
+
+        {/* Shriram returns a ready policy-PDF link with getPaymentStatus */}
+        {policy?.insurer === "SHRIRAM" && policy?.policyUrl && (
+          <div style={{ marginBottom: 16 }}>
+            <a
+              href={policy.policyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                background: "#0f9d78",
+                color: "#fff",
+                padding: "10px 24px",
+                borderRadius: 8,
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              Download Policy PDF
+            </a>
           </div>
         )}
 

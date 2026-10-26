@@ -5,6 +5,13 @@ import Footer from "@/components/ui/Footer";
 import UserDetails from "@/components/ui/UserDetails";
 import { FaRegFileVideo } from "react-icons/fa";
 import { useRouter } from "next/router";
+import shriramPreviousInsurers from "@/lib/shriramMaster/previousInsurer.json";
+import { shriramPrefillFromRc } from "@/lib/shriramRcPrefill";
+
+// A renewal of Shriram's own policy is a separate flow (RENEWAL OF SGI)
+const SHRIRAM_PREV_INSURER_OPTIONS = (shriramPreviousInsurers as string[]).filter(
+  (name) => !/shriram/i.test(name)
+);
 
 const carinsurancecart = () => {
   const [owner, setOwner] = useState("individual");
@@ -22,9 +29,36 @@ const carinsurancecart = () => {
   // carinsurance3.tsx right before navigating here. Zuno and SBI have
   // completely different checkout backends (FullQuote/Razorpay/Issuance for
   // SBI vs Zuno's own full-quote/issue-policy/payment-link APIs).
-  const [insurer, setInsurer] = useState<"ZUNO" | "SBI">("ZUNO");
+  const [insurer, setInsurer] = useState<"ZUNO" | "SBI" | "SHRIRAM">("ZUNO");
   const [sbiQuote, setSbiQuote] = useState<any>(null);
   const [sbiCkyc, setSbiCkyc] = useState<any>(null);
+
+  // Shriram: its proposal needs KYC (PAN + Aadhaar + PAN card file), the real
+  // previous policy, and — for Own Damage only — the running TP policy.
+  const [shriramQuote, setShriramQuote] = useState<any>(null);
+  const [shriramProposal, setShriramProposal] = useState<any>(null);
+  const [fatherName, setFatherName] = useState("");
+  const [aadhaar, setAadhaar] = useState("");
+  const [panFile, setPanFile] = useState<File | null>(null);
+  const [prevInsurer, setPrevInsurer] = useState("");
+  const [prevPolicyNo, setPrevPolicyNo] = useState("");
+  const [tpPolicyNo, setTpPolicyNo] = useState("");
+  const [tpInsurer, setTpInsurer] = useState("");
+  const [tpFrom, setTpFrom] = useState("");
+  const [tpTo, setTpTo] = useState("");
+  const [physicalPolicy, setPhysicalPolicy] = useState(false);
+  const [shriramGateway, setShriramGateway] = useState("CCAVENUE");
+  const shriramOdOnly = shriramQuote?.response?.policyType === "MOT-PLT-009";
+
+  // Shriram's OD policy runs from the day after the previous expiry for a
+  // year, i.e. it ends on the expiry date one year later (same rule as
+  // buildShriramQuoteBody). It must not outlive the TP cover.
+  const shriramOdEnd = (() => {
+    const m = String(quoteInput?.previousPolicyExpiryDate || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? `${+m[1] + 1}-${m[2]}-${m[3]}` : "";
+  })();
+  const shriramTpTooShort = shriramOdOnly && !!tpTo && !!shriramOdEnd && tpTo < shriramOdEnd;
+  const fmtDate = (iso: string) => iso.split("-").reverse().join("-");
 
   // Customer form
   const [firstName, setFirstName] = useState("");
@@ -63,6 +97,28 @@ const carinsurancecart = () => {
           sbiCkycParsed = JSON.parse(ck);
           setSbiCkyc(sbiCkycParsed);
         }
+      } else if (sel === "SHRIRAM") {
+        setInsurer("SHRIRAM");
+        const shq = localStorage.getItem("selectedQuoteShriram");
+        if (shq && shq !== "undefined") setShriramQuote(JSON.parse(shq));
+
+        // Pre-fill what the RC lookup already knows (father's name, address,
+        // current policy) — the customer only checks and corrects it.
+        const rcParsed = r && r !== "undefined" ? JSON.parse(r) : null;
+        const qiParsed = q && q !== "undefined" ? JSON.parse(q) : null;
+        if (rcParsed) {
+          const pre = shriramPrefillFromRc(rcParsed, qiParsed?.registrationDate);
+          setFatherName(pre.fatherName);
+          setAddress1(pre.address);
+          setPincode(pre.pincode);
+          // Shriram's own policy renews via a different flow, so it isn't an option
+          if (!/shriram/i.test(pre.previousInsurer)) setPrevInsurer(pre.previousInsurer);
+          setPrevPolicyNo(pre.previousPolicyNo);
+          setTpPolicyNo(pre.tpPolicyNo);
+          setTpInsurer(pre.tpInsurer);
+          setTpFrom(pre.tpFrom);
+          setTpTo(pre.tpTo);
+        }
       }
 
       // SBI already verified identity via CKYC (OTP or manual OVD) — use
@@ -97,6 +153,34 @@ const carinsurancecart = () => {
 
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
+
+  // Plan summary figures for whichever insurer's card was clicked. Shriram's
+  // proposal premium, once created, replaces its quote premium.
+  const shriramPremium = shriramProposal?.premium || shriramQuote?.response?.quote;
+  const summary =
+    insurer === "SBI"
+      ? {
+          name: "SBI General Insurance",
+          idv: sbiQuote?.response?.idv?.user,
+          net: sbiQuote?.response?.beforeVatPremium,
+          gst: sbiQuote?.response?.gst,
+          total: sbiQuote?.response?.premium,
+        }
+      : insurer === "SHRIRAM"
+      ? {
+          name: "Shriram General Insurance",
+          idv: shriramPremium?.idv,
+          net: shriramPremium?.netPremium,
+          gst: shriramPremium?.gst,
+          total: shriramPremium?.totalPremium,
+        }
+      : {
+          name: "Zuno General Insurance",
+          idv: plan?.idv,
+          net: plan?.netPremium,
+          gst: plan?.gst,
+          total: plan?.grossPremium,
+        };
 
   const handlePay = async () => {
     try {
@@ -370,6 +454,186 @@ const carinsurancecart = () => {
     } catch (e: any) {
       setLoading(false);
       console.log("PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      // readAsDataURL gives "data:<mime>;base64,<data>" — Shriram wants only <data>
+      reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+
+  // Shriram's checkout: GenerateProposal (KYC + PAN card + previous policy)
+  // -> payment (next step, Shriram's own gateway redirect).
+  const handleProposalShriram = async () => {
+    try {
+      if (!isChecked) {
+        alert("Please accept terms & conditions");
+        return;
+      }
+      if (owner === "company") {
+        alert("Company-owned cars aren't supported for Shriram yet");
+        return;
+      }
+      if (!firstName || !dob || !mobile || !email || !address1 || !pincode || !fatherName) {
+        alert("Please fill all personal details, including father's name");
+        return;
+      }
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+        alert("Please enter a valid PAN number");
+        return;
+      }
+      if (!/^\d{12}$/.test(aadhaar)) {
+        alert("Please enter your 12-digit Aadhaar number");
+        return;
+      }
+      if (!panFile) {
+        alert("Please upload your PAN card (PDF, JPG or PNG)");
+        return;
+      }
+      if (panFile.size > 4 * 1024 * 1024) {
+        alert("PAN card file must be under 4 MB");
+        return;
+      }
+      if (!prevInsurer || !prevPolicyNo) {
+        alert("Please fill your previous policy details");
+        return;
+      }
+      if (shriramOdOnly && (!tpPolicyNo || !tpInsurer || !tpFrom || !tpTo)) {
+        alert("Please fill your third-party policy details");
+        return;
+      }
+      if (shriramTpTooShort) {
+        alert(
+          `Your third-party cover ends on ${fmtDate(tpTo)}, before this policy would end. ` +
+            "Shriram needs a short-term policy for this, which isn't available online yet."
+        );
+        return;
+      }
+      if (!nomineeName || !nomineeDob) {
+        alert("Please fill nominee details");
+        return;
+      }
+      if (!quoteInput) {
+        alert("Quote data missing — please get a quote again");
+        return;
+      }
+
+      setLoading(true);
+      setLoadingStep("Creating proposal...");
+
+      const panBase64 = await fileToBase64(panFile);
+      const ext = panFile.name.includes(".") ? panFile.name.split(".").pop()!.toLowerCase() : "pdf";
+
+      const res = await fetch("/api/shriram/4w/proposal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quoteInput,
+          details: {
+            idv: shriramQuote?.response?.quote?.idv,
+            customer: {
+              fullName: `${firstName} ${lastName}`.trim(),
+              gender: gender.toUpperCase().startsWith("F") ? "F" : "M",
+              dob,
+              mobile,
+              email,
+              address1,
+              address2: city,
+              pincode,
+              fatherName,
+            },
+            nominee: { name: nomineeName, relation: nomineeRelation, dob: nomineeDob },
+            previousPolicy: { insurer: prevInsurer, policyNumber: prevPolicyNo },
+            tpPolicy: shriramOdOnly
+              ? { policyNumber: tpPolicyNo, insurer: tpInsurer, address: "INDIA", from: tpFrom, to: tpTo }
+              : undefined,
+            kyc: { pan, aadhaar },
+            panDocument: { base64: panBase64, ext },
+            physicalPolicy,
+          },
+        }),
+      });
+      const data = await res.json();
+      console.log("SHRIRAM PROPOSAL RESULT >>>", data);
+      setLoading(false);
+      setLoadingStep("");
+
+      if (!res.ok || !data.success) {
+        alert(data.message || "Shriram proposal failed — check console");
+        return;
+      }
+
+      setShriramProposal(data);
+      localStorage.setItem("shriramProposal", JSON.stringify(data));
+    } catch (e: any) {
+      setLoading(false);
+      setLoadingStep("");
+      console.log("SHRIRAM PROPOSAL ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  // Hands off to Shriram's own payment page with a real form POST; Shriram
+  // posts the result back to /api/shriram/4w/payment-return.
+  const handlePayShriram = async () => {
+    if (!shriramProposal?.proposalNo) return;
+    try {
+      setLoading(true);
+      setLoadingStep("Opening payment...");
+
+      const amount = shriramProposal.premium?.totalPremium;
+      // The result page needs these for the success screen and the dashboard
+      localStorage.setItem(
+        "shriramCheckout",
+        JSON.stringify({
+          proposalNo: shriramProposal.proposalNo,
+          quoteId: shriramProposal.quoteId,
+          amount,
+          netPremium: shriramProposal.premium?.netPremium,
+          customer: { fullName: `${firstName} ${lastName}`.trim(), email, mobile },
+          vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
+        })
+      );
+
+      const res = await fetch("/api/shriram/4w/payment-form", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proposalNo: shriramProposal.proposalNo,
+          quoteId: shriramProposal.quoteId,
+          amount,
+          gateway: shriramGateway,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setLoading(false);
+        setLoadingStep("");
+        alert(data.message || "Could not open Shriram payment");
+        return;
+      }
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.action;
+      for (const [name, value] of Object.entries(data.fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = String(value);
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
+    } catch (e: any) {
+      setLoading(false);
+      setLoadingStep("");
+      console.log("SHRIRAM PAY ERROR", e);
       alert("Something went wrong: " + e?.message);
     }
   };
@@ -763,6 +1027,110 @@ const carinsurancecart = () => {
                     value={pan}
                     onChange={(e) => setPan(e.target.value.toUpperCase())}
                   />
+
+                  {insurer === "SHRIRAM" && (
+                    <>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Father's name"
+                        value={fatherName}
+                        onChange={(e) => setFatherName(e.target.value)}
+                      />
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Aadhaar number (12 digits)"
+                        maxLength={12}
+                        inputMode="numeric"
+                        value={aadhaar}
+                        onChange={(e) => setAadhaar(e.target.value.replace(/\D/g, ""))}
+                      />
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        PAN card (PDF, JPG or PNG, under 4 MB)
+                        <input
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => setPanFile(e.target.files?.[0] || null)}
+                        />
+                      </label>
+
+                      <h3>Previous Policy</h3>
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        Previous insurer
+                        <select value={prevInsurer} onChange={(e) => setPrevInsurer(e.target.value)}>
+                          <option value="">Select insurer</option>
+                          {SHRIRAM_PREV_INSURER_OPTIONS.map((name) => (
+                            <option key={name} value={name}>
+                              {name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Previous policy number"
+                        value={prevPolicyNo}
+                        onChange={(e) => setPrevPolicyNo(e.target.value.trim())}
+                      />
+
+                      {/* Own Damage only: Shriram needs the long-term TP policy still running */}
+                      {shriramOdOnly && (
+                        <>
+                          <h3>Third-Party Policy</h3>
+                          <input
+                            className={styles.input || ""}
+                            placeholder="Third-party policy number"
+                            value={tpPolicyNo}
+                            onChange={(e) => setTpPolicyNo(e.target.value.trim())}
+                          />
+                          <label style={{ display: "block", marginTop: 8 }}>
+                            Third-party insurer
+                            <select value={tpInsurer} onChange={(e) => setTpInsurer(e.target.value)}>
+                              <option value="">Select insurer</option>
+                              {(shriramPreviousInsurers as string[]).map((name) => (
+                                <option key={name} value={name}>
+                                  {name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label style={{ display: "block", marginTop: 8 }}>
+                            TP policy start date
+                            <input
+                              className={styles.input || ""}
+                              type="date"
+                              value={tpFrom}
+                              onChange={(e) => setTpFrom(e.target.value)}
+                            />
+                          </label>
+                          <label style={{ display: "block", marginTop: 8 }}>
+                            TP policy end date
+                            <input
+                              className={styles.input || ""}
+                              type="date"
+                              value={tpTo}
+                              onChange={(e) => setTpTo(e.target.value)}
+                            />
+                          </label>
+                          {shriramTpTooShort && (
+                            <p style={{ color: "#c0392b", fontSize: 13, marginTop: 6 }}>
+                              Your third-party cover ends on {fmtDate(tpTo)}, before this 1-year policy
+                              would end ({fmtDate(shriramOdEnd)}). Shriram needs a short-term policy for
+                              this, which isn&apos;t available online yet.
+                            </p>
+                          )}
+                        </>
+                      )}
+
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        <input
+                          type="checkbox"
+                          checked={physicalPolicy}
+                          onChange={(e) => setPhysicalPolicy(e.target.checked)}
+                        />{" "}
+                        Send me a printed copy of the policy
+                      </label>
+                    </>
+                  )}
                 </>
               )}
 
@@ -805,36 +1173,64 @@ const carinsurancecart = () => {
               <h2 className={styles.heading}>Plan Summary</h2>
               <div className={styles.row}>
                 <span>IDV Cover</span>
-                <span>{inr(insurer === "SBI" ? sbiQuote?.response?.idv?.user : plan?.idv)}</span>
+                <span>{inr(summary.idv)}</span>
               </div>
               <div className={styles.row}>
                 <span>Insurer</span>
-                <span>{insurer === "SBI" ? "SBI General Insurance" : "Zuno General Insurance"}</span>
+                <span>{summary.name}</span>
               </div>
+              {shriramProposal?.proposalNo && (
+                <div className={styles.row}>
+                  <span>Proposal No.</span>
+                  <span>{shriramProposal.proposalNo}</span>
+                </div>
+              )}
               <button className={styles.viewBtn}>View Inclusions</button>
               <hr />
               <div className={styles.row}>
                 <span>Premium Amount</span>
-                <span>
-                  {inr(insurer === "SBI" ? sbiQuote?.response?.beforeVatPremium : plan?.netPremium)}
-                </span>
+                <span>{inr(summary.net)}</span>
               </div>
               <div className={styles.row}>
                 <span>GST @18%</span>
-                <span>+ {inr(insurer === "SBI" ? sbiQuote?.response?.gst : plan?.gst)}</span>
+                <span>+ {inr(summary.gst)}</span>
               </div>
               <div className={styles.totalBox}>
                 <p className={styles.youPay}>You'll Pay</p>
-                <p className={styles.priceBig}>
-                  {inr(insurer === "SBI" ? sbiQuote?.response?.premium : plan?.grossPremium)}
-                </p>
+                <p className={styles.priceBig}>{inr(summary.total)}</p>
               </div>
+              {/* Shriram is two clicks: create the proposal, then pay through
+                  Shriram's own gateway (customer picks which). */}
+              {insurer === "SHRIRAM" && shriramProposal && (
+                <label style={{ display: "block", margin: "8px 0" }}>
+                  Pay using{" "}
+                  <select value={shriramGateway} onChange={(e) => setShriramGateway(e.target.value)}>
+                    <option value="CCAVENUE">CCAvenue (cards, UPI, netbanking)</option>
+                    <option value="PAYTM">Paytm</option>
+                    <option value="EASEBUZZ">Easebuzz</option>
+                  </select>
+                </label>
+              )}
               <button
                 className={styles.payBtn}
-                onClick={insurer === "SBI" ? handlePaySbi : handlePay}
+                onClick={
+                  insurer === "SBI"
+                    ? handlePaySbi
+                    : insurer === "SHRIRAM"
+                    ? shriramProposal
+                      ? handlePayShriram
+                      : handleProposalShriram
+                    : handlePay
+                }
                 disabled={loading}
               >
-                {loading ? loadingStep || "PROCESSING..." : "PAY SECURELY →"}
+                {loading
+                  ? loadingStep || "PROCESSING..."
+                  : insurer === "SHRIRAM" && !shriramProposal
+                  ? "CREATE PROPOSAL →"
+                  : insurer === "SHRIRAM"
+                  ? `PAY ${inr(summary.total)} →`
+                  : "PAY SECURELY →"}
               </button>
               <div className={styles.terms}>
                 <label>

@@ -246,8 +246,11 @@ export function buildShriramQuoteBody(quoteInput: any) {
       RegNo3: reg.RegNo3,
       RegNo4: reg.RegNo4,
       RTOCode: rto.code,
-      PreviousPolicyNo: "",
-      PreviousInsurer: "",
+      // GetQuote rejects a market renewal without these ("Previous Policy No
+      // is mandatory for Market Renewal"); the real values are only collected
+      // at proposal, so the quote uses placeholders — they don't affect price.
+      PreviousPolicyNo: String(quoteInput.previousPolicyNumber || "PREV00000000"),
+      PreviousInsurer: String(quoteInput.previousInsurer || "Acko General Insurance Ltd"),
       PreviousPolicyFromDt: toShriramDate(prevFrom),
       PreviousPolicyToDt: toShriramDate(prevTo),
       PreviousPolicyUWYear: "",
@@ -387,4 +390,161 @@ export function parseShriramQuote(result: any) {
       .filter((c) => c.Type)
       .map((c) => ({ name: String(c.CoverDesc).trim(), premium: Number(c.Premium) || 0, type: c.Type })),
   };
+}
+
+// ---------- GenerateProposal body ----------
+// Rules below were confirmed against UAT GenerateProposal responses:
+// - AadharNo (12 digits) is required for every individual proposal, whatever POA is sent.
+// - The PAN card (or Form 60) must be sent as a Base64 document with a name and extension.
+// - Form 60 also needs a separate proof-of-identity document — only the PAN path is supported here.
+// - OD Only needs the running TP policy (number, insurer, address, from/to); the OD
+//   end date may not run past the TP end date.
+// - A break-in proposal is rejected without a pre-inspection survey ID, which this
+//   kit has no API to obtain.
+export interface ShriramProposalDetails {
+  idv?: number;
+  customer: {
+    fullName: string;
+    gender: "M" | "F";
+    dob: string; // yyyy-mm-dd
+    mobile: string;
+    email: string;
+    address1: string;
+    address2?: string;
+    pincode: string;
+    fatherName: string;
+  };
+  nominee: { name: string; relation: string; dob: string }; // dob yyyy-mm-dd
+  previousPolicy: { insurer: string; policyNumber: string };
+  tpPolicy?: { policyNumber: string; insurer: string; address: string; from: string; to: string }; // yyyy-mm-dd
+  kyc: { pan: string; aadhaar: string };
+  panDocument: { base64: string; ext: string };
+  physicalPolicy: boolean;
+}
+
+const yearsSince = (iso: string) => {
+  const d = parseDate(iso);
+  if (!d) return 0;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) age--;
+  return age;
+};
+
+export function buildShriramProposalBody(quoteInput: any, details: ShriramProposalDetails) {
+  const built = buildShriramQuoteBody(quoteInput);
+  if ("error" in built) return built;
+  if (built.breakIn) {
+    return {
+      error:
+        "Your previous policy has lapsed. Shriram needs a vehicle pre-inspection before it can issue this policy, which can't be done online yet.",
+    };
+  }
+
+  const { customer: c, nominee: n, kyc } = details;
+  const place = lookupShriramPincode(c.pincode);
+  if (!place) return { error: `Pincode ${c.pincode} not found in Shriram master` };
+
+  const odOnly = built.policyType === SHRIRAM_POLICY_TYPE.OD_ONLY;
+  const tp = details.tpPolicy;
+  if (odOnly && !(tp?.policyNumber && tp.insurer && tp.from && tp.to)) {
+    return { error: "Third-party policy details are required for an Own Damage only policy" };
+  }
+
+  // Shriram won't let OD cover outlive the TP cover; it then asks for a
+  // short-term / pro-rata policy, which the kit has no documented field for
+  // (PolicyToDt = TP end, PolicyTenure, ShortTerm, ProRata all still rejected
+  // in UAT). Stop here with a clear reason instead of Shriram's raw error.
+  if (odOnly) {
+    const tpEnd = parseDate(tp!.to);
+    const odEnd = parseDate(built.body.objPolicyEntryETT.PolicyToDt);
+    if (tpEnd && odEnd && tpEnd < odEnd) {
+      return {
+        error:
+          `Your third-party cover ends on ${toShriramDate(tpEnd)}, before this 1-year policy would end (${toShriramDate(odEnd)}). ` +
+          "Shriram needs a short-term policy for this, which isn't available online yet.",
+      };
+    }
+  }
+
+  const nomineeAge = yearsSince(n.dob);
+  const ext = details.panDocument.ext.startsWith(".") ? details.panDocument.ext : `.${details.panDocument.ext}`;
+  const iso = (s?: string) => {
+    const d = parseDate(s || "");
+    return d ? toShriramDate(d) : "";
+  };
+
+  // OD Only: Shriram reads "previous policy no = TP policy no" as the original
+  // bundled new-car policy, which must start on the TP start date ("Previous
+  // Policy Start Should not Prior than TP Policy Start Date" otherwise). A
+  // different number means the last policy was a standalone OD renewal.
+  const sameAsTp =
+    odOnly &&
+    tp!.policyNumber.replace(/\s+/g, "").toUpperCase() ===
+      details.previousPolicy.policyNumber.replace(/\s+/g, "").toUpperCase();
+  const previousPolicyDates = !odOnly
+    ? {}
+    : sameAsTp
+    ? { PreviousPolicyType: SHRIRAM_POLICY_TYPE.BUNDLED, PreviousPolicyFromDt: iso(tp!.from) }
+    : { PreviousPolicyType: SHRIRAM_POLICY_TYPE.OD_ONLY };
+
+  const body = built.body;
+  Object.assign(body.objPolicyEntryETT, {
+    ...previousPolicyDates,
+    InsuredPrefix: c.gender === "F" ? "2" : "1",
+    InsuredName: c.fullName.toUpperCase(),
+    Gender: c.gender,
+    Address1: c.address1,
+    Address2: c.address2 || place.city,
+    Address3: "",
+    State: place.stateCode,
+    City: place.city,
+    PinCode: c.pincode,
+    MobileNo: c.mobile,
+    EMailID: c.email,
+    // The kit's proposal samples spell it both ways
+    EmailID: c.email,
+    IDV_of_Vehicle: String(Math.round(details.idv || 0)),
+    PreviousPolicyNo: details.previousPolicy.policyNumber,
+    PreviousInsurer: details.previousPolicy.insurer,
+    NomineeNameforPAOwnerDriver: n.name.toUpperCase(),
+    NomineeAgeforPAOwnerDriver: String(nomineeAge),
+    NomineeRelationforPAOwnerDriver: n.relation.toUpperCase(),
+    tpPolNo: odOnly ? tp!.policyNumber : "",
+    tpPolComp: odOnly ? tp!.insurer : "",
+    tpPolAddr: odOnly ? tp!.address || "INDIA" : "",
+    tpPolFmdt: odOnly ? iso(tp!.from) : "",
+    tpPolTodt: odOnly ? iso(tp!.to) : "",
+    // CKYC: no CKYC number — identity by PAN, address by Aadhaar
+    CKYC_NO: "",
+    DOB: iso(c.dob),
+    POI_Type: "PAN",
+    POI_ID: kyc.pan,
+    POA_Type: "PROOF OF POSSESSION OF AADHAR",
+    POA_ID: kyc.aadhaar,
+    AadharNo: kyc.aadhaar,
+    FatherName: c.fatherName.toUpperCase(),
+    MotherName: "",
+    MaritalStatus: "",
+    SpouseName: "",
+    ResidentialStatus: "",
+    POI_DocumentFile: "",
+    POA_DocumentFile: "",
+    Insured_photo: "",
+    POI_DocumentExt: "",
+    POA_DocumentExt: "",
+    Insured_photoExt: "",
+    // AML (Shriram's email of the UAT credentials)
+    PANorForm60: "PAN",
+    PanNo: kyc.pan,
+    Pan_Form60_Document: details.panDocument.base64,
+    Pan_Form60_Document_Ext: ext.toLowerCase(),
+    Pan_Form60_Document_Name: "PAN",
+    PHYSICALPOLICY: details.physicalPolicy ? "1" : "0",
+  });
+
+  // Minor nominee needs an appointee (Data Validation Rules) — not collected yet
+  if (nomineeAge < 18) return { error: "Nominee must be 18 or older" };
+
+  return { ...built, body };
 }

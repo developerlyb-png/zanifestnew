@@ -30,6 +30,8 @@ import Image from "next/image";
 import zunoLogo from "@/assets/insurance/zuno.png";
 import sbiLogo from "@/assets/insurance/sbi.png";
 import bajajLogo from "@/assets/pageImages/bajaj.png";
+import digitLogo from "@/assets/pageImages/digit.png";
+import shriramLogo from "@/assets/insurance/Shriram_General_Insurance-logonew.jpg";
 import IdvEditDialog from "./IdvEditDialog";
 import CkycDialog, { CkycResult } from "./CkycDialog";
 import { requoteWithAddons, requoteWithIdv } from "@/lib/zuno4w";
@@ -120,6 +122,10 @@ const CarInsurance3 = () => {
   const [bajajBaseIdv, setBajajBaseIdv] = useState<number | null>(null);
   const [bajajIdvError, setBajajIdvError] = useState<string | null>(null);
   const [showBajajCoverageDetails, setShowBajajCoverageDetails] = useState(false);
+  const [showDigitCoverageDetails, setShowDigitCoverageDetails] = useState(false);
+  // Shriram General quote — read-only display for now (purchase not wired yet).
+  const [shriramQuote, setShriramQuote] = useState<any>(null);
+  const [showShriramCoverageDetails, setShowShriramCoverageDetails] = useState(false);
 
   // Original Zuno-quoted IDV, fixed as the baseline for the edit range
   const [defaultIdv, setDefaultIdv] = useState<number | null>(null);
@@ -191,6 +197,8 @@ const CarInsurance3 = () => {
       const s = localStorage.getItem("selectedQuoteSbi");
       const dq = localStorage.getItem("selectedQuoteDigit");
       if (dq && dq !== "undefined") setDigitQuote(JSON.parse(dq));
+      const shq = localStorage.getItem("selectedQuoteShriram");
+      if (shq && shq !== "undefined") setShriramQuote(JSON.parse(shq));
       const bq = localStorage.getItem("selectedQuoteBajaj");
       if (bq && bq !== "undefined") {
         const parsedBajaj = JSON.parse(bq);
@@ -252,7 +260,11 @@ const CarInsurance3 = () => {
   const closeSidebar = () => setSidebarOpen(false);
 
   const planCount =
-    1 + (sbiQuote?.success ? 1 : 0) + (digitQuote?.success ? 1 : 0) + (bajajQuote?.success ? 1 : 0);
+    (plan ? 1 : 0) +
+    (sbiQuote?.success ? 1 : 0) +
+    (digitQuote?.success ? 1 : 0) +
+    (bajajQuote?.success ? 1 : 0) +
+    (shriramQuote?.success ? 1 : 0);
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
 
@@ -739,11 +751,12 @@ const CarInsurance3 = () => {
               <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
               <div className={styles.skeletonBlock} />
             </div>
-          ) : plan ? (
+          ) : planCount > 0 ? (
             <>
               <h2>{`${planCount} plan${planCount > 1 ? "s" : ""} available`}</h2>
               <p>Covers damages to your car. Premium includes GST.</p>
 
+              {plan && (
               <div className={styles.planCard}>
                 <div className={styles.planHeader}>
                   <FaTrophy className={styles.trophy} />
@@ -832,6 +845,7 @@ const CarInsurance3 = () => {
                   </div>
                 )}
               </div>
+              )}
 
               {digitQuote?.success && (() => {
                 const dq = digitQuote.response?.quote || {};
@@ -840,6 +854,10 @@ const CarInsurance3 = () => {
                 const gross = num(dq.grossPremium);
                 const gst = num(dq.serviceTax?.totalTax);
                 const idv = num(dq.vehicle?.vehicleIDV?.idv);
+                const cov = dq.contract?.coverages || {};
+                const odPremium = num(cov.ownDamage?.netPremium);
+                const tpPremium = num(cov.thirdPartyLiability?.netPremium);
+                const paPremium = num(cov.personalAccident?.netPremium);
                 return (
                   <div className={styles.planCard}>
                     <div className={styles.planHeader}>
@@ -850,12 +868,20 @@ const CarInsurance3 = () => {
                       </span>
                     </div>
                     <div className={styles.planDetails}>
+                      <div className={styles.logoBanner}>
+                        <Image
+                          src={digitLogo}
+                          alt="Go Digit General Insurance"
+                          className={styles.logo}
+                        />
+                      </div>
                       <div>
                         <div style={{ color: "#5a5959" }}>
                           IDV Cover <strong>{inr(idv)}</strong>
                         </div>
                         <div className={styles.premiumBreakdown}>
-                          <span>Net Premium {inr(net)}</span>
+                          <span>Own Damage {inr(odPremium)}</span>
+                          <span>Third Party {inr(tpPremium)}</span>
                           <span>GST {inr(gst)}</span>
                         </div>
                       </div>
@@ -866,6 +892,137 @@ const CarInsurance3 = () => {
                         <div style={{ fontSize: 12, color: "#5a5959" }}>Purchase coming soon</div>
                       </div>
                     </div>
+
+                    <div className={styles.cardFooter}>
+                      <div className={styles.footerLinks}>
+                        <span
+                          className={styles.footerLink}
+                          onClick={() => setShowDigitCoverageDetails((prev) => !prev)}
+                        >
+                          View Coverage{" "}
+                          {showDigitCoverageDetails ? <FaChevronUp /> : <FaChevronDown />}
+                        </span>
+                      </div>
+                    </div>
+
+                    {showDigitCoverageDetails && (
+                      <div className={styles.coverageDetails}>
+                        <div className={styles.coverageRow}>
+                          <strong>Own Damage Cover</strong>
+                          <span>{inr(odPremium)}</span>
+                        </div>
+                        <div className={styles.coverageRow}>
+                          <strong>Third Party Liability</strong>
+                          <span>{inr(tpPremium)}</span>
+                        </div>
+                        {cov.personalAccident?.selection && (
+                          <div className={styles.coverageRow}>
+                            <strong>Personal Accident Cover</strong>
+                            <span>{inr(paPremium)}</span>
+                          </div>
+                        )}
+                        <div className={styles.coverageRow}>
+                          <strong>Net Premium</strong>
+                          <span>{inr(net)}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {shriramQuote?.success && (() => {
+                const sq = shriramQuote.response?.quote || {};
+                // Shriram's MOT-PLT-009 is OD Only (cars under 3 years, whose
+                // long-term TP is still running) — no TP or PA in that premium.
+                const odOnly = shriramQuote.response?.policyType === "MOT-PLT-009";
+                const coverRows = (sq.covers || []).filter((c: any) => c.premium);
+                return (
+                  <div className={styles.planCard}>
+                    <div className={styles.planHeader}>
+                      <FaTrophy className={styles.trophy} />
+                      Shriram General Insurance
+                      <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 500, color: "#5a5959" }}>
+                        {odOnly ? "Own Damage Only" : "Comprehensive (OD + TP + PA)"}
+                      </span>
+                    </div>
+                    <div className={styles.planDetails}>
+                      <div className={styles.logoBanner}>
+                        <Image
+                          src={shriramLogo}
+                          alt="Shriram General Insurance"
+                          className={styles.logo}
+                        />
+                      </div>
+                      <div>
+                        <div style={{ color: "#5a5959" }}>
+                          IDV Cover <strong>{inr(sq.idv)}</strong>
+                        </div>
+                        <div className={styles.premiumBreakdown}>
+                          <span>Own Damage {inr(sq.odPremium)}</span>
+                          {!odOnly && <span>Third Party {inr(sq.tpPremium)}</span>}
+                          <span>GST {inr(sq.gst)}</span>
+                        </div>
+                      </div>
+                      <div className={styles.actions}>
+                        {shriramQuote.response?.breakIn ? (
+                          <>
+                            <div className={styles.price} style={{ cursor: "default" }}>
+                              {inr(sq.totalPremium)}
+                            </div>
+                            {/* Shriram rejects break-in proposals without a pre-inspection ID */}
+                            <div style={{ fontSize: 12, color: "#5a5959" }}>
+                              Inspection needed — not available online
+                            </div>
+                          </>
+                        ) : (
+                          <div
+                            className={styles.price}
+                            onClick={() => {
+                              localStorage.setItem("selectedInsurer", "SHRIRAM");
+                              router.push("/cart/carinsurancecart");
+                            }}
+                          >
+                            {inr(sq.totalPremium)} →
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {coverRows.length > 0 && (
+                      <>
+                        <div className={styles.cardFooter}>
+                          <div className={styles.footerLinks}>
+                            <span
+                              className={styles.footerLink}
+                              onClick={() => setShowShriramCoverageDetails((prev) => !prev)}
+                            >
+                              View Coverage{" "}
+                              {showShriramCoverageDetails ? <FaChevronUp /> : <FaChevronDown />}
+                            </span>
+                          </div>
+                        </div>
+
+                        {showShriramCoverageDetails && (
+                          <div className={styles.coverageDetails}>
+                            {coverRows.map((c: any, i: number) => (
+                              <div className={styles.coverageRow} key={`${c.name}-${i}`}>
+                                <strong>{c.name}</strong>
+                                {/* "Less" rows are discounts (De-Tariff, NCB) */}
+                                <span>
+                                  {/less/i.test(c.type) ? "− " : ""}
+                                  {inr(Math.abs(c.premium))}
+                                </span>
+                              </div>
+                            ))}
+                            <div className={styles.coverageRow}>
+                              <strong>Net Premium</strong>
+                              <span>{inr(sq.netPremium)}</span>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 );
               })()}

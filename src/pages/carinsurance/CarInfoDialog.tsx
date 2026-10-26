@@ -490,34 +490,58 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
       const sbiEntry = combined?.quotes?.find(
         (q: any) => q.insurer === "SBI"
       );
+      const digitEntry = combined?.quotes?.find(
+        (q: any) => q.insurer === "DIGIT"
+      );
+      const bajajEntry = combined?.quotes?.find(
+        (q: any) => q.insurer === "BAJAJ"
+      );
+      const shriramEntry = combined?.quotes?.find(
+        (q: any) => q.insurer === "SHRIRAM"
+      );
 
       const data = zunoEntry?.response;
 
-      if (data?.success) {
-        const plan = parseQuoteResponse(data);
+      // Each insurer is quoted independently — one insurer's dev-environment
+      // failure (e.g. Zuno's own server erroring) shouldn't block the whole
+      // quotes page when others came back fine.
+      const anySuccess =
+        data?.success ||
+        sbiEntry?.success ||
+        digitEntry?.success ||
+        bajajEntry?.success ||
+        shriramEntry?.success;
 
-        console.log("PLAN >>>", plan);
+      if (anySuccess) {
+        if (data?.success) {
+          const plan = parseQuoteResponse(data);
 
-        localStorage.setItem(
-          "selectedQuote",
-          JSON.stringify(plan)
-        );
+          console.log("PLAN >>>", plan);
 
-        // SBI is stored as-is (success or failure) so carinsurance3 can show
-        // it alongside Zuno's plan, or a friendly "unavailable" state.
+          localStorage.setItem(
+            "selectedQuote",
+            JSON.stringify(plan)
+          );
+        } else {
+          // Clear out any stale Zuno plan from a previous vehicle search.
+          localStorage.removeItem("selectedQuote");
+        }
+
+        // SBI/Digit/Bajaj/Shriram are stored as-is (success or failure) so carinsurance3
+        // can show each alongside Zuno's plan, or a friendly "unavailable" state.
         localStorage.setItem("selectedQuoteSbi", JSON.stringify(sbiEntry || null));
-        localStorage.setItem(
-          "selectedQuoteDigit",
-          JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "DIGIT") || null)
-        );
-        localStorage.setItem(
-          "selectedQuoteBajaj",
-          JSON.stringify(combined?.quotes?.find((q: any) => q.insurer === "BAJAJ") || null)
-        );
+        localStorage.setItem("selectedQuoteDigit", JSON.stringify(digitEntry || null));
+        localStorage.setItem("selectedQuoteBajaj", JSON.stringify(bajajEntry || null));
+        localStorage.setItem("selectedQuoteShriram", JSON.stringify(shriramEntry || null));
+
+        // The plans page (IDV re-quotes) and the cart (proposals) rebuild
+        // insurer requests from these — dropped in the f87ede6 merge, restored.
+        localStorage.setItem("carQuoteInput", JSON.stringify(enrichedInput));
+        localStorage.setItem("carRcDetails", JSON.stringify(rcDetails));
 
         router.push("/carinsurance/carinsurance3");
       } else {
-        alert(data?.message || "ZUNO Quote Failed");
+        alert(data?.message || "Unable to fetch quotes right now. Please try again.");
 
         setQuoteLoading(false);
       }
