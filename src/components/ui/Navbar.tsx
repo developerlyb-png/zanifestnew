@@ -9,6 +9,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdMenu } from "react-icons/io";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import InsuranceInquiryModal from "@/components/ui/InsuranceInquiryModal";
 
 const INSURANCE_PRODUCT_LIST = [
   {
@@ -69,6 +70,7 @@ function Navbar() {
   const [listIndex, setListIndex] = useState<number>(0);
   const [otpUser, setOtpUser] = useState<any>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = () => {
@@ -213,7 +215,7 @@ function Navbar() {
                       className={styles.dropItemMobile}
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(item.link);
+                        setSelectedProduct(item.name);
                         closeMobileMenu();
                       }}
                     >
@@ -326,7 +328,7 @@ function Navbar() {
               <div
                 key={index}
                 className={styles.dropItem}
-                onClick={() => router.push(item.link)}
+                onClick={() => setSelectedProduct(item.name)}
               >
                 {item.name}
               </div>
@@ -416,6 +418,12 @@ function Navbar() {
           </div>
         )}
       </div>
+      {selectedProduct && (
+        <InsuranceInquiryModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </div>
   );
 }
