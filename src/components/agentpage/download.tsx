@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FiAward, FiDownload } from "react-icons/fi";
+import styles from "@/styles/pages/agent.module.css";
 
 export default function DownloadCertificate() {
 
@@ -18,13 +20,21 @@ export default function DownloadCertificate() {
   },[]);
 
   if(loading){
-    return <p style={{padding:20}}>Loading certificate...</p>;
+    return (
+      <div className={styles.certificatePage}>
+        <p className={styles.certificateState}>Loading certificate...</p>
+      </div>
+    );
   }
 
   if(!data?.success){
     return (
-      <div style={{padding:20}}>
-        <h3>{data?.message || "Certificate not available"}</h3>
+      <div className={styles.certificatePage}>
+        <div className={styles.certificateEmpty}>
+          <span className={styles.certificateIcon}><FiAward /></span>
+          <h2>Certificate unavailable</h2>
+          <p>{data?.message || "Your certificate is not available yet."}</p>
+        </div>
       </div>
     );
   }
@@ -46,34 +56,38 @@ export default function DownloadCertificate() {
   };
 
   return (
-    <div style={{ padding:20 }}>
-      <h2>My Certificate</h2>
+    <div className={styles.certificatePage}>
+      <div className={styles.certificateHeading}>
+        <span>AGENT RESOURCES</span>
+        <h2>My Certificate</h2>
+        <p>Your official agent certificate is ready to download.</p>
+      </div>
 
-      <div style={{
-        background:"#fff",
-        padding:20,
-        borderRadius:10,
-        boxShadow:"0 4px 16px rgba(0,0,0,0.08)",
-        maxWidth:520
-      }}>
-
-        <p><strong>Name:</strong> {data.agentName}</p>
-        <p><strong>Agent Code:</strong> {data.agentCode}</p>
-
-        <div style={{ display:"flex", gap:10, marginTop:12 }}>
-
-          {/* "View Certificate" hidden for now — kept in code, not deleted, per request */}
-
-          <button
-            style={{ padding:"8px 12px", background:"#10b981", color:"#fff", borderRadius:6 }}
-            onClick={downloadFile}
-          >
-            Download Certificate
-          </button>
-
+      <section className={styles.certificateCard}>
+        <div className={styles.certificateCardHeading}>
+          <span className={styles.certificateIcon}><FiAward /></span>
+          <div>
+            <h3>Agent Certificate</h3>
+            <p>Verified Zanifest agent document</p>
+          </div>
         </div>
 
-      </div>
+        <div className={styles.certificateDetails}>
+          <div className={styles.certificateDetail}>
+            <span>Name</span>
+            <strong>{data.agentName || "—"}</strong>
+          </div>
+          <div className={styles.certificateDetail}>
+            <span>Agent Code</span>
+            <strong>{data.agentCode || "—"}</strong>
+          </div>
+        </div>
+
+        <button className={styles.downloadBtn} onClick={downloadFile}>
+          <FiDownload aria-hidden="true" />
+          Download Certificate
+        </button>
+      </section>
     </div>
   );
 }

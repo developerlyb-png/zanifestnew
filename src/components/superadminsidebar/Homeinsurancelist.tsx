@@ -169,7 +169,7 @@ const Homeinsurancelist = () => {
                       setSelectedRecord(item);
                     }}
                   >
-                    Show
+                    Show Data
                   </button>
                 </td>
               </tr>

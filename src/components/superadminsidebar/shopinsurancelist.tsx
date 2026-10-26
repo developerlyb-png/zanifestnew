@@ -169,7 +169,7 @@ const ShopInsuranceList = () => {
                       setSelectedShop(shop);
                     }}
                   >
-                    Show
+                    Show Data
                   </button>
                 </td>
               </tr>

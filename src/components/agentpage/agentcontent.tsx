@@ -367,11 +367,10 @@ const updateChart = (sales: SaleRecord[]) => {
   </h3>
 
   {chartData.length > 0 ? (
+    <ResponsiveContainer width="100%" height={360}>
     <LineChart
-      width={1300}        // 🔥 FIXED WIDTH
-      height={420}       // 🔥 FIXED HEIGHT
       data={chartData}
-      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+      margin={{ top: 20, right: 24, left: 8, bottom: 10 }}
     >
       <CartesianGrid strokeDasharray="3 3" />
 
@@ -403,6 +402,7 @@ const updateChart = (sales: SaleRecord[]) => {
         activeDot={{ r: 7 }}
       />
     </LineChart>
+    </ResponsiveContainer>
   ) : (
     <p style={{ textAlign: "center", marginTop: 40 }}>
       No sales data available

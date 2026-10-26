@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/officepackagepolicy.module.css";
+import leadsStyles from "@/styles/components/superadminsidebar/LeadLists.module.css";
 import { FiDownload, FiSearch } from "react-icons/fi";
 
 interface OfficeRecord {
@@ -113,7 +114,7 @@ export default function Officepackagepolicylist() {
   if (loading) return <p className={styles.loading}>Loading...</p>;
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${leadsStyles.leadListPage}`}>
       <div className={styles.header}>
         <h2 className={styles.title}>Office Package Policy List</h2>
         <button className={styles.exportBtn} onClick={exportCsv}>
@@ -181,7 +182,7 @@ export default function Officepackagepolicylist() {
                       setSelectedRecord(r);
                     }}
                   >
-                    Show
+                    Show Data
                   </button>
                 </td>
               </tr>

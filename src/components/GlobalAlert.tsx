@@ -1,10 +1,9 @@
-// components/GlobalAlert.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import styles from "@/styles/components/GlobalAlert.module.css";
 import logo from "@/assets/logo.png";
-import Image from "next/image";
 
 let alertCallback: (() => void) | null = null;
 
@@ -21,14 +20,13 @@ export default function GlobalAlert() {
 
     window.alert = (msg: string) => {
       setMessage(msg);
-
       setTimeout(() => {
         setMessage(null);
         if (alertCallback) {
           alertCallback();
           alertCallback = null;
         }
-      }, 2000); // ⏱ 2 seconds
+      }, 2000);
     };
 
     return () => {
@@ -40,12 +38,11 @@ export default function GlobalAlert() {
 
   return (
     <div className={styles.backdrop}>
-      <div className={styles.dialog}>
-        {/* 🔥 Logo Center Top */}
-        <div className={styles.logoWrapper}>
-          <Image src={logo} alt="Zanifest Logo" width={80} height={80} />
-        </div>
-
+      <div className={styles.toast} role="alert" aria-live="assertive">
+        <span className={styles.accent} aria-hidden="true" />
+        <span className={styles.logoWrapper}>
+          <Image src={logo} alt="Zanifest Insurance" width={190} height={55} />
+        </span>
         <p className={styles.message}>{message}</p>
       </div>
     </div>

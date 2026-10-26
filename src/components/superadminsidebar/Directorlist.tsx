@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/components/superadminsidebar/directorlist.module.css";
+import leadsStyles from "@/styles/components/superadminsidebar/LeadLists.module.css";
 import { FiDownload, FiSearch } from "react-icons/fi";
 
 export default function DirectorList() {
@@ -89,7 +90,7 @@ export default function DirectorList() {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${leadsStyles.leadListPage}`}>
       <div className={styles.header}>
         <h2 className={styles.title}>Director Insurance List</h2>
         <button className={styles.exportBtn} onClick={exportCsv}>
@@ -154,7 +155,7 @@ export default function DirectorList() {
         setSelected(r);
       }}
     >
-      Show
+      Show Data
     </button>
   </td>
 </tr>

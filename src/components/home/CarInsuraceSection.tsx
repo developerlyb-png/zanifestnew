@@ -3,9 +3,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { FaEllipsisH } from "react-icons/fa";
 import useSWR from "swr";
+import InsuranceInquiryModal from "@/components/ui/InsuranceInquiryModal";
 import styles from "@/styles/components/home/CarInsuranceSection.module.css";
 import "aos/dist/aos.css";
 import AOS from "aos";
@@ -135,7 +135,7 @@ export default function CarInsuraceSection({
   initialHeading?: string;
   initialOrder?: string[];
 }) {
-  const router = useRouter();
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   const { data } = useSWR("/api/carinsuranceapi", fetcher);
 
@@ -254,14 +254,7 @@ export default function CarInsuraceSection({
             type="button"
             className={styles.item}
             key={`${normalizeName(item.name)}-${index}`}
-            onClick={() => {
-              router.push(item.link);
-
-              window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-              });
-            }}
+            onClick={() => setSelectedProduct(cleanName(item.name))}
           >
             <span className={styles.top}>
               <span className={styles.imageCont}>
@@ -281,6 +274,12 @@ export default function CarInsuraceSection({
           </button>
         ))}
       </div>
+      {selectedProduct && (
+        <InsuranceInquiryModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </div>
   );
 }
