@@ -176,3 +176,145 @@
   .leadListPage :global(th), .leadListPage :global(td) { padding: 11px 12px !important; }
   .leadListPage :global([class*="modalContent"] p > :last-child) { font-size: 14px; }
 }
+
+/* Keep every insurance lead menu and its Show Data dialog on one palette. */
+.leadListPage :global([class*="modal"] h3),
+.leadListPage :global([class*="modalTitle"]) {
+  color: #142b4a !important;
+  font-family: "Manrope", sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.leadListPage :global([class*="modalOverlay"]) {
+  background: rgba(13, 27, 48, 0.58) !important;
+}
+
+.leadListPage :global([class*="modalBox"]),
+.leadListPage :global([class*="modal"]:not([class*="Overlay"]):not([class*="Content"]):not([class*="Footer"]):not([class*="Title"])) {
+  border: 1px solid #dce8f4 !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 24px 64px rgba(12, 31, 54, 0.22) !important;
+}
+
+.leadListPage :global([class*="modalContent"]) {
+  background: #f4f8fd !important;
+}
+
+.leadListPage :global([class*="modalContent"] label),
+.leadListPage :global([class*="modalContent"] strong),
+.leadListPage :global([class*="modalContent"] .label) {
+  color: #526b86 !important;
+  font-family: "Manrope", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.leadListPage :global([class*="modalContent"] p > :last-child),
+.leadListPage :global([class*="modalContent"] .value),
+.leadListPage :global([class*="modalContent"] .valueBox) {
+  border: 1px solid #dce8f4 !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #142b4a !important;
+  font-family: "Manrope", sans-serif !important;
+}
+
+.leadListPage :global([class*="agentSelectBox"]),
+.leadListPage :global([class*="assignBox"]),
+.leadListPage :global([class*="modalFooter"]) {
+  border-color: #e2eaf2 !important;
+  background: #ffffff !important;
+}
+
+.leadListPage :global([class*="agentSelectBox"] label),
+.leadListPage :global([class*="assignLabel"]) {
+  color: #44566d !important;
+  font-family: "Manrope", sans-serif !important;
+}
+
+.leadListPage :global([class*="agentDropdown"]),
+.leadListPage :global([class*="statusBox"] select),
+.leadListPage :global([class*="statusBox"] textarea) {
+  border: 1px solid #d5e3f0 !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #142b4a !important;
+  font-family: "Manrope", sans-serif !important;
+}
+
+.leadListPage :global([class*="assignBtn"]),
+.leadListPage :global([class*="saveBtn"]) {
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #1876bd, #145f9f) !important;
+  color: #ffffff !important;
+  font-family: "Manrope", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.leadListPage :global([class*="closeBtn"]) {
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-family: "Manrope", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.leadListPage :global([class*="closeBtn"]:hover) {
+  background: #dc2626 !important;
+}
+
+.leadListPage :global([class*="searchBox"]),
+.leadListPage :global([class*="SearchBox"]) {
+  flex: 0 1 360px;
+  width: min(360px, 100%);
+  min-width: min(320px, 100%);
+}
+
+.leadListPage :global([class*="searchBox"] input),
+.leadListPage :global([class*="SearchBox"] input) {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  color: #233b58;
+  font-family: "Manrope", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leadListPage :global([class*="searchBox"] input::placeholder),
+.leadListPage :global([class*="SearchBox"] input::placeholder) {
+  color: #71839a;
+  opacity: 1;
+}
+
+.leadListPage :global([class*="showBtn"]) {
+  display: inline-flex !important;
+  min-width: 104px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #2588cc, #176eaa) !important;
+  color: #ffffff !important;
+  font-family: "Manrope", sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+}
+
+.leadListPage :global([class*="showBtn"]:hover) {
+  background: linear-gradient(135deg, #207dbb, #125d92) !important;
+}
+
+@media (max-width: 600px) {
+  .leadListPage :global([class*="searchBox"]),
+  .leadListPage :global([class*="SearchBox"]) {
+    width: 100%;
+    min-width: 0;
+    flex-basis: 100%;
+  }
+}

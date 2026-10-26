@@ -183,7 +183,7 @@ const HealthInsuranceList = () => {
             setSelectedRecord(r);
           }}
         >
-          Show data
+          Show Data
         </button>
       </td>
     </tr>

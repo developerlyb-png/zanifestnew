@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import logo from "@/assets/logowhite.png";
+import logo from "@/assets/logowhite1.png";
 import styles from "@/styles/pages/agent.module.css";
 import { FiMenu, FiX } from "react-icons/fi";
 import ProfileMenu from "./ProfileMenu";

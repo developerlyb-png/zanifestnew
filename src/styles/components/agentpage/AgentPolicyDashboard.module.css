@@ -925,3 +925,436 @@
     max-width: 100%;
   }
 }
+
+/* Agent dashboard policy page refinement */
+.cont {
+  width: 100%;
+  min-width: 0;
+  padding: clamp(16px, 2vw, 26px);
+  border: 0;
+  border-radius: 0;
+  background: #f3f7fc;
+  color: #263d59;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.heading {
+  color: #142b4a;
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.primaryBtn,
+.exportSolidBtn {
+  min-height: 40px;
+  justify-content: center;
+  padding: 9px 15px;
+  border-radius: 10px;
+  background: #3b82f6;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
+}
+
+.primaryBtn:hover,
+.exportSolidBtn:hover {
+  background: #2563eb;
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.26);
+}
+
+.outlineBtn {
+  min-height: 40px;
+  justify-content: center;
+  padding: 8px 13px;
+  border: 1px solid #d4e2f1;
+  border-radius: 10px;
+  color: #2867a5;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.outlineBtn:hover {
+  border-color: #a9cbed;
+  background: #eef6fd;
+}
+
+.statCard,
+.salesCard,
+.approvalCard {
+  border-color: #e0e8f1;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.055);
+}
+
+.statCardLabel,
+.salesCardTitle,
+.approvalCardTitle,
+.approvalStatLabel {
+  color: #1c3553;
+  font-family: inherit;
+}
+
+.statCardValue,
+.salesCardValue,
+.approvalStatValue {
+  color: #142b4a;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.filterRow,
+.viewByRow {
+  gap: 10px;
+}
+
+.presetBtn,
+.dateInput,
+.selectInput,
+.searchInput {
+  border-color: #d5e3f0;
+  border-radius: 9px;
+  color: #344b65;
+  font-family: inherit;
+  font-size: 0.78rem;
+}
+
+.presetBtn {
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.presetBtnActive,
+.presetBtnActive:hover,
+.viewByBtnActive {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: #fff;
+}
+
+.dateInput,
+.selectInput {
+  min-height: 36px;
+}
+
+.viewByToggle {
+  background: #e8f0f8;
+}
+
+.viewByBtn,
+.viewByLabel,
+.rangeText {
+  font-family: inherit;
+}
+
+.tableWrapper,
+.pendingTableWrapper {
+  border-color: #dfe8f2;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.05);
+  scrollbar-color: #b8cde2 #f2f6fa;
+}
+
+.table {
+  font-family: inherit;
+  font-size: 0.8rem;
+}
+
+.table th {
+  background: #f1f6fb;
+  color: #526b86;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  border-color: #e2eaf3;
+}
+
+.table td {
+  color: #344b65;
+  border-color: #e8eef5;
+  font-size: 0.8rem;
+}
+
+.table th.stickyCol {
+  background: #f1f6fb;
+}
+
+.filterHeaderRow td,
+.filterHeaderRow .stickyCol {
+  background: #f8fbfe;
+}
+
+.selectInput,
+.searchInput {
+  min-height: 34px;
+  background: #fff;
+}
+
+.selectInput:focus,
+.searchInput:focus-within,
+.dateInput:focus {
+  outline: none;
+  border-color: #4b91e8;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.searchInput input {
+  color: #263d59;
+  font-family: inherit;
+  font-size: 0.76rem;
+}
+
+.linkCell {
+  color: #2573c0;
+  font-family: inherit;
+}
+
+.emptyCell,
+.pendingEmptyState {
+  color: #71839a;
+  font-family: inherit;
+  font-size: 0.84rem;
+}
+
+.pendingPanel {
+  border-color: #e0e8f1;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 41, 75, 0.055);
+  font-family: inherit;
+}
+
+.pendingPanelTitle {
+  color: #142b4a;
+  font-family: inherit;
+}
+
+.pendingTable th {
+  background: #f1f6fb;
+  color: #526b86;
+  font-family: inherit;
+}
+
+.pendingTable td {
+  color: #344b65;
+  font-family: inherit;
+}
+
+@media screen and (max-width: 768px) {
+  .cont {
+    padding: 16px;
+    border-radius: 15px;
+  }
+
+  .headerRow {
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .headerActions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .headerActions > button,
+  .headerActions .outlineBtn,
+  .headerActions .primaryBtn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .statCardsRow {
+    gap: 12px;
+  }
+
+  .filterRow {
+    align-items: stretch;
+  }
+
+  .presets {
+    width: 100%;
+    gap: 7px;
+  }
+
+  .presetBtn {
+    flex: 1 1 auto;
+  }
+
+  .filterRowRight {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .viewByRow {
+    align-items: flex-start;
+  }
+
+  .rangeText {
+    width: 100%;
+    margin-left: 0;
+    font-size: 0.75rem;
+  }
+
+  .tableWrapper,
+  .pendingTableWrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .cont {
+    width: 100%;
+    padding: 10px 0 18px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .headerRow {
+    gap: 12px;
+  }
+
+  .headerActions {
+    gap: 8px;
+  }
+
+  .headerActions > button,
+  .headerActions .outlineBtn,
+  .headerActions .primaryBtn {
+    min-height: 38px;
+    padding: 7px 8px;
+    font-size: 0.73rem;
+  }
+
+  .statCardsRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .statCard {
+    min-width: 0;
+    padding: 13px 12px;
+  }
+
+  .statCardLabel {
+    font-size: 0.75rem;
+  }
+
+  .statCardValue {
+    font-size: 1.15rem;
+  }
+
+  .statCardSubtitle {
+    font-size: 0.68rem;
+  }
+
+  .mainGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .salesCard,
+  .approvalCard {
+    min-width: 0;
+    padding: 15px 13px;
+    border: 1px solid #e4ebf3;
+    border-radius: 14px;
+    box-shadow: 0 5px 16px rgba(20, 41, 75, 0.045);
+  }
+
+  .salesCardTitle,
+  .approvalCardTitle {
+    font-size: 0.9rem;
+  }
+
+  .salesCardValue {
+    font-size: 1.35rem;
+  }
+
+  .salesChartBox {
+    width: 100%;
+    height: 240px;
+    margin-top: 5px;
+    overflow: visible;
+  }
+
+  .productLegend {
+    gap: 8px 12px;
+    margin-top: 10px;
+    padding-top: 11px;
+  }
+
+  .approvalCard {
+    gap: 10px;
+  }
+
+  .approvalStatRow {
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .approvalStatSub {
+    font-size: 0.68rem;
+  }
+
+  .filterRowRight {
+    justify-content: stretch;
+  }
+
+  .filterRowRight > *,
+  .filterRowRight .exportSolidBtn,
+  .columnPickerWrapper,
+  .columnPickerWrapper > button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .filterRowRight .exportSolidBtn,
+  .columnPickerWrapper > button {
+    min-height: 38px;
+    padding: 7px 8px;
+    font-size: 0.73rem;
+  }
+
+  .viewByToggle {
+    width: 100%;
+  }
+
+  .viewByBtn {
+    flex: 1;
+    padding: 7px 9px;
+    font-size: 0.7rem;
+  }
+
+  .table {
+    min-width: 1500px;
+    font-size: 0.75rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 11px;
+  }
+
+  .pendingPanel {
+    padding: 14px 12px;
+  }
+
+  .pendingTable {
+    min-width: 850px;
+  }
+}
+
+@media screen and (min-width: 561px) {
+  .mainGrid {
+    grid-template-columns: minmax(0, 2fr) minmax(230px, 1fr);
+  }
+}

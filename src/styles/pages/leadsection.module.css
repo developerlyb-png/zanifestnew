@@ -348,6 +348,567 @@ textarea:focus-visible {
     padding: 10px 12px;
   }
 }
+
+/* Match lead records and their details form to the shared admin blue palette. */
+.container {
+  background: #f4f8fd;
+  color: #142b4a;
+  font-family: "Manrope", sans-serif;
+}
+
+.title {
+  color: #142b4a;
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+}
+
+.tableWrapper,
+.modal {
+  border: 1px solid #dce8f4;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(20, 41, 75, 0.08);
+}
+
+.table th {
+  background: #f3f8fc;
+  color: #637b96;
+  font-family: "Manrope", sans-serif;
+}
+
+.table td {
+  color: #344b65;
+  font-family: "Manrope", sans-serif;
+  border-color: #edf2f7;
+}
+
+.table tr:hover {
+  background: #f1f8fd;
+}
+
+.showBtn,
+.pagination button,
+.saveBtn {
+  background: linear-gradient(135deg, #1876bd, #145f9f);
+  color: #ffffff;
+  font-family: "Manrope", sans-serif;
+}
+
+.showBtn:hover,
+.pagination button:hover:not(:disabled),
+.saveBtn:hover {
+  background: #145f9f;
+}
+
+.modalOverlay {
+  background: rgba(13, 27, 48, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 18px;
+}
+
+.modalHeader,
+.modalFooter {
+  background: #ffffff;
+  border-color: #e2eaf2;
+}
+
+.modalHeader h3 {
+  color: #142b4a;
+  font-family: "Manrope", sans-serif;
+}
+
+.modalContent {
+  background: #f4f8fd;
+}
+
+.label {
+  color: #526b86;
+  font-family: "Manrope", sans-serif;
+}
+
+.valueBox {
+  border: 1px solid #dce8f4;
+  border-radius: 10px;
+  color: #142b4a;
+  font-family: "Manrope", sans-serif;
+}
+
+.statusBox select,
+.statusBox textarea,
+.filterBar select,
+.dateInput,
+.searchBox input {
+  border-color: #d5e3f0;
+  color: #142b4a;
+  font-family: "Manrope", sans-serif;
+}
+
+.statusBox select:focus,
+.statusBox textarea:focus,
+.filterBar select:focus,
+.dateInput:focus,
+.searchBox input:focus {
+  outline: none;
+  border-color: #1876bd;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.12);
+}
+
+.closeBtn {
+  border: 0;
+  background: #ef4444;
+  color: #ffffff;
+  font-family: "Manrope", sans-serif;
+}
+
+.closeBtn:hover {
+  background: #dc2626;
+}
+
+.searchBox {
+  width: min(360px, 100%);
+  min-width: min(320px, 100%);
+}
+
+.searchBox input {
+  min-width: 0;
+  overflow: hidden;
+  color: #233b58;
+  font-family: "Manrope", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchBox input::placeholder {
+  color: #71839a;
+  opacity: 1;
+}
+
+.showBtn {
+  display: inline-flex;
+  min-width: 104px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2588cc, #176eaa);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.showBtn:hover {
+  background: linear-gradient(135deg, #207dbb, #125d92);
+}
+
+@media (max-width: 768px) {
+  .searchBox {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Premium lead dashboard layout and responsive controls. */
+.container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: clamp(16px, 2.2vw, 28px);
+  background: #f3f7fc;
+  color: #233b58;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.container,
+.container * {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.title {
+  margin: 0 0 20px;
+  color: #142b4a;
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-align: left;
+}
+
+.filterBar {
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.filterBar select,
+.dateInput {
+  flex: 0 1 150px;
+  width: auto;
+  min-width: 135px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #d5e3f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #344b65;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(20, 41, 75, 0.025);
+}
+
+.searchBox {
+  flex: 1 1 220px;
+  width: auto;
+  min-width: 190px;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #d5e3f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #71839a;
+}
+
+.searchBox:focus-within,
+.filterBar select:focus,
+.dateInput:focus {
+  border-color: #1876bd;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(24, 118, 189, 0.11);
+}
+
+.searchBox input,
+.searchBox input:focus,
+.searchBox input:focus-visible {
+  min-width: 0;
+  width: 100%;
+  padding: 0 2px 0 28px;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #233b58;
+  font-size: 13px;
+}
+
+.searchBox input::placeholder {
+  color: #71839a;
+  opacity: 1;
+}
+
+.tableWrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e0e8f1;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(20, 41, 75, 0.06);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  padding: 14px 15px;
+  background: #f3f8fc;
+  color: #637b96;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 13px 15px;
+  color: #344b65;
+  font-size: 13px;
+  line-height: 1.5;
+  border-top: 1px solid #edf2f7;
+}
+
+.table tr:hover {
+  background: #f5faff;
+}
+
+.empty {
+  color: #71839a;
+  font-size: 14px;
+}
+
+.pagination {
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: #526b86;
+  font-size: 13px;
+}
+
+.pagination button {
+  min-width: 64px;
+  min-height: 38px;
+  border-radius: 9px;
+  background: #1876bd;
+  box-shadow: 0 4px 12px rgba(24, 118, 189, 0.16);
+  font-size: 13px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #145f9f;
+}
+
+.modalOverlay {
+  padding: 18px;
+  background: rgba(13, 27, 48, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: min(1100px, 100%);
+  max-height: min(92vh, 900px);
+  border: 1px solid #dce8f4;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(12, 31, 54, 0.22);
+}
+
+.modalHeader {
+  padding: 18px 24px;
+  background: #ffffff;
+  border-bottom-color: #e2eaf2;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: #142b4a;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.modalContent {
+  padding: 22px 24px;
+  gap: 14px 18px;
+  background: #f4f8fd;
+}
+
+.field {
+  min-width: 0;
+  gap: 6px;
+}
+
+.label {
+  color: #526b86;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.valueBox {
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #dce8f4;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #233b58;
+  font-size: 13px;
+}
+
+.modalFooter {
+  align-items: flex-end;
+  padding: 18px 24px;
+  border-top-color: #e2eaf2;
+  background: #ffffff;
+}
+
+.statusBox {
+  gap: 9px;
+}
+
+.statusBox select,
+.statusBox textarea {
+  border: 1px solid #d5e3f0;
+  border-radius: 10px;
+  color: #233b58;
+  font-size: 13px;
+}
+
+.saveBtn {
+  min-height: 44px;
+  margin-top: 0;
+  border-radius: 10px;
+  background: #1876bd;
+  box-shadow: 0 5px 14px rgba(24, 118, 189, 0.18);
+  font-size: 14px;
+}
+
+.saveBtn:hover {
+  background: #145f9f;
+}
+
+.closeBtn {
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .filterBar {
+    gap: 9px;
+  }
+
+  .filterBar select,
+  .dateInput,
+  .searchBox {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0 13px;
+  }
+
+  .searchIcon {
+    left: 13px;
+    font-size: 16px;
+  }
+
+  .searchBox input,
+  .searchBox input:focus,
+  .searchBox input:focus-visible {
+    min-height: 44px;
+    padding: 0 0 0 27px;
+    font-size: 14px;
+  }
+
+  .filterBar select,
+  .dateInput {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .modalOverlay {
+    align-items: flex-end;
+    padding: 10px;
+  }
+
+  .modal {
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .modalContent {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .modalFooter {
+    padding: 14px 16px;
+  }
+
+  .saveBtn,
+  .closeBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 12px 22px;
+  }
+
+  .title {
+    margin-bottom: 14px;
+    font-size: 1.25rem;
+  }
+
+  .filterBar {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .tableWrapper {
+    border-radius: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+
+  .table {
+    min-width: 760px;
+  }
+
+  .modalHeader {
+    padding: 15px 16px;
+  }
+
+  .modalHeader h3 {
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 901px) {
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(190px, 1.45fr);
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filterBar select,
+  .dateInput,
+  .searchBox {
+    width: 100%;
+    min-width: 0;
+    flex: initial;
+  }
+
+  .searchBox {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .searchBox input,
+  .searchBox input:focus,
+  .searchBox input:focus-visible {
+    min-width: 0;
+    height: 42px;
+    margin: 0;
+    padding-left: 28px;
+    font-size: 13px;
+    line-height: 1;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 900px) {
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .filterBar select,
+  .dateInput,
+  .searchBox {
+    width: 100%;
+    min-width: 0;
+    flex: initial;
+  }
+
+  .searchBox {
+    grid-column: 1 / -1;
+  }
+}
 /* ================= MODAL LABEL CAPITALIZE FIX ================= */
 .modalContent label {
   text-transform: capitalize;   
