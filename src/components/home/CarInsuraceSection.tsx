@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { FaEllipsisH } from "react-icons/fa";
 import useSWR from "swr";
 import InsuranceInquiryModal from "@/components/ui/InsuranceInquiryModal";
@@ -95,6 +96,10 @@ const cleanName = (name: string) =>
 const normalizeName = (name: string) =>
   cleanName(name).toLowerCase();
 
+// Car and 2 wheeler go straight to their own quote flow instead of the
+// "Talk to an advisor" inquiry popup — removed for these two only, for now.
+const DIRECT_LINK_PRODUCTS = ["Car Insurance", "2 wheeler Insurance"];
+
 const parseHeading = (text: string) => {
   const regex = /<([^>]+)>/g;
   const parts: { text: string; isTag: boolean }[] = [];
@@ -135,6 +140,7 @@ export default function CarInsuraceSection({
   initialHeading?: string;
   initialOrder?: string[];
 }) {
+  const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   const { data } = useSWR("/api/carinsuranceapi", fetcher);
@@ -254,7 +260,14 @@ export default function CarInsuraceSection({
             type="button"
             className={styles.item}
             key={`${normalizeName(item.name)}-${index}`}
-            onClick={() => setSelectedProduct(cleanName(item.name))}
+            onClick={() => {
+              const name = cleanName(item.name);
+              if (DIRECT_LINK_PRODUCTS.includes(name)) {
+                router.push(item.link.replace(/^\./, ""));
+              } else {
+                setSelectedProduct(name);
+              }
+            }}
           >
             <span className={styles.top}>
               <span className={styles.imageCont}>

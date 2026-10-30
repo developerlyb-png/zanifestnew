@@ -46,7 +46,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const k = Object.keys(obj).find((x) => x.toLowerCase() === key.toLowerCase());
       return k ? obj[k] : undefined;
     };
-    const num = (v: any) => (v == null || v === "" ? null : Number(v));
+    // Bajaj sends missing amounts as the string "null"
+    const num = (v: any) => {
+      if (v == null || v === "" || v === "null") return null;
+      const n = Number(v);
+      return isNaN(n) ? null : n;
+    };
 
     // errorcode 0 should mean success, but Bajaj also returns errorcode 0 with
     // an errorlist entry and null premiumdetails on exceptions (seen live on
@@ -55,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const errorList: any[] = (get(data, "errorlist") || []).filter(
       (e: any) => e && (get(e, "errtext") || get(e, "errnumber"))
     );
-    const hasPremium = get(get(data, "premiumdetails"), "finalpremium") != null;
+    const hasPremium = num(get(get(data, "premiumdetails"), "finalpremium")) != null;
     if (!response.ok || errorCode !== 0 || errorList.length || !hasPremium) {
       const messages = errorList
         .map((e) => get(e, "errtext") || get(e, "errordesc") || Object.values(e || {}).filter((x) => typeof x === "string" && x).join(" "))

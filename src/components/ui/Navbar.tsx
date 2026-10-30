@@ -62,6 +62,10 @@ const INSURANCE_PRODUCT_LIST = [
   },
 ];
 
+// Car and 2 wheeler go straight to their own quote flow instead of the
+// "Talk to an advisor" inquiry popup — removed for these two only, for now.
+const DIRECT_LINK_PRODUCTS = ["Car Insurance", "2 wheeler Insurance"];
+
 function Navbar() {
   const router = useRouter();
   const { isLoggedIn, logout } = useAuth();
@@ -100,6 +104,14 @@ function Navbar() {
   const closeMobileMenu = () => {
     setShowMobileMenu(false);
     setListIndex(0);
+  };
+
+  const handleProductClick = (item: { name: string; link: string }) => {
+    if (DIRECT_LINK_PRODUCTS.includes(item.name)) {
+      router.push(item.link);
+    } else {
+      setSelectedProduct(item.name);
+    }
   };
 
   return (
@@ -215,7 +227,7 @@ function Navbar() {
                       className={styles.dropItemMobile}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedProduct(item.name);
+                        handleProductClick(item);
                         closeMobileMenu();
                       }}
                     >
@@ -328,7 +340,7 @@ function Navbar() {
               <div
                 key={index}
                 className={styles.dropItem}
-                onClick={() => setSelectedProduct(item.name)}
+                onClick={() => handleProductClick(item)}
               >
                 {item.name}
               </div>

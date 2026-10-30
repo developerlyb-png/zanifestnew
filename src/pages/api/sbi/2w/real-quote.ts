@@ -186,9 +186,18 @@ function buildPayload(ratingData: any, body: any) {
 
     policyTenure: "1",
 
-    make: vehicle.make,
-    model: vehicle.model,
-    variant: vehicle.variant,
+    // Zuno's full-quote looks these up against its own master data to
+    // resolve a makeModelMasterCode internally — it has no such request
+    // field to send directly (confirmed against Zuno's own Postman
+    // collection: makeModelMasterCode only ever appears in their response
+    // examples). "Make Model Master Code is mandatory" really means it
+    // couldn't resolve one, usually because `make` doesn't exactly match
+    // their master spelling (e.g. "HERO" vs their "HERO MOTOCORP"). The
+    // rating step already resolved this successfully for the same vehicle,
+    // so prefer its echoed make/model/variant over our own normalized ones.
+    make: io.make || vehicle.make,
+    model: io.model || vehicle.model,
+    variant: io.variant || vehicle.variant,
     idvCity: io.idvCity || rto.idvcity || "AHMEDABAD",
     cubicCapacity:
       io.cubiccapacity || String(vehicle.capacity || "").replace(".0", "").replace(".00", ""),
@@ -344,7 +353,24 @@ export default async function handler(
       data = text;
     }
 
-    return res.status(response.status).json({ success: response.ok, data });
+    // HTTP 200 only means Zuno accepted the request — it still reports
+    // underwriting outcomes (quoteStatus) inside the body. A "Referred"/
+    // "Declined"/"Rejected" quote is NOT issuable even though the call
+    // itself succeeded, so surface that as a failure instead of letting
+    // the caller silently proceed to issue-policy with an unapproved quote.
+    const quoteStatus = String(data?.policyLevelDetails?.quoteStatus || "");
+    const isBlocked = /^(referred|declined|rejected)$/i.test(quoteStatus);
+    if (isBlocked) {
+      console.log("FULL QUOTE BLOCKED — quoteStatus:", quoteStatus);
+      return res.status(200).json({
+        success: false,
+        message: `Zuno ${quoteStatus.toLowerCase()} this quote — it needs manual underwriting review and can't be issued automatically (vehicle may be too old or flagged for another reason).`,
+        quoteStatus,
+        data,
+      });
+    }
+
+    return res.status(response.status).json({ success: response.ok, quoteStatus, data });
   } catch (error: any) {
     console.log("FULL QUOTE ERROR", error);
     return res.status(500).json({ success: false, message: error.message });

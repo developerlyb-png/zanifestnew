@@ -66,6 +66,9 @@ export interface BajajQuoteOptions {
   // transactionid from the previous premium call — Bajaj requires it when
   // recomputing (e.g. IDV change) and again at issuance.
   transactionId?: string;
+  // Where Bajaj sends the customer after its payment page (detariff extcol20).
+  // Bajaj's samples send it on both the premium and the issue call.
+  returnUrl?: string;
 }
 
 export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions = {}) {
@@ -110,7 +113,14 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
   const prvncb = "0";
   const ncb = noClaim ? "20" : "0";
 
-  const prevInsurerCode = bajajPrevInsurerCode(rc.vehicle_insurance_company_name);
+  // The proposal form's previous insurer / policy number (when given) beat
+  // the RC's guess, so the issue call prices against what the customer stated.
+  const prevInsurerCode =
+    (quoteInput.previousInsurerCode && String(quoteInput.previousInsurerCode)) ||
+    bajajPrevInsurerCode(rc.vehicle_insurance_company_name);
+  const prevPolicyNo = String(
+    quoteInput.previousPolicyNumber || rc.vehicle_insurance_policy_number || "0"
+  );
 
   const yearManf =
     String(rc.vehicle_manufacturing_month_year || "").split("/")[1] ||
@@ -162,7 +172,7 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
         spdiscrate: "0",
         elecacctotal: "0",
         nonelecacctotal: "0",
-        prvpolicyref: isNew ? "" : String(rc.vehicle_insurance_policy_number || "0"),
+        prvpolicyref: isNew ? "" : prevPolicyNo,
         prvexpirydate: isNew ? "" : bajajDate(prevExpiryIso),
         // Unknown insurer falls back to New India (1); the real one must be
         // captured on the proposal form before issuance.
@@ -216,6 +226,7 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
         ),
         ...Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`extcol${i + 1}`, ""])),
         extcol8: "MCPA", // compulsory PA cover for the owner-driver
+        extcol20: opts.returnUrl || "",
         ...(isNew ? { extcol24: "1" } : {}), // as in Bajaj's own 1825 sample
       },
       transactionid: opts.transactionId || "0",
@@ -228,5 +239,133 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
     ambiguous: match.ambiguous,
     registrationCity: rto.city,
     previousInsurerAssumed: !isNew && !prevInsurerCode,
+  };
+}
+
+// Kit "Prev Insurance Company Codes", for the proposal form's dropdown.
+// Bajaj (6) is left out: its own renewals are a different policy type.
+export const BAJAJ_PREV_INSURERS: { code: string; name: string }[] = [
+  { code: "1", name: "The New India Assurance Company Limited" },
+  { code: "2", name: "Tata AIG General Insurance Company Limited" },
+  { code: "3", name: "United India Insurance Company Limited" },
+  { code: "4", name: "National Insurance Company Limited" },
+  { code: "5", name: "The Oriental Insurance Company Limited" },
+  { code: "8", name: "ICICI Lombard General Insurance Company Limited" },
+  { code: "9", name: "IFFCO Tokio General Insurance Company Limited" },
+  { code: "10", name: "Reliance General Insurance Company Limited" },
+  { code: "11", name: "Royal Sundaram General Insurance Co. Limited" },
+  { code: "12", name: "HDFC ERGO General Insurance Company Limited" },
+  { code: "13", name: "Cholamandalam MS General Insurance Company Limited" },
+  { code: "17", name: "Future Generali India Insurance Company Limited" },
+  { code: "18", name: "Universal Sompo General Insurance Company Limited" },
+  { code: "20", name: "Shriram General Insurance Company Limited" },
+  { code: "21", name: "Bharti AXA General Insurance Company Limited" },
+  { code: "22", name: "Raheja QBE General Insurance Company Limited" },
+  { code: "24", name: "SBI General Insurance Company Limited" },
+  { code: "25", name: "L&T General Insurance Company Limited" },
+  { code: "29", name: "Liberty General Insurance Limited" },
+  { code: "30", name: "Magma HDI General Insurance Company Limited" },
+  { code: "31", name: "Kotak Mahindra General Insurance" },
+  { code: "32", name: "DHFL General Insurance Limited" },
+  { code: "33", name: "Acko General Insurance Limited" },
+  { code: "34", name: "Go Digit General Insurance Limited" },
+  { code: "43", name: "Edelweiss (Zuno) General Insurance Company Limited" },
+];
+
+export interface BajajProposer {
+  title: string; // Mr / Mrs / Ms
+  firstName: string;
+  lastName: string;
+  dob: string; // yyyy-mm-dd
+  mobile: string;
+  email: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  engineNo: string;
+  chassisNo: string;
+  nomineeName: string;
+  nomineeRelation: string;
+}
+
+// issuepolicy body (kit "Policy Issaunce Data"): the premium request's own
+// weomotpolicyin / lists / detariff — Bajaj says "pass same value as in
+// compute premium" — plus the customer, engine/chassis and payment mode.
+// `premiumBody` must be the exact body whose premium call returned
+// `transactionId`.
+export function buildBajajIssueBody(
+  premiumBody: any,
+  transactionId: string,
+  p: BajajProposer
+) {
+  const line1 = p.address1.slice(0, 100);
+  const line2 = (p.address2 || "").slice(0, 100);
+  return {
+    userid: premiumBody.userid,
+    password: premiumBody.password,
+    transactionid: transactionId,
+    rcptlist: [{ payamt: "", paymode: "", collectionamt: "", collectionno: "", receiptno: "" }],
+    custdetails: {
+      parttempid: "",
+      firstname: p.firstName,
+      middlename: "",
+      surname: p.lastName,
+      addline1: line1,
+      addline2: line2,
+      addline3: p.city.slice(0, 60),
+      addline5: p.state.slice(0, 60),
+      pincode: p.pincode,
+      email: p.email,
+      telephone1: "",
+      telephone2: "",
+      mobile: p.mobile,
+      delivaryoption: "",
+      poladdline1: line1,
+      poladdline2: line2,
+      poladdline3: p.city.slice(0, 60),
+      poladdline5: p.state.slice(0, 60),
+      polpincode: p.pincode,
+      password: "",
+      cptype: "P",
+      profession: "",
+      dateofbirth: bajajDate(p.dob),
+      availabletime: "",
+      institutionname: "",
+      existingyn: "N",
+      loggedin: "",
+      mobilealerts: "",
+      emailalerts: "",
+      title: p.title,
+      partid: "",
+      status1: "",
+      status2: "",
+      status3: "",
+    },
+    weomotpolicyin: {
+      ...premiumBody.weomotpolicyin,
+      engineno: p.engineNo.toUpperCase(),
+      chassisno: p.chassisNo.toUpperCase(),
+    },
+    accessorieslist: premiumBody.accessorieslist,
+    paddoncoverlist: premiumBody.paddoncoverlist,
+    // Kit: extrafield1 carries the address pincode at issuance
+    motextracover: { ...premiumBody.motextracover, extrafield1: p.pincode },
+    premiumdetails: {},
+    premiumsummerylist: [],
+    questlist: premiumBody.questlist,
+    detariffobj: {
+      ...premiumBody.detariffobj,
+      // Kit: nominee as "~name~relation" (blank sample "~null~null")
+      extcol38: `~${p.nomineeName}~${p.nomineeRelation}`,
+    },
+    potherdetails: {
+      imdcode: "", covernoteno: "", leadno: "", ccecode: "", runnercode: "",
+      extra1: "", extra2: "", extra3: "", extra4: "", extra5: "",
+    },
+    premiumpayerid: "0",
+    // CC = Bajaj's own payment page; every issuepolicy sample in the kit uses it
+    paymentmode: "CC",
   };
 }

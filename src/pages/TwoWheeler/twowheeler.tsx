@@ -15,6 +15,8 @@ import { useRouter } from "next/router";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+import { deriveIdvCity } from "@/lib/zunoIdvCity";
+
 /* =========================
    YEARS
 ========================= */
@@ -277,6 +279,10 @@ export default function TwoWheeler() {
 
       /* IDV API */
 
+      const idvCity = deriveIdvCity(
+        rc.registrationNumber || rc.number || ""
+      );
+
       const idvRes = await fetch(
         `/api/sbi/2w/master/idv?make=${encodeURIComponent(
           makeName
@@ -284,18 +290,32 @@ export default function TwoWheeler() {
           matchedModel.model
         )}&variant=${encodeURIComponent(
           matchedVariant.variant
-        )}&idvCity=MUMBAI`
+        )}&idvCity=${idvCity}`
       );
 
       const idvJson =
         await idvRes.json();
+
+      // Zuno's IDV master doesn't cover every variant/zone combination
+      // (e.g. Honda Activa "SOLO" has no Delhi NCR pricing even though
+      // other Activa variants and other zones for SOLO do). Proceeding
+      // with no IDV data sends an empty idv/fuelType/capacity to rating,
+      // which fails there with an unhelpful "Error occured in Core
+      // service" instead of a clear message here.
+      if (!idvJson.success) {
+        alert(
+          "This variant isn't available for insurance in your area right now. Please pick a different variant."
+        );
+        setStep("variants");
+        return;
+      }
 
       setIdvData(idvJson.data);
 
       /* RTO API */
 
       const rtoRes = await fetch(
-        `/api/sbi/2w/master/rto?idvCity=MUMBAI`
+        `/api/sbi/2w/master/rto?idvCity=${idvCity}`
       );
 
       const rtoJson =
@@ -931,31 +951,10 @@ export default function TwoWheeler() {
                               ""
                             );
 
-                        let idvCity =
-                          "AHMEDABAD";
-
-                        if (
-                          vehicleNo.startsWith(
-                            "MH"
-                          )
-                        ) {
-                          idvCity =
-                            "MUMBAI";
-                        } else if (
-                          vehicleNo.startsWith(
-                            "DL"
-                          )
-                        ) {
-                          idvCity =
-                            "DELHI";
-                        } else if (
-                          vehicleNo.startsWith(
-                            "GJ"
-                          )
-                        ) {
-                          idvCity =
-                            "AHMEDABAD";
-                        }
+                        const idvCity =
+                          deriveIdvCity(
+                            vehicleNo
+                          );
 
                         /* IDV */
 
@@ -977,6 +976,17 @@ export default function TwoWheeler() {
                           "IDV DATA",
                           result
                         );
+
+                        // Zuno's IDV master doesn't cover every variant/zone
+                        // combination — proceeding anyway sends an empty
+                        // idv/fuelType/capacity to rating, which fails there
+                        // with an unhelpful "Error occured in Core service".
+                        if (!result.success) {
+                          alert(
+                            "This variant isn't available for insurance in your area right now. Please pick a different variant."
+                          );
+                          return;
+                        }
 
                         setIdvData(
                           result.data

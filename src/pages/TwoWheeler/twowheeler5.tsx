@@ -33,9 +33,11 @@ const dummyPlans = [
 const twowheeler5 = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-const [plans, setPlans] = useState(dummyPlans);
+const [plans, setPlans] = useState<typeof dummyPlans>([]);
 const [bikeData, setBikeData] = useState<any>(null);
 const [zunoQuote, setZunoQuote] = useState<any>(null);
+const [quoteLoading, setQuoteLoading] = useState(true);
+const [quoteError, setQuoteError] = useState<string | null>(null);
 
  useEffect(() => {
 
@@ -55,6 +57,8 @@ const selectedRto = JSON.parse(
   localStorage.getItem("selectedRto") || "{}"
 );
       if(!storedData){
+        setQuoteLoading(false);
+        setQuoteError("No vehicle details found — please start again from the bike number step.");
         return;
       }
 
@@ -272,6 +276,17 @@ highlight:
 ]);
 
 
+} else {
+
+console.log(
+  "2W RATING FAILED",
+  result
+);
+
+setQuoteError(
+  result.message || "Unable to fetch your quote right now. Please try again."
+);
+
 }
 
 
@@ -283,6 +298,13 @@ highlight:
         error
       );
 
+      setQuoteError(
+        "Something went wrong while fetching your quote. Please try again."
+      );
+
+    }
+    finally {
+      setQuoteLoading(false);
     }
 
 
@@ -398,13 +420,24 @@ useEffect(() => {
             </div>
           </div>
 
-          <p className={styles.heading}>
-  {plans.length} comprehensive plans available
-</p>
-          <p className={styles.subtext}>Covers damages to your vehicle and third-party</p>
+          {quoteLoading ? (
+            <p className={styles.heading}>Fetching your quote...</p>
+          ) : quoteError ? (
+            <>
+              <p className={styles.heading}>Unable to fetch a quote</p>
+              <p className={styles.subtext}>{quoteError}</p>
+            </>
+          ) : (
+            <>
+              <p className={styles.heading}>
+                {plans.length} comprehensive plans available
+              </p>
+              <p className={styles.subtext}>Covers damages to your vehicle and third-party</p>
+            </>
+          )}
 
           <div className={styles.planList}>
-            {plans.map((plan) => (
+            {!quoteLoading && !quoteError && plans.map((plan) => (
               <div key={plan.id} className={styles.planCard}>
                 <div className={styles.planLeft}>
                   <div className={styles.logoSection}>
