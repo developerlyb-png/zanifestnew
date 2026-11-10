@@ -94,7 +94,7 @@ const ShriramPayment = () => {
           premium: checkout.netPremium ?? status.amount,
           grossPremium: status.amount ?? checkout.amount,
           transactionType: "Rollover",
-          insurer: "Shriram General Insurance",
+          insurer: "Shriram General Insurance Company Limited",
           vehicle: checkout.vehicle,
           customer: checkout.customer,
         }),

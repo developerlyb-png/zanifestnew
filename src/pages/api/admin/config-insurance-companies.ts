@@ -28,10 +28,6 @@ function validate(b: any) {
 
   if (!name) return { error: "Insurance company name is required" };
   if (!branch) return { error: "Insurance company branch is required" };
-  if (!opsRmEmail) return { error: "Operation RM email is required" };
-  if (!opsRmPhone) return { error: "Operation RM phone number is required" };
-  if (!claimsRmEmail) return { error: "Claims RM email is required" };
-  if (!claimsRmPhone) return { error: "Claims RM phone number is required" };
 
   return {
     doc: {

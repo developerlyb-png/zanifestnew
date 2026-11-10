@@ -17,6 +17,8 @@ import {
   FiUpload,
   FiUsers,
   FiCreditCard,
+  FiPlus,
+  FiX,
 } from "react-icons/fi";
 import { INVOICE_STATUSES, invoiceStatusColor } from "@/constants/invoice";
 
@@ -34,6 +36,41 @@ const addrLine = (a?: { line1?: string; line2?: string; city?: string; state?: s
 
 const esc = (v: any) =>
   String(v ?? "—").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+
+const ONES = [
+  "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+  "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
+];
+const TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+function twoDigitsToWords(n: number): string {
+  if (n < 20) return ONES[n];
+  return TENS[Math.floor(n / 10)] + (n % 10 ? " " + ONES[n % 10] : "");
+}
+function threeDigitsToWords(n: number): string {
+  if (n >= 100) return ONES[Math.floor(n / 100)] + " Hundred" + (n % 100 ? " " + twoDigitsToWords(n % 100) : "");
+  return twoDigitsToWords(n);
+}
+// Indian numbering (crore/lakh/thousand), used for the "Amount in Words" line
+// that a GST tax invoice is conventionally expected to carry.
+function numberToWordsIndian(value: number): string {
+  let n = Math.round(Math.abs(value));
+  if (n === 0) return "Zero";
+  const crore = Math.floor(n / 1e7);
+  n %= 1e7;
+  const lakh = Math.floor(n / 1e5);
+  n %= 1e5;
+  const thousand = Math.floor(n / 1e3);
+  n %= 1e3;
+  const hundred = n;
+  const parts: string[] = [];
+  if (crore) parts.push(threeDigitsToWords(crore) + " Crore");
+  if (lakh) parts.push(threeDigitsToWords(lakh) + " Lakh");
+  if (thousand) parts.push(threeDigitsToWords(thousand) + " Thousand");
+  if (hundred) parts.push(threeDigitsToWords(hundred));
+  return parts.join(" ") || "Zero";
+}
+const amountInWords = (n?: number) => `Rupees ${numberToWordsIndian(n || 0)} Only`;
 
 function Section({
   icon,
@@ -78,6 +115,13 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
   const [busy, setBusy] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [paymentMode, setPaymentMode] = useState("Bank Transfer");
+  const [paymentNote, setPaymentNote] = useState("");
+  const [recordingPayment, setRecordingPayment] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -136,26 +180,148 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
   const downloadReport = () => {
     const w = window.open("", "_blank");
     if (!w) return toast.error("Allow pop-ups to download the invoice");
+
+    const seller = invoice.seller || {};
+    const client = invoice.client || {};
+    const clientAddr = addrLine({
+      line1: client.addressLine1,
+      line2: client.addressLine2,
+      city: client.city,
+      state: client.state,
+      pincode: client.pincode,
+    });
+
+    const discountCell = (it: any) => {
+      const v = Number(it.discountValue) || 0;
+      if (!v) return "—";
+      return it.discountType === "%" ? `${v}%` : inr(v);
+    };
     const rows = (invoice.lineItems || [])
       .map(
         (it: any, i: number) =>
-          `<tr><td>${i + 1}</td><td>${esc(it.description)}</td><td>${esc(it.hsnSac)}</td><td>${it.qty}</td><td>${inr(it.rate)}</td><td>${inr(it.amount)}</td></tr>`
+          `<tr><td>${i + 1}</td><td>${esc(it.description)}</td><td>${esc(it.hsnSac)}</td><td class="num">${it.qty}</td><td class="num">${inr(it.rate)}</td><td class="num">${discountCell(it)}</td><td class="num">${inr(it.amount)}</td></tr>`
       )
       .join("");
     const taxRows = (invoice.taxBreakup || [])
-      .map((t: any) => `<tr><td>${t.type} (${t.ratePercent}%)</td><td>${inr(t.amount)}</td></tr>`)
+      .map((t: any) => `<tr><td>${esc(t.type)} (${(t.ratePercent ?? 0).toFixed(1)}%)</td><td class="num">${inr(t.amount)}</td></tr>`)
       .join("");
+
+    const logoImg = seller.companyLogo?.data ? `<img class="logo" src="${seller.companyLogo.data}" />` : "";
+    const sigImg = seller.principalOfficerSignature?.data || seller.signatureImage?.data;
+
+    const bankBlock = seller.showBankDetailsOnInvoice && seller.bank?.accountNumber
+      ? `<div class="bankBox">
+          <div class="label">Bank Details</div>
+          <div>${esc(seller.bank?.bankName)}${seller.bank?.branch ? ", " + esc(seller.bank.branch) : ""}</div>
+          <div>A/C Name: ${esc(seller.bank?.accountName)}</div>
+          <div>A/C No.: ${esc(seller.bank?.accountNumber)} &nbsp;·&nbsp; IFSC: ${esc(seller.bank?.ifscCode)}</div>
+        </div>`
+      : "";
+
     w.document.write(`<!doctype html><html><head><title>Invoice ${esc(invoice.invoiceNo)}</title>
-<style>body{font-family:Arial,sans-serif;padding:28px;color:#111}h1{font-size:20px}h2{font-size:14px;margin-top:22px;color:#444}
-table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:7px 10px;font-size:12.5px;text-align:left}
-th{background:#f3f4f6}.tot{font-weight:700}</style></head><body>
-<h1>${esc(invoice.seller?.companyName)}</h1>
-<p>${esc(addrLine(invoice.seller?.registeredAddress))}<br/>GSTIN: ${esc(invoice.seller?.gstin)} · PAN: ${esc(invoice.seller?.pan)}</p>
-<h2>Invoice ${esc(invoice.invoiceNo)} — ${esc(fmtDate(invoice.invoiceDate))}</h2>
-<p><b>Bill To:</b> ${esc(invoice.client?.name)}<br/>${esc(addrLine({ line1: invoice.client?.addressLine1, line2: invoice.client?.addressLine2, city: invoice.client?.city, state: invoice.client?.state, pincode: invoice.client?.pincode }))}<br/>GSTIN: ${esc(invoice.client?.gstin)}</p>
-<table><tr><th>#</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>${rows}</table>
-<h2>Tax</h2>
-<table><tr><th>Type</th><th>Amount</th></tr>${taxRows}<tr class="tot"><td>Grand Total</td><td>${inr(invoice.grandTotal)}</td></tr></table>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #111827; padding: 32px; max-width: 860px; margin: 0 auto; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111827; padding-bottom: 16px; }
+  .headLeft { display: flex; gap: 14px; align-items: flex-start; }
+  .logo { width: 56px; height: 56px; object-fit: contain; }
+  .coName { font-size: 19px; font-weight: 800; }
+  .muted { color: #4b5563; font-size: 12px; line-height: 1.5; }
+  .headRight { text-align: right; }
+  .title { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .metaRow { font-size: 12px; display: flex; justify-content: flex-end; gap: 8px; }
+  .metaRow span:first-child { color: #6b7280; }
+  .billRow { display: flex; justify-content: space-between; margin-top: 20px; gap: 24px; }
+  .billBox { font-size: 12.5px; line-height: 1.6; max-width: 48%; }
+  .label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; font-weight: 700; margin-bottom: 4px; }
+  .billName { font-size: 14px; font-weight: 700; }
+  table.items { width: 100%; border-collapse: collapse; margin-top: 22px; }
+  table.items th, table.items td { border: 1px solid #d1d5db; padding: 7px 9px; font-size: 12px; text-align: left; }
+  table.items th { background: #f3f4f6; font-weight: 700; }
+  .num { text-align: right; }
+  .bottomRow { display: flex; justify-content: space-between; margin-top: 16px; gap: 24px; align-items: flex-start; }
+  .words { font-size: 12px; max-width: 54%; }
+  .wordsVal { font-weight: 700; margin-top: 2px; }
+  .bankBox { font-size: 11.5px; margin-top: 14px; line-height: 1.6; }
+  table.totals { border-collapse: collapse; min-width: 260px; }
+  table.totals td { padding: 5px 10px; font-size: 12.5px; }
+  table.totals td:last-child { text-align: right; }
+  table.totals tr.grand td { border-top: 2px solid #111827; font-weight: 800; font-size: 14px; padding-top: 8px; }
+  .signRow { display: flex; justify-content: flex-end; margin-top: 46px; }
+  .signBox { text-align: center; font-size: 12px; min-width: 220px; }
+  .sig { max-height: 54px; max-width: 180px; object-fit: contain; display: block; margin: 0 auto 4px; }
+  .sigBlank { height: 54px; }
+  .signLine { border-top: 1px solid #111827; margin-top: 4px; padding-top: 4px; }
+  .foot { margin-top: 36px; text-align: center; font-size: 11px; color: #9ca3af; }
+  @media print { body { padding: 10mm; } }
+</style></head><body>
+
+<div class="head">
+  <div class="headLeft">
+    ${logoImg}
+    <div>
+      <div class="coName">${esc(seller.companyName)}</div>
+      <div class="muted">${esc(addrLine(seller.registeredAddress))}</div>
+      <div class="muted">GSTIN: ${esc(seller.gstin)} &nbsp;·&nbsp; PAN: ${esc(seller.pan)}</div>
+      <div class="muted">${seller.email ? esc(seller.email) : ""}${seller.phone ? " · " + esc(seller.phone) : ""}</div>
+    </div>
+  </div>
+  <div class="headRight">
+    <div class="title">TAX INVOICE</div>
+    <div class="metaRow"><span>Invoice No.&nbsp;</span><b>${esc(invoice.invoiceNo)}</b></div>
+    <div class="metaRow"><span>Invoice Date&nbsp;</span><b>${esc(fmtDate(invoice.invoiceDate))}</b></div>
+    ${invoice.dueDate ? `<div class="metaRow"><span>Due Date&nbsp;</span><b>${esc(fmtDate(invoice.dueDate))}</b></div>` : ""}
+    <div class="metaRow"><span>Place of Supply&nbsp;</span><b>${esc(invoice.placeOfSupply)}</b></div>
+    <div class="metaRow"><span>Status&nbsp;</span><b>${esc(invoice.status)}</b></div>
+    ${invoice.reverseCharge ? `<div class="metaRow"><span>Reverse Charge&nbsp;</span><b>Yes</b></div>` : ""}
+  </div>
+</div>
+
+<div class="billRow">
+  <div class="billBox">
+    <div class="label">Bill To</div>
+    <div class="billName">${esc(client.name)}</div>
+    ${client.contactPerson ? `<div>${esc(client.contactPerson)}</div>` : ""}
+    <div>${esc(clientAddr)}</div>
+    <div>GSTIN: ${esc(client.gstin)} &nbsp;·&nbsp; PAN: ${esc(client.pan)}</div>
+    ${client.email || client.phone ? `<div>${client.email ? esc(client.email) : ""}${client.phone ? " · " + esc(client.phone) : ""}</div>` : ""}
+  </div>
+  <div class="billBox">
+    <div class="label">Tax Mode</div>
+    <div>${invoice.taxMode === "INTRA" ? "Intra State (CGST + SGST)" : "Inter State (IGST)"}</div>
+  </div>
+</div>
+
+<table class="items">
+  <thead><tr><th>#</th><th>Description</th><th>HSN/SAC</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Discount</th><th class="num">Amount</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+
+<div class="bottomRow">
+  <div class="words">
+    <div class="label">Amount in Words</div>
+    <div class="wordsVal">${esc(amountInWords(invoice.grandTotal))}</div>
+    ${bankBlock}
+  </div>
+  <table class="totals">
+    <tr><td>Taxable Amount</td><td>${inr(invoice.subtotal)}</td></tr>
+    ${taxRows}
+    <tr><td>Total Tax</td><td>${inr(invoice.totalTax)}</td></tr>
+    <tr class="grand"><td>Grand Total</td><td>${inr(invoice.grandTotal)}</td></tr>
+    ${(invoice.payments || []).length > 0 ? `<tr><td>Received</td><td>${inr(invoice.amountReceived)}</td></tr><tr><td>Balance Due</td><td>${inr(invoice.balanceDue ?? invoice.grandTotal)}</td></tr>` : ""}
+  </table>
+</div>
+
+<div class="signRow">
+  <div class="signBox">
+    <div>For ${esc(seller.companyName)}</div>
+    ${sigImg ? `<img class="sig" src="${sigImg}" />` : `<div class="sigBlank"></div>`}
+    <div class="signLine">${esc(seller.principalOfficerName || seller.contactPerson)}<br/>Authorized Signatory</div>
+  </div>
+</div>
+
+<div class="foot">This is a computer-generated invoice.</div>
+
 <script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
     setMenuOpen(false);
@@ -210,6 +376,52 @@ th{background:#f3f4f6}.tot{font-weight:700}</style></head><body>
     } finally {
       setBusy(false);
       setMenuOpen(false);
+    }
+  };
+
+  const recordPayment = async () => {
+    const amount = Number(paymentAmount);
+    if (!amount || amount <= 0) return toast.error("Enter a valid payment amount");
+    setRecordingPayment(true);
+    try {
+      const res = await fetch("/api/admin/invoices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          id: invoiceId,
+          addPayment: { date: paymentDate, amount, mode: paymentMode, note: paymentNote },
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      toast.success("Payment recorded");
+      setInvoice(data.invoice);
+      setShowPaymentForm(false);
+      setPaymentAmount("");
+      setPaymentNote("");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to record payment");
+    } finally {
+      setRecordingPayment(false);
+    }
+  };
+
+  const removePayment = async (paymentId: string) => {
+    if (!window.confirm("Remove this payment entry?")) return;
+    try {
+      const res = await fetch("/api/admin/invoices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id: invoiceId, removePaymentId: paymentId }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      toast.success("Payment removed");
+      setInvoice(data.invoice);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to remove payment");
     }
   };
 
@@ -384,6 +596,114 @@ th{background:#f3f4f6}.tot{font-weight:700}</style></head><body>
               <span>Grand Total</span>
               <b>{inr(invoice.grandTotal)}</b>
             </div>
+            <div className={styles.summaryRow}>
+              <span>Received</span>
+              <b>{inr(invoice.amountReceived)}</b>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>Balance Due</span>
+              <b style={{ color: (invoice.balanceDue || 0) > 0 ? "#b91c1c" : "#15803d" }}>
+                {inr(invoice.balanceDue ?? invoice.grandTotal)}
+              </b>
+            </div>
+          </Section>
+
+          <Section
+            icon={<FiCreditCard />}
+            title="Payments"
+            sub={`${(invoice.payments || []).length} recorded · Balance ${inr(invoice.balanceDue ?? invoice.grandTotal)}`}
+            defaultOpen
+          >
+            {(invoice.payments || []).length === 0 ? (
+              <p style={{ color: "#9ca3af", fontSize: 13 }}>No payments recorded yet.</p>
+            ) : (
+              <div style={{ marginBottom: 12 }}>
+                {(invoice.payments || []).map((p: any) => (
+                  <div
+                    key={p._id}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "8px 0",
+                      borderBottom: "1px solid #f1f5f9",
+                      fontSize: 12.5,
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, color: "#111827" }}>{inr(p.amount)}</div>
+                      <div style={{ color: "#6b7280" }}>
+                        {fmtDate(p.date)} · {p.mode}
+                        {p.note ? ` · ${p.note}` : ""}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removePayment(p._id)}
+                      style={{ background: "none", border: "none", color: "#b91c1c", cursor: "pointer", padding: 4 }}
+                      title="Remove payment"
+                    >
+                      <FiX size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showPaymentForm ? (
+              <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+                  <input
+                    type="date"
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(e.target.value)}
+                    style={{ border: "1px solid #d1d5db", borderRadius: 8, padding: "6px 8px", fontSize: 12.5 }}
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="Amount"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    style={{ border: "1px solid #d1d5db", borderRadius: 8, padding: "6px 8px", fontSize: 12.5 }}
+                  />
+                </div>
+                <select
+                  value={paymentMode}
+                  onChange={(e) => setPaymentMode(e.target.value)}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 8, padding: "6px 8px", fontSize: 12.5, marginBottom: 8 }}
+                >
+                  {["Cash", "Bank Transfer", "UPI", "Cheque", "Card", "Other"].map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  placeholder="Note (optional)"
+                  value={paymentNote}
+                  onChange={(e) => setPaymentNote(e.target.value)}
+                  style={{ width: "100%", border: "1px solid #d1d5db", borderRadius: 8, padding: "6px 8px", fontSize: 12.5, marginBottom: 10, boxSizing: "border-box" }}
+                />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={recordPayment}
+                    disabled={recordingPayment}
+                    className={styles.editBtn}
+                  >
+                    {recordingPayment ? "Saving..." : "Save Payment"}
+                  </button>
+                  <button type="button" onClick={() => setShowPaymentForm(false)} className={styles.deleteBtn}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" className={styles.editBtn} onClick={() => setShowPaymentForm(true)}>
+                <FiPlus /> Record Payment
+              </button>
+            )}
           </Section>
 
           {invoice.seller?.showBankDetailsOnInvoice && (

@@ -10,6 +10,7 @@ import {
   str,
   loadReferenceLists,
   validateAndNormalizeRow,
+  registerNewInsurer,
 } from "@/utils/policyBulkMapping";
 
 export const config = {
@@ -82,6 +83,7 @@ export default async function handler(
 
     const docs: any[] = [];
     const skipped: { row: number; reason: string }[] = [];
+    const newInsurers = new Set<string>();
 
     rows.forEach((row, i) => {
       const rowNumber = i + 2; // account for the header row in the sheet
@@ -107,11 +109,12 @@ export default async function handler(
       }
       seenInFile.add(policyNumber);
 
-      const { errors, row: normalizedRow } = validateAndNormalizeRow(row, refs);
+      const { errors, row: normalizedRow, newInsurer } = validateAndNormalizeRow(row, refs);
       if (errors.length) {
         skipped.push({ row: rowNumber, reason: errors.join("; ") });
         return;
       }
+      if (newInsurer) newInsurers.add(newInsurer);
 
       docs.push({ ...mapRow(normalizedRow, managersByName), createdBy: adminName });
     });
@@ -121,6 +124,7 @@ export default async function handler(
       const result = await IssuedPolicy.insertMany(docs, { ordered: false });
       inserted = result.length;
     }
+    await Promise.all([...newInsurers].map(registerNewInsurer));
 
     return res.status(201).json({ success: true, inserted, skipped });
   } catch (err: any) {

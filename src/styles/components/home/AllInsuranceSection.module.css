@@ -60,6 +60,9 @@
 .image {
   width: 100%;
   height: auto;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
 }
 
 .name {
@@ -72,6 +75,10 @@
 
 .desc {
   all: unset;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
   text-align: center;
   font-size: 14px;
   transition: all 0.3s;

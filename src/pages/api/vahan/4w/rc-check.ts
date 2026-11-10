@@ -3,6 +3,24 @@ import type {
  NextApiResponse
 } from "next";
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function callRechargeKit(rcNo: string) {
+  const partnerReqId = "RC" + Date.now() + Math.floor(Math.random() * 1000);
+  const response = await fetch(
+    "https://verify.rechargkit.biz/validation/rcAdvanceVerify",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RECHARGEKIT_TOKEN}`,
+      },
+      body: JSON.stringify({ rc_no: rcNo, partner_request_id: partnerReqId }),
+    }
+  );
+  const data = await response.json();
+  return { data, partnerReqId };
+}
 
 export default async function handler(
 req:NextApiRequest,
@@ -23,49 +41,22 @@ const {
 registrationNumber
 }=req.body;
 
+// RechargeKit's upstream VAHAN lookup is flaky — the same rc_no can fail
+// on one attempt (status 3, "RC Advance validation failed") and succeed
+// immediately on a fresh retry (confirmed live, same as the 2W handler).
+// Each attempt needs its own partner_request_id (RechargeKit rejects
+// reuse), and each is a new order on their side, so keep retries low.
+const MAX_ATTEMPTS = 2;
+let data: any = null;
 
+for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  const result = await callRechargeKit(registrationNumber);
+  data = result.data;
+  console.log(`RECHARGEKIT ATTEMPT ${attempt} status=${data.status} msg=${data.msg}`, data);
 
-const response =
-await fetch(
-"https://verify.rechargkit.biz/validation/rcAdvanceVerify",
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json",
-
-Authorization:
-`Bearer ${process.env.RECHARGEKIT_TOKEN}`
-
-},
-
-body:JSON.stringify({
-
-rc_no:registrationNumber,
-
-partner_request_id:
-"RC"+Date.now()
-
-})
-
+  if (data.status === 1 || data.status === 2) break; // success or genuinely pending
+  if (attempt < MAX_ATTEMPTS) await sleep(1500); // transient failure — retry fresh
 }
-
-);
-
-
-
-const data =
-await response.json();
-
-
-console.log(
-"RECHARGEKIT RAW RESPONSE",
-data
-);
-
-
 
 // RechargeKit wraps the RC record: cardData.data.result holds owner,
 // vehicle, registration and insurance blocks, and currentCredit/creditUsed

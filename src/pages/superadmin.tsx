@@ -520,22 +520,6 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
-            {/* Invoice Clients (single item — no submenu) */}
-            <li
-              className={`${styles.menuItem} ${
-                activeSection === "invoiceClients" ? styles.activeMenu : ""
-              }`}
-              onClick={() => {
-                setActiveSection("invoiceClients");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiFileText className={styles.icon} />
-                <span className={styles.label}>Invoice Clients</span>
-              </span>
-            </li>
-
             {/* Invoice (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${

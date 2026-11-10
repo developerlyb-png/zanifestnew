@@ -9,10 +9,10 @@ const InsuranceCompanyConfigSchema = new Schema(
     branch: { type: String, required: true, trim: true },
     salesRmEmail: { type: String, trim: true },
     salesRmPhone: { type: String, trim: true },
-    opsRmEmail: { type: String, required: true, trim: true },
-    opsRmPhone: { type: String, required: true, trim: true },
-    claimsRmEmail: { type: String, required: true, trim: true },
-    claimsRmPhone: { type: String, required: true, trim: true },
+    opsRmEmail: { type: String, trim: true },
+    opsRmPhone: { type: String, trim: true },
+    claimsRmEmail: { type: String, trim: true },
+    claimsRmPhone: { type: String, trim: true },
   },
   { timestamps: true }
 );

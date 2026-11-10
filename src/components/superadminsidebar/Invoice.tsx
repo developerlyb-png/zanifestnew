@@ -14,9 +14,13 @@ import {
   FiSend,
   FiEdit3,
   FiXCircle,
+  FiPackage,
+  FiBookOpen,
 } from "react-icons/fi";
 import CreateInvoice from "./CreateInvoice";
 import InvoiceDetailView from "./InvoiceDetailView";
+import InvoiceItems from "./InvoiceItems";
+import PartyLedger from "./PartyLedger";
 import { INVOICE_STATUSES, invoiceStatusColor } from "@/constants/invoice";
 
 interface InvoiceRow {
@@ -105,6 +109,7 @@ const STAT_DEFS = [
 ];
 
 export default function Invoice() {
+  const [tab, setTab] = useState<"invoices" | "items" | "ledger">("invoices");
   const [view, setView] = useState<"list" | "create" | "edit" | "detail">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -212,6 +217,50 @@ export default function Invoice() {
     URL.revokeObjectURL(url);
   };
 
+  const SubTabs = () => (
+    <div className={cs.subTabRow}>
+      <button
+        type="button"
+        className={`${cs.subTabBtn} ${tab === "invoices" ? cs.subTabBtnActive : ""}`}
+        onClick={() => setTab("invoices")}
+      >
+        <FiFileText size={14} /> Invoices
+      </button>
+      <button
+        type="button"
+        className={`${cs.subTabBtn} ${tab === "items" ? cs.subTabBtnActive : ""}`}
+        onClick={() => setTab("items")}
+      >
+        <FiPackage size={14} /> Item Catalog
+      </button>
+      <button
+        type="button"
+        className={`${cs.subTabBtn} ${tab === "ledger" ? cs.subTabBtnActive : ""}`}
+        onClick={() => setTab("ledger")}
+      >
+        <FiBookOpen size={14} /> Party Ledger
+      </button>
+    </div>
+  );
+
+  if (tab === "items") {
+    return (
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
+        <SubTabs />
+        <InvoiceItems />
+      </div>
+    );
+  }
+
+  if (tab === "ledger") {
+    return (
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
+        <SubTabs />
+        <PartyLedger />
+      </div>
+    );
+  }
+
   if (view === "create") {
     return (
       <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
@@ -260,6 +309,7 @@ export default function Invoice() {
 
   return (
     <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
+      <SubTabs />
       <div className={styles.headerRow}>
         <h2 className={`${styles.heading} ${cs.invoiceHeading}`}>Invoices</h2>
         <div className={styles.headerActions}>

@@ -108,7 +108,7 @@ export default async function handler(
       policyNumber,
       proposalNumber,
       quoteNumber: b.quoteId,
-      insurer: "Zuno General Insurance",
+      insurer: "Zuno General Insurance Limited",
       product: "Retail Health",
       policyType: "Health",
       customer: {

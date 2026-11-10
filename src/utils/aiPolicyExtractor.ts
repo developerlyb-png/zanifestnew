@@ -18,6 +18,7 @@ import {
   mapRow,
   validateAndNormalizeRow,
   loadReferenceLists,
+  registerNewInsurer,
   type ReferenceLists,
 } from "@/utils/policyBulkMapping";
 
@@ -419,7 +420,8 @@ export async function buildPolicyFromExtraction(
   }
 ) {
   const refs = opts.refs ?? (await loadReferenceLists());
-  const { row: normalized } = validateAndNormalizeRow(x as Record<string, any>, refs);
+  const { row: normalized, newInsurer } = validateAndNormalizeRow(x as Record<string, any>, refs);
+  if (newInsurer) await registerNewInsurer(newInsurer);
   const base: any = mapRow(normalized, new Map());
 
   const vehicleExtras =

@@ -297,6 +297,30 @@
   font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .invoiceHeading { color: #142b4a; font-size: 1.65rem; letter-spacing: -0.025em; }
+
+/* Sub-tabs inside the Invoice section: Invoices / Item Catalog / Party Ledger */
+.subTabRow {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #e5edf6;
+  margin-bottom: 20px;
+}
+.subTabBtn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px;
+  margin-right: 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #718198;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subTabBtn:hover { color: #176eaa; }
+.subTabBtnActive { color: #176eaa; border-bottom-color: #176eaa; }
 .invoiceNewButton {
   background: linear-gradient(135deg, #2588cc, #176eaa);
   border-radius: 10px;

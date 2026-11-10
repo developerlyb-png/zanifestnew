@@ -503,19 +503,6 @@ const router = useRouter();
             </li>
 
             <li
-              className={`${styles.menuItem} ${activeSection === "invoiceClients" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("invoiceClients");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiFileText className={styles.icon} />
-                <span className={styles.label}>Invoice Clients</span>
-              </span>
-            </li>
-
-            <li
               className={`${styles.menuItem} ${activeSection === "invoice" ? styles.activeMenuItem : ""}`}
               onClick={() => {
                 setActiveSection("invoice");

@@ -141,8 +141,22 @@ function TickList({
     return pool.slice(0, maxResults);
   }, [options, q, maxResults]);
 
-  const toggle = (v: string) =>
-    onChange(selected.includes(v) ? selected.filter((x) => x !== v) : [...selected, v]);
+  // An explicit selection covering every option is equivalent to "All" — fold
+  // it back to [] so the master checkbox re-syncs instead of staying unchecked
+  // while every individual row is checked.
+  const normalize = (next: string[]) =>
+    next.length >= options.length && options.every((o) => next.includes(o.value)) ? [] : next;
+
+  const toggle = (v: string) => {
+    if (allSelected) {
+      // Coming from "All" (empty = no restriction): unchecking one row means
+      // "everyone except this one", so materialize the full list minus it
+      // rather than collapsing the selection down to just this row.
+      onChange(normalize(options.map((o) => o.value).filter((x) => x !== v)));
+      return;
+    }
+    onChange(normalize(selected.includes(v) ? selected.filter((x) => x !== v) : [...selected, v]));
+  };
 
   const addNew = async () => {
     const v = newValue.trim();
@@ -175,7 +189,7 @@ function TickList({
       <div className={ps.tickScroll}>
         {visible.map((o) => (
           <label key={o.value} className={ps.tickRow}>
-            <input type="checkbox" checked={selected.includes(o.value)} onChange={() => toggle(o.value)} />
+            <input type="checkbox" checked={allSelected || selected.includes(o.value)} onChange={() => toggle(o.value)} />
             <span>{o.label}</span>
           </label>
         ))}

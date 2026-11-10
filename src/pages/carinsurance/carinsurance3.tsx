@@ -886,10 +886,15 @@ const CarInsurance3 = () => {
                         </div>
                       </div>
                       <div className={styles.actions}>
-                        <div className={styles.price} style={{ cursor: "default" }}>
-                          {inr(gross)}
+                        <div
+                          className={styles.price}
+                          onClick={() => {
+                            localStorage.setItem("selectedInsurer", "DIGIT");
+                            router.push("/cart/carinsurancecart");
+                          }}
+                        >
+                          {inr(gross)} →
                         </div>
-                        <div style={{ fontSize: 12, color: "#5a5959" }}>Purchase coming soon</div>
                       </div>
                     </div>
 
@@ -1068,10 +1073,15 @@ const CarInsurance3 = () => {
                             </div>
                           </div>
                           <div className={styles.actions}>
-                            <div className={styles.price} style={{ cursor: "default" }}>
-                              {inr(bq.premium)}
+                            <div
+                              className={styles.price}
+                              onClick={() => {
+                                localStorage.setItem("selectedInsurer", "BAJAJ");
+                                router.push("/cart/carinsurancecart");
+                              }}
+                            >
+                              {inr(bq.premium)} →
                             </div>
-                            <div style={{ fontSize: 12, color: "#5a5959" }}>Purchase coming soon</div>
                           </div>
                         </>
                       ) : (

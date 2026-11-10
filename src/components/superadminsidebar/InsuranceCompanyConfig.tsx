@@ -12,10 +12,10 @@ interface InsuranceCompanyItem {
   branch: string;
   salesRmEmail?: string;
   salesRmPhone?: string;
-  opsRmEmail: string;
-  opsRmPhone: string;
-  claimsRmEmail: string;
-  claimsRmPhone: string;
+  opsRmEmail?: string;
+  opsRmPhone?: string;
+  claimsRmEmail?: string;
+  claimsRmPhone?: string;
   createdAt: string;
 }
 
@@ -73,10 +73,10 @@ function InsuranceCompanyForm({
           branch: initial.branch,
           salesRmEmail: initial.salesRmEmail || "",
           salesRmPhone: initial.salesRmPhone || "",
-          opsRmEmail: initial.opsRmEmail,
-          opsRmPhone: initial.opsRmPhone,
-          claimsRmEmail: initial.claimsRmEmail,
-          claimsRmPhone: initial.claimsRmPhone,
+          opsRmEmail: initial.opsRmEmail || "",
+          opsRmPhone: initial.opsRmPhone || "",
+          claimsRmEmail: initial.claimsRmEmail || "",
+          claimsRmPhone: initial.claimsRmPhone || "",
         }
       : EMPTY_FORM
   );
@@ -95,12 +95,8 @@ function InsuranceCompanyForm({
   const nameError = fieldError("name", "Insurance company name");
   const otherNameError = touched.otherName && isOther && !otherName.trim() ? "Enter the insurance company name" : "";
   const branchError = fieldError("branch", "Insurance company branch");
-  const opsEmailError = fieldError("opsRmEmail", "Operation RM email");
-  const opsPhoneError = fieldError("opsRmPhone", "Operation RM phone number");
-  const claimsEmailError = fieldError("claimsRmEmail", "Claims RM email");
-  const claimsPhoneError = fieldError("claimsRmPhone", "Claims RM phone number");
 
-  const REQUIRED: (keyof FormState)[] = ["name", "branch", "opsRmEmail", "opsRmPhone", "claimsRmEmail", "claimsRmPhone"];
+  const REQUIRED: (keyof FormState)[] = ["name", "branch"];
 
   const handleSubmit = async () => {
     setTouched((t) => ({ ...t, ...REQUIRED.reduce((acc, k) => ({ ...acc, [k]: true }), {} as Record<string, boolean>), otherName: true }));
@@ -229,73 +225,41 @@ function InsuranceCompanyForm({
           </div>
 
           <div className={styles.field}>
-            <label className={styles.fieldLabel}>
-              Operation RM Email<span className={styles.required}>*</span>
-            </label>
+            <label className={styles.fieldLabel}>Operation RM Email</label>
             <input
-              className={`${styles.input} ${opsEmailError ? styles.inputError : ""}`}
+              className={styles.input}
               type="email"
               value={form.opsRmEmail}
               onChange={(e) => set("opsRmEmail", e.target.value)}
-              onBlur={() => touch("opsRmEmail")}
             />
-            {opsEmailError && (
-              <span className={styles.fieldError}>
-                <FiAlertCircle size={12} /> {opsEmailError}
-              </span>
-            )}
           </div>
 
           <div className={styles.field}>
-            <label className={styles.fieldLabel}>
-              Operation RM Phone Number<span className={styles.required}>*</span>
-            </label>
+            <label className={styles.fieldLabel}>Operation RM Phone Number</label>
             <input
-              className={`${styles.input} ${opsPhoneError ? styles.inputError : ""}`}
+              className={styles.input}
               value={form.opsRmPhone}
               onChange={(e) => set("opsRmPhone", e.target.value)}
-              onBlur={() => touch("opsRmPhone")}
             />
-            {opsPhoneError && (
-              <span className={styles.fieldError}>
-                <FiAlertCircle size={12} /> {opsPhoneError}
-              </span>
-            )}
           </div>
 
           <div className={styles.field}>
-            <label className={styles.fieldLabel}>
-              Claims RM Email<span className={styles.required}>*</span>
-            </label>
+            <label className={styles.fieldLabel}>Claims RM Email</label>
             <input
-              className={`${styles.input} ${claimsEmailError ? styles.inputError : ""}`}
+              className={styles.input}
               type="email"
               value={form.claimsRmEmail}
               onChange={(e) => set("claimsRmEmail", e.target.value)}
-              onBlur={() => touch("claimsRmEmail")}
             />
-            {claimsEmailError && (
-              <span className={styles.fieldError}>
-                <FiAlertCircle size={12} /> {claimsEmailError}
-              </span>
-            )}
           </div>
 
           <div className={styles.field}>
-            <label className={styles.fieldLabel}>
-              Claims RM Phone Number<span className={styles.required}>*</span>
-            </label>
+            <label className={styles.fieldLabel}>Claims RM Phone Number</label>
             <input
-              className={`${styles.input} ${claimsPhoneError ? styles.inputError : ""}`}
+              className={styles.input}
               value={form.claimsRmPhone}
               onChange={(e) => set("claimsRmPhone", e.target.value)}
-              onBlur={() => touch("claimsRmPhone")}
             />
-            {claimsPhoneError && (
-              <span className={styles.fieldError}>
-                <FiAlertCircle size={12} /> {claimsPhoneError}
-              </span>
-            )}
           </div>
         </div>
 

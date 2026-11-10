@@ -7,6 +7,9 @@ import { FaRegFileVideo } from "react-icons/fa";
 import { useRouter } from "next/router";
 import shriramPreviousInsurers from "@/lib/shriramMaster/previousInsurer.json";
 import { shriramPrefillFromRc } from "@/lib/shriramRcPrefill";
+import { BAJAJ_PREV_INSURERS, bajajPrevInsurerCode } from "@/lib/bajajPrevInsurers";
+import { DIGIT_PREV_INSURERS, digitPrevInsurerCode } from "@/lib/digitPrevInsurers";
+import { DIGIT_STATES } from "@/lib/digitStateCodes";
 
 // A renewal of Shriram's own policy is a separate flow (RENEWAL OF SGI)
 const SHRIRAM_PREV_INSURER_OPTIONS = (shriramPreviousInsurers as string[]).filter(
@@ -29,7 +32,23 @@ const carinsurancecart = () => {
   // carinsurance3.tsx right before navigating here. Zuno and SBI have
   // completely different checkout backends (FullQuote/Razorpay/Issuance for
   // SBI vs Zuno's own full-quote/issue-policy/payment-link APIs).
-  const [insurer, setInsurer] = useState<"ZUNO" | "SBI" | "SHRIRAM">("ZUNO");
+  const [insurer, setInsurer] = useState<"ZUNO" | "SBI" | "SHRIRAM" | "BAJAJ" | "DIGIT">("ZUNO");
+
+  // Bajaj: issuepolicy needs engine/chassis, address state and the real
+  // previous insurer (Bajaj's own code list), then pays on Bajaj's own page.
+  const [bajajQuote, setBajajQuote] = useState<any>(null);
+  const [bajajPrevInsurer, setBajajPrevInsurer] = useState("");
+  const [addressState, setAddressState] = useState("");
+  const [engineNo, setEngineNo] = useState("");
+  const [chassisNo, setChassisNo] = useState("");
+
+  // Digit: create-quote needs the proposer + nominee + a Digit-coded state
+  // and previous insurer, then KYC (hosted page) and payment happen on
+  // /cart/digit-kyc before the customer ever reaches Digit's own payment page.
+  const [digitQuote, setDigitQuote] = useState<any>(null);
+  const [digitState, setDigitState] = useState("");
+  const [digitPrevInsurer, setDigitPrevInsurer] = useState("");
+  const [digitPrevPolicyNo, setDigitPrevPolicyNo] = useState("");
   const [sbiQuote, setSbiQuote] = useState<any>(null);
   const [sbiCkyc, setSbiCkyc] = useState<any>(null);
 
@@ -96,6 +115,44 @@ const carinsurancecart = () => {
         if (ck && ck !== "undefined") {
           sbiCkycParsed = JSON.parse(ck);
           setSbiCkyc(sbiCkycParsed);
+        }
+      } else if (sel === "BAJAJ") {
+        setInsurer("BAJAJ");
+        const bq = localStorage.getItem("selectedQuoteBajaj");
+        if (bq && bq !== "undefined") setBajajQuote(JSON.parse(bq));
+
+        // Pre-fill what the RC already knows; the customer checks it
+        const rcParsed = r && r !== "undefined" ? JSON.parse(r) : null;
+        const qiParsed = q && q !== "undefined" ? JSON.parse(q) : null;
+        if (rcParsed) {
+          const pre = shriramPrefillFromRc(rcParsed, qiParsed?.registrationDate);
+          setAddress1(pre.address);
+          setPincode(pre.pincode);
+          setEngineNo(String(rcParsed.engine || ""));
+          setChassisNo(String(rcParsed.chassis || ""));
+          const code = bajajPrevInsurerCode(rcParsed.vehicle_insurance_company_name);
+          // Bajaj's own renewals (6) are a different policy type
+          if (code && code !== "6") setBajajPrevInsurer(code);
+          setPrevPolicyNo(String(rcParsed.vehicle_insurance_policy_number || ""));
+        }
+      } else if (sel === "DIGIT") {
+        setInsurer("DIGIT");
+        const dq = localStorage.getItem("selectedQuoteDigit");
+        if (dq && dq !== "undefined") setDigitQuote(JSON.parse(dq));
+
+        const rcParsed = r && r !== "undefined" ? JSON.parse(r) : null;
+        const qiParsed = q && q !== "undefined" ? JSON.parse(q) : null;
+        if (rcParsed) {
+          const pre = shriramPrefillFromRc(rcParsed, qiParsed?.registrationDate);
+          setAddress1(pre.address);
+          setPincode(pre.pincode);
+          // The 4W RC-check response has no flat vehicle_insurance_* fields —
+          // the real data is nested at raw.insurance_details (same place
+          // shriramPrefillFromRc already reads policy number from above).
+          const insuranceDetails = rcParsed.raw?.insurance_details || {};
+          const code = digitPrevInsurerCode(insuranceDetails.insurer);
+          if (code) setDigitPrevInsurer(code);
+          setDigitPrevPolicyNo(pre.previousPolicyNo || "");
         }
       } else if (sel === "SHRIRAM") {
         setInsurer("SHRIRAM");
@@ -166,6 +223,26 @@ const carinsurancecart = () => {
           gst: sbiQuote?.response?.gst,
           total: sbiQuote?.response?.premium,
         }
+      : insurer === "BAJAJ"
+      ? {
+          name: "Bajaj Allianz General Insurance",
+          idv: bajajQuote?.response?.idv,
+          net: bajajQuote?.response?.netPremium,
+          gst: bajajQuote?.response?.gst,
+          total: bajajQuote?.response?.premium,
+        }
+      : insurer === "DIGIT"
+      ? (() => {
+          const dq = digitQuote?.response?.quote || {};
+          const num = (v: any) => Number(String(v || "").replace(/[^0-9.]/g, "")) || 0;
+          return {
+            name: "Go Digit General Insurance",
+            idv: num(dq.vehicle?.vehicleIDV?.idv),
+            net: num(dq.netPremium),
+            gst: num(dq.serviceTax?.totalTax),
+            total: num(dq.grossPremium),
+          };
+        })()
       : insurer === "SHRIRAM"
       ? {
           name: "Shriram General Insurance",
@@ -387,7 +464,7 @@ const carinsurancecart = () => {
           premium: plan?.netPremium ?? plan?.grossPremium,
           grossPremium: plan?.grossPremium,
           transactionType: quoteInput?.isNew ? "New" : "Rollover",
-          insurer: "Zuno General Insurance",
+          insurer: "Zuno General Insurance Limited",
           vehicle: {
             number: rc?.reg_no,
             make: quoteInput?.make,
@@ -638,6 +715,223 @@ const carinsurancecart = () => {
     }
   };
 
+  // Bajaj's checkout: issue-policy (fresh price + proposal) -> Bajaj's own
+  // payment page -> /api/bajaj/4w/payment-return -> /cart/bajaj-payment.
+  const handlePayBajaj = async () => {
+    try {
+      if (!isChecked) {
+        alert("Please accept terms & conditions");
+        return;
+      }
+      if (owner === "company") {
+        alert("Company-owned cars aren't supported for Bajaj yet");
+        return;
+      }
+      if (!firstName || !lastName || !dob || !mobile || !email || !address1 || !city || !addressState || !pincode) {
+        alert("Please fill all personal details, including last name and state");
+        return;
+      }
+      if (!/^[6-9]\d{9}$/.test(mobile)) {
+        alert("Please enter a valid 10-digit mobile number");
+        return;
+      }
+      if (!/^\d{6}$/.test(pincode)) {
+        alert("Please enter a valid 6-digit pincode");
+        return;
+      }
+      if (engineNo.trim().length < 6 || chassisNo.trim().length < 6) {
+        alert("Please enter the engine and chassis numbers from your RC");
+        return;
+      }
+      if (!bajajPrevInsurer || !prevPolicyNo) {
+        alert("Please fill your previous policy details");
+        return;
+      }
+      if (!nomineeName || !nomineeDob) {
+        alert("Please fill nominee details");
+        return;
+      }
+      if (!quoteInput || !bajajQuote?.success) {
+        alert("Quote data missing — please get a quote again");
+        return;
+      }
+
+      setLoading(true);
+      setLoadingStep("Creating proposal...");
+
+      const res = await fetch("/api/bajaj/4w/issue-policy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quoteInput,
+          idv: bajajQuote.response?.idv,
+          proposer: {
+            title: gender.toUpperCase().startsWith("F") ? "Ms" : "Mr",
+            firstName,
+            lastName,
+            dob,
+            mobile,
+            email,
+            address1,
+            city,
+            state: addressState,
+            pincode,
+            engineNo: engineNo.trim(),
+            chassisNo: chassisNo.trim(),
+            nomineeName,
+            nomineeRelation,
+            previousInsurerCode: bajajPrevInsurer,
+            previousPolicyNumber: prevPolicyNo,
+          },
+        }),
+      });
+      const data = await res.json();
+      console.log("BAJAJ ISSUE RESULT >>>", data);
+
+      if (!res.ok || !data.success) {
+        setLoading(false);
+        setLoadingStep("");
+        alert(data.message || "Bajaj proposal failed — check console");
+        return;
+      }
+
+      // Bajaj's final price can differ from the quote (e.g. the real previous
+      // insurer); the customer sees it again on Bajaj's payment page.
+      if (data.premium && Math.round(data.premium) !== Math.round(summary.total || 0)) {
+        const ok = confirm(
+          `Bajaj's final premium for these details is ${inr(data.premium)} (quoted ${inr(summary.total)}). Continue to payment?`
+        );
+        if (!ok) {
+          setLoading(false);
+          setLoadingStep("");
+          return;
+        }
+      }
+
+      // The result page needs these for the success screen and the dashboard
+      localStorage.setItem(
+        "bajajCheckout",
+        JSON.stringify({
+          transactionId: data.transactionId,
+          amount: data.premium,
+          netPremium: data.netPremium,
+          customer: { fullName: `${firstName} ${lastName}`.trim(), email, mobile },
+          vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
+        })
+      );
+
+      setLoadingStep("Opening payment...");
+      window.location.href = data.paymentUrl;
+    } catch (e: any) {
+      setLoading(false);
+      setLoadingStep("");
+      console.log("BAJAJ PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  // Digit's checkout: create-quote (proposal) -> /cart/digit-kyc, which
+  // handles the hosted KYC step and Digit's own payment page from there —
+  // Digit gates payment behind KYC completing, so it can't happen here.
+  const handlePayDigit = async () => {
+    try {
+      if (!isChecked) {
+        alert("Please accept terms & conditions");
+        return;
+      }
+      if (owner === "company") {
+        alert("Company-owned cars aren't supported for Digit yet");
+        return;
+      }
+      if (!firstName || !lastName || !dob || !gender || !mobile || !email || !address1 || !city || !digitState || !pincode) {
+        alert("Please fill all personal details, including state");
+        return;
+      }
+      if (!/^[6-9]\d{9}$/.test(mobile)) {
+        alert("Please enter a valid 10-digit mobile number");
+        return;
+      }
+      if (!/^\d{6}$/.test(pincode)) {
+        alert("Please enter a valid 6-digit pincode");
+        return;
+      }
+      // Digit's kit (2.3.1.H): previousInsurerCode is mandatory for a
+      // rollover vehicle (this flow always sends isVehicleNew: false) —
+      // previousPolicyNumber is optional, so it isn't checked here.
+      if (!digitPrevInsurer) {
+        alert("Please select your previous insurer");
+        return;
+      }
+      if (!nomineeName || !nomineeDob) {
+        alert("Please fill nominee details");
+        return;
+      }
+      if (!quoteInput || !digitQuote?.success) {
+        alert("Quote data missing — please get a quote again");
+        return;
+      }
+
+      setLoading(true);
+      setLoadingStep("Creating proposal...");
+
+      const res = await fetch("/api/digit/4w/create-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quoteInput,
+          proposer: {
+            firstName,
+            lastName,
+            dob,
+            gender,
+            mobile,
+            email,
+            address1,
+            city,
+            state: digitState,
+            pincode,
+            nomineeName,
+            nomineeRelation,
+            previousInsurerCode: digitPrevInsurer,
+            previousPolicyNumber: digitPrevPolicyNo,
+          },
+        }),
+      });
+      const data = await res.json();
+      console.log("DIGIT CREATE QUOTE RESULT >>>", data);
+
+      if (!res.ok || !data.success) {
+        setLoading(false);
+        setLoadingStep("");
+        alert(data.message || "Digit proposal failed — check console");
+        return;
+      }
+
+      // digit-kyc.tsx needs these for the KYC + payment steps and the
+      // success screen afterward
+      localStorage.setItem(
+        "digitCheckout",
+        JSON.stringify({
+          policyNumber: data.policyNumber,
+          applicationId: data.applicationId,
+          amount: data.grossPremium ?? summary.total,
+          netPremium: data.netPremium ?? summary.net,
+          dob,
+          gender,
+          customer: { fullName: `${firstName} ${lastName}`.trim(), email, mobile },
+          vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
+        })
+      );
+
+      router.push("/cart/digit-kyc");
+    } catch (e: any) {
+      setLoading(false);
+      setLoadingStep("");
+      console.log("DIGIT PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
   const loadRazorpayScript = (): Promise<boolean> =>
     new Promise((resolve) => {
       if ((window as any).Razorpay) return resolve(true);
@@ -841,7 +1135,7 @@ const carinsurancecart = () => {
           premium: amount,
           grossPremium: amount,
           transactionType: "New",
-          insurer: "SBI General Insurance",
+          insurer: "SBI General Insurance Company Limited",
           vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
           customer: { fullName: payerName, email, mobile },
         }),
@@ -1027,6 +1321,85 @@ const carinsurancecart = () => {
                     value={pan}
                     onChange={(e) => setPan(e.target.value.toUpperCase())}
                   />
+
+                  {insurer === "BAJAJ" && (
+                    <>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="State (e.g. Maharashtra)"
+                        value={addressState}
+                        onChange={(e) => setAddressState(e.target.value)}
+                      />
+
+                      <h3>Vehicle</h3>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Engine number (as on RC)"
+                        value={engineNo}
+                        onChange={(e) => setEngineNo(e.target.value.toUpperCase())}
+                      />
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Chassis number (as on RC)"
+                        value={chassisNo}
+                        onChange={(e) => setChassisNo(e.target.value.toUpperCase())}
+                      />
+
+                      <h3>Previous Policy</h3>
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        Previous insurer
+                        <select value={bajajPrevInsurer} onChange={(e) => setBajajPrevInsurer(e.target.value)}>
+                          <option value="">Select insurer</option>
+                          {BAJAJ_PREV_INSURERS.map((i) => (
+                            <option key={i.code} value={i.code}>
+                              {i.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Previous policy number"
+                        value={prevPolicyNo}
+                        onChange={(e) => setPrevPolicyNo(e.target.value.trim())}
+                      />
+                    </>
+                  )}
+
+                  {insurer === "DIGIT" && (
+                    <>
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        State
+                        <select value={digitState} onChange={(e) => setDigitState(e.target.value)}>
+                          <option value="">Select state</option>
+                          {DIGIT_STATES.map((s) => (
+                            <option key={s.code} value={s.code}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <h3>Previous Policy</h3>
+                      <label style={{ display: "block", marginTop: 8 }}>
+                        Previous insurer
+                        <select value={digitPrevInsurer} onChange={(e) => setDigitPrevInsurer(e.target.value)}>
+                          <option value="">Select insurer</option>
+                          {DIGIT_PREV_INSURERS.map((i) => (
+                            <option key={i.code} value={i.code}>
+                              {i.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <input
+                        className={styles.input || ""}
+                        placeholder="Previous policy number"
+                        value={digitPrevPolicyNo}
+                        onChange={(e) => setDigitPrevPolicyNo(e.target.value.trim())}
+                      />
+                    </>
+                  )}
 
                   {insurer === "SHRIRAM" && (
                     <>
@@ -1216,6 +1589,10 @@ const carinsurancecart = () => {
                 onClick={
                   insurer === "SBI"
                     ? handlePaySbi
+                    : insurer === "BAJAJ"
+                    ? handlePayBajaj
+                    : insurer === "DIGIT"
+                    ? handlePayDigit
                     : insurer === "SHRIRAM"
                     ? shriramProposal
                       ? handlePayShriram

@@ -46,6 +46,7 @@ function computeTotals(lineItems: any[], taxMode: string, taxRatePercent: number
       it.discountType === "%" ? (gross * num(it.discountValue)) / 100 : num(it.discountValue);
     const amount = Math.max(0, gross - discount);
     return {
+      itemId: it.itemId || undefined,
       description: String(it.description || "").trim(),
       hsnSac: String(it.hsnSac || "").trim(),
       qty,
@@ -201,6 +202,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         subtotal,
         totalTax,
         grandTotal,
+        amountReceived: 0,
+        balanceDue: grandTotal,
         createdBy: adminName,
       });
 
@@ -249,6 +252,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       existing.subtotal = subtotal;
       existing.totalTax = totalTax;
       existing.grandTotal = grandTotal;
+      // Line items (and so grandTotal) can change on edit; payments already
+      // recorded are untouched, so balanceDue is simply re-derived from them.
+      existing.balanceDue = Math.round((grandTotal - (existing.amountReceived || 0)) * 100) / 100;
       existing.updatedBy = adminName;
 
       await existing.save();
@@ -261,8 +267,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "PATCH") {
     try {
-      const { id, status, signedPdf } = req.body || {};
+      const { id, status, signedPdf, addPayment, removePaymentId } = req.body || {};
       if (!id) return res.status(400).json({ success: false, message: "id is required" });
+
+      // Payments mutate an array and a denormalized running total together,
+      // so they go through load-modify-save rather than a single $set.
+      if (addPayment || removePaymentId) {
+        const invoiceDoc: any = await Invoice.findById(id);
+        if (!invoiceDoc) return res.status(404).json({ success: false, message: "Invoice not found" });
+
+        if (addPayment) {
+          const amount = num(addPayment.amount);
+          if (amount <= 0) return res.status(400).json({ success: false, message: "Payment amount must be greater than 0" });
+          invoiceDoc.payments.push({
+            date: addPayment.date ? new Date(addPayment.date) : new Date(),
+            amount,
+            mode: addPayment.mode || "Bank Transfer",
+            note: addPayment.note || "",
+            recordedBy: adminName,
+          });
+        }
+        if (removePaymentId) {
+          invoiceDoc.payments = invoiceDoc.payments.filter((p: any) => String(p._id) !== String(removePaymentId));
+        }
+
+        invoiceDoc.amountReceived =
+          Math.round(invoiceDoc.payments.reduce((s: number, p: any) => s + num(p.amount), 0) * 100) / 100;
+        invoiceDoc.balanceDue = Math.round((invoiceDoc.grandTotal - invoiceDoc.amountReceived) * 100) / 100;
+        invoiceDoc.updatedBy = adminName;
+
+        await invoiceDoc.save();
+        return res.status(200).json({ success: true, invoice: invoiceDoc });
+      }
 
       const update: any = { updatedBy: adminName };
       if (status) {

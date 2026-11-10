@@ -5,38 +5,31 @@ import Agent from "@/models/Agent";
 // at admin-approval time. Now also called right after exam pass so the
 // certificate is never generated with "POS Code: N/A" baked into it.
 //
-// Prefix switched from the old "ZIP####" to "ZNIB####" per the new
-// certificate template (sample showed "IRDAI POSP Code: ZNIB13098") — this
-// is an assumed default (continue the existing counter, just with the new
-// prefix) since the exact numbering scheme wasn't confirmed; adjust here if
-// a different starting number or scheme is needed. Old ZIP#### codes on
-// existing agents are left as-is — only new codes use the new prefix.
-// Retries on a rare concurrent-duplicate (two agents passing at the same
-// instant) since agentCode is a unique/sparse index.
+// Confirmed numbering scheme: ZNIB13102, ZNIB13103, ZNIB13104, ... — fixed
+// 5-digit sequence. The lookup is anchored to exactly 5 digits so it can't
+// be thrown off by an old/malformed code of a different length; a plain
+// `/^ZNIB\d+$/` would happily "continue" from a stray 4-digit code instead
+// of the real sequence. Retries on a rare concurrent-duplicate (two agents
+// passing at the same instant) since agentCode is a unique/sparse index.
+const AGENT_CODE_PREFIX = "ZNIB";
+const AGENT_CODE_START = 13102;
+
 export async function ensureAgentCode(agent: any): Promise<string> {
   if (agent.agentCode) return agent.agentCode;
 
   for (let attempt = 0; attempt < 5; attempt++) {
-    const [lastZnib, lastZip] = await Promise.all([
-      Agent.findOne({ agentCode: { $regex: /^ZNIB\d+$/ } })
-        .sort({ createdAt: -1 })
-        .select("agentCode"),
-      Agent.findOne({ agentCode: { $regex: /^ZIP\d+$/ } })
-        .sort({ createdAt: -1 })
-        .select("agentCode"),
-    ]);
+    const lastCode = await Agent.findOne({ agentCode: { $regex: /^ZNIB\d{5}$/ } })
+      .sort({ agentCode: -1 }) // safe lexicographic order — every match is the same digit length
+      .select("agentCode");
 
-    let nextNumber = 1310; // default start (continues on from the old ZIP1309 baseline)
-    if (lastZnib?.agentCode) {
-      const num = parseInt(lastZnib.agentCode.replace("ZNIB", ""), 10);
-      if (!isNaN(num)) nextNumber = num + 1;
-    } else if (lastZip?.agentCode) {
-      const num = parseInt(lastZip.agentCode.replace("ZIP", ""), 10);
-      if (!isNaN(num)) nextNumber = num + 1;
+    let nextNumber = AGENT_CODE_START;
+    if (lastCode?.agentCode) {
+      const num = parseInt(lastCode.agentCode.slice(AGENT_CODE_PREFIX.length), 10);
+      if (!isNaN(num) && num + 1 > nextNumber) nextNumber = num + 1;
     }
     nextNumber += attempt;
 
-    const candidate = `ZNIB${nextNumber}`;
+    const candidate = `${AGENT_CODE_PREFIX}${nextNumber}`;
     try {
       agent.agentCode = candidate;
       await agent.save();

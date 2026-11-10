@@ -106,6 +106,8 @@ export const INSURANCE_COMPANIES = [
   "Liberty General Insurance Limited",
   "Zurich Kotak General Insurance Limited",
   "Kiwi General Insurance Limited",
+  "Shriram General Insurance Company Limited",
+  "IFFCO Tokio General Insurance Company Limited",
   "Other",
 ];
 

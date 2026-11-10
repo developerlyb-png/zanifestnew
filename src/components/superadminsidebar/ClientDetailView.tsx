@@ -32,12 +32,16 @@ interface ClientRow {
 
 export default function ClientDetailView({
   clientId,
+  virtualPrefill,
   onBack,
   onEdit,
+  onEditVirtual,
 }: {
   clientId: string;
+  virtualPrefill?: Partial<ClientRow>;
   onBack: () => void;
   onEdit: () => void;
+  onEditVirtual?: () => void;
 }) {
   const [client, setClient] = useState<ClientRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,9 +79,32 @@ export default function ClientDetailView({
         </button>
         <p style={{ color: "#6b7280", fontSize: 13.5 }}>
           {isVirtual
-            ? "This insured name came from a policy and hasn't been saved to the client directory yet. Use Add Client to save it."
+            ? "This insured name came from a policy and hasn't been saved to the client directory yet."
             : "Client not found."}
         </p>
+        {isVirtual && (
+          <>
+            <div className={cs.dGrid} style={{ maxWidth: 480, marginBottom: 16 }}>
+              <div className={cs.dRow}>
+                <span className={cs.dKey}>Name</span>
+                <span className={cs.dVal}>{virtualPrefill?.name || "—"}</span>
+              </div>
+              <div className={cs.dRow}>
+                <span className={cs.dKey}>Email</span>
+                <span className={cs.dVal}>{virtualPrefill?.email || "—"}</span>
+              </div>
+              <div className={cs.dRow}>
+                <span className={cs.dKey}>Phone</span>
+                <span className={cs.dVal}>{virtualPrefill?.phone || "—"}</span>
+              </div>
+            </div>
+            {onEditVirtual && (
+              <button type="button" className={cs.dEditBtn} onClick={onEditVirtual}>
+                <FiEdit2 /> Edit &amp; Save to Directory
+              </button>
+            )}
+          </>
+        )}
       </div>
     );
   }

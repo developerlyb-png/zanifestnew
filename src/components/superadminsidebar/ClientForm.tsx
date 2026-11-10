@@ -18,22 +18,31 @@ interface KycFile {
   fileName: string;
 }
 
+interface ClientPrefill {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
 export default function ClientForm({
   editId,
+  initial,
   onCancel,
   onSaved,
 }: {
   editId?: string;
+  initial?: ClientPrefill;
   onCancel: () => void;
   onSaved: (clientId: string) => void;
 }) {
   const isEdit = !!editId;
 
   const [loadingClient, setLoadingClient] = useState(isEdit);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [name, setName] = useState(initial?.name || "");
+  const [email, setEmail] = useState(initial?.email || "");
+  const [phone, setPhone] = useState(initial?.phone || "");
+  const [address, setAddress] = useState(initial?.address || "");
   const [kycDocumentType, setKycDocumentType] = useState("");
   const [kycFiles, setKycFiles] = useState<KycFile[]>([]);
   const [notifyWhatsapp, setNotifyWhatsapp] = useState(false);
@@ -180,6 +189,13 @@ export default function ClientForm({
           </p>
         </div>
       </div>
+
+      {!isEdit && initial && (
+        <p style={{ fontSize: 13, color: "#6b7280", margin: "-6px 0 16px" }}>
+          This insured name came from a policy and isn't in the client directory yet.
+          Review the details below (email is required) and save to make it editable going forward.
+        </p>
+      )}
 
       <div className={cm.formCard}>
         <h3 className={cm.formCardTitle}>Basic Client Details</h3>

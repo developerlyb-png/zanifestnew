@@ -101,6 +101,10 @@ const CarPolicySuccess = () => {
             ? "SBI General Insurance"
             : policy?.insurer === "SHRIRAM"
             ? "Shriram General Insurance"
+            : policy?.insurer === "BAJAJ"
+            ? "Bajaj Allianz General Insurance"
+            : policy?.insurer === "DIGIT"
+            ? "Go Digit General Insurance"
             : "Zuno General Insurance"}
         </p>
 
@@ -202,8 +206,10 @@ const CarPolicySuccess = () => {
           </div>
         )}
 
-        {/* Shriram returns a ready policy-PDF link with getPaymentStatus */}
-        {policy?.insurer === "SHRIRAM" && policy?.policyUrl && (
+        {/* Shriram returns a ready policy-PDF link with getPaymentStatus;
+            Bajaj's and Digit's are our own policy-pdf proxy routes */}
+        {(policy?.insurer === "SHRIRAM" || policy?.insurer === "BAJAJ" || policy?.insurer === "DIGIT") &&
+          policy?.policyUrl && (
           <div style={{ marginBottom: 16 }}>
             <a
               href={policy.policyUrl}

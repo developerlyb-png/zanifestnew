@@ -57,6 +57,7 @@ const ClientSnapshotSchema = new Schema(
 
 const LineItemSchema = new Schema(
   {
+    itemId: { type: Schema.Types.ObjectId, ref: "InvoiceItem" },
     description: String,
     hsnSac: String,
     qty: Number,
@@ -71,6 +72,17 @@ const LineItemSchema = new Schema(
 const TaxRowSchema = new Schema(
   { type: String, ratePercent: Number, amount: Number },
   { _id: false }
+);
+
+const PaymentSchema = new Schema(
+  {
+    date: { type: Date, required: true },
+    amount: { type: Number, required: true },
+    mode: { type: String, enum: ["Cash", "Bank Transfer", "UPI", "Cheque", "Card", "Other"], default: "Bank Transfer" },
+    note: String,
+    recordedBy: String,
+  },
+  { timestamps: true }
 );
 
 const InvoiceSchema = new Schema(
@@ -95,6 +107,13 @@ const InvoiceSchema = new Schema(
     subtotal: { type: Number, default: 0 },
     totalTax: { type: Number, default: 0 },
     grandTotal: { type: Number, default: 0 },
+
+    // Party ledger: payments received against this invoice. amountReceived /
+    // balanceDue are kept denormalized (recomputed on every payment write)
+    // so the ledger view can sum across invoices without re-walking payments.
+    payments: [PaymentSchema],
+    amountReceived: { type: Number, default: 0 },
+    balanceDue: { type: Number, default: 0 },
 
     signedPdf: { data: String, fileName: String },
 

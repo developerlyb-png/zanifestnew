@@ -88,6 +88,123 @@ function matchOption(value: string, options: string[]): string | null {
   return found ?? null;
 }
 
+// ---- Fuzzy insurer-name matching ----
+// The same insurer shows up under wildly different spellings depending on
+// where the name came from — manual entry, Excel bulk upload, or AI PDF
+// extraction, which copies whatever the source document prints (and can
+// introduce OCR slips): "TATA AIG" vs "Tata AIG General Insurance Company
+// Limited", "ICICI Lombard General Insurance Co. Ltd." vs a misread "icici
+// lambaord". An exact (even case-folded) match misses all of these and lets
+// every spelling become its own distinct "insurer" — this instead strips
+// the generic legal boilerplate and then does a typo-tolerant, per-word
+// comparison, so only the real distinguishing brand words have to line up.
+const INSURER_STOPWORDS = ["THE", "GENERAL", "INSURANCE", "COMPANY", "CO", "LTD", "LIMITED", "AND"];
+const INSURER_STOPWORD_SET = new Set(INSURER_STOPWORDS);
+// "GENERAL" is excluded from fuzzy (typo-tolerant) stopword matching on
+// purpose: "Generali" (a real insurer brand) is one edit away from it, so
+// fuzzy-stripping would eat a real brand word. A literal typo of "General"
+// just falls through as an extra, harmless token instead (see matchScore).
+const FUZZY_INSURER_STOPWORDS = INSURER_STOPWORDS.filter((w) => w !== "GENERAL");
+
+function levenshtein(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[m][n];
+}
+
+const WORD_SIM_THRESHOLD = 0.65; // per-word typo tolerance
+const CANDIDATE_MATCH_THRESHOLD = 0.65; // fraction of a candidate's brand words that must be found
+
+function isNearStopword(word: string): boolean {
+  if (INSURER_STOPWORD_SET.has(word)) return true;
+  if (word.length < 5) return false; // too short to safely fuzzy-match a stopword
+  return FUZZY_INSURER_STOPWORDS.some((sw) => sw.length >= 5 && levenshtein(word, sw) <= 1);
+}
+
+function insurerTokens(name: string): string[] {
+  return name
+    .toUpperCase()
+    .replace(/\([^)]*\)/g, " ") // drop parenthetical qualifiers, e.g. "(India)"
+    .replace(/[^A-Z0-9]+/g, " ")
+    .split(" ")
+    .filter(Boolean);
+}
+
+function insurerSignificantTokens(name: string): string[] {
+  return insurerTokens(name).filter((w) => !isNearStopword(w));
+}
+
+function tokenSimilarity(a: string, b: string): number {
+  if (a.length <= 3 || b.length <= 3) return a === b ? 1 : 0;
+  // A genuine typo/OCR slip of a word almost always keeps its first letter
+  // intact; two coincidentally similar but unrelated words (e.g. "GENRAL"
+  // vs "CENTRAL") often don't — this blocks that class of false match
+  // without needing a stricter (and typo-intolerant) overall threshold.
+  if (a[0] !== b[0]) return 0;
+  return 1 - levenshtein(a, b) / Math.max(a.length, b.length);
+}
+
+function candidateMatchScore(rawTokens: string[], candidateTokens: string[]): number {
+  if (candidateTokens.length === 0) return 0;
+  let matched = 0;
+  for (const ct of candidateTokens) {
+    const best = rawTokens.reduce((m, rt) => Math.max(m, tokenSimilarity(ct, rt)), 0);
+    if (best >= WORD_SIM_THRESHOLD) matched++;
+  }
+  return matched / candidateTokens.length;
+}
+
+export function matchInsurerName(raw: string, options: string[]): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const exact = matchOption(trimmed, options);
+  if (exact) return exact;
+
+  const rawTokens = insurerSignificantTokens(trimmed);
+  if (rawTokens.length === 0) return null;
+
+  let best: string | null = null;
+  let bestScore = 0;
+  for (const opt of options) {
+    const score = candidateMatchScore(rawTokens, insurerSignificantTokens(opt));
+    if (score > bestScore) {
+      bestScore = score;
+      best = opt;
+    }
+  }
+  return bestScore >= CANDIDATE_MATCH_THRESHOLD ? best : null;
+}
+
+// Called whenever matchInsurerName() finds nothing close enough — the raw
+// text is treated as a genuinely new insurer and added to the registry (so
+// it becomes part of refs.insurers, and future spellings of this same new
+// company can fuzzy-match onto it too) instead of being rejected.
+export async function registerNewInsurer(name: string): Promise<void> {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  try {
+    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const existing = await CustomInsurer.findOne({ name: { $regex: `^${escaped}$`, $options: "i" } });
+    if (!existing) {
+      await CustomInsurer.create({ name: trimmed });
+    }
+  } catch {
+    // Non-fatal — the policy still saves with this insurer text even if the
+    // registry write loses a race against a concurrent identical insert.
+  }
+}
+
 const DATE_FIELDS: { key: string; label: string }[] = [
   { key: "paymentReceivedDate", label: "Payment Received Date" },
   { key: "startDate", label: "Risk Start Date" },
@@ -115,7 +232,7 @@ const NUMBER_FIELDS: { key: string; label: string }[] = [
 export function validateAndNormalizeRow(
   row: Record<string, any>,
   refs: ReferenceLists
-): { errors: string[]; row: Record<string, any> } {
+): { errors: string[]; row: Record<string, any>; newInsurer?: string } {
   const errors: string[] = [];
   const normalized: Record<string, any> = { ...row };
 
@@ -163,7 +280,23 @@ export function validateAndNormalizeRow(
   checkEnum("policyRemark", "Policy Remark", POLICY_REMARKS);
   checkEnum("mediumOfIssuance", "Medium of Issuance", MEDIUM_OF_ISSUANCE);
   checkEnum("rewardStatus", "Reward Status", REWARD_STATUS);
-  checkEnum("insurer", "Insurance Company", refs.insurers);
+
+  let newInsurer: string | undefined;
+  const insurerRaw = str(row.insurer);
+  if (insurerRaw) {
+    const insurerMatch = matchInsurerName(insurerRaw, refs.insurers);
+    if (insurerMatch) {
+      normalized.insurer = insurerMatch;
+    } else {
+      // No existing insurer (predefined or previously custom-added) is even
+      // a fuzzy match — treat this as a genuinely new insurer rather than
+      // rejecting the row. The caller registers it (registerNewInsurer) so
+      // it becomes part of the reference list for future rows/uploads.
+      normalized.insurer = insurerRaw;
+      newInsurer = insurerRaw;
+    }
+  }
+
   checkEnum("branchName", "Branch Name", refs.branches);
 
   const agentTypeRaw = str(row.agentType);
@@ -215,7 +348,7 @@ export function validateAndNormalizeRow(
     }
   }
 
-  return { errors, row: normalized };
+  return { errors, row: normalized, newInsurer };
 }
 
 export function mapRow(row: Record<string, any>, managersByName: Map<string, any>) {

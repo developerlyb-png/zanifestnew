@@ -43,7 +43,7 @@ const COLUMNS: { key: ColumnKey; label: string; defaultOn: boolean }[] = [
   { key: "name", label: "Name", defaultOn: true },
   { key: "contact", label: "Contact Info", defaultOn: true },
   { key: "kyc", label: "KYC Documents", defaultOn: true },
-  { key: "subInsureds", label: "Sub Insureds", defaultOn: true },
+  { key: "subInsureds", label: "Insurer ID", defaultOn: true },
   { key: "notifications", label: "Notifications", defaultOn: true },
   { key: "type", label: "Client Type", defaultOn: true },
   { key: "status", label: "Status", defaultOn: true },
@@ -70,6 +70,8 @@ const AVATAR_TONE_CLASSES = [cm.avatarTone0, cm.avatarTone1, cm.avatarTone2, cm.
 export default function ClientManagement() {
   const [view, setView] = useState<"list" | "add" | "edit" | "detail">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [addPrefill, setAddPrefill] = useState<Partial<ClientRow> | null>(null);
+  const [detailPrefill, setDetailPrefill] = useState<Partial<ClientRow> | null>(null);
 
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -165,12 +167,12 @@ export default function ClientManagement() {
       c.phone,
       c.address || "",
       (c.kycFiles || []).length,
-      (c.subClients || []).length,
+      c._id,
       c.isGlobal ? "Global" : "Private",
       c.isActive !== false ? "Active" : "Inactive",
     ]);
     const csvText = [
-      ["Name", "Email", "Phone", "Address", "KYC Files", "Sub Insureds", "Client Type", "Status"],
+      ["Name", "Email", "Phone", "Address", "KYC Files", "Insurer ID", "Client Type", "Status"],
       ...rows,
     ]
       .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -187,8 +189,13 @@ export default function ClientManagement() {
     return (
       <div className={`${styles.cont} ${cm.clientManagementPage}`}>
         <ClientForm
-          onCancel={() => setView("list")}
+          initial={addPrefill || undefined}
+          onCancel={() => {
+            setAddPrefill(null);
+            setView("list");
+          }}
           onSaved={(id) => {
+            setAddPrefill(null);
             setView("detail");
             setActiveId(id);
             setRefreshKey((k) => k + 1);
@@ -219,11 +226,16 @@ export default function ClientManagement() {
       <div className={`${styles.cont} ${cm.clientManagementPage}`}>
         <ClientDetailView
           clientId={activeId}
+          virtualPrefill={detailPrefill || undefined}
           onBack={() => {
             setView("list");
             setRefreshKey((k) => k + 1);
           }}
           onEdit={() => setView("edit")}
+          onEditVirtual={() => {
+            setAddPrefill(detailPrefill);
+            setView("add");
+          }}
         />
       </div>
     );
@@ -237,7 +249,13 @@ export default function ClientManagement() {
           <button className={styles.outlineBtn} onClick={() => toast("Bulk upload is coming soon.")}>
             <FiUploadCloud /> Bulk Upload
           </button>
-          <button className={`${styles.primaryBtn} ${cm.clientAddButton}`} onClick={() => setView("add")}>
+          <button
+            className={`${styles.primaryBtn} ${cm.clientAddButton}`}
+            onClick={() => {
+              setAddPrefill(null);
+              setView("add");
+            }}
+          >
             <FiPlus /> Add Client
           </button>
         </div>
@@ -384,7 +402,6 @@ export default function ClientManagement() {
             ) : (
               visible.map((c) => {
                 const kycCount = (c.kycFiles || []).length;
-                const subCount = (c.subClients || []).length;
                 const isVirtual = c._id.startsWith("policy-");
                 return (
                   <tr key={c._id}>
@@ -399,6 +416,7 @@ export default function ClientManagement() {
                             className={cm.nameLink}
                             onClick={() => {
                               setActiveId(c._id);
+                              setDetailPrefill(c);
                               setView("detail");
                             }}
                           >
@@ -426,7 +444,7 @@ export default function ClientManagement() {
                     )}
                     {visibleColumns.subInsureds && (
                       <td>
-                        <span className={`${cm.subBadge} ${subCount > 0 ? cm.subBadgeSome : cm.subBadgeZero}`}>{subCount}</span>
+                        <span style={{ fontFamily: "monospace", fontSize: 12, color: "#64748b" }}>{c._id}</span>
                       </td>
                     )}
                     {visibleColumns.notifications && (
@@ -475,6 +493,7 @@ export default function ClientManagement() {
                           title="View"
                           onClick={() => {
                             setActiveId(c._id);
+                            setDetailPrefill(c);
                             setView("detail");
                           }}
                         >
@@ -483,11 +502,20 @@ export default function ClientManagement() {
                         <button
                           type="button"
                           className={cm.iconActionBtn}
-                          title={isVirtual ? "Save this client first via Add Client" : "Edit"}
-                          disabled={isVirtual}
+                          title="Edit"
                           onClick={() => {
-                            setActiveId(c._id);
-                            setView("edit");
+                            if (isVirtual) {
+                              setAddPrefill({
+                                name: c.name,
+                                email: c.email,
+                                phone: c.phone,
+                                address: c.address,
+                              });
+                              setView("add");
+                            } else {
+                              setActiveId(c._id);
+                              setView("edit");
+                            }
                           }}
                         >
                           <FiEdit2 size={14} />

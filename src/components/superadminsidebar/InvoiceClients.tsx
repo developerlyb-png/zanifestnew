@@ -140,7 +140,7 @@ function Field({
   );
 }
 
-function AddInvoiceClientForm({
+export function AddInvoiceClientForm({
   onCancel,
   onCreated,
   editId,

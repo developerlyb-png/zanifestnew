@@ -17,6 +17,8 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { INDIAN_STATES, TAX_MODE_LABELS, INVOICE_STATUSES } from "@/constants/invoice";
+import { AddInvoiceClientForm } from "./InvoiceClients";
+import { AddInvoiceItemForm, InvoiceItemRow } from "./InvoiceItems";
 
 interface SellerProfileRow {
   _id: string;
@@ -50,6 +52,7 @@ interface InvoiceClientRow {
 }
 
 interface LineItem {
+  itemId?: string;
   description: string;
   hsnSac: string;
   qty: string;
@@ -93,6 +96,7 @@ export default function CreateInvoice({
   const [clientResults, setClientResults] = useState<InvoiceClientRow[]>([]);
   const [searchingClients, setSearchingClients] = useState(false);
   const [client, setClient] = useState<InvoiceClientRow | null>(null);
+  const [clientFormMode, setClientFormMode] = useState<"add" | "edit" | null>(null);
 
   const [invoiceDate, setInvoiceDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [dueDate, setDueDate] = useState("");
@@ -105,6 +109,12 @@ export default function CreateInvoice({
   const [items, setItems] = useState<LineItem[]>([{ ...EMPTY_ITEM }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  const [itemQuery, setItemQuery] = useState("");
+  const [itemResults, setItemResults] = useState<InvoiceItemRow[]>([]);
+  const [searchingItems, setSearchingItems] = useState(false);
+  const [showItemSearch, setShowItemSearch] = useState(false);
+  const [showNewItemForm, setShowNewItemForm] = useState(false);
 
   const seller = sellers.find((s) => s._id === sellerId) || null;
 
@@ -158,6 +168,7 @@ export default function CreateInvoice({
         setTaxRatePercent(String(inv.taxRatePercent ?? 18));
         setItems(
           (inv.lineItems || []).map((it: any) => ({
+            itemId: it.itemId,
             description: it.description || "",
             hsnSac: it.hsnSac || "",
             qty: String(it.qty ?? 1),
@@ -192,15 +203,85 @@ export default function CreateInvoice({
     setClient(c);
     setClientQuery("");
     setClientResults([]);
+    setClientFormMode(null);
     if (!placeOfSupply) setPlaceOfSupply(c.state);
     if (!taxModeTouched && seller) {
       setTaxMode(seller.registeredAddress.state.toLowerCase() === c.state.toLowerCase() ? "INTRA" : "INTER");
     }
   };
 
+  // After adding or editing a client inline, re-fetch the full record (the
+  // create/update response only carries an id) and (re)select it so the
+  // place-of-supply / tax-mode auto-detect picks up the latest state.
+  const selectClientById = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/invoice-clients?id=${id}`, { credentials: "include" });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      selectClient(data.client);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to load client");
+    }
+  };
+
   const nextInvoiceNoPreview = seller
     ? `${seller.invoiceSeries}${String((seller.lastSequenceUsed || 0) + 1).padStart(3, "0")}`
     : "";
+
+  // Debounced item-catalog search.
+  useEffect(() => {
+    if (!itemQuery.trim()) {
+      setItemResults([]);
+      return;
+    }
+    setSearchingItems(true);
+    const t = setTimeout(() => {
+      fetch(`/api/admin/invoice-items?q=${encodeURIComponent(itemQuery.trim())}`, { credentials: "include" })
+        .then((r) => r.json())
+        .then((d) => setItemResults(d.items || []))
+        .catch(() => setItemResults([]))
+        .finally(() => setSearchingItems(false));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [itemQuery]);
+
+  // Appends a new line pre-filled from a catalog item. The last-picked item's
+  // GST rate drives the invoice's single tax rate — right for the common case
+  // of one rate per invoice; mixed-rate invoices still get a rate to start
+  // from and the admin can override it in the Tax Calculation card.
+  const addItemFromCatalog = (it: InvoiceItemRow) => {
+    setItems((prev) => {
+      const blank = prev.length === 1 && !prev[0].description.trim() ? prev.slice(1) : prev;
+      return [
+        ...blank,
+        {
+          itemId: it._id,
+          description: it.name,
+          hsnSac: it.hsnSac || "",
+          qty: "1",
+          rate: String(it.salesPrice || 0),
+          discountType: "₹",
+          discountValue: "0",
+        },
+      ];
+    });
+    if (it.gstRate) setTaxRatePercent(String(it.gstRate));
+    setItemQuery("");
+    setItemResults([]);
+    setShowItemSearch(false);
+  };
+
+  const addItemFromCatalogId = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/invoice-items?id=${id}`, { credentials: "include" });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      addItemFromCatalog(data.item);
+      setShowNewItemForm(false);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to load item");
+    }
+  };
 
   const setItem = (i: number, patch: Partial<LineItem>) =>
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
@@ -272,6 +353,7 @@ export default function CreateInvoice({
           status,
           taxRatePercent: Number(taxRatePercent) || 0,
           lineItems: items.map((it) => ({
+            itemId: it.itemId,
             description: it.description,
             hsnSac: it.hsnSac,
             qty: Number(it.qty) || 0,
@@ -427,91 +509,122 @@ export default function CreateInvoice({
       )}
 
       {step === 2 && (
-        <div className={styles.card}>
-          <div className={styles.cardHead}>
-            <h3 className={styles.cardTitle}>
-              <FiUsers style={{ verticalAlign: -2, marginRight: 8 }} />
-              Bill To
-            </h3>
-          </div>
-
-          {client ? (
-            <div className={styles.selectedPanel}>
-              <div>
-                <div className={styles.selectedMain}>{client.name}</div>
-                <div className={styles.selectedSub}>
-                  {client.contactPerson} · {client.email} · {client.phone}
-                </div>
-              </div>
-              <button type="button" className={styles.changeBtn} onClick={() => setClient(null)}>
-                Change client
-              </button>
-            </div>
+        <>
+          {clientFormMode ? (
+            <AddInvoiceClientForm
+              editId={clientFormMode === "edit" ? client?._id : undefined}
+              onCancel={() => setClientFormMode(null)}
+              onCreated={(id) => selectClientById(id)}
+            />
           ) : (
-            <div className={styles.searchBox}>
-              <FiSearch size={14} color="#94a3b8" />
-              <input
-                placeholder="Search clients by name, email, or GST number..."
-                value={clientQuery}
-                onChange={(e) => setClientQuery(e.target.value)}
-                autoFocus
-              />
-            </div>
-          )}
-
-          {!client && clientQuery.trim() && (
-            <div className={styles.searchResults}>
-              {searchingClients ? (
-                <div className={styles.searchEmpty}>Searching...</div>
-              ) : clientResults.length === 0 ? (
-                <div className={styles.searchEmpty}>No clients found. Add them under Invoice Clients first.</div>
-              ) : (
-                clientResults.map((c) => (
-                  <button key={c._id} type="button" className={styles.searchResultRow} onClick={() => selectClient(c)}>
-                    <span>
-                      <div className={styles.searchResultMain}>{c.name}</div>
-                      <div className={styles.searchResultSub}>
-                        {c.contactPerson} · {c.email}
-                      </div>
-                    </span>
-                    <span className={styles.searchResultSub}>{c.gstin}</span>
+            <div className={styles.card}>
+              <div className={styles.cardHead}>
+                <h3 className={styles.cardTitle}>
+                  <FiUsers style={{ verticalAlign: -2, marginRight: 8 }} />
+                  Bill To
+                </h3>
+                {!client && (
+                  <button type="button" className={styles.changeBtn} onClick={() => setClientFormMode("add")}>
+                    <FiPlus size={12} style={{ verticalAlign: -1, marginRight: 4 }} />
+                    Add New Client
                   </button>
-                ))
+                )}
+              </div>
+
+              {client ? (
+                <div className={styles.selectedPanel}>
+                  <div>
+                    <div className={styles.selectedMain}>{client.name}</div>
+                    <div className={styles.selectedSub}>
+                      {client.contactPerson} · {client.email} · {client.phone}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button type="button" className={styles.changeBtn} onClick={() => setClientFormMode("edit")}>
+                      Edit client
+                    </button>
+                    <button type="button" className={styles.changeBtn} onClick={() => setClient(null)}>
+                      Change client
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.searchBox}>
+                  <FiSearch size={14} color="#94a3b8" />
+                  <input
+                    placeholder="Search clients by name, email, or GST number..."
+                    value={clientQuery}
+                    onChange={(e) => setClientQuery(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+              )}
+
+              {!client && clientQuery.trim() && (
+                <div className={styles.searchResults}>
+                  {searchingClients ? (
+                    <div className={styles.searchEmpty}>Searching...</div>
+                  ) : clientResults.length === 0 ? (
+                    <div className={styles.searchEmpty}>
+                      No clients found.{" "}
+                      <button
+                        type="button"
+                        className={styles.changeBtn}
+                        style={{ marginLeft: 6 }}
+                        onClick={() => setClientFormMode("add")}
+                      >
+                        Add "{clientQuery.trim()}" as a new client
+                      </button>
+                    </div>
+                  ) : (
+                    clientResults.map((c) => (
+                      <button key={c._id} type="button" className={styles.searchResultRow} onClick={() => selectClient(c)}>
+                        <span>
+                          <div className={styles.searchResultMain}>{c.name}</div>
+                          <div className={styles.searchResultSub}>
+                            {c.contactPerson} · {c.email}
+                          </div>
+                        </span>
+                        <span className={styles.searchResultSub}>{c.gstin}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {client && (
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Contact Person</span>
+                    <span className={styles.infoVal}>{client.contactPerson}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Email</span>
+                    <span className={styles.infoVal}>{client.email}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Phone</span>
+                    <span className={styles.infoVal}>{client.phone}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>GSTIN</span>
+                    <span className={styles.infoVal}>{client.gstin}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>PAN</span>
+                    <span className={styles.infoVal}>{client.pan}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Billing Address</span>
+                    <span className={styles.infoVal}>
+                      {addrLine({ line1: client.addressLine1, line2: client.addressLine2, city: client.city, state: client.state, pincode: client.pincode })}
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
           )}
-
-          {client && (
-            <div className={styles.infoGrid}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>Contact Person</span>
-                <span className={styles.infoVal}>{client.contactPerson}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>Email</span>
-                <span className={styles.infoVal}>{client.email}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>Phone</span>
-                <span className={styles.infoVal}>{client.phone}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>GSTIN</span>
-                <span className={styles.infoVal}>{client.gstin}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>PAN</span>
-                <span className={styles.infoVal}>{client.pan}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoKey}>Billing Address</span>
-                <span className={styles.infoVal}>
-                  {addrLine({ line1: client.addressLine1, line2: client.addressLine2, city: client.city, state: client.state, pincode: client.pincode })}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+        </>
       )}
 
       {step === 3 && (
@@ -589,8 +702,68 @@ export default function CreateInvoice({
           <div className={styles.card}>
             <div className={styles.cardHead}>
               <h3 className={styles.cardTitle}>₹ Line Items</h3>
+              {!showNewItemForm && (
+                <button type="button" className={styles.changeBtn} onClick={() => setShowItemSearch((v) => !v)}>
+                  <FiSearch size={12} style={{ verticalAlign: -1, marginRight: 4 }} />
+                  Pick from Catalog
+                </button>
+              )}
             </div>
-            <div className={styles.lineTableWrap}>
+
+            {showNewItemForm ? (
+              <AddInvoiceItemForm
+                onCancel={() => setShowNewItemForm(false)}
+                onCreated={(id) => addItemFromCatalogId(id)}
+              />
+            ) : (
+              showItemSearch && (
+                <div style={{ marginBottom: 14 }}>
+                  <div className={styles.searchBox}>
+                    <FiSearch size={14} color="#94a3b8" />
+                    <input
+                      placeholder="Search catalog items by name or HSN..."
+                      value={itemQuery}
+                      onChange={(e) => setItemQuery(e.target.value)}
+                      autoFocus
+                    />
+                  </div>
+                  {itemQuery.trim() && (
+                    <div className={styles.searchResults}>
+                      {searchingItems ? (
+                        <div className={styles.searchEmpty}>Searching...</div>
+                      ) : itemResults.length === 0 ? (
+                        <div className={styles.searchEmpty}>
+                          No items found.{" "}
+                          <button
+                            type="button"
+                            className={styles.changeBtn}
+                            style={{ marginLeft: 6 }}
+                            onClick={() => setShowNewItemForm(true)}
+                          >
+                            Add "{itemQuery.trim()}" as a new item
+                          </button>
+                        </div>
+                      ) : (
+                        itemResults.map((it) => (
+                          <button key={it._id} type="button" className={styles.searchResultRow} onClick={() => addItemFromCatalog(it)}>
+                            <span>
+                              <div className={styles.searchResultMain}>{it.name}</div>
+                              <div className={styles.searchResultSub}>
+                                {it.hsnSac || "No HSN"} · {it.unit || "PCS"}
+                                {it.trackStock ? ` · Stock: ${it.currentStock ?? 0}` : ""}
+                              </div>
+                            </span>
+                            <span className={styles.searchResultSub}>₹{(it.salesPrice || 0).toLocaleString("en-IN")}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+
+            {!showNewItemForm && <div className={styles.lineTableWrap}>
               <table className={styles.lineTable}>
                 <thead>
                   <tr>
@@ -665,10 +838,12 @@ export default function CreateInvoice({
                   ))}
                 </tbody>
               </table>
-            </div>
-            <button type="button" className={styles.addLineBtn} onClick={addItem}>
-              <FiPlus size={14} /> Add Item
-            </button>
+            </div>}
+            {!showNewItemForm && (
+              <button type="button" className={styles.addLineBtn} onClick={addItem}>
+                <FiPlus size={14} /> Add Item
+              </button>
+            )}
           </div>
 
           <div className={styles.card}>
@@ -714,21 +889,23 @@ export default function CreateInvoice({
         </>
       )}
 
-      <div className={styles.navRow}>
-        <button type="button" className={styles.btnGhost} onClick={step === 1 ? onCancel : () => setStep((s) => s - 1)}>
-          <FiArrowLeft /> {step === 1 ? "Cancel" : "Previous"}
-        </button>
-        {step < 3 ? (
-          <button type="button" className={styles.btnPrimary} onClick={next}>
-            Next <FiArrowRight />
+      {!(step === 2 && clientFormMode) && (
+        <div className={styles.navRow}>
+          <button type="button" className={styles.btnGhost} onClick={step === 1 ? onCancel : () => setStep((s) => s - 1)}>
+            <FiArrowLeft /> {step === 1 ? "Cancel" : "Previous"}
           </button>
-        ) : (
-          <button type="button" className={styles.btnPrimary} onClick={submit} disabled={submitting}>
-            {isEdit ? <FiSave /> : <FiCheckCircle />}
-            {isEdit ? (submitting ? "Saving..." : "Save Changes") : submitting ? "Generating..." : "Generate Invoice"}
-          </button>
-        )}
-      </div>
+          {step < 3 ? (
+            <button type="button" className={styles.btnPrimary} onClick={next}>
+              Next <FiArrowRight />
+            </button>
+          ) : (
+            <button type="button" className={styles.btnPrimary} onClick={submit} disabled={submitting}>
+              {isEdit ? <FiSave /> : <FiCheckCircle />}
+              {isEdit ? (submitting ? "Saving..." : "Save Changes") : submitting ? "Generating..." : "Generate Invoice"}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
