@@ -32,6 +32,7 @@ const SellerSnapshotSchema = new Schema(
     companyLogo: { data: String, fileName: String },
     signatureImage: { data: String, fileName: String },
     principalOfficerName: String,
+    principalOfficerStamp: { data: String, fileName: String },
     principalOfficerSignature: { data: String, fileName: String },
   },
   { _id: false }

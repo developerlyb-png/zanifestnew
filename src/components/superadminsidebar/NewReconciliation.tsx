@@ -147,8 +147,8 @@ export default function NewReconciliation({
               <label className={styles.dropzone}>
                 <FiUpload size={22} color="#94a3b8" />
                 <span className={styles.dropzoneTitle}>Upload file with commission data</span>
-                <span className={styles.dropzoneHint}>Supported formats: XLSX, XLS, CSV up to 10MB</span>
-                <input type="file" hidden accept=".xlsx,.xls,.csv" onChange={handleFile} />
+                <span className={styles.dropzoneHint}>Supported formats: XLSX, XLS, CSV, PDF up to 10MB</span>
+                <input type="file" hidden accept=".xlsx,.xls,.csv,.pdf" onChange={handleFile} />
               </label>
             )}
           </div>

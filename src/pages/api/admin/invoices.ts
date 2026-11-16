@@ -92,6 +92,7 @@ function sellerSnapshot(sellerProfile: any) {
     companyLogo: sellerProfile.companyLogo,
     signatureImage: sellerProfile.signatureImage,
     principalOfficerName: sellerProfile.principalOfficerName,
+    principalOfficerStamp: sellerProfile.principalOfficerStamp,
     principalOfficerSignature: sellerProfile.principalOfficerSignature,
   };
 }
@@ -149,7 +150,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (from) query.invoiceDate.$gte = new Date(String(from));
         if (to) query.invoiceDate.$lte = new Date(String(to));
       }
-      const invoices = await Invoice.find(query, { lineItems: 0, "seller.companyLogo": 0, "seller.signatureImage": 0, signedPdf: 0 })
+      const invoices = await Invoice.find(query, {
+        lineItems: 0,
+        "seller.companyLogo": 0,
+        "seller.signatureImage": 0,
+        "seller.principalOfficerStamp": 0,
+        "seller.principalOfficerSignature": 0,
+        signedPdf: 0,
+      })
         .sort({ createdAt: -1 })
         .lean();
       return res.status(200).json({ success: true, invoices });

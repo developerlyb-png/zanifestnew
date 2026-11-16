@@ -8,6 +8,7 @@ import ReconciliationBatch from "@/models/ReconciliationBatch";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import PayInPayOutRule from "@/models/PayInPayOutRule";
 import { computeCommission } from "@/utils/payInPayOutMatch";
+import { extractCommissionRowsFromPdf } from "@/utils/aiCommissionExtractor";
 
 export const config = {
   api: {
@@ -103,35 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       (f) => !!mapping.fieldMap[f]
     );
 
-    const base64 = String(fileData).includes(",") ? String(fileData).split(",")[1] : String(fileData);
-    const buffer = Buffer.from(base64, "base64");
-    const workbook = XLSX.read(buffer, { type: "buffer" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rawRows: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-    const csRows = rawRows
-      .map((row) => {
-        const read = buildRowReader(row);
-        const policyNo = String(read(mapping.fieldMap.policyNo) ?? "").trim();
-        if (!policyNo) return null;
-        return {
-          policyNo,
-          policyNoKey: normPolicyNo(policyNo),
-          insuredName: mapping.fieldMap.insuredName ? String(read(mapping.fieldMap.insuredName) ?? "").trim() : "",
-          premium: mapping.fieldMap.premium ? toNumber(read(mapping.fieldMap.premium)) : 0,
-          commissionAmount: mapping.fieldMap.commissionAmount ? toNumber(read(mapping.fieldMap.commissionAmount)) : 0,
-          commissionPercentage: mapping.fieldMap.commissionPercentage
-            ? toNumber(read(mapping.fieldMap.commissionPercentage))
-            : 0,
-          basicPremium: mapping.fieldMap.basicPremiumAmount ? toNumber(read(mapping.fieldMap.basicPremiumAmount)) : null,
-          odPremium: mapping.fieldMap.odPremiumAmount ? toNumber(read(mapping.fieldMap.odPremiumAmount)) : null,
-          tpPremium: mapping.fieldMap.tpPremiumAmount ? toNumber(read(mapping.fieldMap.tpPremiumAmount)) : null,
-          terrorismPremium: mapping.fieldMap.terrorismPremiumAmount
-            ? toNumber(read(mapping.fieldMap.terrorismPremiumAmount))
-            : null,
-        };
-      })
-      .filter(Boolean) as {
+    type CsRow = {
       policyNo: string;
       policyNoKey: string;
       insuredName: string;
@@ -142,7 +115,76 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       odPremium: number | null;
       tpPremium: number | null;
       terrorismPremium: number | null;
-    }[];
+    };
+
+    // Shared by both the XLSX/CSV path (raw values come from the insurer's
+    // own column headers via the configured mapping) and the PDF path (raw
+    // values come straight from the AI extraction, under canonical field
+    // names) — whichever field is "mapped"/known for this insurer still
+    // behaves identically either way: everything else downstream (matching
+    // against our own policies, computing mismatches) never needs to know
+    // which source a row came from.
+    function buildCsRow(raw: {
+      policyNo: any;
+      insuredName?: any;
+      premium?: any;
+      commissionAmount?: any;
+      commissionPercentage?: any;
+      basicPremiumAmount?: any;
+      odPremiumAmount?: any;
+      tpPremiumAmount?: any;
+      terrorismPremiumAmount?: any;
+    }): CsRow | null {
+      const policyNo = String(raw.policyNo ?? "").trim();
+      if (!policyNo) return null;
+      return {
+        policyNo,
+        policyNoKey: normPolicyNo(policyNo),
+        insuredName: mapping.fieldMap.insuredName ? String(raw.insuredName ?? "").trim() : "",
+        premium: mapping.fieldMap.premium ? toNumber(raw.premium) : 0,
+        commissionAmount: mapping.fieldMap.commissionAmount ? toNumber(raw.commissionAmount) : 0,
+        commissionPercentage: mapping.fieldMap.commissionPercentage ? toNumber(raw.commissionPercentage) : 0,
+        basicPremium: mapping.fieldMap.basicPremiumAmount ? toNumber(raw.basicPremiumAmount) : null,
+        odPremium: mapping.fieldMap.odPremiumAmount ? toNumber(raw.odPremiumAmount) : null,
+        tpPremium: mapping.fieldMap.tpPremiumAmount ? toNumber(raw.tpPremiumAmount) : null,
+        terrorismPremium: mapping.fieldMap.terrorismPremiumAmount ? toNumber(raw.terrorismPremiumAmount) : null,
+      };
+    }
+
+    const isPdf =
+      /\.pdf$/i.test(String(fileName || "")) || /^data:application\/pdf/i.test(String(fileData));
+
+    let csRows: CsRow[];
+    if (isPdf) {
+      const extracted = await extractCommissionRowsFromPdf(
+        String(fileData),
+        fileName || "commission-statement.pdf"
+      );
+      csRows = extracted.map((row) => buildCsRow(row)).filter(Boolean) as CsRow[];
+    } else {
+      const base64 = String(fileData).includes(",") ? String(fileData).split(",")[1] : String(fileData);
+      const buffer = Buffer.from(base64, "base64");
+      const workbook = XLSX.read(buffer, { type: "buffer" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rawRows: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      csRows = rawRows
+        .map((row) => {
+          const read = buildRowReader(row);
+          return buildCsRow({
+            policyNo: read(mapping.fieldMap.policyNo),
+            insuredName: read(mapping.fieldMap.insuredName),
+            premium: read(mapping.fieldMap.premium),
+            commissionAmount: read(mapping.fieldMap.commissionAmount),
+            commissionPercentage: read(mapping.fieldMap.commissionPercentage),
+            basicPremiumAmount: read(mapping.fieldMap.basicPremiumAmount),
+            odPremiumAmount: read(mapping.fieldMap.odPremiumAmount),
+            tpPremiumAmount: read(mapping.fieldMap.tpPremiumAmount),
+            terrorismPremiumAmount: read(mapping.fieldMap.terrorismPremiumAmount),
+          });
+        })
+        .filter(Boolean) as CsRow[];
+    }
 
     // ---------------- Load our own expected data (MIS) ----------------
     const [policies, rules] = await Promise.all([

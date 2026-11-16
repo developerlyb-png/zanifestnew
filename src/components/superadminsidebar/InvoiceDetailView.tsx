@@ -208,6 +208,7 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
 
     const logoImg = seller.companyLogo?.data ? `<img class="logo" src="${seller.companyLogo.data}" />` : "";
     const sigImg = seller.principalOfficerSignature?.data || seller.signatureImage?.data;
+    const stampImg = seller.principalOfficerStamp?.data;
 
     const bankBlock = seller.showBankDetailsOnInvoice && seller.bank?.accountNumber
       ? `<div class="bankBox">
@@ -227,9 +228,9 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
   .logo { width: 56px; height: 56px; object-fit: contain; }
   .coName { font-size: 19px; font-weight: 800; }
   .muted { color: #4b5563; font-size: 12px; line-height: 1.5; }
-  .headRight { text-align: right; }
-  .title { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 8px; }
-  .metaRow { font-size: 12px; display: flex; justify-content: flex-end; gap: 8px; }
+  .headRight { text-align: right; flex-shrink: 0; white-space: nowrap; }
+  .title { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 8px; white-space: nowrap; }
+  .metaRow { font-size: 12px; display: flex; justify-content: flex-end; gap: 8px; white-space: nowrap; }
   .metaRow span:first-child { color: #6b7280; }
   .billRow { display: flex; justify-content: space-between; margin-top: 20px; gap: 24px; }
   .billBox { font-size: 12.5px; line-height: 1.6; max-width: 48%; }
@@ -249,7 +250,9 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
   table.totals tr.grand td { border-top: 2px solid #111827; font-weight: 800; font-size: 14px; padding-top: 8px; }
   .signRow { display: flex; justify-content: flex-end; margin-top: 46px; }
   .signBox { text-align: center; font-size: 12px; min-width: 220px; }
-  .sig { max-height: 54px; max-width: 180px; object-fit: contain; display: block; margin: 0 auto 4px; }
+  .signImages { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; }
+  .sig { max-height: 54px; max-width: 160px; object-fit: contain; }
+  .stamp { max-height: 64px; max-width: 100px; object-fit: contain; }
   .sigBlank { height: 54px; }
   .signLine { border-top: 1px solid #111827; margin-top: 4px; padding-top: 4px; }
   .foot { margin-top: 36px; text-align: center; font-size: 11px; color: #9ca3af; }
@@ -272,7 +275,6 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
     <div class="metaRow"><span>Invoice Date&nbsp;</span><b>${esc(fmtDate(invoice.invoiceDate))}</b></div>
     ${invoice.dueDate ? `<div class="metaRow"><span>Due Date&nbsp;</span><b>${esc(fmtDate(invoice.dueDate))}</b></div>` : ""}
     <div class="metaRow"><span>Place of Supply&nbsp;</span><b>${esc(invoice.placeOfSupply)}</b></div>
-    <div class="metaRow"><span>Status&nbsp;</span><b>${esc(invoice.status)}</b></div>
     ${invoice.reverseCharge ? `<div class="metaRow"><span>Reverse Charge&nbsp;</span><b>Yes</b></div>` : ""}
   </div>
 </div>
@@ -281,10 +283,8 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
   <div class="billBox">
     <div class="label">Bill To</div>
     <div class="billName">${esc(client.name)}</div>
-    ${client.contactPerson ? `<div>${esc(client.contactPerson)}</div>` : ""}
     <div>${esc(clientAddr)}</div>
     <div>GSTIN: ${esc(client.gstin)} &nbsp;·&nbsp; PAN: ${esc(client.pan)}</div>
-    ${client.email || client.phone ? `<div>${client.email ? esc(client.email) : ""}${client.phone ? " · " + esc(client.phone) : ""}</div>` : ""}
   </div>
   <div class="billBox">
     <div class="label">Tax Mode</div>
@@ -315,7 +315,10 @@ export default function InvoiceDetailView({ invoiceId, onBack, onEdit }: Props) 
 <div class="signRow">
   <div class="signBox">
     <div>For ${esc(seller.companyName)}</div>
-    ${sigImg ? `<img class="sig" src="${sigImg}" />` : `<div class="sigBlank"></div>`}
+    <div class="signImages">
+      ${stampImg ? `<img class="stamp" src="${stampImg}" />` : ""}
+      ${sigImg ? `<img class="sig" src="${sigImg}" />` : !stampImg ? `<div class="sigBlank"></div>` : ""}
+    </div>
     <div class="signLine">${esc(seller.principalOfficerName || seller.contactPerson)}<br/>Authorized Signatory</div>
   </div>
 </div>
