@@ -22,6 +22,7 @@ export interface Policy {
   _id: string;
   policyNumber?: string;
   subInsured?: string;
+  vehicle?: { number?: string };
   endorsementNo?: string;
   policyType?: string;
   lineOfBusiness?: string;
@@ -198,7 +199,7 @@ const EMPTY_FILTERS: ColumnFilters = {
 
 type ColumnKey =
   | "insuredName"
-  | "subInsured"
+  | "registrationNo"
   | "policyNo"
   | "endorsementNo"
   | "productName"
@@ -221,7 +222,7 @@ type ColumnKey =
 
 const COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "insuredName", label: "Insured Name" },
-  { key: "subInsured", label: "Sub-Insured" },
+  { key: "registrationNo", label: "Registration No." },
   { key: "policyNo", label: "Policy No." },
   { key: "endorsementNo", label: "Endorsement No." },
   { key: "productName", label: "Product Name" },
@@ -479,7 +480,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
     const rows = filteredPolicies.map((p) => {
       const cellFor: Record<ColumnKey, string | number> = {
         insuredName: p.customer?.fullName || "",
-        subInsured: p.subInsured || "",
+        registrationNo: p.vehicle?.number || "",
         policyNo: p.policyNumber || "",
         endorsementNo: p.endorsementNo || "",
         productName: p.policyType || "",
@@ -866,7 +867,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                       />
                     </td>
                   )}
-                  {visibleColumns.subInsured && <td className={styles.dashCell}>—</td>}
+                  {visibleColumns.registrationNo && <td className={styles.dashCell}>—</td>}
                   {visibleColumns.policyNo && (
                     <td>
                       <div className={styles.searchInput}>
@@ -984,7 +985,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                           </button>
                         </td>
                       )}
-                      {visibleColumns.subInsured && <td>{p.subInsured || "--"}</td>}
+                      {visibleColumns.registrationNo && <td>{p.vehicle?.number || "--"}</td>}
                       {visibleColumns.policyNo && <td>{p.policyNumber || "--"}</td>}
                       {visibleColumns.endorsementNo && <td>{p.endorsementNo || "-"}</td>}
                       {visibleColumns.productName && <td>{p.policyType || "--"}</td>}

@@ -1,4 +1,5 @@
-import vehicles from "@/lib/bajajMaster/vehicle4w.json";
+import vehicles4w from "@/lib/bajajMaster/vehicle4w.json";
+import vehicles2w from "@/lib/bajajMaster/vehicle2w.json";
 import rtoCities from "@/lib/bajajMaster/rtoCity.json";
 import rtoLocationTable from "@/lib/sbiMasterData/rtoLocation.json";
 import rtoDistrictTable from "@/lib/sbiMasterData/rtoDistrict.json";
@@ -46,14 +47,22 @@ const MAKE_ALIASES: Record<string, string> = {
   MG: "MORRIS GARAGES",
   "MG MOTOR": "MORRIS GARAGES",
   NISSAN: "NISSAN MOTORS",
+  // two-wheelers: RC maker names vs Bajaj's master
+  HERO: "HERO MOTOCORP",
+  "HERO MOTO CORP": "HERO MOTOCORP",
+  "TVS MOTOR": "TVS",
+  "BAJAJ AUTO": "BAJAJ",
+  "HARLEY DAVIDSON": "HARLEY- DAVIDSON",
 };
+
+export type BajajVehicleClass = "4W" | "2W";
 
 export type BajajVehicleMatch =
   | { ok: true; vehicle: BajajVehicle; ambiguous: boolean; candidates: number }
   | { ok: false; reason: string };
 
 // rc: { vehicle_manufacturer_name, model, type (fuel), vehicle_cubic_capacity }
-export function matchBajajVehicle(rc: any): BajajVehicleMatch {
+export function matchBajajVehicle(rc: any, vehicleClass: BajajVehicleClass = "4W"): BajajVehicleMatch {
   const rawMake = norm(rc.vehicle_manufacturer_name);
   const model = norm(rc.model);
   const fuel = bajajFuel(rc.type || rc.fuel);
@@ -61,7 +70,7 @@ export function matchBajajVehicle(rc: any): BajajVehicleMatch {
 
   if (!rawMake || !model) return { ok: false, reason: "RC is missing make or model" };
 
-  const all = vehicles as BajajVehicle[];
+  const all = (vehicleClass === "2W" ? vehicles2w : vehicles4w) as BajajVehicle[];
   const makes = [...new Set(all.map((v) => norm(v.make)))];
 
   // RC makers carry legal suffixes ("MARUTI SUZUKI INDIA LTD"): try the
@@ -74,6 +83,16 @@ export function matchBajajVehicle(rc: any): BajajVehicleMatch {
       if (MAKE_ALIASES[prefix]) make = MAKE_ALIASES[prefix];
       else if (makes.includes(prefix)) make = prefix;
     }
+  }
+  // Bike makers often lead with something else ("INDIA YAMAHA MOTOR PVT
+  // LTD", "HONDA MOTORCYCLE AND SCOOTER INDIA") — fall back to the longest
+  // Bajaj make found as whole words anywhere in the RC maker name.
+  if (!makes.includes(norm(make))) {
+    const padded = ` ${rawMake} `;
+    const inside = makes
+      .filter((m) => m && padded.includes(` ${m} `))
+      .sort((a, b) => b.length - a.length)[0];
+    if (inside) make = inside;
   }
   const byMake = all.filter((v) => norm(v.make) === norm(make));
   if (!byMake.length) return { ok: false, reason: `No Bajaj vehicles for make "${rawMake}"` };
@@ -89,6 +108,20 @@ export function matchBajajVehicle(rc: any): BajajVehicleMatch {
     });
     const longest = Math.max(0, ...contained.map((v) => compact(norm(v.model)).length));
     byModel = contained.filter((v) => compact(norm(v.model)).length === longest);
+  }
+  if (!byModel.length) {
+    // Word match with letters and digits split, so RC "PULSAR NS200" finds
+    // Bajaj's "PULSAR 200": every word of the Bajaj model must be in the RC
+    // model; the model with the most words wins.
+    const words = (s: string) =>
+      norm(s).replace(/([A-Z])(\d)/g, "$1 $2").replace(/(\d)([A-Z])/g, "$1 $2").split(" ").filter(Boolean);
+    const rcWords = new Set(words(model));
+    const fits = byMake.filter((v) => {
+      const w = words(v.model);
+      return w.length > 0 && w.every((x) => rcWords.has(x));
+    });
+    const most = Math.max(0, ...fits.map((v) => words(v.model).length));
+    byModel = fits.filter((v) => words(v.model).length === most);
   }
   if (!byModel.length) return { ok: false, reason: `No Bajaj model matches "${model}" for ${make}` };
 

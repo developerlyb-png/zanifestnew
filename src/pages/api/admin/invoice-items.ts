@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import InvoiceItem from "@/models/InvoiceItem";
+import { logInvoiceAudit, diffSummary } from "@/lib/invoiceAudit";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -30,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   await dbConnect();
+  const adminName = `${admin.userFirstName ?? ""} ${admin.userLastName ?? ""}`.trim() || admin.email;
 
   if (req.method === "GET") {
     try {
@@ -64,7 +66,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ success: false, message: "Item name is required" });
       }
 
-      const adminName = `${admin.userFirstName ?? ""} ${admin.userLastName ?? ""}`.trim() || admin.email;
       const trackStock = !!b.trackStock;
       const openingStock = num(b.openingStock);
 
@@ -79,6 +80,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         currentStock: trackStock ? openingStock : 0,
         category: String(b.category || "").trim(),
         createdBy: adminName,
+      });
+
+      await logInvoiceAudit({
+        entityType: "InvoiceItem",
+        entityId: item._id,
+        entityLabel: item.name,
+        action: "created",
+        summary: `Created item "${item.name}"`,
+        performedBy: adminName,
       });
 
       return res.status(201).json({ success: true, item });
@@ -100,6 +110,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const existing = await InvoiceItem.findById(id);
       if (!existing) return res.status(404).json({ success: false, message: "Item not found" });
 
+      const before = existing.toObject();
+
       const trackStock = !!b.trackStock;
       const openingStock = num(b.openingStock);
       // Preserve how much stock has moved since the item was created: shifting
@@ -119,6 +131,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       existing.currentStock = trackStock ? num(existing.currentStock) + openingDelta : 0;
 
       await existing.save();
+
+      const changeSummary = diffSummary(before, existing.toObject(), [
+        { key: "name", label: "Name" },
+        { key: "hsnSac", label: "HSN/SAC" },
+        { key: "salesPrice", label: "Sales Price" },
+        { key: "gstRate", label: "GST Rate" },
+        { key: "category", label: "Category" },
+      ]);
+      await logInvoiceAudit({
+        entityType: "InvoiceItem",
+        entityId: existing._id,
+        entityLabel: existing.name,
+        action: "updated",
+        summary: changeSummary ? `Updated item "${existing.name}": ${changeSummary}` : `Updated item "${existing.name}"`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true, item: existing });
     } catch (err: any) {
       console.log("INVOICE ITEMS PUT ERROR", err);
@@ -132,6 +161,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!id) return res.status(400).json({ success: false, message: "id is required" });
       const item = await InvoiceItem.findByIdAndDelete(id);
       if (!item) return res.status(404).json({ success: false, message: "Item not found" });
+
+      await logInvoiceAudit({
+        entityType: "InvoiceItem",
+        entityId: item._id,
+        entityLabel: item.name,
+        action: "deleted",
+        summary: `Deleted item "${item.name}"`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("INVOICE ITEMS DELETE ERROR", err);

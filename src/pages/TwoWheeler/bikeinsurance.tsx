@@ -147,6 +147,10 @@ function bikeinsurance() {
                         rc.cc || rc.capacity || rc.vehicle_cubic_capacity || "",
                       registrationDate: rc.regDate || rc.reg_date || "",
                       ownerName: rc.ownerName || rc.owner_name || "",
+                      // current policy + address, used by Bajaj's quote and checkout
+                      insurance: rc.insurance || null,
+                      address: rc.address || "",
+                      pincode: rc.pincode || "",
                     };
 
                     console.log("NORMALIZED VEHICLE >>>", vehicle);

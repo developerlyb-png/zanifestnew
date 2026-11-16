@@ -16,11 +16,13 @@ import {
   FiXCircle,
   FiPackage,
   FiBookOpen,
+  FiClock,
 } from "react-icons/fi";
 import CreateInvoice from "./CreateInvoice";
 import InvoiceDetailView from "./InvoiceDetailView";
 import InvoiceItems from "./InvoiceItems";
 import PartyLedger from "./PartyLedger";
+import InvoiceAuditTrail from "./InvoiceAuditTrail";
 import { INVOICE_STATUSES, invoiceStatusColor } from "@/constants/invoice";
 
 interface InvoiceRow {
@@ -109,7 +111,7 @@ const STAT_DEFS = [
 ];
 
 export default function Invoice() {
-  const [tab, setTab] = useState<"invoices" | "items" | "ledger">("invoices");
+  const [tab, setTab] = useState<"invoices" | "items" | "ledger" | "audit">("invoices");
   const [view, setView] = useState<"list" | "create" | "edit" | "detail">("list");
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -240,6 +242,13 @@ export default function Invoice() {
       >
         <FiBookOpen size={14} /> Party Ledger
       </button>
+      <button
+        type="button"
+        className={`${cs.subTabBtn} ${tab === "audit" ? cs.subTabBtnActive : ""}`}
+        onClick={() => setTab("audit")}
+      >
+        <FiClock size={14} /> Audit Trail
+      </button>
     </div>
   );
 
@@ -257,6 +266,15 @@ export default function Invoice() {
       <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
         <SubTabs />
         <PartyLedger />
+      </div>
+    );
+  }
+
+  if (tab === "audit") {
+    return (
+      <div className={`${styles.cont} ${cs.invoiceWorkspace}`}>
+        <SubTabs />
+        <InvoiceAuditTrail />
       </div>
     );
   }

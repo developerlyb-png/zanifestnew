@@ -17,6 +17,8 @@ import sbiLogo from "@/assets/CommercialVehicle/sbi.png";
 import licLogo from "@/assets/CommercialVehicle/liclogo.png";
 import {useRouter} from 'next/router'
 import { FaFilter } from "react-icons/fa";
+import bajajLogo from "@/assets/pageImages/bajaj.png";
+import { buildBajaj2wQuoteInput } from "@/lib/bajaj2wQuoteInput";
 
 const dummyPlans = [
   {
@@ -38,6 +40,10 @@ const [bikeData, setBikeData] = useState<any>(null);
 const [zunoQuote, setZunoQuote] = useState<any>(null);
 const [quoteLoading, setQuoteLoading] = useState(true);
 const [quoteError, setQuoteError] = useState<string | null>(null);
+// Bajaj Allianz — quoted alongside Zuno with its own state, so its card
+// shows (or explains why it can't) whatever happens to Zuno's quote.
+const [bajajQuote, setBajajQuote] = useState<any>(null);
+const [bajajQuoteInput, setBajajQuoteInput] = useState<any>(null);
 
  useEffect(() => {
 
@@ -69,6 +75,26 @@ const selectedRto = JSON.parse(
 
       // sidebar data
       setBikeData(bike);
+
+      // Bajaj quote in parallel (Zuno's flow below doesn't wait for it)
+      try {
+        const bikeRc = JSON.parse(localStorage.getItem("bikeRcDetails") || "null");
+        const bajajInput = buildBajaj2wQuoteInput(bike, bikeRc);
+        setBajajQuoteInput(bajajInput);
+        fetch("/api/bajaj/2w/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bajajInput),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            console.log("BAJAJ 2W QUOTE >>>", d);
+            setBajajQuote(d);
+          })
+          .catch((e) => setBajajQuote({ success: false, message: e.message }));
+      } catch (e: any) {
+        setBajajQuote({ success: false, message: e.message });
+      }
 
 
 
@@ -607,6 +633,46 @@ plan.highlight as keyof typeof styles
 >{plan.badge}</p>
               </div>
             ))}
+
+            {/* Bajaj Allianz — independent of Zuno's loading/error state */}
+            {bajajQuote?.success && (
+              <div className={styles.planCard}>
+                <div className={styles.planLeft}>
+                  <div className={styles.logoSection}>
+                    <Image src={bajajLogo} alt="Bajaj Allianz" width={100} height={30} />
+                    <p>Bajaj Allianz General Insurance</p>
+                  </div>
+                  <div>
+                    <p className={styles.idvLabel}>IDV</p>
+                    <p className={styles.idvValue}>₹{Math.round(bajajQuote.idv || 0).toLocaleString("en-IN")}</p>
+                  </div>
+                  <button
+                    className={styles.buyBtn}
+                    onClick={() => {
+                      localStorage.setItem("selectedInsurer2w", "BAJAJ");
+                      localStorage.setItem("selectedQuoteBajaj2w", JSON.stringify(bajajQuote));
+                      localStorage.setItem("bajaj2wQuoteInput", JSON.stringify(bajajQuoteInput));
+                      router.push("/cart/bajajbikecart");
+                    }}
+                  >
+                    Buy now <span>₹{Math.round(bajajQuote.premium || 0).toLocaleString("en-IN")}</span>
+                    <MdOutlineKeyboardArrowRight />
+                  </button>
+                </div>
+                <p className={`${styles.badge} ${styles.green}`}>
+                  {bajajQuote.product === "1826" ? "New bike: 1 yr own damage + 5 yr third party" : "Comprehensive"}
+                  {" | "}OD ₹{Math.round(bajajQuote.odPremium || 0).toLocaleString("en-IN")} | TP ₹
+                  {Math.round(bajajQuote.tpPremium || 0).toLocaleString("en-IN")} | GST ₹
+                  {Math.round(bajajQuote.gst || 0).toLocaleString("en-IN")}
+                </p>
+              </div>
+            )}
+            {bajajQuote && !bajajQuote.success && (
+              <p className={styles.subtext}>
+                Bajaj Allianz isn&apos;t available for this bike right now
+                {bajajQuote.message ? `: ${bajajQuote.message}` : "."}
+              </p>
+            )}
           </div>
         </main>
       </div>

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import InvoiceClient from "@/models/InvoiceClient";
+import { logInvoiceAudit, diffSummary } from "@/lib/invoiceAudit";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -18,18 +19,10 @@ async function requireAdmin(req: NextApiRequest) {
   return data;
 }
 
-const REQUIRED_FIELDS = [
-  "name",
-  "contactPerson",
-  "email",
-  "phone",
-  "gstin",
-  "pan",
-  "addressLine1",
-  "pincode",
-  "city",
-  "state",
-];
+// Falls back to a placeholder only for display (audit log entityLabel, the
+// row's name link) when the client has no name — every field on this form
+// is optional, so a blank name is valid and shouldn't crash either of those.
+const displayName = (name?: string) => (name && name.trim()) || "(unnamed client)";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const admin: any = await requireAdmin(req);
@@ -38,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   await dbConnect();
+  const adminName = `${admin.userFirstName ?? ""} ${admin.userLastName ?? ""}`.trim() || admin.email;
 
   if (req.method === "GET") {
     try {
@@ -76,16 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "POST") {
     try {
       const b = req.body || {};
-      const missing = REQUIRED_FIELDS.filter((f) => !String(b[f] || "").trim());
-      if (missing.length) {
-        return res.status(400).json({
-          success: false,
-          message: `Missing required field(s): ${missing.join(", ")}`,
-        });
-      }
-
-      const adminName =
-        `${admin.userFirstName ?? ""} ${admin.userLastName ?? ""}`.trim() || admin.email;
 
       const client = await InvoiceClient.create({
         name: String(b.name).trim(),
@@ -102,6 +86,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         createdBy: adminName,
       });
 
+      await logInvoiceAudit({
+        entityType: "InvoiceClient",
+        entityId: client._id,
+        entityLabel: displayName(client.name),
+        action: "created",
+        summary: `Created client "${displayName(client.name)}"`,
+        performedBy: adminName,
+      });
+
       return res.status(201).json({ success: true, client });
     } catch (err: any) {
       console.log("INVOICE CLIENTS POST ERROR", err);
@@ -115,13 +108,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { id } = b;
       if (!id) return res.status(400).json({ success: false, message: "id is required" });
 
-      const missing = REQUIRED_FIELDS.filter((f) => !String(b[f] || "").trim());
-      if (missing.length) {
-        return res.status(400).json({
-          success: false,
-          message: `Missing required field(s): ${missing.join(", ")}`,
-        });
-      }
+      const before = await InvoiceClient.findById(id).lean();
+      if (!before) return res.status(404).json({ success: false, message: "Client not found" });
 
       const client = await InvoiceClient.findByIdAndUpdate(
         id,
@@ -141,6 +129,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         { new: true }
       );
       if (!client) return res.status(404).json({ success: false, message: "Client not found" });
+
+      const changeSummary = diffSummary((before as any), (client as any).toObject(), [
+        { key: "name", label: "Name" },
+        { key: "email", label: "Email" },
+        { key: "phone", label: "Phone" },
+        { key: "gstin", label: "GSTIN" },
+        { key: "addressLine1", label: "Address" },
+        { key: "city", label: "City" },
+        { key: "state", label: "State" },
+      ]);
+      await logInvoiceAudit({
+        entityType: "InvoiceClient",
+        entityId: client._id,
+        entityLabel: displayName(client.name),
+        action: "updated",
+        summary: changeSummary
+          ? `Updated client "${displayName(client.name)}": ${changeSummary}`
+          : `Updated client "${displayName(client.name)}"`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true, client });
     } catch (err: any) {
       console.log("INVOICE CLIENTS PUT ERROR", err);
@@ -154,6 +163,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!id) return res.status(400).json({ success: false, message: "id is required" });
       const client = await InvoiceClient.findByIdAndDelete(id);
       if (!client) return res.status(404).json({ success: false, message: "Client not found" });
+
+      await logInvoiceAudit({
+        entityType: "InvoiceClient",
+        entityId: client._id,
+        entityLabel: displayName(client.name),
+        action: "deleted",
+        summary: `Deleted client "${displayName(client.name)}"`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("INVOICE CLIENTS DELETE ERROR", err);

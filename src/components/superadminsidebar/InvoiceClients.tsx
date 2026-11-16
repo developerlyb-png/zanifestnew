@@ -154,6 +154,7 @@ export function AddInvoiceClientForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [loadingClient, setLoadingClient] = useState(isEdit);
+  const [lookingUpPincode, setLookingUpPincode] = useState(false);
 
   useEffect(() => {
     if (!editId) return;
@@ -182,24 +183,40 @@ export function AddInvoiceClientForm({
   }, [editId]);
 
   const set = (key: keyof FormState, value: string) => setForm((f) => ({ ...f, [key]: value }));
+
+  // Auto-fill City/State from the pincode — mirrors a standard Indian
+  // address form; only fires once the pincode is a complete 6 digits, and
+  // re-fills City/State every time a (different) valid pincode settles, so
+  // they always track whatever pincode is currently entered.
+  useEffect(() => {
+    const pincode = form.pincode.trim();
+    if (!/^\d{6}$/.test(pincode)) return;
+    let cancelled = false;
+    setLookingUpPincode(true);
+    const t = setTimeout(() => {
+      fetch(`/api/admin/pincode-lookup?pincode=${pincode}`, { credentials: "include" })
+        .then((r) => r.json())
+        .then((d) => {
+          if (cancelled || !d.success) return;
+          setForm((f) => (f.pincode.trim() === pincode ? { ...f, city: d.city || f.city, state: d.state || f.state } : f));
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (!cancelled) setLookingUpPincode(false);
+        });
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.pincode]);
+
   const bind = (key: keyof FormState) => ({
     value: form[key],
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => set(key, e.target.value),
   });
   const cls = (key: keyof FormState) => `${cs.input} ${errors[key] ? cs.errorInput : ""}`;
-
-  const REQUIRED: (keyof FormState)[] = [
-    "name",
-    "contactPerson",
-    "email",
-    "phone",
-    "gstin",
-    "pan",
-    "addressLine1",
-    "pincode",
-    "city",
-    "state",
-  ];
 
   const clearForm = () => {
     setForm(EMPTY_FORM);
@@ -207,16 +224,6 @@ export function AddInvoiceClientForm({
   };
 
   const submit = async () => {
-    const e: Record<string, string> = {};
-    REQUIRED.forEach((k) => {
-      if (!form[k].trim()) e[k] = "Required";
-    });
-    setErrors(e);
-    if (Object.keys(e).length) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
     setSubmitting(true);
     try {
       const res = await fetch("/api/admin/invoice-clients", {
@@ -256,15 +263,15 @@ export function AddInvoiceClientForm({
       <div className={cs.formCard}>
         <h3 className={cs.cardTitle}>Client Information</h3>
         <div className={cs.grid2}>
-          <Field label="Client Name" required err={errors.name}>
+          <Field label="Client Name">
             <input className={cls("name")} placeholder="e.g., ABC Corporation" {...bind("name")} />
           </Field>
         </div>
         <div className={cs.grid2}>
-          <Field label="Contact Person Name" required err={errors.contactPerson}>
+          <Field label="Contact Person Name">
             <input className={cls("contactPerson")} placeholder="e.g., John Doe" {...bind("contactPerson")} />
           </Field>
-          <Field label="Email" required err={errors.email}>
+          <Field label="Email">
             <input
               type="email"
               className={cls("email")}
@@ -272,7 +279,7 @@ export function AddInvoiceClientForm({
               {...bind("email")}
             />
           </Field>
-          <Field label="Phone" required err={errors.phone}>
+          <Field label="Phone">
             <input className={cls("phone")} placeholder="e.g., 9876543210" {...bind("phone")} />
           </Field>
         </div>
@@ -281,7 +288,7 @@ export function AddInvoiceClientForm({
       <div className={cs.formCard}>
         <h3 className={cs.cardTitle}>Tax Information</h3>
         <div className={cs.grid2}>
-          <Field label="GSTIN" required err={errors.gstin}>
+          <Field label="GSTIN">
             <input
               className={cls("gstin")}
               placeholder="e.g., 22AAAAA0000A1Z1"
@@ -289,7 +296,7 @@ export function AddInvoiceClientForm({
               onChange={(e) => set("gstin", e.target.value.toUpperCase())}
             />
           </Field>
-          <Field label="PAN" required err={errors.pan}>
+          <Field label="PAN">
             <input
               className={cls("pan")}
               placeholder="e.g., ABCDE1234F"
@@ -303,7 +310,7 @@ export function AddInvoiceClientForm({
       <div className={cs.formCard}>
         <h3 className={cs.cardTitle}>Address</h3>
         <div className={cs.grid2}>
-          <Field label="Address Line 1" required err={errors.addressLine1}>
+          <Field label="Address Line 1">
             <input className={cls("addressLine1")} placeholder="e.g., 123 Business Street" {...bind("addressLine1")} />
           </Field>
           <Field label="Address Line 2">
@@ -311,13 +318,19 @@ export function AddInvoiceClientForm({
           </Field>
         </div>
         <div className={cs.grid3}>
-          <Field label="Pincode" required err={errors.pincode}>
-            <input className={cls("pincode")} placeholder="e.g., 400001" {...bind("pincode")} />
+          <Field label={lookingUpPincode ? "Pincode (looking up city/state...)" : "Pincode"}>
+            <input
+              className={cls("pincode")}
+              placeholder="e.g., 400001"
+              maxLength={6}
+              {...bind("pincode")}
+              onChange={(e) => set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+            />
           </Field>
-          <Field label="City" required err={errors.city}>
+          <Field label="City">
             <input className={cls("city")} placeholder="e.g., Mumbai" {...bind("city")} />
           </Field>
-          <Field label="State" required err={errors.state}>
+          <Field label="State">
             <input className={cls("state")} placeholder="e.g., Maharashtra" {...bind("state")} />
           </Field>
         </div>

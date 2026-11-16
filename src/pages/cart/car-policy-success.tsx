@@ -67,6 +67,37 @@ const CarPolicySuccess = () => {
     }
   };
 
+  // Bajaj's PDF comes from our /api/bajaj/4w/policy-pdf proxy, fetched on
+  // click so Bajaj's own error (e.g. PDF access not enabled yet) can be shown
+  const downloadBajajPolicyPdf = async () => {
+    if (!policy?.policyNo) return;
+    setPdfLoading(true);
+    setPdfError(null);
+    try {
+      const res = await fetch(`/api/bajaj/4w/policy-pdf?policyNo=${encodeURIComponent(policy.policyNo)}`);
+      if (!res.ok || !/pdf/i.test(res.headers.get("content-type") || "")) {
+        const data = await res.json().catch(() => ({}));
+        console.log("BAJAJ PDF ERROR", data);
+        setPdfError(
+          "Bajaj hasn't made the PDF available for download yet. It's being emailed to you by Bajaj Allianz."
+        );
+        return;
+      }
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${policy.policyNo}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      setPdfError(e.message || "Something went wrong downloading the PDF");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
   return (
     <div>
       <UserDetails />
@@ -95,7 +126,7 @@ const CarPolicySuccess = () => {
           ✓ Policy Issued Successfully
         </div>
 
-        <h2 style={{ margin: "0 0 8px" }}>Your Car Insurance Policy</h2>
+        <h2 style={{ margin: "0 0 8px" }}>Your {policy?.vehicleClass === "2W" ? "Bike" : "Car"} Insurance Policy</h2>
         <p style={{ color: "#666", marginBottom: 24 }}>
           {policy?.insurer === "SBI"
             ? "SBI General Insurance"
@@ -182,10 +213,10 @@ const CarPolicySuccess = () => {
           </a>
         )}
 
-        {policy?.insurer === "SBI" && policy?.policyNo && (
+        {(policy?.insurer === "SBI" || policy?.insurer === "BAJAJ") && policy?.policyNo && (
           <div style={{ marginBottom: 16 }}>
             <button
-              onClick={downloadSbiPolicyPdf}
+              onClick={policy.insurer === "BAJAJ" ? downloadBajajPolicyPdf : downloadSbiPolicyPdf}
               disabled={pdfLoading}
               style={{
                 background: "#0f9d78",
@@ -208,7 +239,8 @@ const CarPolicySuccess = () => {
 
         {/* Shriram returns a ready policy-PDF link with getPaymentStatus;
             Bajaj's and Digit's are our own policy-pdf proxy routes */}
-        {(policy?.insurer === "SHRIRAM" || policy?.insurer === "BAJAJ" || policy?.insurer === "DIGIT") &&
+        {/* Bajaj uses the download button above instead */}
+        {(policy?.insurer === "SHRIRAM" || policy?.insurer === "DIGIT") &&
           policy?.policyUrl && (
           <div style={{ marginBottom: 16 }}>
             <a

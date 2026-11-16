@@ -1,12 +1,14 @@
-import { matchBajajVehicle, matchBajajRto } from "@/lib/bajajVehicleMatch";
+import { matchBajajVehicle, matchBajajRto, BajajVehicleClass } from "@/lib/bajajVehicleMatch";
 import { rcDateToIso } from "@/lib/zuno4w";
 import { bajajPrevInsurerCode } from "@/lib/bajajPrevInsurers";
 
 export { BAJAJ_PREV_INSURERS, bajajPrevInsurerCode } from "@/lib/bajajPrevInsurers";
 
-// Builds the body for Bajaj Allianz's calculatemotorpremiumsig (private car)
-// from the same quote input the Zuno / SBI / Digit flows use, following the
-// field rules in Bajaj's WLS_REST_MOTOR kit ("Compute Premium Data" sheet).
+// Builds the body for Bajaj Allianz's calculatemotorpremiumsig (private car,
+// or two-wheeler with vehicleClass "2W") from the same quote input the Zuno /
+// SBI / Digit flows use, following the field rules in Bajaj's WLS_REST_MOTOR
+// kit ("Compute Premium Data" sheet). Same API and fields for both classes;
+// only the vehicle type, product code and vehicle master differ.
 
 // Bajaj 4W product codes (kit: "Product, card info and Extra columns")
 export const BAJAJ_4W_PRODUCTS = {
@@ -14,6 +16,19 @@ export const BAJAJ_4W_PRODUCTS = {
   TP_ONLY: "1805",
   NEW_BUSINESS: "1825",
   OD_ONLY: "1870",
+} as const;
+
+// Bajaj 2W product codes (1826 = new bike: 1 year OD + 5 years TP)
+export const BAJAJ_2W_PRODUCTS = {
+  COMPREHENSIVE: "1802",
+  TP_ONLY: "1806",
+  NEW_BUSINESS: "1826",
+  OD_ONLY: "1871",
+} as const;
+
+const VEHICLE_CLASS = {
+  "4W": { typeCode: "22", type: "Private Car", products: BAJAJ_4W_PRODUCTS, seats: 5 },
+  "2W": { typeCode: "21", type: "Two Wheeler", products: BAJAJ_2W_PRODUCTS, seats: 2 },
 } as const;
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -37,6 +52,7 @@ export interface BajajQuoteOptions {
   // Where Bajaj sends the customer after its payment page (detariff extcol20).
   // Bajaj's samples send it on both the premium and the issue call.
   returnUrl?: string;
+  vehicleClass?: BajajVehicleClass; // default "4W"
 }
 
 export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions = {}) {
@@ -47,8 +63,10 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
     return { error: "Bajaj credentials are not configured (BAJAJ_USERID / BAJAJ_PASSWORD / BAJAJ_BRANCH_CODE)" };
   }
 
+  const vehicleClass = opts.vehicleClass || "4W";
+  const cls = VEHICLE_CLASS[vehicleClass];
   const rc = quoteInput.rcRaw || {};
-  const match = matchBajajVehicle(rc);
+  const match = matchBajajVehicle(rc, vehicleClass);
   if (!match.ok) return { error: match.reason };
   const v = match.vehicle;
 
@@ -69,7 +87,12 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
   const prevExpiry = prevExpiryIso ? new Date(`${prevExpiryIso}T00:00:00Z`) : null;
   if (!isNew && !prevExpiry) return { error: "Previous policy expiry date is required for Bajaj quote" };
   if (prevExpiry && prevExpiry.getTime() > addDays(today, 45).getTime()) {
-    return { error: "Bajaj quotes only within 45 days of the previous policy's expiry" };
+    // Bajaj's rule (kit: previous expiry "cannot be later than 45 days from
+    // the current date") — say when renewal opens instead of a bare refusal
+    const opens = addDays(prevExpiry, -45);
+    return {
+      error: `Your current policy expires on ${bajajDate(prevExpiry)}. Bajaj can renew it from ${bajajDate(opens)} (45 days before expiry).`,
+    };
   }
   const start = prevExpiry && prevExpiry >= today ? addDays(prevExpiry, 1) : today;
   const end = addDays(new Date(Date.UTC(start.getUTCFullYear() + 1, start.getUTCMonth(), start.getUTCDate())), -1);
@@ -83,18 +106,24 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
 
   // The proposal form's previous insurer / policy number (when given) beat
   // the RC's guess, so the issue call prices against what the customer stated.
+  // The 4W RC lookup keeps RechargeKit's insurance block only in rc.raw
+  // (insurance_details { insurer, policy_number }); older RC shapes had flat fields.
+  const rcInsurance = rc.raw?.insurance_details || {};
   const prevInsurerCode =
     (quoteInput.previousInsurerCode && String(quoteInput.previousInsurerCode)) ||
-    bajajPrevInsurerCode(rc.vehicle_insurance_company_name);
+    bajajPrevInsurerCode(rcInsurance.insurer || rc.vehicle_insurance_company_name);
   const prevPolicyNo = String(
-    quoteInput.previousPolicyNumber || rc.vehicle_insurance_policy_number || "0"
-  );
+    quoteInput.previousPolicyNumber ||
+      rcInsurance.policy_number ||
+      rc.vehicle_insurance_policy_number ||
+      "0"
+  ).trim();
 
   const yearManf =
     String(rc.vehicle_manufacturing_month_year || "").split("/")[1] ||
     (regIso ? regIso.slice(0, 4) : String(today.getUTCFullYear()));
 
-  const product = isNew ? BAJAJ_4W_PRODUCTS.NEW_BUSINESS : BAJAJ_4W_PRODUCTS.COMPREHENSIVE;
+  const product = isNew ? cls.products.NEW_BUSINESS : cls.products.COMPREHENSIVE;
 
   return {
     body: {
@@ -112,8 +141,8 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
         termenddate: bajajDate(end),
         tpfintype: "0",
         hypo: "",
-        vehicletypecode: "22",
-        vehicletype: "Private Car",
+        vehicletypecode: cls.typeCode,
+        vehicletype: cls.type,
         miscvehtype: "0",
         vehiclemakecode: v.makeCode,
         vehiclemake: v.make,
@@ -129,7 +158,7 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
         registrationdate: bajajDate(regIso || today),
         registrationlocation: rto.city,
         regilocother: rto.city,
-        carryingcapacity: String(v.seats || 5),
+        carryingcapacity: String(v.seats || cls.seats),
         cubiccapacity: String(v.cc || ""),
         yearmanf: yearManf,
         color: "",
@@ -195,7 +224,8 @@ export function buildBajajPremiumBody(quoteInput: any, opts: BajajQuoteOptions =
         ...Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`extcol${i + 1}`, ""])),
         extcol8: "MCPA", // compulsory PA cover for the owner-driver
         extcol20: opts.returnUrl || "",
-        ...(isNew ? { extcol24: "1" } : {}), // as in Bajaj's own 1825 sample
+        // as in Bajaj's own 1825 sample; its new-bike (1826) sample leaves it blank
+        ...(isNew && vehicleClass === "4W" ? { extcol24: "1" } : {}),
       },
       transactionid: opts.transactionId || "0",
       transactiontype: "MOTOR_WEBSERVICE",

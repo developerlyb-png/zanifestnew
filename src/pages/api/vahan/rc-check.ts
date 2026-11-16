@@ -96,6 +96,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         rtoCode: cleanNumber.slice(0, 4),
         regDate: vehicle.registration_date,
         ownerName: owner.name,
+        // Current policy (Bajaj's renewal quote needs its expiry, insurer and
+        // number) and the owner's address, to pre-fill the checkout
+        insurance: {
+          insurer: record.insurance_details?.insurer || "",
+          policyNumber: record.insurance_details?.policy_number || "",
+          expiryDate: record.insurance_details?.policy_expiry_date || "", // yyyy-mm-dd
+        },
+        address: String(owner.present_address || owner.permanent_address || "")
+          .replace(/,?\s*\d{6}\s*$/, "")
+          .trim(),
+        pincode:
+          (String(owner.present_address || "").match(/\b(\d{6})\b/) ||
+            String(owner.permanent_address || "").match(/\b(\d{6})\b/) ||
+            [])[1] || "",
       },
     });
   } catch (error: any) {

@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import Invoice from "@/models/Invoice";
 import { sendEmail } from "@/utils/mailSender";
+import { logInvoiceAudit } from "@/lib/invoiceAudit";
 
 const BRAND_BLUE = "#1878bd";
 
@@ -43,8 +44,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, message: "Method not allowed" });
   }
-  const admin = await requireAdmin(req);
+  const admin: any = await requireAdmin(req);
   if (!admin) return res.status(401).json({ success: false, message: "Not authorized" });
+  const adminName = `${admin.userFirstName ?? ""} ${admin.userLastName ?? ""}`.trim() || admin.email;
 
   try {
     await dbConnect();
@@ -86,6 +88,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       { $set: { status: invoice.status === "Draft" ? "Sent" : invoice.status } },
       { new: true }
     ).lean();
+
+    await logInvoiceAudit({
+      entityType: "Invoice",
+      entityId: invoice._id,
+      entityLabel: invoice.invoiceNo,
+      action: "email_sent",
+      summary: `Emailed invoice ${invoice.invoiceNo} to ${invoice.client.email}`,
+      performedBy: adminName,
+    });
 
     return res.status(200).json({ success: true, invoice: updated });
   } catch (err: any) {

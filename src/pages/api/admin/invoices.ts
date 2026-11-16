@@ -5,6 +5,7 @@ import Invoice from "@/models/Invoice";
 import SellerProfile from "@/models/SellerProfile";
 import InvoiceClient from "@/models/InvoiceClient";
 import { INVOICE_STATUSES } from "@/constants/invoice";
+import { logInvoiceAudit, diffSummary } from "@/lib/invoiceAudit";
 
 export const config = {
   api: {
@@ -207,6 +208,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         createdBy: adminName,
       });
 
+      await logInvoiceAudit({
+        entityType: "Invoice",
+        entityId: invoice._id,
+        entityLabel: invoice.invoiceNo,
+        action: "created",
+        summary: `Created invoice ${invoice.invoiceNo} for ${client.name} (₹${grandTotal.toLocaleString("en-IN")})`,
+        performedBy: adminName,
+      });
+
       return res.status(201).json({ success: true, invoice });
     } catch (err: any) {
       console.log("INVOICES POST ERROR", err);
@@ -238,6 +248,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         b.taxRatePercent
       );
 
+      const before = {
+        clientName: existing.client?.name,
+        status: existing.status,
+        taxMode: existing.taxMode,
+        grandTotal: existing.grandTotal,
+        lineItemCount: (existing.lineItems || []).length,
+      };
+
       existing.seller = sellerSnapshot(sellerProfile) as any;
       existing.client = clientSnapshot(client) as any;
       existing.invoiceDate = b.invoiceDate;
@@ -258,6 +276,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       existing.updatedBy = adminName;
 
       await existing.save();
+
+      const changeSummary = diffSummary(
+        before,
+        {
+          clientName: client.name,
+          status: existing.status,
+          taxMode: existing.taxMode,
+          grandTotal: existing.grandTotal,
+          lineItemCount: items.length,
+        },
+        [
+          { key: "clientName", label: "Bill To" },
+          { key: "status", label: "Status" },
+          { key: "taxMode", label: "Tax Mode" },
+          { key: "grandTotal", label: "Grand Total" },
+          { key: "lineItemCount", label: "Line Items" },
+        ]
+      );
+      await logInvoiceAudit({
+        entityType: "Invoice",
+        entityId: existing._id,
+        entityLabel: existing.invoiceNo,
+        action: "updated",
+        summary: changeSummary
+          ? `Updated invoice ${existing.invoiceNo}: ${changeSummary}`
+          : `Updated invoice ${existing.invoiceNo}`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true, invoice: existing });
     } catch (err: any) {
       console.log("INVOICES PUT ERROR", err);
@@ -276,9 +323,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const invoiceDoc: any = await Invoice.findById(id);
         if (!invoiceDoc) return res.status(404).json({ success: false, message: "Invoice not found" });
 
+        let paymentAuditAmount = 0;
         if (addPayment) {
           const amount = num(addPayment.amount);
           if (amount <= 0) return res.status(400).json({ success: false, message: "Payment amount must be greater than 0" });
+          paymentAuditAmount = amount;
           invoiceDoc.payments.push({
             date: addPayment.date ? new Date(addPayment.date) : new Date(),
             amount,
@@ -288,6 +337,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
         }
         if (removePaymentId) {
+          const removed = invoiceDoc.payments.find((p: any) => String(p._id) === String(removePaymentId));
+          paymentAuditAmount = num(removed?.amount);
           invoiceDoc.payments = invoiceDoc.payments.filter((p: any) => String(p._id) !== String(removePaymentId));
         }
 
@@ -297,8 +348,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         invoiceDoc.updatedBy = adminName;
 
         await invoiceDoc.save();
+
+        await logInvoiceAudit({
+          entityType: "Invoice",
+          entityId: invoiceDoc._id,
+          entityLabel: invoiceDoc.invoiceNo,
+          action: addPayment ? "payment_added" : "payment_removed",
+          summary: addPayment
+            ? `Recorded a payment of ₹${paymentAuditAmount.toLocaleString("en-IN")} (${addPayment.mode || "Bank Transfer"}) on invoice ${invoiceDoc.invoiceNo}`
+            : `Removed a payment of ₹${paymentAuditAmount.toLocaleString("en-IN")} from invoice ${invoiceDoc.invoiceNo}`,
+          performedBy: adminName,
+        });
+
         return res.status(200).json({ success: true, invoice: invoiceDoc });
       }
+
+      const current = await Invoice.findById(id).select("invoiceNo status").lean();
+      if (!current) return res.status(404).json({ success: false, message: "Invoice not found" });
 
       const update: any = { updatedBy: adminName };
       if (status) {
@@ -312,8 +378,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!status) update.status = "Signed";
       }
 
-      const invoice = await Invoice.findByIdAndUpdate(id, update, { new: true }).lean();
+      const invoice: any = await Invoice.findByIdAndUpdate(id, update, { new: true }).lean();
       if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
+
+      if (status && status !== (current as any).status) {
+        await logInvoiceAudit({
+          entityType: "Invoice",
+          entityId: invoice._id,
+          entityLabel: invoice.invoiceNo,
+          action: "status_changed",
+          summary: `Status changed from ${(current as any).status} to ${status} on invoice ${invoice.invoiceNo}`,
+          performedBy: adminName,
+        });
+      }
+      if (signedPdf?.data) {
+        await logInvoiceAudit({
+          entityType: "Invoice",
+          entityId: invoice._id,
+          entityLabel: invoice.invoiceNo,
+          action: "signed_pdf_uploaded",
+          summary: `Uploaded signed PDF "${signedPdf.fileName || "signed-invoice.pdf"}" for invoice ${invoice.invoiceNo}`,
+          performedBy: adminName,
+        });
+      }
+
       return res.status(200).json({ success: true, invoice });
     } catch (err: any) {
       console.log("INVOICES PATCH ERROR", err);
@@ -325,8 +413,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { id } = req.body || {};
       if (!id) return res.status(400).json({ success: false, message: "id is required" });
-      const invoice = await Invoice.findByIdAndDelete(id);
+      const invoice: any = await Invoice.findByIdAndDelete(id);
       if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
+
+      await logInvoiceAudit({
+        entityType: "Invoice",
+        entityId: invoice._id,
+        entityLabel: invoice.invoiceNo,
+        action: "deleted",
+        summary: `Deleted invoice ${invoice.invoiceNo} (₹${(invoice.grandTotal || 0).toLocaleString("en-IN")})`,
+        performedBy: adminName,
+      });
+
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("INVOICES DELETE ERROR", err);

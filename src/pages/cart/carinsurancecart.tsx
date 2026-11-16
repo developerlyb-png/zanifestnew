@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import shriramPreviousInsurers from "@/lib/shriramMaster/previousInsurer.json";
 import { shriramPrefillFromRc } from "@/lib/shriramRcPrefill";
 import { BAJAJ_PREV_INSURERS, bajajPrevInsurerCode } from "@/lib/bajajPrevInsurers";
+import BajajKycDialog from "@/components/bajaj/BajajKycDialog";
 import { DIGIT_PREV_INSURERS, digitPrevInsurerCode } from "@/lib/digitPrevInsurers";
 import { DIGIT_STATES } from "@/lib/digitStateCodes";
 
@@ -41,6 +42,9 @@ const carinsurancecart = () => {
   const [addressState, setAddressState] = useState("");
   const [engineNo, setEngineNo] = useState("");
   const [chassisNo, setChassisNo] = useState("");
+  // Priced proposal waiting on KYC: {transactionId, premium, netPremium, request}
+  const [bajajProposal, setBajajProposal] = useState<any>(null);
+  const [showBajajKyc, setShowBajajKyc] = useState(false);
 
   // Digit: create-quote needs the proposer + nominee + a Digit-coded state
   // and previous insurer, then KYC (hosted page) and payment happen on
@@ -130,10 +134,14 @@ const carinsurancecart = () => {
           setPincode(pre.pincode);
           setEngineNo(String(rcParsed.engine || ""));
           setChassisNo(String(rcParsed.chassis || ""));
-          const code = bajajPrevInsurerCode(rcParsed.vehicle_insurance_company_name);
+          // The RC lookup keeps the insurance block in rc.raw.insurance_details
+          const ins = rcParsed.raw?.insurance_details || {};
+          const code = bajajPrevInsurerCode(ins.insurer || rcParsed.vehicle_insurance_company_name);
           // Bajaj's own renewals (6) are a different policy type
           if (code && code !== "6") setBajajPrevInsurer(code);
-          setPrevPolicyNo(String(rcParsed.vehicle_insurance_policy_number || ""));
+          setPrevPolicyNo(
+            String(ins.policy_number || rcParsed.vehicle_insurance_policy_number || "").trim()
+          );
         }
       } else if (sel === "DIGIT") {
         setInsurer("DIGIT");
@@ -207,6 +215,23 @@ const carinsurancecart = () => {
       console.log("CART LOAD ERROR", e);
     }
   }, []);
+
+  // Bajaj: fill city + state from the pincode (both stay editable)
+  useEffect(() => {
+    if (insurer !== "BAJAJ" || !/^\d{6}$/.test(pincode)) return;
+    let cancelled = false;
+    fetch(`/api/pincode?pin=${pincode}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled || !d.success) return;
+        setCity(d.city);
+        setAddressState(d.state);
+      })
+      .catch((e) => console.log("PINCODE LOOKUP ERROR", e));
+    return () => {
+      cancelled = true;
+    };
+  }, [insurer, pincode]);
 
   const inr = (n: any) =>
     n == null ? "--" : "₹" + Math.round(Number(n)).toLocaleString("en-IN");
@@ -747,7 +772,8 @@ const carinsurancecart = () => {
         alert("Please fill your previous policy details");
         return;
       }
-      if (!nomineeName || !nomineeDob) {
+      // Bajaj takes only the nominee's name and relation (no date of birth)
+      if (!nomineeName) {
         alert("Please fill nominee details");
         return;
       }
@@ -756,41 +782,29 @@ const carinsurancecart = () => {
         return;
       }
 
+      // Same details as the proposal already priced: reopen its KYC instead
+      // of re-pricing (a new price means a new transaction and fresh KYC)
+      const request = bajajIssueRequest();
+      if (bajajProposal && JSON.stringify(bajajProposal.request) === JSON.stringify(request)) {
+        setShowBajajKyc(true);
+        return;
+      }
+
       setLoading(true);
       setLoadingStep("Creating proposal...");
 
+      // Step 1: fresh price -> the transaction id KYC and issuance both use
       const res = await fetch("/api/bajaj/4w/issue-policy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          quoteInput,
-          idv: bajajQuote.response?.idv,
-          proposer: {
-            title: gender.toUpperCase().startsWith("F") ? "Ms" : "Mr",
-            firstName,
-            lastName,
-            dob,
-            mobile,
-            email,
-            address1,
-            city,
-            state: addressState,
-            pincode,
-            engineNo: engineNo.trim(),
-            chassisNo: chassisNo.trim(),
-            nomineeName,
-            nomineeRelation,
-            previousInsurerCode: bajajPrevInsurer,
-            previousPolicyNumber: prevPolicyNo,
-          },
-        }),
+        body: JSON.stringify({ action: "price", ...request }),
       });
       const data = await res.json();
-      console.log("BAJAJ ISSUE RESULT >>>", data);
+      console.log("BAJAJ PRICE RESULT >>>", data);
+      setLoading(false);
+      setLoadingStep("");
 
       if (!res.ok || !data.success) {
-        setLoading(false);
-        setLoadingStep("");
         alert(data.message || "Bajaj proposal failed — check console");
         return;
       }
@@ -799,22 +813,80 @@ const carinsurancecart = () => {
       // insurer); the customer sees it again on Bajaj's payment page.
       if (data.premium && Math.round(data.premium) !== Math.round(summary.total || 0)) {
         const ok = confirm(
-          `Bajaj's final premium for these details is ${inr(data.premium)} (quoted ${inr(summary.total)}). Continue to payment?`
+          `Bajaj's final premium for these details is ${inr(data.premium)} (quoted ${inr(summary.total)}). Continue?`
         );
-        if (!ok) {
-          setLoading(false);
-          setLoadingStep("");
-          return;
-        }
+        if (!ok) return;
+      }
+
+      // Step 2: KYC (dialog) — issueBajaj runs once it's verified
+      setBajajProposal({ ...data, request });
+      setShowBajajKyc(true);
+    } catch (e: any) {
+      setLoading(false);
+      setLoadingStep("");
+      console.log("BAJAJ PAY ERROR", e);
+      alert("Something went wrong: " + e?.message);
+    }
+  };
+
+  // Everything Bajaj's price and issue calls need — built once per click so
+  // the issue call repeats the priced request exactly (Bajaj's rule).
+  const bajajIssueRequest = () => ({
+    quoteInput,
+    idv: bajajQuote?.response?.idv,
+    proposer: {
+      title: gender.toUpperCase().startsWith("F") ? "Ms" : "Mr",
+      firstName,
+      lastName,
+      dob,
+      mobile,
+      email,
+      address1,
+      city,
+      state: addressState,
+      pincode,
+      engineNo: engineNo.trim(),
+      chassisNo: chassisNo.trim(),
+      nomineeName,
+      nomineeRelation,
+      previousInsurerCode: bajajPrevInsurer,
+      previousPolicyNumber: prevPolicyNo,
+    },
+  });
+
+  // Step 3: issue with the KYC proof, then Bajaj's own payment page
+  const issueBajaj = async (kycProof: string) => {
+    if (!bajajProposal) return;
+    try {
+      setLoading(true);
+      setLoadingStep("Issuing policy...");
+      const res = await fetch("/api/bajaj/4w/issue-policy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "issue",
+          ...bajajProposal.request,
+          transactionId: bajajProposal.transactionId,
+          kycProof,
+        }),
+      });
+      const data = await res.json();
+      console.log("BAJAJ ISSUE RESULT >>>", data);
+      if (!res.ok || !data.success) {
+        setLoading(false);
+        setLoadingStep("");
+        setShowBajajKyc(false);
+        alert(data.message || "Bajaj could not issue the policy — check console");
+        return;
       }
 
       // The result page needs these for the success screen and the dashboard
       localStorage.setItem(
         "bajajCheckout",
         JSON.stringify({
-          transactionId: data.transactionId,
-          amount: data.premium,
-          netPremium: data.netPremium,
+          transactionId: bajajProposal.transactionId,
+          amount: bajajProposal.premium,
+          netPremium: bajajProposal.netPremium,
           customer: { fullName: `${firstName} ${lastName}`.trim(), email, mobile },
           vehicle: { number: rc?.reg_no, make: quoteInput?.make, model: quoteInput?.model },
         })
@@ -825,7 +897,7 @@ const carinsurancecart = () => {
     } catch (e: any) {
       setLoading(false);
       setLoadingStep("");
-      console.log("BAJAJ PAY ERROR", e);
+      console.log("BAJAJ ISSUE ERROR", e);
       alert("Something went wrong: " + e?.message);
     }
   };
@@ -1314,13 +1386,16 @@ const carinsurancecart = () => {
                       setPincode(e.target.value.replace(/\D/g, ""))
                     }
                   />
-                  <input
-                    className={styles.input || ""}
-                    placeholder="PAN Number (e.g. ABCDE1234F)"
-                    maxLength={10}
-                    value={pan}
-                    onChange={(e) => setPan(e.target.value.toUpperCase())}
-                  />
+                  {/* Bajaj asks for PAN/Aadhaar in its own KYC step instead */}
+                  {insurer !== "BAJAJ" && (
+                    <input
+                      className={styles.input || ""}
+                      placeholder="PAN Number (e.g. ABCDE1234F)"
+                      maxLength={10}
+                      value={pan}
+                      onChange={(e) => setPan(e.target.value.toUpperCase())}
+                    />
+                  )}
 
                   {insurer === "BAJAJ" && (
                     <>
@@ -1529,15 +1604,18 @@ const carinsurancecart = () => {
                   <option>Daughter</option>
                 </select>
               </label>
-              <label style={{ display: "block", marginTop: 8 }}>
-                Nominee Date of Birth
-                <input
-                  className={styles.input || ""}
-                  type="date"
-                  value={nomineeDob}
-                  onChange={(e) => setNomineeDob(e.target.value)}
-                />
-              </label>
+              {/* Bajaj's proposal has no nominee date of birth */}
+              {insurer !== "BAJAJ" && (
+                <label style={{ display: "block", marginTop: 8 }}>
+                  Nominee Date of Birth
+                  <input
+                    className={styles.input || ""}
+                    type="date"
+                    value={nomineeDob}
+                    onChange={(e) => setNomineeDob(e.target.value)}
+                  />
+                </label>
+              )}
             </div>
           </div>
 
@@ -1622,13 +1700,28 @@ const carinsurancecart = () => {
               <div className={styles.nextStep}>
                 <strong>Next step</strong>
                 <p>
-                  After payment, we'll complete your KYC and issue your policy.
+                  {insurer === "BAJAJ"
+                    ? "Next, verify your KYC with an OTP, then pay on Bajaj's secure page."
+                    : "After payment, we'll complete your KYC and issue your policy."}
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {bajajProposal && (
+        <BajajKycDialog
+          open={showBajajKyc}
+          transactionId={bajajProposal.transactionId}
+          premium={bajajProposal.premium}
+          isNew={quoteInput?.isNew === true || quoteInput?.isNew === "true"}
+          fullName={`${firstName} ${lastName}`.trim()}
+          mobile={mobile}
+          pan={pan}
+          onClose={() => setShowBajajKyc(false)}
+          onVerified={issueBajaj}
+        />
+      )}
       <Footer />
     </div>
   );

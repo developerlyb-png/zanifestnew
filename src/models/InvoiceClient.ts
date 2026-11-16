@@ -2,19 +2,19 @@ import mongoose, { Schema } from "mongoose";
 
 const InvoiceClientSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true },
-    contactPerson: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true },
-    phone: { type: String, required: true, trim: true },
+    name: { type: String, trim: true },
+    contactPerson: { type: String, trim: true },
+    email: { type: String, trim: true },
+    phone: { type: String, trim: true },
 
-    gstin: { type: String, required: true, trim: true, uppercase: true },
-    pan: { type: String, required: true, trim: true, uppercase: true },
+    gstin: { type: String, trim: true, uppercase: true },
+    pan: { type: String, trim: true, uppercase: true },
 
-    addressLine1: { type: String, required: true, trim: true },
+    addressLine1: { type: String, trim: true },
     addressLine2: { type: String, trim: true },
-    pincode: { type: String, required: true, trim: true },
-    city: { type: String, required: true, trim: true },
-    state: { type: String, required: true, trim: true },
+    pincode: { type: String, trim: true },
+    city: { type: String, trim: true },
+    state: { type: String, trim: true },
 
     createdBy: String,
   },
