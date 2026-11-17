@@ -396,11 +396,20 @@ export function parseShriramQuote(result: any) {
 // Rules below were confirmed against UAT GenerateProposal responses:
 // - AadharNo (12 digits) is required for every individual proposal, whatever POA is sent.
 // - The PAN card (or Form 60) must be sent as a Base64 document with a name and extension.
-// - Form 60 also needs a separate proof-of-identity document — only the PAN path is supported here.
+// - Form 60 (no PAN) additionally needs POI + POA documents and the insured's photo;
+//   when Aadhaar is the POI/POA, its ID fields take only the last 4 digits.
 // - OD Only needs the running TP policy (number, insurer, address, from/to); the OD
 //   end date may not run past the TP end date.
 // - A break-in proposal is rejected without a pre-inspection survey ID, which this
 //   kit has no API to obtain.
+export interface ShriramDocument {
+  base64: string;
+  ext: string;
+}
+
+const docExt = (d?: ShriramDocument) =>
+  !d ? "" : (d.ext.startsWith(".") ? d.ext : `.${d.ext}`).toLowerCase();
+
 export interface ShriramProposalDetails {
   idv?: number;
   customer: {
@@ -417,8 +426,12 @@ export interface ShriramProposalDetails {
   nominee: { name: string; relation: string; dob: string }; // dob yyyy-mm-dd
   previousPolicy: { insurer: string; policyNumber: string };
   tpPolicy?: { policyNumber: string; insurer: string; address: string; from: string; to: string }; // yyyy-mm-dd
-  kyc: { pan: string; aadhaar: string };
-  panDocument: { base64: string; ext: string };
+  // PAN mode: pan + panDocument (PAN card). FORM60 mode: panDocument is the
+  // filled Form 60, plus the Aadhaar card (used as POI and POA) and a photo.
+  kyc: { mode?: "PAN" | "FORM60"; pan?: string; aadhaar: string };
+  panDocument: ShriramDocument;
+  aadhaarDocument?: ShriramDocument;
+  photo?: ShriramDocument;
   physicalPolicy: boolean;
 }
 
@@ -456,8 +469,19 @@ export function buildShriramProposalBody(quoteInput: any, details: ShriramPropos
   // (PolicyToDt = TP end, PolicyTenure, ShortTerm, ProRata all still rejected
   // in UAT). Stop here with a clear reason instead of Shriram's raw error.
   if (odOnly) {
+    const tpStart = parseDate(tp!.from);
     const tpEnd = parseDate(tp!.to);
     const odEnd = parseDate(built.body.objPolicyEntryETT.PolicyToDt);
+    // A new car's TP is exactly a 3-year policy; Shriram rejects one day more
+    // or less ("... difference should not less / not greater than 3 years").
+    const tpExpectedEnd = tpStart ? addDays(addYears(tpStart, 3), -1) : null;
+    if (tpEnd && tpExpectedEnd && tpEnd.getTime() !== tpExpectedEnd.getTime()) {
+      return {
+        error:
+          `Third-party policy must run exactly 3 years: from ${toShriramDate(tpStart!)} it should end on ` +
+          `${toShriramDate(tpExpectedEnd)}, not ${toShriramDate(tpEnd)}.`,
+      };
+    }
     if (tpEnd && odEnd && tpEnd < odEnd) {
       return {
         error:
@@ -468,7 +492,11 @@ export function buildShriramProposalBody(quoteInput: any, details: ShriramPropos
   }
 
   const nomineeAge = yearsSince(n.dob);
-  const ext = details.panDocument.ext.startsWith(".") ? details.panDocument.ext : `.${details.panDocument.ext}`;
+  const form60 = kyc.mode === "FORM60";
+  if (form60 && !(details.aadhaarDocument?.base64 && details.photo?.base64)) {
+    return { error: "Form 60 needs the Aadhaar card and a photo" };
+  }
+  const aadhaarLast4 = kyc.aadhaar.slice(-4);
   const iso = (s?: string) => {
     const d = parseDate(s || "");
     return d ? toShriramDate(d) : "";
@@ -515,31 +543,33 @@ export function buildShriramProposalBody(quoteInput: any, details: ShriramPropos
     tpPolAddr: odOnly ? tp!.address || "INDIA" : "",
     tpPolFmdt: odOnly ? iso(tp!.from) : "",
     tpPolTodt: odOnly ? iso(tp!.to) : "",
-    // CKYC: no CKYC number — identity by PAN, address by Aadhaar
+    // CKYC: no CKYC number. PAN mode — identity by PAN, address by Aadhaar.
+    // Form 60 mode — Aadhaar card is both identity and address proof, sent as
+    // documents with only its last 4 digits, plus the insured's photo.
     CKYC_NO: "",
     DOB: iso(c.dob),
-    POI_Type: "PAN",
-    POI_ID: kyc.pan,
+    POI_Type: form60 ? "PROOF OF POSSESSION OF AADHAR" : "PAN",
+    POI_ID: form60 ? aadhaarLast4 : kyc.pan,
     POA_Type: "PROOF OF POSSESSION OF AADHAR",
-    POA_ID: kyc.aadhaar,
+    POA_ID: form60 ? aadhaarLast4 : kyc.aadhaar,
     AadharNo: kyc.aadhaar,
     FatherName: c.fatherName.toUpperCase(),
     MotherName: "",
     MaritalStatus: "",
     SpouseName: "",
     ResidentialStatus: "",
-    POI_DocumentFile: "",
-    POA_DocumentFile: "",
-    Insured_photo: "",
-    POI_DocumentExt: "",
-    POA_DocumentExt: "",
-    Insured_photoExt: "",
+    POI_DocumentFile: form60 ? details.aadhaarDocument!.base64 : "",
+    POA_DocumentFile: form60 ? details.aadhaarDocument!.base64 : "",
+    Insured_photo: form60 ? details.photo!.base64 : "",
+    POI_DocumentExt: form60 ? docExt(details.aadhaarDocument) : "",
+    POA_DocumentExt: form60 ? docExt(details.aadhaarDocument) : "",
+    Insured_photoExt: form60 ? docExt(details.photo) : "",
     // AML (Shriram's email of the UAT credentials)
-    PANorForm60: "PAN",
-    PanNo: kyc.pan,
+    PANorForm60: form60 ? "FORM60" : "PAN",
+    PanNo: form60 ? "" : kyc.pan,
     Pan_Form60_Document: details.panDocument.base64,
-    Pan_Form60_Document_Ext: ext.toLowerCase(),
-    Pan_Form60_Document_Name: "PAN",
+    Pan_Form60_Document_Ext: docExt(details.panDocument),
+    Pan_Form60_Document_Name: form60 ? "FORM60" : "PAN",
     PHYSICALPOLICY: details.physicalPolicy ? "1" : "0",
   });
 

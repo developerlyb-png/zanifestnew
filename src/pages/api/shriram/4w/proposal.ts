@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { buildShriramProposalBody, parseShriramQuote } from "@/lib/shriram4w";
 
-// The PAN card travels as Base64 inside the JSON body
-export const config = { api: { bodyParser: { sizeLimit: "8mb" } } };
+// KYC documents travel as Base64 inside the JSON body — up to three files
+// (Form 60 + Aadhaar card + photo), each capped at 4 MB by the cart.
+export const config = { api: { bodyParser: { sizeLimit: "20mb" } } };
 
 // Shriram General Insurance — Private Car GenerateProposal.
 // Body: { quoteInput, details: ShriramProposalDetails }. Returns the proposal
@@ -18,6 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const c = details.customer || {};
+  const form60 = details.kyc?.mode === "FORM60";
   const missing = [
     ["name", c.fullName],
     ["date of birth", c.dob],
@@ -29,9 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ["nominee", details.nominee?.name && details.nominee?.dob && details.nominee?.relation],
     ["previous insurer", details.previousPolicy?.insurer],
     ["previous policy number", details.previousPolicy?.policyNumber],
-    ["PAN", /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(details.kyc?.pan || "")],
+    ["PAN", form60 || /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(details.kyc?.pan || "")],
     ["Aadhaar number", /^\d{12}$/.test(details.kyc?.aadhaar || "")],
-    ["PAN card file", details.panDocument?.base64 && details.panDocument?.ext],
+    [form60 ? "Form 60 file" : "PAN card file", details.panDocument?.base64 && details.panDocument?.ext],
+    ["Aadhaar card file", !form60 || (details.aadhaarDocument?.base64 && details.aadhaarDocument?.ext)],
+    ["photo", !form60 || (details.photo?.base64 && details.photo?.ext)],
   ]
     .filter(([, ok]) => !ok)
     .map(([label]) => label);

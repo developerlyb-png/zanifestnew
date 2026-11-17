@@ -16,12 +16,21 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const decoded: any = jwt.verify(token, JWT_SECRET);
     // console.log("Decoded token:", decoded);
     //working till here
-    const { userFirstName, userLastName, email, role } = decoded;
+    const { userFirstName, userLastName, email, role, isStaffUser, staffRole, accessModules, adminAccessModules } = decoded;
 
     console.log("decoded name", userFirstName)
 
     return res.status(200).json({
-      user: { userFirstName, userLastName, email, role }
+      user: {
+        userFirstName,
+        userLastName,
+        email,
+        role,
+        isStaffUser: !!isStaffUser,
+        staffRole: staffRole || undefined,
+        accessModules: accessModules || undefined,
+        adminAccessModules: adminAccessModules || undefined,
+      }
     });
   } 
   

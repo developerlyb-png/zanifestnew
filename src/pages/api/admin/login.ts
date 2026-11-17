@@ -1,6 +1,7 @@
 // pages/api/admin/login.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import Admin from "@/models/Admin";
+import StaffUser from "@/models/StaffUser";
 import dbConnect from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -29,6 +30,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log("Admin found:", admin);
 
     if (!admin) {
+      // Not an Admin-collection account — check the standalone User
+      // Management (StaffUser) accounts before failing. Issued a JWT with
+      // role:"admin" so every existing requireAdmin() check across the app
+      // keeps accepting it unchanged; what a staff user can actually see is
+      // driven by accessModules/adminAccessModules on the sidebar instead.
+      const staffUser = await StaffUser.findOne({ email: normalizedEmail });
+      if (staffUser) {
+        const isMatch = await bcrypt.compare(password, staffUser.password);
+        if (!isMatch) {
+          console.warn("Login failed: Password mismatch (staff user)");
+          return res.status(401).json({ message: "Invalid email or password" });
+        }
+        if (!staffUser.isActive) {
+          return res.status(403).json({ message: "Account is not active. Please contact support." });
+        }
+
+        const token = jwt.sign(
+          {
+            id: staffUser._id,
+            userFirstName: staffUser.fullName,
+            userLastName: "",
+            email: staffUser.email,
+            role: "admin",
+            accountStatus: "active",
+            isStaffUser: true,
+            staffRole: staffUser.role,
+            accessModules: staffUser.accessModules || [],
+            adminAccessModules: staffUser.adminAccessModules || [],
+          },
+          process.env.JWT_SECRET as string,
+          { expiresIn: "1d" }
+        );
+
+        res.setHeader(
+          "Set-Cookie",
+          serialize("adminToken", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24,
+          })
+        );
+
+        return res.status(200).json({ token, role: "admin" });
+      }
+
       console.warn("Login failed: Admin not found");
       return res.status(401).json({ message: "Invalid email or password" });
     }

@@ -7,6 +7,7 @@ import { FaRegFileVideo } from "react-icons/fa";
 import { useRouter } from "next/router";
 import shriramPreviousInsurers from "@/lib/shriramMaster/previousInsurer.json";
 import { shriramPrefillFromRc } from "@/lib/shriramRcPrefill";
+import ShriramCheckoutForm, { ShriramFormValues, ShriramKycMode } from "@/components/cart/ShriramCheckoutForm";
 import { BAJAJ_PREV_INSURERS, bajajPrevInsurerCode } from "@/lib/bajajPrevInsurers";
 import BajajKycDialog from "@/components/bajaj/BajajKycDialog";
 import { DIGIT_PREV_INSURERS, digitPrevInsurerCode } from "@/lib/digitPrevInsurers";
@@ -82,6 +83,17 @@ const carinsurancecart = () => {
   })();
   const shriramTpTooShort = shriramOdOnly && !!tpTo && !!shriramOdEnd && tpTo < shriramOdEnd;
   const fmtDate = (iso: string) => iso.split("-").reverse().join("-");
+  // Shriram requires the TP policy to run exactly 3 years: end = start + 3y - 1 day
+  const tpEndFor = (fromIso: string) => {
+    const m = fromIso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return "";
+    const d = new Date(+m[1] + 3, +m[2] - 1, +m[3] - 1);
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  };
+  const shriramTpExpectedEnd = tpEndFor(tpFrom);
+  const shriramTpNot3Years =
+    shriramOdOnly && !!tpTo && !!shriramTpExpectedEnd && tpTo !== shriramTpExpectedEnd;
 
   // Customer form
   const [firstName, setFirstName] = useState("");
@@ -97,6 +109,41 @@ const carinsurancecart = () => {
   const [nomineeName, setNomineeName] = useState("");
   const [nomineeRelation, setNomineeRelation] = useState("Brother");
   const [nomineeDob, setNomineeDob] = useState("");
+
+  // Shriram KYC: PAN (PAN card file) or Form 60 (Form 60 + Aadhaar card + photo)
+  const [shriramKycMode, setShriramKycMode] = useState<ShriramKycMode>("PAN");
+  const [aadhaarFile, setAadhaarFile] = useState<File | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
+  const shriramFormValues: ShriramFormValues = {
+    firstName, lastName, gender, dob, mobile, email, address1, city, pincode, fatherName,
+    kycMode: shriramKycMode, pan, aadhaar, panFile, aadhaarFile, photoFile,
+    prevInsurer, prevPolicyNo, tpPolicyNo, tpInsurer, tpFrom, tpTo,
+    nomineeName, nomineeRelation, nomineeDob, physicalPolicy,
+  };
+  const shriramSetters: { [K in keyof ShriramFormValues]: (v: ShriramFormValues[K]) => void } = {
+    firstName: setFirstName, lastName: setLastName, gender: setGender, dob: setDob,
+    mobile: setMobile, email: setEmail, address1: setAddress1, city: setCity,
+    pincode: setPincode, fatherName: setFatherName, kycMode: setShriramKycMode,
+    pan: setPan, aadhaar: setAadhaar, panFile: setPanFile, aadhaarFile: setAadhaarFile,
+    photoFile: setPhotoFile, prevInsurer: setPrevInsurer, prevPolicyNo: setPrevPolicyNo,
+    tpPolicyNo: setTpPolicyNo, tpInsurer: setTpInsurer,
+    // TP is always exactly 3 years, so the end date follows the start
+    tpFrom: (v) => {
+      setTpFrom(v);
+      setTpTo(tpEndFor(v));
+    },
+    tpTo: setTpTo, nomineeName: setNomineeName, nomineeRelation: setNomineeRelation,
+    nomineeDob: setNomineeDob, physicalPolicy: setPhysicalPolicy,
+  };
+  const setShriramField = <K extends keyof ShriramFormValues>(key: K, value: ShriramFormValues[K]) =>
+    shriramSetters[key](value);
+  const shriramTpWarning = shriramTpNot3Years
+    ? `Third-party policy must run exactly 3 years — from ${fmtDate(tpFrom)} it should end on ${fmtDate(shriramTpExpectedEnd)}.`
+    : shriramTpTooShort
+    ? `Your third-party cover ends on ${fmtDate(tpTo)}, before this 1-year policy would end (${fmtDate(shriramOdEnd)}). ` +
+      "Shriram needs a short-term policy for this, which isn't available online yet."
+    : null;
 
   const router = useRouter();
 
@@ -585,7 +632,8 @@ const carinsurancecart = () => {
         alert("Please fill all personal details, including father's name");
         return;
       }
-      if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      const form60 = shriramKycMode === "FORM60";
+      if (!form60 && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
         alert("Please enter a valid PAN number");
         return;
       }
@@ -593,13 +641,19 @@ const carinsurancecart = () => {
         alert("Please enter your 12-digit Aadhaar number");
         return;
       }
-      if (!panFile) {
-        alert("Please upload your PAN card (PDF, JPG or PNG)");
-        return;
-      }
-      if (panFile.size > 4 * 1024 * 1024) {
-        alert("PAN card file must be under 4 MB");
-        return;
+      // Each KYC file is Base64'd into the proposal request — keep them small
+      const kycFiles: [File | null, string][] = form60
+        ? [[panFile, "signed Form 60"], [aadhaarFile, "Aadhaar card"], [photoFile, "photo"]]
+        : [[panFile, "PAN card"]];
+      for (const [file, label] of kycFiles) {
+        if (!file) {
+          alert(`Please upload your ${label}`);
+          return;
+        }
+        if (file.size > 4 * 1024 * 1024) {
+          alert(`Your ${label} file must be under 4 MB`);
+          return;
+        }
       }
       if (!prevInsurer || !prevPolicyNo) {
         alert("Please fill your previous policy details");
@@ -607,6 +661,12 @@ const carinsurancecart = () => {
       }
       if (shriramOdOnly && (!tpPolicyNo || !tpInsurer || !tpFrom || !tpTo)) {
         alert("Please fill your third-party policy details");
+        return;
+      }
+      if (shriramTpNot3Years) {
+        alert(
+          `Third-party policy must run exactly 3 years — with this start date it should end on ${fmtDate(shriramTpExpectedEnd)}.`
+        );
         return;
       }
       if (shriramTpTooShort) {
@@ -628,8 +688,18 @@ const carinsurancecart = () => {
       setLoading(true);
       setLoadingStep("Creating proposal...");
 
-      const panBase64 = await fileToBase64(panFile);
-      const ext = panFile.name.includes(".") ? panFile.name.split(".").pop()!.toLowerCase() : "pdf";
+      const toDoc = async (file: File | null) =>
+        file
+          ? {
+              base64: await fileToBase64(file),
+              ext: file.name.includes(".") ? file.name.split(".").pop()!.toLowerCase() : "pdf",
+            }
+          : undefined;
+      const [panDocument, aadhaarDocument, photo] = await Promise.all([
+        toDoc(panFile),
+        form60 ? toDoc(aadhaarFile) : undefined,
+        form60 ? toDoc(photoFile) : undefined,
+      ]);
 
       const res = await fetch("/api/shriram/4w/proposal", {
         method: "POST",
@@ -654,8 +724,10 @@ const carinsurancecart = () => {
             tpPolicy: shriramOdOnly
               ? { policyNumber: tpPolicyNo, insurer: tpInsurer, address: "INDIA", from: tpFrom, to: tpTo }
               : undefined,
-            kyc: { pan, aadhaar },
-            panDocument: { base64: panBase64, ext },
+            kyc: { mode: shriramKycMode, pan: form60 ? "" : pan, aadhaar },
+            panDocument,
+            aadhaarDocument,
+            photo,
             physicalPolicy,
           },
         }),
@@ -1297,7 +1369,18 @@ const carinsurancecart = () => {
 
             {/* Customer details — SBI already collected & verified this via
                 CKYC (OTP or manual OVD), so re-asking would be redundant;
-                Zuno has no such step, so it still needs the full form. */}
+                Zuno has no such step, so it still needs the full form.
+                Shriram has its own sectioned form, with KYC inside it. */}
+            {insurer === "SHRIRAM" ? (
+              <ShriramCheckoutForm
+                values={shriramFormValues}
+                onChange={setShriramField}
+                odOnly={shriramOdOnly}
+                insurerOptions={SHRIRAM_PREV_INSURER_OPTIONS}
+                tpInsurerOptions={shriramPreviousInsurers as string[]}
+                tpWarning={shriramTpWarning}
+              />
+            ) : (
             <div className={styles.card1}>
               {insurer === "SBI" ? (
                 <>
@@ -1475,110 +1558,6 @@ const carinsurancecart = () => {
                       />
                     </>
                   )}
-
-                  {insurer === "SHRIRAM" && (
-                    <>
-                      <input
-                        className={styles.input || ""}
-                        placeholder="Father's name"
-                        value={fatherName}
-                        onChange={(e) => setFatherName(e.target.value)}
-                      />
-                      <input
-                        className={styles.input || ""}
-                        placeholder="Aadhaar number (12 digits)"
-                        maxLength={12}
-                        inputMode="numeric"
-                        value={aadhaar}
-                        onChange={(e) => setAadhaar(e.target.value.replace(/\D/g, ""))}
-                      />
-                      <label style={{ display: "block", marginTop: 8 }}>
-                        PAN card (PDF, JPG or PNG, under 4 MB)
-                        <input
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={(e) => setPanFile(e.target.files?.[0] || null)}
-                        />
-                      </label>
-
-                      <h3>Previous Policy</h3>
-                      <label style={{ display: "block", marginTop: 8 }}>
-                        Previous insurer
-                        <select value={prevInsurer} onChange={(e) => setPrevInsurer(e.target.value)}>
-                          <option value="">Select insurer</option>
-                          {SHRIRAM_PREV_INSURER_OPTIONS.map((name) => (
-                            <option key={name} value={name}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <input
-                        className={styles.input || ""}
-                        placeholder="Previous policy number"
-                        value={prevPolicyNo}
-                        onChange={(e) => setPrevPolicyNo(e.target.value.trim())}
-                      />
-
-                      {/* Own Damage only: Shriram needs the long-term TP policy still running */}
-                      {shriramOdOnly && (
-                        <>
-                          <h3>Third-Party Policy</h3>
-                          <input
-                            className={styles.input || ""}
-                            placeholder="Third-party policy number"
-                            value={tpPolicyNo}
-                            onChange={(e) => setTpPolicyNo(e.target.value.trim())}
-                          />
-                          <label style={{ display: "block", marginTop: 8 }}>
-                            Third-party insurer
-                            <select value={tpInsurer} onChange={(e) => setTpInsurer(e.target.value)}>
-                              <option value="">Select insurer</option>
-                              {(shriramPreviousInsurers as string[]).map((name) => (
-                                <option key={name} value={name}>
-                                  {name}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label style={{ display: "block", marginTop: 8 }}>
-                            TP policy start date
-                            <input
-                              className={styles.input || ""}
-                              type="date"
-                              value={tpFrom}
-                              onChange={(e) => setTpFrom(e.target.value)}
-                            />
-                          </label>
-                          <label style={{ display: "block", marginTop: 8 }}>
-                            TP policy end date
-                            <input
-                              className={styles.input || ""}
-                              type="date"
-                              value={tpTo}
-                              onChange={(e) => setTpTo(e.target.value)}
-                            />
-                          </label>
-                          {shriramTpTooShort && (
-                            <p style={{ color: "#c0392b", fontSize: 13, marginTop: 6 }}>
-                              Your third-party cover ends on {fmtDate(tpTo)}, before this 1-year policy
-                              would end ({fmtDate(shriramOdEnd)}). Shriram needs a short-term policy for
-                              this, which isn&apos;t available online yet.
-                            </p>
-                          )}
-                        </>
-                      )}
-
-                      <label style={{ display: "block", marginTop: 8 }}>
-                        <input
-                          type="checkbox"
-                          checked={physicalPolicy}
-                          onChange={(e) => setPhysicalPolicy(e.target.checked)}
-                        />{" "}
-                        Send me a printed copy of the policy
-                      </label>
-                    </>
-                  )}
                 </>
               )}
 
@@ -1617,6 +1596,7 @@ const carinsurancecart = () => {
                 </label>
               )}
             </div>
+            )}
           </div>
 
           <div className={styles.right}>

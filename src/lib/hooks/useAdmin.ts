@@ -5,6 +5,10 @@ type DecodedToken = {
   userLastName?: string;
   email: string;
   role: string;
+  isStaffUser?: boolean;
+  staffRole?: string;
+  accessModules?: string[];
+  adminAccessModules?: string[];
 };
 
 export function useAdmin() {
@@ -25,6 +29,10 @@ export function useAdmin() {
             userLastName: data.user.userLastName ?? "", // optional handling
             email: data.user.email,
             role: data.user.role,
+            isStaffUser: data.user.isStaffUser,
+            staffRole: data.user.staffRole,
+            accessModules: data.user.accessModules,
+            adminAccessModules: data.user.adminAccessModules,
           });
         } else {
           console.error("Failed to fetch admin data:", res.status);

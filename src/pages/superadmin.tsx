@@ -62,6 +62,7 @@ import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
 import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
+import UserManagement from "@/components/superadminsidebar/UserManagement";
 import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
 import Reconcile from "@/components/superadminsidebar/Reconcile";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
@@ -552,6 +553,22 @@ const SuperAdminDashboard = () => {
               </span>
             </li>
 
+            {/* User Management (single item — no submenu) */}
+            <li
+              className={`${styles.menuItem} ${
+                activeSection === "userManagement" ? styles.activeMenu : ""
+              }`}
+              onClick={() => {
+                setActiveSection("userManagement");
+                setSidebarOpen(false);
+              }}
+            >
+              <span className={styles.iconLabel}>
+                <FiUsers className={styles.icon} />
+                <span className={styles.label}>User Management</span>
+              </span>
+            </li>
+
             {/* IRDAI Reports (single item — no submenu) */}
             <li
               className={`${styles.menuItem} ${
@@ -990,6 +1007,7 @@ const SuperAdminDashboard = () => {
           {activeSection === "invoiceClients" && <InvoiceClients />}
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
+          {activeSection === "userManagement" && <UserManagement />}
           {activeSection === "irdaiReports" && <IrdaiReports />}
           {activeSection === "reconcile" && <Reconcile />}
           {activeSection === "configManagement" && <ConfigManagement />}

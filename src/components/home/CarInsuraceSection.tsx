@@ -96,9 +96,9 @@ const cleanName = (name: string) =>
 const normalizeName = (name: string) =>
   cleanName(name).toLowerCase();
 
-// Car and 2 wheeler go straight to their own quote flow instead of the
-// "Talk to an advisor" inquiry popup — removed for these two only, for now.
-const DIRECT_LINK_PRODUCTS = ["Car Insurance", "2 wheeler Insurance"];
+// Car, 2 wheeler and Commercial Vehicle go straight to their own quote flow
+// instead of the "Talk to an advisor" inquiry popup.
+const DIRECT_LINK_PRODUCTS = ["Car Insurance", "2 wheeler Insurance", "Commercial Vehicle"];
 
 const parseHeading = (text: string) => {
   const regex = /<([^>]+)>/g;

@@ -17,6 +17,7 @@ import ConfigSeller from "@/components/superadminsidebar/ConfigSeller";
 import InvoiceClients from "@/components/superadminsidebar/InvoiceClients";
 import Invoice from "@/components/superadminsidebar/Invoice";
 import ClientManagement from "@/components/superadminsidebar/ClientManagement";
+import UserManagement from "@/components/superadminsidebar/UserManagement";
 import IrdaiReports from "@/components/superadminsidebar/IrdaiReports";
 import Reconcile from "@/components/superadminsidebar/Reconcile";
 import ConfigManagement from "@/components/superadminsidebar/ConfigManagement";
@@ -118,6 +119,44 @@ const router = useRouter();
 
    const { admin, loading } = useAdmin();
    console.log("Admin data:", admin?.userFirstName);
+
+   // User Management permission gating — only applies to accounts created
+   // there (admin.isStaffUser); genuine Admin/superadmin accounts (and
+   // sections with no module mapping below) stay unrestricted, same as
+   // before this feature existed.
+   // Names here must match userModules.ts's ACCESS_MODULES/ADMIN_ACCESS_MODULES
+   // exactly — this is what ties "a module is checked in User Management" to
+   // "this sidebar section is visible".
+   const SIDEBAR_MODULE_MAP: Record<string, string> = {
+     dashboard: "Dashboard",
+     leads: "Leads", // the whole Leads group, gated as one unit below
+     lists: "User Management", // the whole Lists group (Manager List, User List), gated as one unit below
+     posp: "POSP Management", // the whole POSP group, gated as one unit below
+     policyDashboard: "Customer",
+     policyRenewals: "Policy Renewals",
+     claims: "Claims",
+     invoice: "Invoice",
+     commission: "Commission",
+     payInPayOut: "Pay In Pay Out",
+     clientManagement: "Client Management",
+     userManagement: "User Management",
+     configManagement: "Configuration",
+     configSeller: "Config Seller",
+     pospManagement: "POSP Management",
+     irdaiReports: "IRDAI Reports",
+     reconcile: "Reconciliation",
+   };
+   const canSeeSection = (section: string) => {
+     if (!admin?.isStaffUser) return true;
+     const moduleName = SIDEBAR_MODULE_MAP[section];
+     if (!moduleName) return true;
+     return (admin.accessModules || []).includes(moduleName) || (admin.adminAccessModules || []).includes(moduleName);
+   };
+   // The org-wide headcount cards (Admins/State Managers/District Managers/
+   // Agents) are only meaningful to someone running the whole org — a real
+   // Admin/superadmin, or a User Management account whose role is "Admin".
+   // Every other staff role just sees Policies Issued + the panels below.
+   const isFullAdminView = !admin?.isStaffUser || admin?.staffRole === "Admin";
 
      const adminName = typeof window !== "undefined" ? localStorage.getItem("adminName") : null;
 
@@ -278,338 +317,389 @@ const router = useRouter();
           </div>
           <p className={styles.sectionTitle}>Menu</p>
           <ul className={styles.menu}>
-            <li
-              onClick={() => {
-                setActiveSection("dashboard");
-                setSidebarOpen(false);
-              }}
-              className={`${styles.menuItem} ${activeSection === "dashboard" ? styles.activeMenuItem : ""}`}
-            >
-              <span className={styles.iconLabel}>
-                <FiGrid className={styles.icon} />
-                <span className={styles.label}>Dashboard</span>
-              </span>
-            </li>
+            {canSeeSection("dashboard") && (
+              <li
+                onClick={() => {
+                  setActiveSection("dashboard");
+                  setSidebarOpen(false);
+                }}
+                className={`${styles.menuItem} ${activeSection === "dashboard" ? styles.activeMenuItem : ""}`}
+              >
+                <span className={styles.iconLabel}>
+                  <FiGrid className={styles.icon} />
+                  <span className={styles.label}>Dashboard</span>
+                </span>
+              </li>
+            )}
 
-            {/* Leads */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.leads ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("leads")}
-            >
-              <span className={styles.iconLabel}>
-                <FiTarget className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Leads</span>
-              </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.leads ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.leads && (
+            {canSeeSection("leads") && (
               <>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "marineinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("marineinsurancelist")}
+                {/* Leads */}
+                <button
+                  type="button"
+                  className={`${styles.sectionToggle} ${openSections.leads ? styles.sectionToggleOpen : ""}`}
+                  onClick={() => toggleSection("leads")}
                 >
                   <span className={styles.iconLabel}>
-                    <FiAnchor className={styles.icon} />
-                    <span className={styles.label}>Marine Insurance</span>
+                    <FiTarget className={styles.icon} />
+                    <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Leads</span>
                   </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "travelinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("travelinsurancelist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiMap className={styles.icon} />
-                    <span className={styles.label}>Travel Insurance</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "shopinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("shopinsurancelist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiShoppingBag className={styles.icon} />
-                    <span className={styles.label}>Shop Insurance</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "healthinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("healthinsurancelist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiHeart className={styles.icon} />
-                    <span className={styles.label}>Health Insurance</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "homeinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("homeinsurancelist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiHome className={styles.icon} />
-                    <span className={styles.label}>Home Insurance</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "doctorinsurancelist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("doctorinsurancelist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiActivity className={styles.icon} />
-                    <span className={styles.label}>Doctor Insurance</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "officepackagepolicylist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("officepackagepolicylist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiPackage className={styles.icon} />
-                    <span className={styles.label}>Office Package Policy</span>
-                  </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "directorlist" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("directorlist")}
-                >
-                  <span className={styles.iconLabel}>
-                    <FiBookOpen className={styles.icon} />
-                    <span className={styles.label}>Director Officer Liability</span>
-                  </span>
-                </li>
+                  <FiChevronDown
+                    className={`${styles.sectionChevron} ${openSections.leads ? styles.sectionChevronOpen : ""}`}
+                  />
+                </button>
+                {openSections.leads && (
+                  <>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "marineinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("marineinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiAnchor className={styles.icon} />
+                        <span className={styles.label}>Marine Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "travelinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("travelinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiMap className={styles.icon} />
+                        <span className={styles.label}>Travel Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "shopinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("shopinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiShoppingBag className={styles.icon} />
+                        <span className={styles.label}>Shop Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "healthinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("healthinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiHeart className={styles.icon} />
+                        <span className={styles.label}>Health Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "homeinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("homeinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiHome className={styles.icon} />
+                        <span className={styles.label}>Home Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "doctorinsurancelist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("doctorinsurancelist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiActivity className={styles.icon} />
+                        <span className={styles.label}>Doctor Insurance</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "officepackagepolicylist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("officepackagepolicylist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiPackage className={styles.icon} />
+                        <span className={styles.label}>Office Package Policy</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "directorlist" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("directorlist")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiBookOpen className={styles.icon} />
+                        <span className={styles.label}>Director Officer Liability</span>
+                      </span>
+                    </li>
+                  </>
+                )}
               </>
             )}
 
-            {/* Lists */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.lists ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("lists")}
-            >
-              <span className={styles.iconLabel}>
-                <FiUsers className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Lists</span>
-              </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.lists ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.lists && (
+            {canSeeSection("lists") && (
               <>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "managerList" ? styles.activeMenu : ""}`}
-                  onClick={() => {
-                    setActiveSection("managerList");
-                    setSidebarOpen(false);
-                  }}>
+                {/* Lists */}
+                <button
+                  type="button"
+                  className={`${styles.sectionToggle} ${openSections.lists ? styles.sectionToggleOpen : ""}`}
+                  onClick={() => toggleSection("lists")}
+                >
                   <span className={styles.iconLabel}>
                     <FiUsers className={styles.icon} />
-                    <span className={styles.label}>Manager List</span>
+                    <span className={`${styles.label} ${styles.sectionToggleLabel}`}>Lists</span>
                   </span>
-                </li>
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "userList" ? styles.activeMenu : ""}`}
-                  onClick={() => {
-                    setActiveSection("userList");
-                    setSidebarOpen(false);
-                  }}>
-                  <span className={styles.iconLabel}>
-                    <FiUser className={styles.icon} />
-                    <span className={styles.label}>User List</span>
-                  </span>
-                </li>
+                  <FiChevronDown
+                    className={`${styles.sectionChevron} ${openSections.lists ? styles.sectionChevronOpen : ""}`}
+                  />
+                </button>
+                {openSections.lists && (
+                  <>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "managerList" ? styles.activeMenu : ""}`}
+                      onClick={() => {
+                        setActiveSection("managerList");
+                        setSidebarOpen(false);
+                      }}>
+                      <span className={styles.iconLabel}>
+                        <FiUsers className={styles.icon} />
+                        <span className={styles.label}>Manager List</span>
+                      </span>
+                    </li>
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "userList" ? styles.activeMenu : ""}`}
+                      onClick={() => {
+                        setActiveSection("userList");
+                        setSidebarOpen(false);
+                      }}>
+                      <span className={styles.iconLabel}>
+                        <FiUser className={styles.icon} />
+                        <span className={styles.label}>User List</span>
+                      </span>
+                    </li>
+                  </>
+                )}
               </>
             )}
 
             {/* Modules — standalone, like Dashboard */}
-            <li
-              className={`${styles.menuItem} ${activeSection === "policyDashboard" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("policyDashboard");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiFileText className={styles.icon} />
-                <span className={styles.label}>Customer</span>
-              </span>
-            </li>
+            {canSeeSection("policyDashboard") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "policyDashboard" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("policyDashboard");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiFileText className={styles.icon} />
+                  <span className={styles.label}>Customer</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "policyRenewals" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("policyRenewals");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiRefreshCw className={styles.icon} />
-                <span className={styles.label}>Policy Renewals</span>
-              </span>
-            </li>
+            {canSeeSection("policyRenewals") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "policyRenewals" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("policyRenewals");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiRefreshCw className={styles.icon} />
+                  <span className={styles.label}>Policy Renewals</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "payInPayOut" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("payInPayOut");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiPercent className={styles.icon} />
-                <span className={styles.label}>Pay In Pay Out</span>
-              </span>
-            </li>
+            {canSeeSection("payInPayOut") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "payInPayOut" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("payInPayOut");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiPercent className={styles.icon} />
+                  <span className={styles.label}>Pay In Pay Out</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "commission" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("commission");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiPercent className={styles.icon} />
-                <span className={styles.label}>Commission</span>
-              </span>
-            </li>
+            {canSeeSection("commission") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "commission" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("commission");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiPercent className={styles.icon} />
+                  <span className={styles.label}>Commission</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "claims" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("claims");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiShield className={styles.icon} />
-                <span className={styles.label}>Claims</span>
-              </span>
-            </li>
+            {canSeeSection("claims") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "claims" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("claims");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiShield className={styles.icon} />
+                  <span className={styles.label}>Claims</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "configSeller" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("configSeller");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiBriefcase className={styles.icon} />
-                <span className={styles.label}>Config Seller</span>
-              </span>
-            </li>
+            {canSeeSection("configSeller") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "configSeller" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("configSeller");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiBriefcase className={styles.icon} />
+                  <span className={styles.label}>Config Seller</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "invoice" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("invoice");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiDollarSign className={styles.icon} />
-                <span className={styles.label}>Invoice</span>
-              </span>
-            </li>
+            {canSeeSection("invoice") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "invoice" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("invoice");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiDollarSign className={styles.icon} />
+                  <span className={styles.label}>Invoice</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "clientManagement" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("clientManagement");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiUsers className={styles.icon} />
-                <span className={styles.label}>Client Management</span>
-              </span>
-            </li>
+            {canSeeSection("clientManagement") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "clientManagement" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("clientManagement");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiUsers className={styles.icon} />
+                  <span className={styles.label}>Client Management</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "irdaiReports" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("irdaiReports");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiBarChart2 className={styles.icon} />
-                <span className={styles.label}>IRDAI Reports</span>
-              </span>
-            </li>
+            {canSeeSection("userManagement") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "userManagement" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("userManagement");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiUsers className={styles.icon} />
+                  <span className={styles.label}>User Management</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "reconcile" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("reconcile");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiRefreshCw className={styles.icon} />
-                <span className={styles.label}>Reconciliation</span>
-              </span>
-            </li>
+            {canSeeSection("irdaiReports") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "irdaiReports" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("irdaiReports");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiBarChart2 className={styles.icon} />
+                  <span className={styles.label}>IRDAI Reports</span>
+                </span>
+              </li>
+            )}
 
-            <li
-              className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
-              onClick={() => {
-                setActiveSection("configManagement");
-                setSidebarOpen(false);
-              }}
-            >
-              <span className={styles.iconLabel}>
-                <FiSettings className={styles.icon} />
-                <span className={styles.label}>Configuration</span>
-              </span>
-            </li>
+            {canSeeSection("reconcile") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "reconcile" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("reconcile");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiRefreshCw className={styles.icon} />
+                  <span className={styles.label}>Reconciliation</span>
+                </span>
+              </li>
+            )}
 
-            {/* POSP */}
-            <button
-              type="button"
-              className={`${styles.sectionToggle} ${openSections.posp ? styles.sectionToggleOpen : ""}`}
-              onClick={() => toggleSection("posp")}
-            >
-              <span className={styles.iconLabel}>
-                <FiLayers className={styles.icon} />
-                <span className={`${styles.label} ${styles.sectionToggleLabel}`}>POSP</span>
-              </span>
-              <FiChevronDown
-                className={`${styles.sectionChevron} ${openSections.posp ? styles.sectionChevronOpen : ""}`}
-              />
-            </button>
-            {openSections.posp && (
+            {canSeeSection("configManagement") && (
+              <li
+                className={`${styles.menuItem} ${activeSection === "configManagement" ? styles.activeMenuItem : ""}`}
+                onClick={() => {
+                  setActiveSection("configManagement");
+                  setSidebarOpen(false);
+                }}
+              >
+                <span className={styles.iconLabel}>
+                  <FiSettings className={styles.icon} />
+                  <span className={styles.label}>Configuration</span>
+                </span>
+              </li>
+            )}
+
+            {canSeeSection("posp") && (
               <>
-                {/* Agents — hidden from the sidebar now that POSP Management
-                    (Assigned To / Lifetime Sales / Status / Delete / +Add Agent)
-                    covers everything this list did. Feature kept intact. */}
-                {false && (
-                  <li
-                    className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
-                    onClick={() => {
-                      setActiveSection("agentList");
-                      setSidebarOpen(false);
-                    }}
-                  >
-                    <span className={styles.iconLabel}>
-                      <FiBriefcase className={styles.icon} />
-                      <span className={styles.label}>Agents</span>
-                    </span>
-                  </li>
-                )}
-                <li
-                  className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "reviewApplication" ? styles.activeMenu : ""}`}
-                  onClick={() => setActiveSection("reviewApplication")}
+                {/* POSP */}
+                <button
+                  type="button"
+                  className={`${styles.sectionToggle} ${openSections.posp ? styles.sectionToggleOpen : ""}`}
+                  onClick={() => toggleSection("posp")}
                 >
                   <span className={styles.iconLabel}>
-                    <FiClipboard className={styles.icon} />
-                    <span className={styles.label}>Review Application</span>
-                    <ReviewApplicationBadge />
+                    <FiLayers className={styles.icon} />
+                    <span className={`${styles.label} ${styles.sectionToggleLabel}`}>POSP</span>
                   </span>
-                </li>
+                  <FiChevronDown
+                    className={`${styles.sectionChevron} ${openSections.posp ? styles.sectionChevronOpen : ""}`}
+                  />
+                </button>
+                {openSections.posp && (
+                  <>
+                    {/* Agents — hidden from the sidebar now that POSP Management
+                        (Assigned To / Lifetime Sales / Status / Delete / +Add Agent)
+                        covers everything this list did. Feature kept intact. */}
+                    {false && (
+                      <li
+                        className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "agentList" ? styles.activeMenu : ""}`}
+                        onClick={() => {
+                          setActiveSection("agentList");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <span className={styles.iconLabel}>
+                          <FiBriefcase className={styles.icon} />
+                          <span className={styles.label}>Agents</span>
+                        </span>
+                      </li>
+                    )}
+                    <li
+                      className={`${styles.menuItem} ${styles.subMenuItem} ${activeSection === "reviewApplication" ? styles.activeMenu : ""}`}
+                      onClick={() => setActiveSection("reviewApplication")}
+                    >
+                      <span className={styles.iconLabel}>
+                        <FiClipboard className={styles.icon} />
+                        <span className={styles.label}>Review Application</span>
+                        <ReviewApplicationBadge />
+                      </span>
+                    </li>
+                  </>
+                )}
               </>
             )}
           </ul>
@@ -632,57 +722,61 @@ const router = useRouter();
              {activeSection === "dashboard" && (
             <>
             <div className={styles.dashboardCards}>
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUsers size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>Number of Admins</span>
-                </div>
-                <p className={styles.cardValue}>{adminCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>All admin accounts</span>
-                </div>
-              </div>
+              {isFullAdminView && (
+                <>
+                  <div className={styles.card}>
+                    <div className={styles.cardTopRow}>
+                      <span className={styles.cardIconBadge}>
+                        <FiUsers size={16} />
+                      </span>
+                      <span className={styles.cardLabel}>Number of Admins</span>
+                    </div>
+                    <p className={styles.cardValue}>{adminCount}</p>
+                    <div className={styles.cardBottomRow}>
+                      <span className={styles.cardSubLabel}>All admin accounts</span>
+                    </div>
+                  </div>
 
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUserPlus size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>State Managers</span>
-                </div>
-                <p className={styles.cardValue}>{stateManagerCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Regional heads</span>
-                </div>
-              </div>
+                  <div className={styles.card}>
+                    <div className={styles.cardTopRow}>
+                      <span className={styles.cardIconBadge}>
+                        <FiUserPlus size={16} />
+                      </span>
+                      <span className={styles.cardLabel}>State Managers</span>
+                    </div>
+                    <p className={styles.cardValue}>{stateManagerCount}</p>
+                    <div className={styles.cardBottomRow}>
+                      <span className={styles.cardSubLabel}>Regional heads</span>
+                    </div>
+                  </div>
 
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUsers size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>District Managers</span>
-                </div>
-                <p className={styles.cardValue}>{districtManagerCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Local heads</span>
-                </div>
-              </div>
+                  <div className={styles.card}>
+                    <div className={styles.cardTopRow}>
+                      <span className={styles.cardIconBadge}>
+                        <FiUsers size={16} />
+                      </span>
+                      <span className={styles.cardLabel}>District Managers</span>
+                    </div>
+                    <p className={styles.cardValue}>{districtManagerCount}</p>
+                    <div className={styles.cardBottomRow}>
+                      <span className={styles.cardSubLabel}>Local heads</span>
+                    </div>
+                  </div>
 
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUserPlus size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>Agents</span>
-                </div>
-                <p className={styles.cardValue}>{agentCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Active field agents</span>
-                </div>
-              </div>
+                  <div className={styles.card}>
+                    <div className={styles.cardTopRow}>
+                      <span className={styles.cardIconBadge}>
+                        <FiUserPlus size={16} />
+                      </span>
+                      <span className={styles.cardLabel}>Agents</span>
+                    </div>
+                    <p className={styles.cardValue}>{agentCount}</p>
+                    <div className={styles.cardBottomRow}>
+                      <span className={styles.cardSubLabel}>Active field agents</span>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className={styles.card}>
                 <div className={styles.cardTopRow}>
@@ -828,6 +922,7 @@ const router = useRouter();
           {activeSection === "invoiceClients" && <InvoiceClients />}
           {activeSection === "invoice" && <Invoice />}
           {activeSection === "clientManagement" && <ClientManagement />}
+          {activeSection === "userManagement" && <UserManagement />}
           {activeSection === "irdaiReports" && <IrdaiReports />}
           {activeSection === "reconcile" && <Reconcile />}
           {activeSection === "configManagement" && <ConfigManagement />}
