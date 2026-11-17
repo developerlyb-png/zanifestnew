@@ -40,6 +40,7 @@ import ManagerList from "@/components/superadminsidebar/managerlist";
 import AgentList from "@/components/superadminsidebar/agentlist";
 import ChangePassword from "@/components/superadminsidebar/changepasswords";
 import styles from "@/styles/pages/admindashboard.module.css";
+import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import HomeSection from "@/components/superadminsidebar/mainpage";
 import MarineInsuranceList from "@/components/superadminsidebar/marineinsurancelist";
 import TravelInsuranceList from "@/components/superadminsidebar/travelinsurancelist";
@@ -122,14 +123,6 @@ const SIDEBAR_GROUP_OF: Record<string, string> = {
   pospManagement: "posp",
   adminlist: "admin",
   managerlist: "admin",
-};
-
-const statusTone = (status?: string) => {
-  const s = (status || "").toLowerCase();
-  if (s === "active" || s === "issued") return "active";
-  if (s === "draft" || s === "pending") return "draft";
-  if (s === "expired" || s === "cancelled") return "danger";
-  return "other";
 };
 
 const SuperAdminDashboard = () => {
@@ -268,22 +261,6 @@ const SuperAdminDashboard = () => {
     year: "numeric",
   });
 
-  const recentPolicies = policies.slice(0, 5);
-
-  const statusBuckets = policies.reduce(
-    (acc: { active: number; draft: number; other: number }, p: any) => {
-      const tone = statusTone(p.status);
-      const key = tone === "active" ? "active" : tone === "draft" ? "draft" : "other";
-      acc[key] += 1;
-      return acc;
-    },
-    { active: 0, draft: 0, other: 0 }
-  );
-
-  const totalForPct = policies.length || 1;
-  const activePct = Math.round((statusBuckets.active / totalForPct) * 100);
-  const draftPct = Math.round((statusBuckets.draft / totalForPct) * 100);
-  const otherPct = Math.max(0, 100 - activePct - draftPct);
 
   return (
     <div className={styles.wrapper}>
@@ -823,177 +800,12 @@ const SuperAdminDashboard = () => {
         {/* Main Content */}
         <main key={navKey} className={styles.mainContent}>
           {activeSection === "dashboard" && (
-            <>
-            <div className={styles.dashboardCards}>
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUsers size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>Number of Admins</span>
-                </div>
-                <p className={styles.cardValue}>{adminCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>All admin accounts</span>
-                </div>
-              </div>
-
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUserPlus size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>State Managers</span>
-                </div>
-                <p className={styles.cardValue}>{stateManagerCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Regional heads</span>
-                </div>
-              </div>
-
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUsers size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>District Managers</span>
-                </div>
-                <p className={styles.cardValue}>{districtManagerCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Local heads</span>
-                </div>
-              </div>
-
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiUserPlus size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>Agents</span>
-                </div>
-                <p className={styles.cardValue}>{agentCount}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>Active field agents</span>
-                </div>
-              </div>
-
-              <div className={styles.card}>
-                <div className={styles.cardTopRow}>
-                  <span className={styles.cardIconBadge}>
-                    <FiFileText size={16} />
-                  </span>
-                  <span className={styles.cardLabel}>Policies Issued</span>
-                </div>
-                <p className={styles.cardValue}>{policies.length}</p>
-                <div className={styles.cardBottomRow}>
-                  <span className={styles.cardSubLabel}>All time total</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.dashboardGrid}>
-              {/* Recent Policies */}
-              <div className={styles.panelCard}>
-                <div className={styles.panelHeader}>
-                  <h3 className={styles.panelTitle}>Recent Policies</h3>
-                </div>
-                {recentPolicies.length === 0 ? (
-                  <p className={styles.panelEmpty}>No policies yet.</p>
-                ) : (
-                  <div className={styles.tableScroll}>
-                    <table className={styles.recentTable}>
-                      <thead>
-                        <tr>
-                          <th>Insured Name</th>
-                          <th>Insurer</th>
-                          <th>Premium</th>
-                          <th>Status</th>
-                          <th>Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentPolicies.map((p) => (
-                          <tr key={p._id}>
-                            <td>{p.customer?.fullName || "—"}</td>
-                            <td>{p.insurer || "—"}</td>
-                            <td>
-                              {p.premium
-                                ? `₹${Math.round(p.premium).toLocaleString("en-IN")}`
-                                : "—"}
-                            </td>
-                            <td>
-                              <span
-                                className={`${styles.statusBadge} ${
-                                  styles[`statusTone_${statusTone(p.status)}`]
-                                }`}
-                              >
-                                {p.status || "—"}
-                              </span>
-                            </td>
-                            <td>
-                              {p.createdAt
-                                ? new Date(p.createdAt).toLocaleDateString("en-GB")
-                                : "—"}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className={styles.viewAllLink}
-                  onClick={() => setActiveSection("policyDashboard")}
-                >
-                  View All Policies →
-                </button>
-              </div>
-
-              {/* Side panels */}
-              <div className={styles.sidePanels}>
-                <div className={styles.panelCard}>
-                  <h3 className={styles.panelTitle}>Policy Status</h3>
-                  <p className={styles.statusBigPct}>
-                    {activePct}% <span>Active</span>
-                  </p>
-                  <div className={styles.statusBar}>
-                    <span className={styles.statusSegActive} style={{ width: `${activePct}%` }} />
-                    <span className={styles.statusSegDraft} style={{ width: `${draftPct}%` }} />
-                    <span className={styles.statusSegOther} style={{ width: `${otherPct}%` }} />
-                  </div>
-                  <div className={styles.statTileRow}>
-                    <div className={styles.statTile}>
-                      <span className={styles.statTileValue}>{statusBuckets.active}</span>
-                      <span className={styles.statTileLabel}>Active</span>
-                    </div>
-                    <div className={styles.statTile}>
-                      <span className={styles.statTileValue}>{statusBuckets.draft}</span>
-                      <span className={styles.statTileLabel}>Draft</span>
-                    </div>
-                    <div className={styles.statTile}>
-                      <span className={styles.statTileValue}>{statusBuckets.other}</span>
-                      <span className={styles.statTileLabel}>Other</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.quickActionsCard}>
-                  <h3 className={styles.quickActionsTitle}>Add a new policy</h3>
-                  <p className={styles.quickActionsText}>
-                    Create a policy manually or bulk upload from Excel/CSV.
-                  </p>
-                  <button
-                    type="button"
-                    className={styles.quickActionsBtn}
-                    onClick={() => setActiveSection("policyDashboard")}
-                  >
-                    Go to Policy Data →
-                  </button>
-                </div>
-              </div>
-            </div>
-            </>
+            <DashboardOverview
+              policies={policies}
+              userName={admin?.userFirstName}
+              team={{ admins: adminCount, stateManagers: stateManagerCount, districtManagers: districtManagerCount, agents: agentCount }}
+              onNavigate={setActiveSection}
+            />
           )}
 
           {activeSection === "policyDashboard" && (
