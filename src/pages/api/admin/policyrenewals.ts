@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { EXCLUDE_TRAVEL_FILTER } from "@/utils/policyCategory";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -42,7 +43,8 @@ export default async function handler(
       windowEnd.setDate(windowEnd.getDate() + RENEWAL_WINDOW_DAYS);
 
       const policies = await IssuedPolicy.find(
-        { endDate: { $exists: true, $ne: null, $lte: windowEnd } },
+        // Travel policies are single-trip covers and aren't renewed.
+        { endDate: { $exists: true, $ne: null, $lte: windowEnd }, ...EXCLUDE_TRAVEL_FILTER },
         {
           "policyDocuments.data": 0,
           "paymentDetails.transactionProof.data": 0,

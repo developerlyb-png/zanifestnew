@@ -49,6 +49,20 @@ export function policyCategory(p: CategorizablePolicy): PolicyCategory {
   return "Other";
 }
 
+// Travel covers are single-trip / fixed-term and aren't renewed, so they're
+// left out of every renewals list. Matches the "Travel" Non Motor product
+// and any online travel policyType ("Travel Insurance", ...).
+export const TRAVEL_RE = /travel/i;
+
+export function isTravelPolicy(p: CategorizablePolicy): boolean {
+  return TRAVEL_RE.test(String(p.product || "")) || TRAVEL_RE.test(String(p.policyType || "")) || TRAVEL_RE.test(String(p.lineOfBusiness || ""));
+}
+
+/** Mongo filter excluding travel policies (same rule as isTravelPolicy). */
+export const EXCLUDE_TRAVEL_FILTER = {
+  $nor: [{ product: TRAVEL_RE }, { policyType: TRAVEL_RE }, { lineOfBusiness: TRAVEL_RE }],
+};
+
 /** A readable business-line label for charts: "Non Motor" is replaced by the actual product. */
 export function businessLineLabel(p: CategorizablePolicy): string {
   const lob = String(p.lineOfBusiness || p.policyType || "").trim();

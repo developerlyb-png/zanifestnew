@@ -31,7 +31,7 @@ import {
   FiMinusCircle,
 } from "react-icons/fi";
 import s from "@/styles/components/dashboard/DashboardOverview.module.css";
-import { businessLineLabel } from "@/utils/policyCategory";
+import { businessLineLabel, isTravelPolicy } from "@/utils/policyCategory";
 
 /**
  * recharts' responsive wrapper measures 0 inside this dashboard layout and
@@ -410,7 +410,7 @@ export default function DashboardOverview({
     // Implausible end dates (Excel-serial years like 46513) are ignored.
     const today = startOfDay(now).getTime();
     const renewals = policies
-      .filter((p) => p.endDate)
+      .filter((p) => p.endDate && !isTravelPolicy(p)) // travel covers aren't renewed
       .map((p) => ({ p, end: new Date(p.endDate).getTime() }))
       .filter((x) => !isNaN(x.end) && isPlausibleDate(new Date(x.end), now) && x.end <= today + RENEWAL_WINDOW_DAYS * DAY)
       .sort((a, b) => a.end - b.end);
