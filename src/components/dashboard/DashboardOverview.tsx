@@ -138,6 +138,20 @@ interface Bucket {
 }
 
 /** Trend buckets sized to the period: daily for ≤30d, weekly for 90d, monthly beyond. */
+// Hard ceiling so no data — however odd — can make the chart render
+// thousands of points.
+const MAX_BUCKETS = 240;
+// Must match RENEWAL_WINDOW_DAYS in src/pages/api/admin/policyrenewals.ts
+const RENEWAL_WINDOW_DAYS = 90;
+const monthsBetween = (a: Date, b: Date) =>
+  (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+
+/** A policy date worth plotting: year 2000 up to 2 years ahead. Anything else is a data-entry typo. */
+function isPlausibleDate(d: Date, now: Date) {
+  const y = d.getFullYear();
+  return y >= 2000 && y <= now.getFullYear() + 2;
+}
+
 function buildBuckets(period: Period, from: Date, to: Date): Bucket[] {
   const out: Bucket[] = [];
   if (period === "7d" || period === "30d") {
@@ -164,9 +178,21 @@ function buildBuckets(period: Period, from: Date, to: Date): Bucket[] {
         policies: 0,
       });
     }
+  } else if (monthsBetween(from, to) > 36) {
+    // Long "All" ranges: one bucket per year keeps the chart readable.
+    for (let y = from.getFullYear(); y <= to.getFullYear() && out.length < MAX_BUCKETS; y++) {
+      out.push({
+        key: String(y),
+        label: String(y),
+        start: new Date(y, 0, 1).getTime(),
+        end: new Date(y + 1, 0, 1).getTime(),
+        premium: 0,
+        policies: 0,
+      });
+    }
   } else {
     let d = new Date(from.getFullYear(), from.getMonth(), 1);
-    while (d <= to) {
+    while (d <= to && out.length < MAX_BUCKETS) {
       const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
       out.push({
         key: `${d.getFullYear()}-${d.getMonth()}`,
@@ -335,8 +361,14 @@ export default function DashboardOverview({
     } else {
       // "All" means every policy — including ones whose start date is still
       // in the future (advance bookings), which the old `<= now` cut dropped.
-      const earliest = dated.reduce((m, x) => (x.d < m ? x.d : m), now);
-      const latest = dated.reduce((m, x) => (x.d > m ? x.d : m), now);
+      // The chart's time axis only spans *plausible* dates. One typo'd date
+      // on live (e.g. year 0026 or 2206) used to stretch it to thousands of
+      // monthly buckets and crash the page ("Maximum call stack size
+      // exceeded"). Such policies still count in every total below — they
+      // just can't widen the chart.
+      const plausible = dated.filter((x) => isPlausibleDate(x.d, now));
+      const earliest = plausible.reduce((m, x) => (x.d < m ? x.d : m), now);
+      const latest = plausible.reduce((m, x) => (x.d > m ? x.d : m), now);
       start = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
       end = latest;
     }
@@ -370,13 +402,20 @@ export default function DashboardOverview({
     const statusCounts: Record<StatusKey, number> = { active: 0, draft: 0, danger: 0, other: 0 };
     current.forEach((p) => (statusCounts[statusTone(p.status)] += 1));
 
-    // Renewals look forward from today regardless of the period picker.
+    // Same rule as the Policy Renewals page (api/admin/policyrenewals.ts):
+    // every policy whose end date is on or before today + 90 days — that
+    // includes already-expired ones not yet renewed (overdue). The card used
+    // to look only at the next 30 days and skip overdue, so it showed 0 while
+    // the Renewals page listed many. Independent of the period picker.
+    // Implausible end dates (Excel-serial years like 46513) are ignored.
     const today = startOfDay(now).getTime();
     const renewals = policies
       .filter((p) => p.endDate)
       .map((p) => ({ p, end: new Date(p.endDate).getTime() }))
-      .filter((x) => !isNaN(x.end) && x.end >= today && x.end <= today + 30 * DAY)
+      .filter((x) => !isNaN(x.end) && isPlausibleDate(new Date(x.end), now) && x.end <= today + RENEWAL_WINDOW_DAYS * DAY)
       .sort((a, b) => a.end - b.end);
+    const overdue = renewals.filter((x) => x.end < today);
+    const upcoming = renewals.filter((x) => x.end >= today);
 
     return {
       cur: kpi(current),
@@ -388,6 +427,8 @@ export default function DashboardOverview({
       insurers: rankBy(current, (p) => p.insurer, 5),
       renewals,
       renewalPremium: renewals.reduce((a, x) => a + premiumOf(x.p), 0),
+      renewalsOverdue: overdue.length,
+      renewalsUpcoming: upcoming,
     };
   }, [policies, period]);
 
@@ -505,7 +546,8 @@ export default function DashboardOverview({
           </div>
           <div className={s.kpiValueLight}>{data.renewals.length}</div>
           <div className={s.kpiFootLight}>
-            {inrCompact(data.renewalPremium)} premium · next 30 days <FiArrowRight size={12} />
+            {data.renewalsUpcoming.length} due in {RENEWAL_WINDOW_DAYS}d · {data.renewalsOverdue} overdue ·{" "}
+            {inrCompact(data.renewalPremium)} <FiArrowRight size={12} />
           </div>
         </button>
       </div>
@@ -534,7 +576,14 @@ export default function DashboardOverview({
           <div className={s.panelHead}>
             <div>
               <h3 className={s.panelTitle}>Premium Trend</h3>
-              <p className={s.panelSub}>Premium written per {period === "7d" || period === "30d" ? "day" : period === "90d" ? "week" : "month"}</p>
+              <p className={s.panelSub}>Premium written per{" "}
+                {period === "7d" || period === "30d"
+                  ? "day"
+                  : period === "90d"
+                    ? "week"
+                    : data.buckets[0]?.key.length === 4
+                      ? "year"
+                      : "month"}</p>
             </div>
             <div className={s.panelStat}>
               <span className={s.panelStatValue}>{inrCompact(data.cur.premium)}</span>
@@ -655,17 +704,20 @@ export default function DashboardOverview({
           <div className={s.panelHead}>
             <div>
               <h3 className={s.panelTitle}>Upcoming Renewals</h3>
-              <p className={s.panelSub}>Expiring in the next 30 days</p>
+              <p className={s.panelSub}>
+                Next {RENEWAL_WINDOW_DAYS} days
+                {data.renewalsOverdue ? ` · ${data.renewalsOverdue} overdue (see Renewals)` : ""}
+              </p>
             </div>
             <button type="button" className={s.linkBtn} onClick={() => onNavigate("policyRenewals")}>
               View all <FiArrowRight size={12} />
             </button>
           </div>
-          {data.renewals.length === 0 ? (
-            <p className={s.empty}>Nothing expiring in the next 30 days.</p>
+          {data.renewalsUpcoming.length === 0 ? (
+            <p className={s.empty}>Nothing expiring in the next {RENEWAL_WINDOW_DAYS} days.</p>
           ) : (
             <ul className={s.renewList}>
-              {data.renewals.slice(0, 6).map(({ p, end }) => {
+              {data.renewalsUpcoming.slice(0, 6).map(({ p, end }) => {
                 const days = Math.round((end - startOfDay(new Date()).getTime()) / DAY);
                 return (
                   <li key={p._id}>
