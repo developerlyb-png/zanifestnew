@@ -140,6 +140,12 @@ const PRESETS: { key: Preset; label: string }[] = [
 // counted as Motor.
 const bucketFor = (p: Policy) => policyCategory(p as any);
 
+// What the "Product Name" column/filter shows. Manual, Excel and AI-imported
+// policies store policyType = "Motor" / "Non Motor" and the real product
+// (Health, Fire, Pvt Car, …) in `product`; online policies only have a
+// descriptive policyType ("Car Insurance", "Health"). Prefer the product.
+const productLabel = (p: Policy) => (p.product || p.policyType || "").trim();
+
 type SummaryTone = "blue" | "orange" | "green" | "purple";
 
 const TONE_CLASS: Record<SummaryTone, string> = {
@@ -390,13 +396,16 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
   const uniqueValues = (key: "policyType" | "transactionType" | "insurer" | "pospPartner") =>
     Array.from(new Set(visiblePolicies.map((p) => p[key]).filter(Boolean))) as string[];
 
+  const uniqueProducts = () =>
+    Array.from(new Set(visiblePolicies.map(productLabel).filter(Boolean))).sort();
+
   const uniqueNames = () =>
     Array.from(new Set(visiblePolicies.map((p) => p.customer?.fullName).filter(Boolean))) as string[];
 
   const filteredPolicies = useMemo(() => {
     return visiblePolicies.filter((p) => {
       if (filters.insuredName && p.customer?.fullName !== filters.insuredName) return false;
-      if (filters.productName && p.policyType !== filters.productName) return false;
+      if (filters.productName && productLabel(p) !== filters.productName) return false;
       if (filters.transactionType && p.transactionType !== filters.transactionType) return false;
       if (filters.insurer && p.insurer !== filters.insurer) return false;
       if (filters.pospPartner && p.pospPartner !== filters.pospPartner) return false;
@@ -443,25 +452,39 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
   }, [preset, customFrom, customTo]);
 
   useEffect(() => {
+    // Cancel the previous period's request when the period changes. Without
+    // this, a slow "This Year" response (the default, and large on live)
+    // could land *after* a quick "This Month" response and overwrite it —
+    // the cards then showed the year's numbers under the "This Month" button.
+    const controller = new AbortController();
     setLoading(true);
     const params = new URLSearchParams({
       from: range.from.toISOString(),
       to: range.to.toISOString(),
       dateField: dateBasis,
     });
-    fetch(`/api/admin/policies?${params.toString()}`, { credentials: "include" })
+    fetch(`/api/admin/policies?${params.toString()}`, { credentials: "include", signal: controller.signal })
       .then((res) => res.json())
-      .then((data) => setPolicies(data.policies || []))
-      .catch(() => setPolicies([]))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!controller.signal.aborted) setPolicies(data.policies || []);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setPolicies([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
   }, [range, dateBasis, refreshKey]);
 
   const summary = useMemo(() => {
     const buckets = ["Motor", "Health", "Life", "Other"] as const;
     const counts: Record<string, number> = { Motor: 0, Health: 0, Life: 0, Other: 0 };
-    for (const p of visiblePolicies) counts[bucketFor(p)] += 1;
-    return { buckets, totalPolicies: visiblePolicies.length, counts };
-  }, [visiblePolicies]);
+    // Cards follow the table: period + every column filter (insurer, client,
+    // product, …), not just the period.
+    for (const p of filteredPolicies) counts[bucketFor(p)] += 1;
+    return { buckets, totalPolicies: filteredPolicies.length, counts };
+  }, [filteredPolicies]);
 
   const sumByBucket = (list: Policy[], key: "grossPremium" | "commissionAmount" | "payoutAmount") => {
     const buckets = ["Motor", "Health", "Life", "Other"] as const;
@@ -475,9 +498,9 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
     return { buckets, total, sums };
   };
 
-  const premiumSummary = useMemo(() => sumByBucket(visiblePolicies, "grossPremium"), [visiblePolicies]);
-  const commissionSummary = useMemo(() => sumByBucket(visiblePolicies, "commissionAmount"), [visiblePolicies]);
-  const payoutSummary = useMemo(() => sumByBucket(visiblePolicies, "payoutAmount"), [visiblePolicies]);
+  const premiumSummary = useMemo(() => sumByBucket(filteredPolicies, "grossPremium"), [filteredPolicies]);
+  const commissionSummary = useMemo(() => sumByBucket(filteredPolicies, "commissionAmount"), [filteredPolicies]);
+  const payoutSummary = useMemo(() => sumByBucket(filteredPolicies, "payoutAmount"), [filteredPolicies]);
 
   const exportCsv = () => {
     const visible = COLUMNS.filter((c) => visibleColumns[c.key]);
@@ -488,7 +511,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
         registrationNo: p.vehicle?.number || "",
         policyNo: p.policyNumber || "",
         endorsementNo: p.endorsementNo || "",
-        productName: p.policyType || "",
+        productName: productLabel(p),
         transactionType: p.transactionType || "",
         insurer: p.insurer || "",
         pospPartner: p.pospPartner || "",
@@ -905,7 +928,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                         onChange={(e) => setFilter("productName", e.target.value)}
                       >
                         <option value="">Select</option>
-                        {uniqueValues("policyType").map((v) => (
+                        {uniqueProducts().map((v) => (
                           <option key={v} value={v}>
                             {v}
                           </option>
@@ -993,7 +1016,7 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                       {visibleColumns.registrationNo && <td>{p.vehicle?.number || "--"}</td>}
                       {visibleColumns.policyNo && <td>{p.policyNumber || "--"}</td>}
                       {visibleColumns.endorsementNo && <td>{p.endorsementNo || "-"}</td>}
-                      {visibleColumns.productName && <td>{p.policyType || "--"}</td>}
+                      {visibleColumns.productName && <td>{productLabel(p) || "--"}</td>}
                       {visibleColumns.transactionType && <td>{p.transactionType || "--"}</td>}
                       {visibleColumns.insurer && <td>{p.insurer || "--"}</td>}
                       {visibleColumns.pospPartner && <td>{p.pospPartner || "--"}</td>}
