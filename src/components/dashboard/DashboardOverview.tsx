@@ -31,6 +31,7 @@ import {
   FiMinusCircle,
 } from "react-icons/fi";
 import s from "@/styles/components/dashboard/DashboardOverview.module.css";
+import { businessLineLabel } from "@/utils/policyCategory";
 
 /**
  * recharts' responsive wrapper measures 0 inside this dashboard layout and
@@ -85,14 +86,22 @@ export const statusTone = (status?: string): StatusKey => {
   return "other";
 };
 
-type Period = "7d" | "30d" | "90d" | "12m" | "all";
+type Period = "7d" | "30d" | "90d" | "12m" | "fy" | "all";
 const PERIODS: { key: Period; label: string; days?: number }[] = [
   { key: "7d", label: "7D", days: 7 },
   { key: "30d", label: "30D", days: 30 },
   { key: "90d", label: "90D", days: 90 },
   { key: "12m", label: "12M", days: 365 },
+  // Same window as the Customer Dashboard's "This Year" (Indian FY, 1 Apr – 31 Mar)
+  { key: "fy", label: "This FY" },
   { key: "all", label: "All" },
 ];
+
+/** Indian financial year containing `d`: 1 Apr 00:00 – 31 Mar 23:59:59.999 (local). */
+function fyRange(d: Date) {
+  const y = d.getMonth() < 3 ? d.getFullYear() - 1 : d.getFullYear();
+  return { from: new Date(y, 3, 1), to: new Date(y + 1, 2, 31, 23, 59, 59, 999) };
+}
 
 const DAY = 86400000;
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -106,7 +115,9 @@ const policyDate = (p: any): Date | null => {
   const d = new Date(raw);
   return isNaN(d.getTime()) ? null : d;
 };
-const premiumOf = (p: any) => Number(p.premium ?? p.grossPremium ?? 0) || 0;
+// Gross premium (incl. GST), same figure as the Customer Dashboard's "Total
+// Gross Premium" — net premium here made the two pages disagree by ~18%.
+const premiumOf = (p: any) => Number(p.grossPremium ?? p.premium ?? 0) || 0;
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const inrCompact = (n: number) => {
@@ -302,7 +313,6 @@ export default function DashboardOverview({
 
   const data = useMemo(() => {
     const now = new Date();
-    const end = now;
     const cfg = PERIODS.find((p) => p.key === period)!;
 
     const dated = policies
@@ -310,19 +320,30 @@ export default function DashboardOverview({
       .filter((x): x is { p: any; d: Date } => !!x.d);
 
     let start: Date;
-    if (cfg.days) {
+    let end: Date = now;
+    let prevStart: Date | null = null;
+    if (period === "fy") {
+      // Includes policies whose cover starts later in the FY, exactly like
+      // the Customer Dashboard's "This Year".
+      ({ from: start, to: end } = fyRange(now));
+      prevStart = new Date(start.getFullYear() - 1, 3, 1);
+    } else if (cfg.days) {
       start = period === "12m"
         ? new Date(now.getFullYear(), now.getMonth() - 11, 1)
         : startOfDay(new Date(now.getTime() - (cfg.days - 1) * DAY));
+      prevStart = new Date(start.getTime() - (end.getTime() - start.getTime()));
     } else {
+      // "All" means every policy — including ones whose start date is still
+      // in the future (advance bookings), which the old `<= now` cut dropped.
       const earliest = dated.reduce((m, x) => (x.d < m ? x.d : m), now);
+      const latest = dated.reduce((m, x) => (x.d > m ? x.d : m), now);
       start = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+      end = latest;
     }
-    const span = end.getTime() - start.getTime();
-    const prevStart = cfg.days ? new Date(start.getTime() - span) : null;
 
-    const current = dated.filter((x) => x.d >= start && x.d <= end).map((x) => x.p);
-    const previous = prevStart ? dated.filter((x) => x.d >= prevStart && x.d < start).map((x) => x.p) : null;
+    const current =
+      period === "all" ? policies : dated.filter((x) => x.d >= start && x.d <= end).map((x) => x.p);
+    const previous = prevStart ? dated.filter((x) => x.d >= prevStart! && x.d < start).map((x) => x.p) : null;
 
     const sum = (list: any[], f: (p: any) => number) => list.reduce((a, p) => a + f(p), 0);
     const kpi = (list: any[]) => {
@@ -363,7 +384,7 @@ export default function DashboardOverview({
       buckets,
       statusCounts,
       statusTotal: current.length,
-      lob: rankBy(current, (p) => p.lineOfBusiness || p.policyType),
+      lob: rankBy(current, (p) => businessLineLabel(p)),
       insurers: rankBy(current, (p) => p.insurer, 5),
       renewals,
       renewalPremium: renewals.reduce((a, x) => a + premiumOf(x.p), 0),
@@ -371,13 +392,20 @@ export default function DashboardOverview({
   }, [policies, period]);
 
   const recent = policies.slice(0, 6);
-  const periodLabel = { "7d": "last 7 days", "30d": "last 30 days", "90d": "last 90 days", "12m": "last 12 months", all: "all time" }[period];
+  const periodLabel = {
+    "7d": "last 7 days",
+    "30d": "last 30 days",
+    "90d": "last 90 days",
+    "12m": "last 12 months",
+    fy: "this financial year",
+    all: "all time",
+  }[period];
   const hour = new Date().getHours();
   const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const kpis = [
     {
-      label: "Total Premium",
+      label: "Gross Premium",
       value: inr(data.cur.premium),
       icon: FiDollarSign,
       tint: "blue",
@@ -693,7 +721,7 @@ export default function DashboardOverview({
                         {p.policyNumber && <div className={s.cellSub}>{p.policyNumber}</div>}
                       </td>
                       <td>{p.insurer || "—"}</td>
-                      <td>{p.lineOfBusiness || p.policyType || "—"}</td>
+                      <td>{businessLineLabel(p)}</td>
                       <td className={s.num}>{premiumOf(p) ? inr(premiumOf(p)) : "—"}</td>
                       <td>
                         <span className={`${s.pill} ${s[`pill_${tone}`]}`}>

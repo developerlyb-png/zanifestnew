@@ -17,6 +17,7 @@ import PolicyDetailView from "./PolicyDetailView";
 import AgentPolicyReview from "./AgentPolicyReview";
 import PolicyDocumentImport from "./PolicyDocumentImport";
 import SearchableSelect from "./SearchableSelect";
+import { policyCategory } from "@/utils/policyCategory";
 
 export interface Policy {
   _id: string;
@@ -68,7 +69,8 @@ function financialYearRange() {
   let fyStartYear = today.getFullYear();
   if (today.getMonth() < 3) fyStartYear -= 1; // Jan-Mar belongs to previous FY
   const from = new Date(fyStartYear, 3, 1);
-  const to = new Date(fyStartYear + 1, 2, 31);
+  // End of day on 31 March — midnight would drop every policy dated that day.
+  const to = new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999);
   return { from, to };
 }
 
@@ -132,14 +134,11 @@ const PRESETS: { key: Preset; label: string }[] = [
   { key: "custom", label: "Custom Range" },
 ];
 
-const bucketFor = (p: Policy) => {
-  const t = (p.policyType || "").toLowerCase();
-  if (t.includes("car") || t.includes("bike") || t.includes("vehicle") || t.includes("motor"))
-    return "Motor";
-  if (t.includes("health")) return "Health";
-  if (t.includes("life")) return "Life";
-  return "Other";
-};
+// Shared with the main dashboard. The old inline check used
+// `policyType.includes("motor")`, which also matched "Non Motor" (what the
+// manual form / Excel / AI import store), so every non-motor policy was
+// counted as Motor.
+const bucketFor = (p: Policy) => policyCategory(p as any);
 
 type SummaryTone = "blue" | "orange" | "green" | "purple";
 
@@ -432,7 +431,13 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
 
   const range = useMemo(() => {
     if (preset === "custom" && customFrom && customTo) {
-      return { from: new Date(customFrom), to: new Date(customTo) };
+      // "YYYY-MM-DD" alone parses as UTC midnight (05:30 IST), which cut off
+      // the first hours of the start day and almost all of the end day.
+      // Anchor both ends to local time: start of `from`, end of `to`.
+      return {
+        from: new Date(`${customFrom}T00:00:00`),
+        to: new Date(`${customTo}T23:59:59.999`),
+      };
     }
     return presetRange(preset);
   }, [preset, customFrom, customTo]);
