@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Image from "@/models/Home";
-import connectDB from "@/lib/dbConnect";
+import connectDB from "@/lib/dbConnect";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
@@ -11,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log("Fetched images:", images);
       res.status(200).json({ success: true, images });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      res.status(errorStatus(error, 500)).json({ success: false, error: friendlyMessage(error) });
     }
   } else {
     res.setHeader("Allow", ["GET"]);

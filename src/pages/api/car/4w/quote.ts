@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { buildDigitQuickQuoteBody } from "@/lib/digit4wRequestBuilder";
+import { buildDigitQuickQuoteBody } from "@/lib/digit4wRequestBuilder";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -164,7 +165,7 @@ export default async function handler(
 
     return res.status(500).json({
       success: false,
-      message: err.message,
+      message: friendlyMessage(err),
     });
   }
 }

@@ -6,6 +6,7 @@ import SellerProfile from "@/models/SellerProfile";
 import InvoiceClient from "@/models/InvoiceClient";
 import { INVOICE_STATUSES } from "@/constants/invoice";
 import { logInvoiceAudit, diffSummary } from "@/lib/invoiceAudit";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -163,7 +164,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, invoices });
     } catch (err: any) {
       console.log("INVOICES GET ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -228,7 +229,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(201).json({ success: true, invoice });
     } catch (err: any) {
       console.log("INVOICES POST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -316,7 +317,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, invoice: existing });
     } catch (err: any) {
       console.log("INVOICES PUT ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -413,7 +414,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, invoice });
     } catch (err: any) {
       console.log("INVOICES PATCH ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -436,7 +437,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("INVOICES DELETE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

@@ -6,6 +6,7 @@ import Admin from "@/models/Admin";
 import Manager from "@/models/Manager";
 import StaffRole from "@/models/StaffRole";
 import Agent from "@/models/Agent";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -185,7 +186,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, users });
     } catch (err: any) {
       console.log("STAFF USERS GET ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -245,7 +246,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(201).json({ success: true, user: sanitize(user) });
     } catch (err: any) {
       console.log("STAFF USERS POST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -314,7 +315,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, user: sanitize(user) });
     } catch (err: any) {
       console.log("STAFF USERS PUT ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -341,7 +342,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     } catch (err: any) {
       console.log("STAFF USERS PATCH ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -378,7 +379,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("STAFF USERS DELETE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

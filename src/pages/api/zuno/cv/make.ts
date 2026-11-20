@@ -1,5 +1,6 @@
 // src/pages/api/zuno/cv/make.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // TOKEN CREATE
 async function getZunoToken() {
@@ -57,6 +58,6 @@ export default async function handler(
     return res.status(response.status).json(data);
   } catch (error: any) {
     console.log("MAKE ERROR", error);
-    return res.status(500).json({ message: error.message });
+    return res.status(errorStatus(error, 500)).json({ message: friendlyMessage(error) });
   }
 }

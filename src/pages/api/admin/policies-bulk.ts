@@ -12,6 +12,7 @@ import {
   validateAndNormalizeRow,
   registerNewInsurer,
 } from "@/utils/policyBulkMapping";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -129,6 +130,6 @@ export default async function handler(
     return res.status(201).json({ success: true, inserted, skipped });
   } catch (err: any) {
     console.log("ADMIN POLICIES BULK ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

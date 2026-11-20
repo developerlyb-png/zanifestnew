@@ -17,7 +17,8 @@
 // Either avoids extra verification hits. Confirm with RechargeKit whether
 // pending/duplicate attempts are billed on your plan.
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -164,6 +165,6 @@ export default async function handler(
     console.log("RC VERIFY ERROR", error.message);
     return res
       .status(500)
-      .json({ success: false, pending: false, message: error.message });
+      .json({ success: false, pending: false, message: friendlyMessage(error) });
   }
 }

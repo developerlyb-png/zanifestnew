@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
-import Agent from "@/models/Agent";
+import Agent from "@/models/Agent";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -99,7 +100,7 @@ updateData.agentCode = `ZIP${nextNumber}`;
 
     return res.status(500).json({
       success:false,
-      message:error.message
+      message:friendlyMessage(error)
     });
   }
 }

@@ -5,7 +5,8 @@ import type {
 
 
 import ZunoTwoWheeler from
-"@/services/insurers/zuno/twoWheeler";
+"@/services/insurers/zuno/twoWheeler";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 
@@ -65,7 +66,7 @@ success:false,
 
 message:"Zuno quote failed",
 
-error:error.message
+error:friendlyMessage(error)
 
 });
 

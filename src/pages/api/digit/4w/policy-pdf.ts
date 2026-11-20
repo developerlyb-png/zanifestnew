@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit "PDF Generation" (kit API_Curls/PDF-generation.txt) — returns S3
 // links to the policy schedule PDF, not the file itself. Needs a separate
@@ -63,6 +64,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.redirect(302, pdfUrl);
   } catch (err: any) {
     console.log("DIGIT PDF ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

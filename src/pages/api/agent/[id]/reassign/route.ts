@@ -2,7 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Agent from "@/models/Agent";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 interface DecodedToken {
   id: string;
@@ -56,6 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error: any) {
     console.error("Error reassigning agent:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(errorStatus(error, 500)).json({ message: "Server error", error: friendlyMessage(error) });
   }
 }

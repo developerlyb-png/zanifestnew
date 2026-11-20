@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 // TOKEN
@@ -152,7 +153,7 @@ return res
 
 return res.status(500).json({
 
-message:error.message
+message:friendlyMessage(error)
 
 });
 

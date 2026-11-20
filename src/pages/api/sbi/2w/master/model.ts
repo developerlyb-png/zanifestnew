@@ -3,7 +3,8 @@ import type {
  NextApiResponse
 } from "next";
 
-import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { friendlyMessage } from "@/utils/friendlyError";
 // TOKEN FUNCTION
 
 async function getZunoToken(){
@@ -136,7 +137,7 @@ return res.status(500).json({
 
 message:"Model API Failed",
 
-error:error.message
+error:friendlyMessage(error)
 
 });
 

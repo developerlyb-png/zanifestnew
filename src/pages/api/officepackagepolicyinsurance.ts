@@ -3,7 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import OfficePackagePolicy from "@/models/OfficePackagePolicy";
 import User from "@/models/User";
 import Agent from "@/models/Agent";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -35,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(200).json({ success: true, data: updated });
     } catch (err: any) {
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

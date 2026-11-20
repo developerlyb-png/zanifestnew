@@ -6,6 +6,7 @@ import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import Agent from "@/models/Agent";
 import { sendEmail } from "@/utils/mailSender";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 const BRAND_BLUE = "#1878bd";
 
@@ -154,7 +155,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("ADMIN POLICY GET ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -186,7 +187,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("ADMIN POLICY DOCUMENT UPLOAD ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -326,7 +327,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("ADMIN POLICY UPDATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -339,7 +340,7 @@ export default async function handler(
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("ADMIN POLICY DELETE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

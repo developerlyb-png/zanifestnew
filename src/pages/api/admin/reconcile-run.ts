@@ -9,6 +9,7 @@ import IssuedPolicy from "@/models/IssuedPolicy";
 import PayInPayOutRule from "@/models/PayInPayOutRule";
 import { computeCommission } from "@/utils/payInPayOutMatch";
 import { extractCommissionRowsFromPdf } from "@/utils/aiCommissionExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -357,6 +358,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(201).json({ success: true, batch });
   } catch (err: any) {
     console.log("RECONCILE RUN ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

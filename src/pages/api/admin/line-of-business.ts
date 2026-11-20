@@ -5,6 +5,7 @@ import LineOfBusiness, {
   LOB_SEGMENTS,
   LOB_IRDAI_GROUPS,
 } from "@/models/LineOfBusiness";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -61,7 +62,7 @@ export default async function handler(
       return res.status(200).json({ success: true, items });
     } catch (err: any) {
       console.log("LINE OF BUSINESS LIST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -97,7 +98,7 @@ export default async function handler(
       return res.status(201).json({ success: true, item });
     } catch (err: any) {
       console.log("LINE OF BUSINESS CREATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -137,7 +138,7 @@ export default async function handler(
       return res.status(200).json({ success: true, item });
     } catch (err: any) {
       console.log("LINE OF BUSINESS UPDATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

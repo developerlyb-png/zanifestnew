@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function getZunoToken() {
   const auth = Buffer.from(
@@ -61,6 +62,6 @@ export default async function handler(
     return res.status(response.status).json(data);
   } catch (e: any) {
     console.log("4W MODEL ERROR", e);
-    return res.status(500).json({ success: false, message: e.message });
+    return res.status(errorStatus(e, 500)).json({ success: false, message: friendlyMessage(e) });
   }
 }

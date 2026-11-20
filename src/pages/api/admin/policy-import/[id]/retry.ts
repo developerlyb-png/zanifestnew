@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import { runExtractionJob } from "@/utils/aiPolicyExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -50,6 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(202).json({ success: true });
   } catch (err: any) {
     console.log("POLICY IMPORT RETRY ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

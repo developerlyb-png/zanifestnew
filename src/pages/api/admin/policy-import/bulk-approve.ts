@@ -9,6 +9,7 @@ import {
   buildPolicyFromExtraction,
 } from "@/utils/aiPolicyExtractor";
 import { loadReferenceLists } from "@/utils/policyBulkMapping";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -128,6 +129,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("POLICY IMPORT BULK APPROVE ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

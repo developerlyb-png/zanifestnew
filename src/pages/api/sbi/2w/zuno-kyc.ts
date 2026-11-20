@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Same Signzy e-KYC integration as src/pages/api/zuno/4w/kyc.ts —
 // MIBL e-KYC is no longer used for 2W.
@@ -86,6 +87,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(response.status).json({ success: response.ok, data });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(errorStatus(error, 500)).json({ success: false, message: friendlyMessage(error) });
   }
 }

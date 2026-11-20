@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // ================= TOKEN =================
 async function getZunoToken() {
@@ -373,6 +374,6 @@ export default async function handler(
     return res.status(response.status).json({ success: response.ok, quoteStatus, data });
   } catch (error: any) {
     console.log("FULL QUOTE ERROR", error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(errorStatus(error, 500)).json({ success: false, message: friendlyMessage(error) });
   }
 }

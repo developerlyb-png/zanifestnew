@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Bajaj policy schedule (kit "POLICY PDF SCHEDULE DOWNLOAD"): POST
 // {userid, password, pdfmode: "WS_POLICY_PDF", policynum} returns the PDF as
@@ -56,6 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(pdf);
   } catch (err: any) {
     console.log("BAJAJ 4W PDF ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

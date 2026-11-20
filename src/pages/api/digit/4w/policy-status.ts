@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit "Policy Status" (kit API_Curls/policyStatus.txt) — same payload
 // shape as create-quote's response, plus kycStatus/payment once those are
@@ -54,6 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("DIGIT POLICY STATUS ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

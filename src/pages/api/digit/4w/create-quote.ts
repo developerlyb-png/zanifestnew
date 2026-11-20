@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
 import { buildDigitCreateQuoteBody, DigitProposer } from "@/lib/digit4wRequestBuilder";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit "Create Quote" (kit API_Curls/create_quote.txt) — issues the
 // quote number (policyNumber) + applicationId the rest of the flow (KYC,
@@ -99,6 +100,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("DIGIT CREATE QUOTE ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

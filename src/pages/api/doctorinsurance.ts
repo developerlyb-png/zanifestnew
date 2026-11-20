@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import DoctorInsurance from "@/models/Doctor";
 import Agent from "@/models/Agent";
 import User from "@/models/User";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
@@ -80,7 +81,7 @@ export default async function handler(
     } catch (err: any) {
       return res.status(500).json({
         success: false,
-        message: err.message,
+        message: friendlyMessage(err),
       });
     }
   }
@@ -102,7 +103,7 @@ export default async function handler(
     } catch (err: any) {
       return res.status(400).json({
         success: false,
-        message: err.message,
+        message: friendlyMessage(err),
       });
     }
   }
@@ -140,7 +141,7 @@ export default async function handler(
     } catch (err: any) {
       return res.status(500).json({
         success: false,
-        message: err.message,
+        message: friendlyMessage(err),
       });
     }
   }

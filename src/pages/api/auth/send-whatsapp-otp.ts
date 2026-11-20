@@ -5,7 +5,8 @@ import type {
  
  
 import dbConnect from "@/lib/dbConnect";
-import Otp from "@/models/Otp";
+import Otp from "@/models/Otp";
+import { friendlyMessage } from "@/utils/friendlyError";
  
  
  
@@ -382,7 +383,7 @@ success:false,
  
  
 message:
-error.message
+friendlyMessage(error)
  
 });
 }

@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import { findDuplicatePolicy, buildPolicyFromExtraction } from "@/utils/aiPolicyExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Agent's "submit this reviewed PDF as a policy" step. Unlike the admin
 // equivalent (which creates the policy already visible/active), this always
@@ -134,6 +135,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, policy });
   } catch (err: any) {
     console.log("AGENT POLICY IMPORT APPROVE ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

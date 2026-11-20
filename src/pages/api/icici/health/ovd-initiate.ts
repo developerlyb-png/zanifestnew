@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getIciciHealthToken, iciciHealthBaseUrl, iciciClientSlug } from "@/lib/iciciHealth";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Fallback KYC path when ckyc.ts finds no CKYC record — upload identity +
 // address proof documents directly.
@@ -82,6 +83,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json(data);
   } catch (err: any) {
     console.log("ICICI HEALTH OVD-INITIATE ERROR", err.message);
-    return res.status(500).json({ success: false, message: "OVD upload failed", error: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: "OVD upload failed", error: friendlyMessage(err) });
   }
 }

@@ -11,8 +11,14 @@ import agent from "@/assets/health/manicon.webp";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import zunoLogo from "@/assets/CommercialVehicle/zuno.png";
+import sbiLogo from "@/assets/CommercialVehicle/sbi.png";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import {
+  buildGcvInputFromCvStorage,
+  isGoodsCarrier,
+  SBI_GCV_STORAGE_KEY,
+} from "@/lib/sbiGcv/cvJourney";
 
 const inr = (n: any) =>
   n == null || isNaN(Number(n))
@@ -28,6 +34,11 @@ const CommercialVehicle5: React.FC = () => {
   const [quotePayload, setQuotePayload] = useState<any>(null); // payload the API built
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+
+  // SBI General — GCV (goods carrier) quote, fetched alongside Zuno's
+  const [sbiQuote, setSbiQuote] = useState<any>(null);
+  const [sbiLoading, setSbiLoading] = useState(false);
+  const [sbiError, setSbiError] = useState<string>("");
 
   const router = useRouter();
 
@@ -51,8 +62,45 @@ const CommercialVehicle5: React.FC = () => {
       console.log("CV PAGE5 DATA", data);
       setVehicleData(data);
       getQuote(data);
+      getSbiGcvQuote();
     }
   }, []);
+
+  const getSbiGcvQuote = async () => {
+    const rc = JSON.parse(localStorage.getItem("cvRcDetails") || "{}");
+    if (!isGoodsCarrier(rc)) return; // SBI GCV covers goods carriers only
+    const input = buildGcvInputFromCvStorage();
+    if (!input) return;
+    try {
+      setSbiLoading(true);
+      setSbiError("");
+      const res = await axios.post("/api/sbi/gcv/quick-quote", input);
+      console.log("SBI GCV QUOTE", res.data);
+      if (!res.data.success) {
+        setSbiError(res.data.message || "SBI quote unavailable for this vehicle");
+        return;
+      }
+      setSbiQuote({ input, ...res.data, data: undefined });
+    } catch (e: any) {
+      console.log("SBI GCV QUOTE ERROR", e.response?.data || e);
+      setSbiError("SBI quote unavailable right now");
+    } finally {
+      setSbiLoading(false);
+    }
+  };
+
+  const selectSbiPlan = () => {
+    if (!sbiQuote) return;
+    // Pin SBI's resolved variant so the checkout prices the exact same vehicle.
+    localStorage.setItem(
+      SBI_GCV_STORAGE_KEY,
+      JSON.stringify({
+        ...sbiQuote,
+        input: { ...sbiQuote.input, variantId: sbiQuote.sbiVehicle?.variantId },
+      })
+    );
+    router.push("/CommercialVehicle/SbiGcv/checkout");
+  };
 
   const getQuote = async (data: any) => {
     try {
@@ -272,7 +320,11 @@ const CommercialVehicle5: React.FC = () => {
             )}
 
             <h2 className={styles.heading}>
-              {quote ? "1 Package plan" : loading ? "Fetching plans..." : "Plans"}
+              {quote || sbiQuote
+                ? `${(quote ? 1 : 0) + (sbiQuote ? 1 : 0)} Package plan${quote && sbiQuote ? "s" : ""}`
+                : loading || sbiLoading
+                ? "Fetching plans..."
+                : "Plans"}
             </h2>
             <p className={styles.subtext}>
               cover damages caused to your vehicle as well as third party
@@ -329,6 +381,44 @@ const CommercialVehicle5: React.FC = () => {
                     <span>
                       <a href="#">View Coverage</a>
                     </span>
+                  </div>
+                </div>
+              )}
+
+              {/* ===== SBI General — GCV ===== */}
+              {sbiLoading && <p>Fetching SBI General quote...</p>}
+              {!sbiLoading && sbiError && (
+                <p style={{ fontSize: 13, color: "#a33" }}>SBI General: {sbiError}</p>
+              )}
+              {!sbiLoading && sbiQuote?.quote && (
+                <div className={styles.packageCard}>
+                  <div className={styles.tagRow}>
+                    <span className={styles.tagSuccess}>Buy Without Inspection</span>
+                  </div>
+                  <div className={styles.packageMain}>
+                    <Image src={sbiLogo} alt="SBI General Insurance" height={90} width={100} />
+                    <div className={styles.packageInfo}>
+                      <p>
+                        IDV Cover <br />
+                        <span>₹ {inr(sbiQuote.quote.idv?.selected)}</span>
+                      </p>
+                      <p>
+                        Net + GST <br />
+                        <span>
+                          ₹ {inr(sbiQuote.quote.netPremium)} + ₹ {inr(sbiQuote.quote.gst)}
+                        </span>
+                      </p>
+                    </div>
+                    <button className={styles.priceBtn} onClick={selectSbiPlan}>
+                      ₹ {inr(sbiQuote.quote.premium)} →
+                    </button>
+                  </div>
+                  <div className={styles.packageFooter}>
+                    <span style={{ fontSize: 12 }}>
+                      {sbiQuote.sbiVehicle?.make} {sbiQuote.sbiVehicle?.model}{" "}
+                      {sbiQuote.sbiVehicle?.variant} · {sbiQuote.sbiVehicle?.gvw} GVW
+                    </span>
+                    <span>OD ₹ {inr(sbiQuote.quote.odPremium)} · TP ₹ {inr(sbiQuote.quote.tpPremium)}</span>
                   </div>
                 </div>
               )}

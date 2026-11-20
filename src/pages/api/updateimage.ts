@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import connectDB from "@/lib/dbConnect";
-import Image from "@/models/Home";
+import Image from "@/models/Home";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,7 +47,7 @@ export default async function handler(
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: friendlyMessage(error),
     });
   }
 }

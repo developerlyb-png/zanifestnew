@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit "Payment Gateway API" (kit API_Curls/paymentAPI.txt) — returns
 // Digit's own hosted payment page link for this application. Called once
@@ -65,6 +66,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("DIGIT PAYMENT ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

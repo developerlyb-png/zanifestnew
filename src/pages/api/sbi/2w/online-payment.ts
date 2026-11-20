@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 // =========================
 // GENERATE OAUTH TOKEN
@@ -149,7 +150,7 @@ export default async function handler(
     return res.status(500).json({
       success: false,
       message: "Payment Failed",
-      error: error.message,
+      error: friendlyMessage(error),
     });
   }
 }

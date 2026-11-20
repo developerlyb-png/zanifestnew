@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function getZunoToken() {
   const auth = Buffer.from(
@@ -84,6 +85,6 @@ console.log(kycPayload);
 
     return res.status(response.status).json({ success: response.ok, data });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(errorStatus(error, 500)).json({ success: false, message: friendlyMessage(error) });
   }
 }

@@ -3,7 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Agent from "@/models/Agent";
 import Manager from "@/models/Manager";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
@@ -43,6 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error("Error fetching agents:", error);
     return res
       .status(500)
-      .json({ message: "Server error", error: error.message });
+      .json({ message: "Server error", error: friendlyMessage(error) });
   }
 }

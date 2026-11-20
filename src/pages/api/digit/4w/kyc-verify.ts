@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit "KYC Verification" (kit API_Curls/KYC-Verification.txt) — we
 // don't collect ID/address proof files ourselves, so this is sent
@@ -68,6 +69,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, link: data.link, status: data.kycVerificationStatus });
   } catch (err: any) {
     console.log("DIGIT KYC VERIFY ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

@@ -3,7 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import Sale from "@/models/sales/sale";
 import Manager from "@/models/Manager";
 import Agent from "@/models/Agent";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -136,7 +137,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: err.message,
+      message: friendlyMessage(err),
     });
   }
 }

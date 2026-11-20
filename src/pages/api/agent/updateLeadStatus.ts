@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 import Lead from "@/models/lead";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -29,6 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({ success: true });
   } catch (err: any) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

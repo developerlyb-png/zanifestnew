@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
-import Marine from "@/models/Marinemodule";
+import Marine from "@/models/Marinemodule";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
@@ -56,6 +57,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ success: false, message: "Not allowed" });
     }
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, error: friendlyMessage(err) });
   }
 }

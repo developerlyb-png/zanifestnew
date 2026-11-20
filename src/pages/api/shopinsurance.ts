@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import Shop from "@/models/Shop";
 import User from "@/models/User";
 import Agent from "@/models/Agent";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
@@ -73,6 +74,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ success: false, message: "Method Not Allowed" });
 
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, error: friendlyMessage(err) });
   }
 }

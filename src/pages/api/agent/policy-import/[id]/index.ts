@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAgent(req: NextApiRequest) {
   const token = req.cookies["agentToken"];
@@ -57,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("AGENT POLICY IMPORT DELETE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

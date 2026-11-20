@@ -1,7 +1,8 @@
 // pages/api/sbi/2w/issue-policy.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
-import IssuedPolicy from "@/models/IssuedPolicy";
+import IssuedPolicy from "@/models/IssuedPolicy";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // ================= TOKEN =================
 async function getZunoToken() {
@@ -215,6 +216,6 @@ export default async function handler(
     });
   } catch (error: any) {
     console.log("2W ISSUE ERROR", error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(errorStatus(error, 500)).json({ success: false, message: friendlyMessage(error) });
   }
 }

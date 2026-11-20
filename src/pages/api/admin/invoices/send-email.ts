@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import Invoice from "@/models/Invoice";
 import { sendEmail } from "@/utils/mailSender";
 import { logInvoiceAudit } from "@/lib/invoiceAudit";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 const BRAND_BLUE = "#1878bd";
 
@@ -101,6 +102,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, invoice: updated });
   } catch (err: any) {
     console.log("INVOICE SEND EMAIL ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import Claim from "@/models/Claim";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = { api: { bodyParser: { sizeLimit: "12mb" } } };
 
@@ -66,6 +67,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ success: false, message: "Method not allowed" });
   } catch (err: any) {
     console.log("CLAIM DOCUMENTS ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

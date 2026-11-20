@@ -1,7 +1,8 @@
 import type {
  NextApiRequest,
  NextApiResponse
-} from "next";
+} from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -111,7 +112,7 @@ return res.status(500).json({
 
 success:false,
 
-message:error.message
+message:friendlyMessage(error)
 
 });
 

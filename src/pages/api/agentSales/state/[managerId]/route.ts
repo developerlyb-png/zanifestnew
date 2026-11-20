@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Manager from "@/models/Manager";
-import Sale from "@/models/sales/sale";
+import Sale from "@/models/sales/sale";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export async function GET(
   req: Request,
@@ -66,7 +67,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Error fetching state manager sales:", error);
     return NextResponse.json(
-      { success: false, message: "Server error", error: error.message },
+      { success: false, message: "Server error", error: friendlyMessage(error) },
       { status: 500 }
     );
   }

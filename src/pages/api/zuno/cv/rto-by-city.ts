@@ -1,7 +1,8 @@
 import type {
  NextApiRequest,
  NextApiResponse
-} from "next";
+} from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 
@@ -193,7 +194,7 @@ error
 
 return res.status(500).json({
 
-message:error.message
+message:friendlyMessage(error)
 
 });
 

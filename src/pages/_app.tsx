@@ -79,6 +79,7 @@ import "antd/dist/reset.css";
 
 import type { AppProps } from "next/app";
 import GlobalAlert from "@/components/GlobalAlert";
+import "@/lib/installFriendlyToasts";
 
 function ScrollToTop() {
   const router = useRouter();
@@ -159,7 +160,32 @@ function MyApp({ Component, pageProps }: AppProps) {
           {loading && <Loader />} {/* ✅ show loader globally */}
           <GlobalAlert/> {/* ✅ Global Alert Component */}
           <Component {...pageProps} />
-          <Toaster position="top-center" reverseOrder={false} />
+          <Toaster
+            position="top-center"
+            reverseOrder={false}
+            containerStyle={{ top: 20 }}
+            toastOptions={{
+              style: {
+                maxWidth: 460,
+                padding: "12px 14px",
+                borderRadius: 12,
+                fontSize: 14,
+                lineHeight: 1.45,
+                color: "#0f172a",
+                background: "#ffffff",
+                boxShadow: "0 12px 32px rgba(15, 23, 42, 0.16)",
+              },
+              success: {
+                duration: 3000,
+                style: { borderLeft: "4px solid #0ca30c" },
+              },
+              error: {
+                // long enough to actually read a sentence about what went wrong
+                duration: 7000,
+                style: { borderLeft: "4px solid #d03b3b", background: "#fff8f8" },
+              },
+            }}
+          />
         </AntdApp>
       </ConfigProvider>
     </AuthProvider>

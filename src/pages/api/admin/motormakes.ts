@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { requireAdminOrAgent } from "@/utils/requireAdminOrAgent";
 import dbConnect from "@/lib/dbConnect";
 import MotorMake from "@/models/MotorMake";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +21,7 @@ export default async function handler(
       return res.status(200).json({ success: true, makes: makes.map((m: any) => m.name) });
     } catch (err: any) {
       console.log("ADMIN MOTOR MAKES ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -38,7 +39,7 @@ export default async function handler(
       return res.status(201).json({ success: true, make: make.name });
     } catch (err: any) {
       console.log("ADMIN MOTOR MAKES CREATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

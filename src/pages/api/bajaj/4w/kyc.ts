@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { callBajajKyc, signBajajKycProof } from "@/lib/bajajKyc";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // upload-poa carries the document as base64 (up to ~6 MB); Next's default
 // API body limit is 1 MB
@@ -162,6 +163,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("BAJAJ KYC ERROR", b.action, err.message);
-    return res.status(502).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 502)).json({ success: false, message: friendlyMessage(err) });
   }
 }

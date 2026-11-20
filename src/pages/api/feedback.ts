@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
-import { FeedbackModel, ConfigModel, IFeedbackItem } from "@/models/feedback";
+import { FeedbackModel, ConfigModel, IFeedbackItem } from "@/models/feedback";
+import { humanizeErrorMessage } from "@/utils/friendlyError";
 
 type Data = {
   success: boolean;
@@ -100,6 +101,6 @@ export default async function handler(
     console.error(err);
     return res
       .status(400)
-      .json({ success: false, message: err.message || "Server Error" });
+      .json({ success: false, message: humanizeErrorMessage(err.message || "Server Error") });
   }
 }

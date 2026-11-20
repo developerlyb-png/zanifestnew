@@ -6,6 +6,7 @@ import PayInPayOutRule from "@/models/PayInPayOutRule";
 import LineOfBusiness from "@/models/LineOfBusiness";
 import Claim from "@/models/Claim";
 import { computeCommission } from "@/utils/payInPayOutMatch";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -210,6 +211,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (err: any) {
     console.log("IRDAI REPORTS ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

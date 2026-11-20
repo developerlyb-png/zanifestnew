@@ -9,7 +9,8 @@ import Doctor from "@/models/Doctor";
 import HealthInsurance from "@/models/HealthInsurance";
 import Director from "@/models/Director";
 import OfficePackagePolicy from "@/models/OfficePackagePolicy";
-import Marine from "@/models/Marinemodule";
+import Marine from "@/models/Marinemodule";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -62,6 +63,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, data: updated });
   } catch (err: any) {
     console.error("Update Email Error:", err);
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, error: friendlyMessage(err) });
   }
 }

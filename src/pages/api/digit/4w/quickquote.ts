@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getDigitToken } from "@/lib/digitToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Go Digit motor Quick Quote — POST /OneAPI/v1/executor with the same JSON
 // body shape as Digit's API kit sample (Quick_quote.txt). Caller supplies
@@ -89,6 +90,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, quote: data });
   } catch (err: any) {
     console.log("DIGIT QUICK QUOTE ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

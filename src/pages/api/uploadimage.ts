@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Image from "@/models/Home";
-import connectDB from "@/lib/dbConnect";
+import connectDB from "@/lib/dbConnect";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
@@ -19,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       res.status(201).json({ success: true, image: newImage });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      res.status(errorStatus(error, 500)).json({ success: false, error: friendlyMessage(error) });
     }
   } else {
     res.setHeader("Allow", ["POST"]);

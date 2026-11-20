@@ -4,7 +4,8 @@ import type {
 } from "next";
 
 import dbConnect from "@/lib/dbConnect";
-import User from "@/models/User";
+import User from "@/models/User";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 export default async function handler(
@@ -171,7 +172,7 @@ return res.status(500).json({
 
 success:false,
 
-message:error.message
+message:friendlyMessage(error)
 
 });
 

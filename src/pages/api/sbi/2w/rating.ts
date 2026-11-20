@@ -2,7 +2,8 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from "next";
-import { mapZunoBike } from "@/utils/zunoBikeMapper";
+import { mapZunoBike } from "@/utils/zunoBikeMapper";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 // TOKEN FUNCTION
 
@@ -577,7 +578,7 @@ data
 
  success:false,
 
- error:error.message
+ error:friendlyMessage(error)
 
  });
 

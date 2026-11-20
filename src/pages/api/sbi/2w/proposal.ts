@@ -1,7 +1,8 @@
 import type {
  NextApiRequest,
  NextApiResponse,
-} from "next";
+} from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 // TOKEN
@@ -585,7 +586,7 @@ catch(error:any){
   success:false,
 
   error:
-  error.message
+  friendlyMessage(error)
 
  });
 

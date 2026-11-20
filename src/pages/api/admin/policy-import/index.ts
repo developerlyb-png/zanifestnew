@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import { runExtractionJob } from "@/utils/aiPolicyExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // The frontend uploads one file per request (see PolicyDocumentImport.tsx),
 // so this only ever needs to hold a single ~15MB PDF's base64 encoding
@@ -55,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, items });
     } catch (err: any) {
       console.log("POLICY IMPORT LIST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -109,7 +110,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(202).json({ success: true, ids, skipped });
     } catch (err: any) {
       console.log("POLICY IMPORT UPLOAD ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import { findDuplicatePolicy, buildPolicyFromExtraction } from "@/utils/aiPolicyExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -122,6 +123,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, policy });
   } catch (err: any) {
     console.log("POLICY IMPORT APPROVE ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

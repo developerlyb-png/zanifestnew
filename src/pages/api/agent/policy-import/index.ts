@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import PolicyImport from "@/models/PolicyImport";
 import { runExtractionJob } from "@/utils/aiPolicyExtractor";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Agent's own "Upload PDF" flow — mirrors /api/admin/policy-import exactly
 // (same one-file-per-request upload architecture, same 25-file/15MB limits),
@@ -57,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, items: shaped });
     } catch (err: any) {
       console.log("AGENT POLICY IMPORT LIST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -109,7 +110,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(202).json({ success: true, ids, skipped });
     } catch (err: any) {
       console.log("AGENT POLICY IMPORT UPLOAD ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

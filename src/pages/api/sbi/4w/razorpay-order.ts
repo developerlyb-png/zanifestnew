@@ -12,7 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { amountInRupees, quotationNo } = req.body || {};
+    // productName defaults to 4W; GCV passes "CMVGC01" (see /api/sbi/gcv/razorpay-order).
+    const { amountInRupees, quotationNo, productName } = req.body || {};
 
     if (amountInRupees == null || !quotationNo) {
       return res.status(400).json({
@@ -44,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         notes: {
           PartnerName: "SBIG",
           QuotationNumber: quotationNo,
-          ProductName: "PMCAR001",
+          ProductName: productName || "PMCAR001",
           AgreementCode: "6660",
         },
       },

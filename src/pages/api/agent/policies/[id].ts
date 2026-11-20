@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -48,7 +49,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("AGENT POLICY GET ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -80,7 +81,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("AGENT POLICY DOCUMENT UPLOAD ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -156,7 +157,7 @@ export default async function handler(
       return res.status(200).json({ success: true, policy });
     } catch (err: any) {
       console.log("AGENT POLICY EDIT/RESUBMIT ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -177,7 +178,7 @@ export default async function handler(
       return res.status(200).json({ success: true });
     } catch (err: any) {
       console.log("AGENT POLICY DELETE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

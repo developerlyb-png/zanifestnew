@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Manager from "@/models/Manager";
 import Sale from "@/models/sales/sale";
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -84,7 +85,7 @@ export default async function handler(
     console.error("State with sales error:", err);
     return res.status(500).json({
       success: false,
-      message: err.message,
+      message: friendlyMessage(err),
     });
   }
 }

@@ -4,6 +4,7 @@ import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import PayInPayOutRule from "@/models/PayInPayOutRule";
 import { computeCommission, ruleSummary, policyDate } from "@/utils/payInPayOutMatch";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAgent(req: NextApiRequest) {
   const token = req.cookies["agentToken"];
@@ -82,6 +83,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ success: true, rows, summary: { totalPayOut, count: rows.length } });
   } catch (err: any) {
     console.log("AGENT POLICY COMMISSIONS ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

@@ -3,7 +3,8 @@ import type {
  NextApiResponse
 } from "next";
 
-import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { friendlyMessage } from "@/utils/friendlyError";
 async function getZunoToken(){
 
  const auth = Buffer.from(
@@ -154,7 +155,7 @@ return res.status(500).json({
 
 message:"IDV API Failed",
 
-error:error.message
+error:friendlyMessage(error)
 
 });
 

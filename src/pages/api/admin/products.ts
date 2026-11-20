@@ -6,6 +6,7 @@ import Product, {
   PRODUCT_DOCUMENT_OPTIONS,
 } from "@/models/Product";
 import LineOfBusiness from "@/models/LineOfBusiness";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function requireAdmin(req: NextApiRequest) {
   const token = req.cookies["adminToken"];
@@ -73,7 +74,7 @@ export default async function handler(
       return res.status(200).json({ success: true, items });
     } catch (err: any) {
       console.log("PRODUCTS LIST ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -110,7 +111,7 @@ export default async function handler(
       return res.status(201).json({ success: true, item: populated });
     } catch (err: any) {
       console.log("PRODUCTS CREATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -151,7 +152,7 @@ export default async function handler(
       return res.status(200).json({ success: true, item });
     } catch (err: any) {
       console.log("PRODUCTS UPDATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

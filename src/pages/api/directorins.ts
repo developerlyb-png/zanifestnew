@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Director from "@/models/Director";
 import User from "@/models/User";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -129,6 +130,6 @@ if (req.method === "PUT") {
     res.setHeader("Allow", ["GET", "POST", "PUT"]);
     res.status(405).end();
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

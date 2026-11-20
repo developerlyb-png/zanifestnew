@@ -6,7 +6,8 @@
 // Returns the REAL premium (OD + TP + PA), not the OD-only toy
 // number the old stripped payload produced.
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // =======================
 // ZUNO TOKEN
@@ -434,6 +435,6 @@ export default async function handler(
     });
   } catch (error: any) {
     console.log("CV QUOTE ERROR", error);
-    return res.status(500).json({ message: error.message, success: false });
+    return res.status(errorStatus(error, 500)).json({ message: friendlyMessage(error), success: false });
   }
 }

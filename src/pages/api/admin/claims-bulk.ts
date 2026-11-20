@@ -10,6 +10,7 @@ import {
   DEFAULT_CLAIM_STATUS,
   TEMP_CLAIM_PREFIX,
 } from "@/constants/claims";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = { api: { bodyParser: { sizeLimit: "15mb" } } };
 
@@ -200,6 +201,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(201).json({ success: true, inserted, skipped });
   } catch (err: any) {
     console.log("CLAIMS BULK ERROR", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
   }
 }

@@ -6,6 +6,7 @@
 // the proposal-level fields (proposer, nominee, driver, chassis/engine).
 
 import type { NextApiRequest, NextApiResponse } from "next";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 async function getZunoToken() {
   const auth = Buffer.from(
@@ -456,6 +457,6 @@ console.log({
     });
   } catch (error: any) {
     console.log("FULL QUOTE ERROR:", error.message);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(errorStatus(error, 500)).json({ success: false, message: friendlyMessage(error) });
   }
 }

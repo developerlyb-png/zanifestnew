@@ -3,7 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import HealthInsurance from "@/models/HealthInsurance";
 import User from "@/models/User";
 import Agent from "@/models/Agent";
-import { verifyToken } from "@/utils/verifyToken";
+import { verifyToken } from "@/utils/verifyToken";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -58,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     } catch (err: any) {
       console.error("ASSIGN ERROR:", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -74,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return res.status(201).json({ success: true, data: record });
     } catch (error: any) {
-      return res.status(400).json({ success: false, message: error.message });
+      return res.status(400).json({ success: false, message: friendlyMessage(error) });
     }
   }
 

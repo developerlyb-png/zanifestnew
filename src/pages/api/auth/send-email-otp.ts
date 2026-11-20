@@ -7,7 +7,8 @@ import type {
 import dbConnect from "@/lib/dbConnect";
 import Otp from "@/models/Otp";
 
-import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 
@@ -238,7 +239,7 @@ success:false,
 
 
 message:
-error.message
+friendlyMessage(error)
 
 
 });

@@ -3,6 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
   api: {
@@ -125,7 +126,7 @@ export default async function handler(
       return res.status(200).json({ success: true, clients: merged });
     } catch (err: any) {
       console.log("ADMIN CLIENTS ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -136,6 +137,25 @@ export default async function handler(
         return res.status(400).json({
           success: false,
           message: "Client Name, Email Address and Phone Number are required",
+        });
+      }
+
+      // Mobile is unique on User too. Matching here is by email, so a phone
+      // already on a *different* email would otherwise surface as a raw
+      // E11000 from the upsert — say exactly who has it instead.
+      const phoneOwner: any = await User.findOne({
+        mobile: body.phone,
+        email: { $ne: String(body.email).toLowerCase() },
+      })
+        .select("userName email")
+        .lean();
+      if (phoneOwner) {
+        return res.status(409).json({
+          success: false,
+          field: "phone",
+          message: `Phone number ${body.phone} is already registered to another client${
+            phoneOwner.userName ? ` (${phoneOwner.userName}${phoneOwner.email ? `, ${phoneOwner.email}` : ""})` : ""
+          }. Use a different phone number, or edit that client instead.`,
         });
       }
 
@@ -163,7 +183,7 @@ export default async function handler(
       return res.status(201).json({ success: true, client: toClientShape(user) });
     } catch (err: any) {
       console.log("ADMIN CLIENTS CREATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -183,6 +203,24 @@ export default async function handler(
       if (body.name !== undefined) update.userName = body.name;
       if (body.email !== undefined) update.email = String(body.email).toLowerCase();
       if (body.phone !== undefined) update.mobile = body.phone;
+      for (const [field, key, label] of [
+        ["mobile", "phone", "Phone number"],
+        ["email", "email", "Email address"],
+      ] as const) {
+        if (update[field] === undefined) continue;
+        const owner: any = await User.findOne({ [field]: update[field], _id: { $ne: id } })
+          .select("userName email")
+          .lean();
+        if (owner) {
+          return res.status(409).json({
+            success: false,
+            field: key,
+            message: `${label} ${update[field]} is already registered to another client${
+              owner.userName ? ` (${owner.userName})` : ""
+            }. Please use a different ${label.toLowerCase()}.`,
+          });
+        }
+      }
       if (body.address !== undefined) update.address = body.address;
       if (body.kycDocumentType !== undefined) update.kycDocumentType = body.kycDocumentType;
       if (body.kycFiles !== undefined) update.kycFiles = body.kycFiles;
@@ -198,7 +236,7 @@ export default async function handler(
       return res.status(200).json({ success: true, client: toClientShape(user) });
     } catch (err: any) {
       console.log("ADMIN CLIENTS PATCH ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 

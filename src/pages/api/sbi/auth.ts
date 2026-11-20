@@ -1,7 +1,8 @@
 import type {
   NextApiRequest,
   NextApiResponse,
-} from "next";
+} from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 export default async function handler(
@@ -137,7 +138,7 @@ export default async function handler(
       success:false,
 
       error:
-        error.message
+        friendlyMessage(error)
 
     });
 

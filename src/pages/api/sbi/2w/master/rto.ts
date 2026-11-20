@@ -1,7 +1,8 @@
 import type {
  NextApiRequest,
  NextApiResponse
-} from "next";
+} from "next";
+import { friendlyMessage } from "@/utils/friendlyError";
 
 
 
@@ -184,7 +185,7 @@ message:
 "RTO API Failed",
 
 error:
-error.message
+friendlyMessage(error)
 
 });
 

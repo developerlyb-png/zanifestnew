@@ -3,7 +3,8 @@ import type {
  NextApiResponse
 } from "next";
 
-import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { getZunoMakeName } from "@/utils/zunoBikeMapper";
+import { friendlyMessage } from "@/utils/friendlyError";
 async function getZunoToken(){
 
  const auth = Buffer.from(
@@ -119,7 +120,7 @@ return res.status(response.status).send(responseText);
 
 return res.status(500).json({
 message:"Variant API Failed",
-error:error.message
+error:friendlyMessage(error)
 });
 
 }

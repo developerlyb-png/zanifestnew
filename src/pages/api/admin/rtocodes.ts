@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { requireAdminOrAgent } from "@/utils/requireAdminOrAgent";
 import dbConnect from "@/lib/dbConnect";
 import CustomRto from "@/models/CustomRto";
+import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 // Extra RTO codes added from the Pay In Pay Out rule form when a code isn't
 // in the static RTO master list — mirrors /api/admin/motormakes.
@@ -19,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ success: true, codes: codes.map((c: any) => c.code) });
     } catch (err: any) {
       console.log("ADMIN RTO CODES ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
@@ -40,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(201).json({ success: true, code: rto.code });
     } catch (err: any) {
       console.log("ADMIN RTO CODES CREATE ERROR", err);
-      return res.status(500).json({ success: false, message: err.message });
+      return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });
     }
   }
 
