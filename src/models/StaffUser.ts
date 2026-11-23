@@ -52,7 +52,6 @@ const StaffUserSchema = new Schema(
     city: { type: String, trim: true },
     district: { type: String, trim: true },
     state: { type: String, trim: true },
-
     isActive: { type: Boolean, default: true },
     createdBy: String,
   },

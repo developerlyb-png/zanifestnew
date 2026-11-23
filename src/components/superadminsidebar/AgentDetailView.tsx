@@ -12,6 +12,7 @@ import {
   FiEyeOff,
   FiEdit2,
   FiDownload,
+  FiRefreshCw,
   FiMail,
   FiPhone,
   FiCreditCard,
@@ -200,6 +201,7 @@ const AgentDetailView: React.FC<AgentDetailViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [generatingCert, setGeneratingCert] = useState(false);
+  const [regeneratingCert, setRegeneratingCert] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -295,6 +297,45 @@ const AgentDetailView: React.FC<AgentDetailViewProps> = ({
     }
   };
 
+  // Redraws the certificate with the agent's *current* IRDAI POSP code — for
+  // when the code was corrected after the certificate was first generated
+  // (the old PDF has the old code printed into it and never updates itself).
+  const handleRegenerateCertificate = async () => {
+    const ok = window.confirm(
+      `Regenerate ${fullName || "this POSP"}'s certificate with the current IRDAI POSP Code (${
+        agent.agentCode || "a new code will be assigned"
+      })?\n\nThe old certificate will be replaced, for the agent's download too.`
+    );
+    if (!ok) return;
+    setRegeneratingCert(true);
+    try {
+      const res = await fetch("/api/admin/regenerate-certificate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ agentId }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.url) {
+        alert(data.message || "Could not regenerate the certificate");
+        return;
+      }
+      setAgent((prev: any) => ({
+        ...prev,
+        agentCode: data.agentCode,
+        certificate: data.url,
+        certificate2: data.url,
+      }));
+      alert(`Certificate regenerated with POSP Code ${data.agentCode}.`);
+      openFile(data.url);
+    } catch (err) {
+      console.log("REGENERATE CERTIFICATE ERROR", err);
+      alert("Could not regenerate the certificate");
+    } finally {
+      setRegeneratingCert(false);
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.topRow}>
@@ -313,6 +354,18 @@ const AgentDetailView: React.FC<AgentDetailViewProps> = ({
           >
             <FiDownload size={14} /> {generatingCert ? "Generating..." : "Download Certificate"}
           </button>
+          {hasValidCertificate && (
+            <button
+              type="button"
+              className={styles.certBtn}
+              disabled={!certificateEligible || regeneratingCert || generatingCert}
+              title="Create a fresh certificate using the current IRDAI POSP Code"
+              onClick={handleRegenerateCertificate}
+            >
+              <FiRefreshCw size={14} />{" "}
+              {regeneratingCert ? "Regenerating..." : "Regenerate Certificate"}
+            </button>
+          )}
           <span className={`${styles.statusPill} ${isOnboarded ? styles.statusPillGreen : styles.statusPillGray}`}>
             {isOnboarded ? "ONBOARDED" : "NOT ONBOARDED"}
           </span>
