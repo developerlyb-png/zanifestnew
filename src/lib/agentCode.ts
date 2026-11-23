@@ -12,7 +12,11 @@ import Agent from "@/models/Agent";
 // of the real sequence. Retries on a rare concurrent-duplicate (two agents
 // passing at the same instant) since agentCode is a unique/sparse index.
 const AGENT_CODE_PREFIX = "ZNIB";
-const AGENT_CODE_START = 13102;
+// Codes up to ZNIB13102 are already issued, so the first new agent gets
+// ZNIB13103, then 13104, ... The generator always takes the larger of this
+// floor and (highest ZNIB code in the DB + 1), so it never goes backwards
+// or reuses a code — even if 13102 was assigned outside this database.
+const AGENT_CODE_START = 13103;
 
 export async function ensureAgentCode(agent: any): Promise<string> {
   if (agent.agentCode) return agent.agentCode;

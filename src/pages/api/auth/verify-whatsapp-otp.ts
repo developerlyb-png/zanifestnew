@@ -5,8 +5,9 @@ import type {
 
 
 import dbConnect from "@/lib/dbConnect";
-import Otp from "@/models/Otp";
+import Otp from "@/models/Otp";
 import { friendlyMessage } from "@/utils/friendlyError";
+import { normalizeIndianMobile } from "@/utils/mobile";
 
 
 
@@ -30,10 +31,10 @@ await dbConnect();
 
 
 
-const {
- mobile,
- otp
-}=req.body;
+// Same normalisation as send-whatsapp-otp, so "+91…"/"91…"/"0…" input finds
+// the OTP that was stored under the bare 10-digit number.
+const otp = req.body?.otp;
+const mobile = normalizeIndianMobile(req.body?.mobile);
 
 
 
