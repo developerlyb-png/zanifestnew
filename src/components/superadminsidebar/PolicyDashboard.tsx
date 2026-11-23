@@ -83,7 +83,15 @@ function presetRange(preset: Preset): { from: Date; to: Date } {
     case "today":
       return { from: startOfToday, to: endOfToday };
     case "thisMonth":
-      return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: endOfToday };
+      // Full calendar month (1st → last day 23:59:59), not 1st → today, so
+      // policies entered now with a risk start later this month (advance
+      // bookings) show under "Policy Effective Date". Same idea as "This
+      // Year", which already runs to 31 March. Day 0 of next month = last
+      // day of this month.
+      return {
+        from: new Date(now.getFullYear(), now.getMonth(), 1),
+        to: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999),
+      };
     case "lastMonth":
       return {
         from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
