@@ -26,6 +26,10 @@ const BajajCheckoutSchema = new mongoose.Schema(
     // Customer's account, when they were logged in at checkout
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     userEmail: String,
+    // Set when an agent sold this from the agent portal (Buy Insurance);
+    // copied onto the IssuedPolicy when payment returns.
+    agentId: String,
+    agentName: String,
     customer: {
       fullName: String,
       email: String,

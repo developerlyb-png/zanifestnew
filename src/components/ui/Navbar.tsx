@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useInAgentShell } from "@/context/AgentShellContext";
 import styles from "@/styles/components/ui/Navbar.module.css";
 import { useRouter } from "next/router";
 import { IoCloseSharp } from "react-icons/io5";
@@ -68,6 +69,7 @@ const DIRECT_LINK_PRODUCTS = ["Car Insurance", "2 wheeler Insurance"];
 
 function Navbar() {
   const router = useRouter();
+  const inAgentShell = useInAgentShell();
   const { isLoggedIn, logout } = useAuth();
 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -113,6 +115,9 @@ function Navbar() {
       setSelectedProduct(item.name);
     }
   };
+
+  // Inside the agent portal shell the portal header/sidebar replace the site nav.
+  if (inAgentShell) return null;
 
   return (
     <div className={styles.cont}>

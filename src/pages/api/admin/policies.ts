@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/utils/verifyToken";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import Agent from "@/models/Agent";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
 
 export const config = {
@@ -66,6 +67,23 @@ export default async function handler(
       })
         .sort({ createdAt: -1 })
         .lean();
+
+      // Agent code for agent-linked policies (list column / search / export).
+      const agentIds = Array.from(
+        new Set(policies.map((p: any) => p.createdByAgentId && String(p.createdByAgentId)).filter(Boolean)),
+      );
+      if (agentIds.length) {
+        const agents: any[] = await Agent.find({ _id: { $in: agentIds } }).select("agentCode phone email").lean();
+        const byId = new Map(agents.map((a) => [String(a._id), a]));
+        for (const p of policies as any[]) {
+          const a = p.createdByAgentId && byId.get(String(p.createdByAgentId));
+          if (a) {
+            p.agentCode = p.soldByAgent?.code || a.agentCode || "";
+            p.agentMobile = p.soldByAgent?.mobile || a.phone || "";
+            p.agentEmail = p.soldByAgent?.email || a.email || "";
+          }
+        }
+      }
 
       return res.status(200).json({ success: true, policies });
     } catch (err: any) {

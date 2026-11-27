@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import AgentCustomerForm from "@/components/agentpage/AgentCustomerForm";
+import { isAgentSelling } from "@/lib/agentCustomer";
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 import { FiEdit2, FiMapPin } from "react-icons/fi";
 import { FaTruck, FaCar } from "react-icons/fa";
@@ -54,7 +56,14 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
   const [showEmailOtp, setShowEmailOtp] = useState(false);
   const [loggedUser, setLoggedUser] = useState<any>(null);
 
+  // Agent selling from the portal: agent enters the customer's details, no OTP.
+  const [agentSelling, setAgentSelling] = useState(false);
+
   useEffect(() => {
+    if (isAgentSelling()) {
+      setAgentSelling(true);
+      return; // ignore any customer login on this browser
+    }
     const user = localStorage.getItem("user");
     if (user) {
       const parsed = JSON.parse(user);
@@ -268,7 +277,22 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
         {/* RIGHT */}
         <div className={styles.right}>
-          {loggedUser ? (
+          {agentSelling ? (
+            <AgentCustomerForm
+              headingClassName={styles.heading}
+              inputClassName={styles.input}
+              buttonClassName={styles.viewBtn}
+              buttonLabel="View Prices"
+              onDone={(c) => {
+                setFullName(c.name);
+                setMobile("+91 " + c.mobile);
+                setEmail(c.email);
+                // CommercialVehicle6 / SbiGcv checkout prefill from cvCustomer
+                localStorage.setItem("cvCustomer", JSON.stringify(c));
+                goToPrices();
+              }}
+            />
+          ) : loggedUser ? (
             <>
               <h3 className={styles.heading}>Welcome {loggedUser.name}</h3>
               <button className={styles.viewBtn} onClick={goToPrices}>

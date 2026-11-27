@@ -152,7 +152,23 @@ export default async function handler(
       if (!policy) {
         return res.status(404).json({ success: false, message: "Policy not found" });
       }
-      return res.status(200).json({ success: true, policy });
+      // Agent's current code / mobile / email, for any policy linked to an
+      // agent (portal sales, agent uploads, older portal sales without the
+      // soldByAgent snapshot).
+      const agentId = (policy as any).createdByAgentId || (policy as any).assignment?.pospAgent?.id;
+      let agentDetails = null;
+      if (agentId) {
+        const a: any = await Agent.findById(agentId).select("firstName lastName email phone agentCode").lean();
+        if (a) {
+          agentDetails = {
+            name: [a.firstName, a.lastName].filter(Boolean).join(" ").trim(),
+            code: a.agentCode || "",
+            mobile: a.phone || "",
+            email: a.email || "",
+          };
+        }
+      }
+      return res.status(200).json({ success: true, policy: { ...policy.toObject(), agentDetails } });
     } catch (err: any) {
       console.log("ADMIN POLICY GET ERROR", err);
       return res.status(errorStatus(err, 500)).json({ success: false, message: friendlyMessage(err) });

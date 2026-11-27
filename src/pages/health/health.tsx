@@ -11,6 +11,8 @@ import { FiSearch } from "react-icons/fi";
 import womanicon from "@/assets/pageImages/health/2.webp";
 import manicon from "@/assets/health/manicon.webp";
 import { useRouter } from "next/router";
+import AgentCustomerForm from "@/components/agentpage/AgentCustomerForm";
+import { isAgentSelling } from "@/lib/agentCustomer";
 
 const Health = () => {
   const router = useRouter();
@@ -70,7 +72,14 @@ const Health = () => {
     return member?.image || (gender === "F" ? womanicon : manicon);
   };
 
+  // Agent selling from the portal: agent enters the customer's details, no OTP.
+  const [agentSelling, setAgentSelling] = useState(false);
+
   useEffect(() => {
+    if (isAgentSelling()) {
+      setAgentSelling(true);
+      return; // ignore any customer login on this browser
+    }
     const saved = localStorage.getItem("user");
 
     if (saved && saved !== "undefined") {
@@ -889,9 +898,26 @@ const Health = () => {
                 time you visit us
               </p>
 
+              {agentSelling && (
+                <AgentCustomerForm
+                  inputClassName={styles.detailsInput}
+                  buttonClassName={styles.detailsContinueBtn}
+                  buttonLabel="View Plans"
+                  onDone={(c) => {
+                    setFullName(c.name);
+                    setMobile(c.mobile);
+                    setEmail(c.email);
+                    setMobileVerified(true);
+                    setEmailVerified(true);
+                    setStep(4);
+                  }}
+                />
+              )}
+
               {/* STEP 1 - NAME MOBILE */}
 
-              {!mobileOtpSent &&
+              {!agentSelling &&
+                !mobileOtpSent &&
                 !mobileVerified && (
                   <>
                     <input
@@ -1070,7 +1096,8 @@ const Health = () => {
 
               {/* FINAL */}
 
-              {mobileVerified &&
+              {!agentSelling &&
+                mobileVerified &&
                 emailVerified && (
                   <>
                     <div

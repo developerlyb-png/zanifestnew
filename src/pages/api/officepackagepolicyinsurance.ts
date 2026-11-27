@@ -5,6 +5,7 @@ import User from "@/models/User";
 import Agent from "@/models/Agent";
 import { verifyToken } from "@/utils/verifyToken";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentLeadFields } from "@/lib/agentAttribution";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -55,6 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const data = req.body;
 
+    const sellingAgent = await getSellingAgent(req);
     const created = await OfficePackagePolicy.create({
       companyName: data.companyName,
       mobile: data.mobile,
@@ -66,6 +68,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       assignedAgent: null,
       assignedTo: null,
       assignedAt: null,
+      // Enquiry raised by an agent from the agent portal -> straight into their Lead tab.
+      ...(sellingAgent ? agentLeadFields(sellingAgent) : {}),
     });
 
     return res.status(201).json({ success: true, data: created });

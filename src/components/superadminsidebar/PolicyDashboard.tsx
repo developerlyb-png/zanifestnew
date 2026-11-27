@@ -46,6 +46,12 @@ export interface Policy {
   createdAt?: string;
   createdBy?: string;
   createdByAgentId?: string;
+  // Agent details (added by /api/admin/policies for agent-linked policies)
+  agentCode?: string;
+  agentMobile?: string;
+  agentEmail?: string;
+  // Set when the agent sold it from the agent portal's Buy Insurance tab
+  soldByAgent?: { name?: string; code?: string; mobile?: string; email?: string; channel?: string; soldAt?: string };
   customer?: { fullName?: string; email?: string; mobile?: string; address?: string };
   // `data` is stripped out of the list endpoint's response for performance
   // (see /api/admin/policies GET) — present only on a document fetched
@@ -512,7 +518,8 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
 
   const exportCsv = () => {
     const visible = COLUMNS.filter((c) => visibleColumns[c.key]);
-    const headers = visible.map((c) => c.label);
+    // Agent contact columns, after the regular ones
+    const headers = [...visible.map((c) => c.label), "Agent Code", "Agent Mobile", "Agent Email", "Sold Via"];
     const rows = filteredPolicies.map((p) => {
       const cellFor: Record<ColumnKey, string | number> = {
         insuredName: p.customer?.fullName || "",
@@ -539,7 +546,13 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
         reconcile: p.reconcile || "",
         uploadPdf: p.policyDocuments && p.policyDocuments.length > 0 ? "Uploaded" : "Not uploaded",
       };
-      return visible.map((c) => cellFor[c.key]);
+      return [
+        ...visible.map((c) => cellFor[c.key]),
+        p.agentCode || p.soldByAgent?.code || "",
+        p.agentMobile || p.soldByAgent?.mobile || "",
+        p.agentEmail || p.soldByAgent?.email || "",
+        p.soldByAgent ? "Agent Portal" : p.createdByAgentId ? "Agent Upload" : "Admin",
+      ];
     });
     const csv = [headers, ...rows]
       .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
@@ -1027,7 +1040,32 @@ function PolicyDashboard({ canEditPolicy = false }: PolicyDashboardProps) {
                       {visibleColumns.productName && <td>{productLabel(p) || "--"}</td>}
                       {visibleColumns.transactionType && <td>{p.transactionType || "--"}</td>}
                       {visibleColumns.insurer && <td>{p.insurer || "--"}</td>}
-                      {visibleColumns.pospPartner && <td>{p.pospPartner || "--"}</td>}
+                      {visibleColumns.pospPartner && (
+                        <td>
+                          <div>{p.pospPartner || "--"}</div>
+                          {(p.agentCode || p.soldByAgent) && (
+                            <div style={{ fontSize: 11.5, color: "#64748b", marginTop: 2, lineHeight: 1.5 }}>
+                              <div style={{ whiteSpace: "nowrap" }}>
+                                {p.agentCode || p.soldByAgent?.code}
+                                {p.soldByAgent && (
+                                  <span
+                                    title="Sold from the agent portal"
+                                    style={{ marginLeft: 6, padding: "1px 7px", borderRadius: 999, background: "#e8f1fd", color: "#1d63c0", fontWeight: 700 }}
+                                  >
+                                    Agent Portal
+                                  </span>
+                                )}
+                              </div>
+                              {(p.agentMobile || p.soldByAgent?.mobile) && (
+                                <div style={{ whiteSpace: "nowrap" }}>📞 {p.agentMobile || p.soldByAgent?.mobile}</div>
+                              )}
+                              {(p.agentEmail || p.soldByAgent?.email) && (
+                                <div style={{ wordBreak: "break-all" }}>✉ {p.agentEmail || p.soldByAgent?.email}</div>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      )}
                       {visibleColumns.status && <td>{p.status || "--"}</td>}
                       {visibleColumns.startDate && <td>{formatDisplayDate(p.startDate)}</td>}
                       {visibleColumns.endDate && <td>{formatDisplayDate(p.endDate)}</td>}

@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentPolicyFields } from "@/lib/agentAttribution";
 
 // ================= TOKEN =================
 async function getZunoToken() {
@@ -185,6 +186,7 @@ export default async function handler(
     const startDate = new Date();
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + 1);
+    const sellingAgent = await getSellingAgent(req);
 
     const saved = await IssuedPolicy.create({
       policyNumber,
@@ -203,6 +205,8 @@ export default async function handler(
       startDate,
       endDate,
       zunoResponse: zunoData,
+      // Sold by an agent from the agent portal -> file it under the agent.
+      ...(sellingAgent ? agentPolicyFields(sellingAgent) : {}),
     });
 
     // Return the Zuno response shape the cart expects

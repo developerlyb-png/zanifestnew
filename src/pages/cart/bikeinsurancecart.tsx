@@ -6,6 +6,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
 import UserDetails from "@/components/ui/UserDetails";
+import { isAgentSelling, getPrefillUser } from "@/lib/agentCustomer";
 export default function bikeinsurancecart() {
   const [selectedYear, setSelectedYear] = useState("1");
 const [selectedPlan, setSelectedPlan] = useState<any>(null);
@@ -18,6 +19,7 @@ const [mobile, setMobile] =
 const [otp, setOtp] = useState("");
 const [mobileOtp,setMobileOtp] =
 useState("");
+const [agentSelling,setAgentSelling] = useState(false);
 const [isLoggedIn,setIsLoggedIn] =
 useState(false);
 const [userData,setUserData] =
@@ -48,6 +50,20 @@ if(storedPlan){
 setSelectedPlan(
 JSON.parse(storedPlan)
 );
+}
+// Agent selling from the portal: agent types the customer's mobile/email,
+// no OTP; prefill from the customer they entered earlier, if any.
+if(isAgentSelling()){
+setAgentSelling(true);
+const c = getPrefillUser();
+if(c){
+setFullName(c.name || "");
+setMobile(c.mobile || "");
+setEmail(c.email || "");
+}
+setMobileVerified(true);
+setEmailVerified(true);
+return;
 }
 // CHECK LOGIN USER
 const user =
@@ -289,6 +305,16 @@ setLoading(false);
 };
 const handleProposal = async () => {
 try{
+if(agentSelling){
+if(!/^[6-9]\d{9}$/.test(String(mobile).replace(/\D/g,"").slice(-10))){
+alert("Enter a valid 10-digit mobile number for the customer");
+return;
+}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())){
+alert("Enter a valid email address for the customer");
+return;
+}
+}
 if(
 !mobileVerified ||
 !emailVerified
@@ -617,10 +643,44 @@ Email : {email}
 )
 }
 {/* =========================
+    AGENT SELLING — customer contact, no OTP
+========================= */}
+{
+agentSelling && (
+<div className={styles.otpRow}>
+<div className={styles.mobileBox}>
+<label className={styles.label}>
+Customer mobile number
+</label>
+<input
+ className={styles.otpInput}
+ inputMode="numeric"
+ maxLength={10}
+ value={mobile}
+ onChange={(e)=>
+ setMobile(e.target.value.replace(/\D/g,"").slice(0,10))}
+/>
+</div>
+<div className={styles.mobileBox}>
+<label className={styles.label}>
+Customer email
+</label>
+<input
+ className={styles.otpInput}
+ type="email"
+ value={email}
+ onChange={(e)=>
+ setEmail(e.target.value)}
+/>
+</div>
+</div>
+)
+}
+{/* =========================
     GUEST OTP FLOW
 ========================= */}
 {
-!isLoggedIn && (
+!isLoggedIn && !agentSelling && (
 <>
 {/* MOBILE ROW */}
 <div className={styles.otpRow}>

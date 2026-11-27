@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { getPrefillUser } from "@/lib/agentCustomer";
 
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
@@ -142,10 +143,10 @@ const Proposal = () => {
   }, [router.isReady, router.query.proposal]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("user");
-    if (saved && saved !== "undefined") {
+    // agent's customer while an agent is selling, else the logged-in customer
+    const user = getPrefillUser();
+    if (user) {
       try {
-        const user = JSON.parse(saved);
         setProposer((prev) => ({
           ...prev,
           name: prev.name || user.name || "",
@@ -324,6 +325,9 @@ const Proposal = () => {
           quoteId,
           policyTenure: quoteData?.data?.policy_tenure,
           orderId: linkData.data.orderId,
+          // /health/payment-return opens this in a new tab and polls the
+          // order until it's paid (ZunoPay doesn't redirect back to us).
+          paymentLink: linkData.data.paymentLink,
           transactionId,
           amount: premiumAmount,
           customer: {
@@ -335,7 +339,7 @@ const Proposal = () => {
         }),
       );
 
-      window.location.href = linkData.data.paymentLink;
+      window.location.href = "/health/payment-return";
     } catch (error: any) {
       setLoading(false);
       console.log("PROPOSAL SUBMIT ERROR", error);

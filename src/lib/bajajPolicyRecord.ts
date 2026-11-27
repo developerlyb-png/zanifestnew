@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/dbConnect";
 import BajajCheckout from "@/models/BajajCheckout";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import { getSellingAgent, agentPolicyFields, agentSessionById } from "@/lib/agentAttribution";
 
 // Server-side bookkeeping for Bajaj purchases: the checkout is saved when the
 // proposal is priced/issued, and the IssuedPolicy is created when Bajaj's
@@ -43,6 +44,9 @@ export async function saveBajajCheckout(args: {
   if (!transactionId) return;
   const w = premiumBody?.weomotpolicyin || {};
   const user = loggedInUser(req);
+  // Captured now (the agent's browser is on this request); the payment
+  // return later may not carry the agent's cookies.
+  const agent = await getSellingAgent(req);
   try {
     await dbConnect();
     await BajajCheckout.updateOne(
@@ -57,6 +61,7 @@ export async function saveBajajCheckout(args: {
           termEnd: fromBajajDate(w.termenddate),
           isNew: Number(w.poltype) === 1,
           ...(user ? { userId: user.id, userEmail: user.email } : {}),
+          ...(agent ? { agentId: agent.id, agentName: agent.name } : {}),
           customer: {
             fullName: `${proposer?.firstName || ""} ${proposer?.lastName || ""}`.trim(),
             email: proposer?.email || "",
@@ -117,6 +122,8 @@ export async function recordBajajPolicy(transactionId: string, policyNumber: str
     status: "Active",
     startDate: c.termStart || now,
     endDate: c.termEnd || fallbackEnd,
+    // Sold by an agent from the agent portal -> file it under the agent.
+    ...(c.agentId ? agentPolicyFields(await agentSessionById(String(c.agentId), c.agentName || "Agent")) : {}),
   });
   await BajajCheckout.updateOne({ transactionId }, { $set: { status: "paid", policyNumber } });
   return { created: true };

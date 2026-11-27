@@ -12,6 +12,7 @@ import { BAJAJ_PREV_INSURERS, bajajPrevInsurerCode } from "@/lib/bajajPrevInsure
 import BajajKycDialog from "@/components/bajaj/BajajKycDialog";
 import { DIGIT_PREV_INSURERS, digitPrevInsurerCode } from "@/lib/digitPrevInsurers";
 import { DIGIT_STATES } from "@/lib/digitStateCodes";
+import { getPrefillUser } from "@/lib/agentCustomer";
 
 // A renewal of Shriram's own policy is a separate flow (RENEWAL OF SGI)
 const SHRIRAM_PREV_INSURER_OPTIONS = (shriramPreviousInsurers as string[]).filter(
@@ -248,9 +249,9 @@ const carinsurancecart = () => {
         setCity(ckycRecord.correspondenceAddress?.city || "");
         setPincode(ckycRecord.correspondenceAddress?.pincode || "");
       } else {
-        const u = localStorage.getItem("user");
-        if (u && u !== "undefined") {
-          const user = JSON.parse(u);
+        // agent's customer while an agent is selling, else the logged-in customer
+        const user = getPrefillUser();
+        if (user) {
           const parts = String(user.name || "").split(" ");
           setFirstName(parts[0] || "");
           setLastName(parts.slice(1).join(" ") || "");

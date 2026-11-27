@@ -4,8 +4,11 @@ import { MdEmail } from "react-icons/md";
 import { FiFacebook, FiLinkedin } from "react-icons/fi";
 
 import styles from "@/styles/components/ui/UserDetails.module.css";
+import { useInAgentShell } from "@/context/AgentShellContext";
 
 function UserDetails() {
+  // Hidden inside the agent portal shell (agent selling from Buy Insurance).
+  if (useInAgentShell()) return null;
   return (
     <div className={styles.cont}>
       

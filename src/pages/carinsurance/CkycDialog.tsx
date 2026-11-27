@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import styles from "@/styles/pages/ckycDialog.module.css";
 import { FaTimes, FaCheckCircle, FaCloudUploadAlt } from "react-icons/fa";
 import sbiStateTable from "@/lib/sbiMasterData/state.json";
+import { getPrefillUser } from "@/lib/agentCustomer";
 
 // Manual OVD's address only has city/pincode, no state — but SBI's
 // City/District master-data matching is scoped by state, and the customer's
@@ -169,9 +170,9 @@ const CkycDialog = ({ open, onClose, onVerified }: CkycDialogProps) => {
       // may differ. Once CKYC (either path) succeeds, these become the
       // identity of record for SBI's checkout — no need to re-collect them.
       try {
-        const saved = localStorage.getItem("user");
-        if (saved && saved !== "undefined") {
-          const user = JSON.parse(saved);
+        // agent's customer while an agent is selling, else the logged-in customer
+        const user = getPrefillUser();
+        if (user) {
           if (user?.mobile) {
             setMobileNumber(String(user.mobile));
             setMMobile(String(user.mobile));

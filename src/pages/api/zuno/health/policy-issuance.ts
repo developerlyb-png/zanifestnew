@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import dbConnect from "@/lib/dbConnect";
 import IssuedPolicy from "@/models/IssuedPolicy";
+import { getSellingAgent, agentPolicyFields } from "@/lib/agentAttribution";
 
 async function getZunoToken() {
   const basic = Buffer.from(
@@ -104,7 +105,10 @@ export default async function handler(
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + Number(b.policyTenure || 1));
 
+    const sellingAgent = await getSellingAgent(req);
     const saved = await IssuedPolicy.create({
+      // Sold by an agent from the agent portal -> file it under the agent.
+      ...(sellingAgent ? agentPolicyFields(sellingAgent) : {}),
       policyNumber,
       proposalNumber,
       quoteNumber: b.quoteId,

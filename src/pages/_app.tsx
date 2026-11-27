@@ -80,6 +80,7 @@ import "antd/dist/reset.css";
 import type { AppProps } from "next/app";
 import GlobalAlert from "@/components/GlobalAlert";
 import "@/lib/installFriendlyToasts";
+import AgentPortalShell from "@/components/agentpage/AgentPortalShell";
 
 function ScrollToTop() {
   const router = useRouter();
@@ -159,7 +160,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           <ScrollToTop />
           {loading && <Loader />} {/* ✅ show loader globally */}
           <GlobalAlert/> {/* ✅ Global Alert Component */}
-          <Component {...pageProps} />
+          {/* agent selling from the portal: keep the agent header + sidebar around the site */}
+          <AgentPortalShell>
+            <Component {...pageProps} />
+          </AgentPortalShell>
           <Toaster
             position="top-center"
             reverseOrder={false}

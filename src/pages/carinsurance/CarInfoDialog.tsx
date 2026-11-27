@@ -7,6 +7,8 @@ import {
 } from "@/lib/zuno4w";
 
 import React, { useState, useEffect } from "react";
+import AgentCustomerForm from "@/components/agentpage/AgentCustomerForm";
+import { isAgentSelling } from "@/lib/agentCustomer";
 
 import styles from "@/styles/pages/CommercialVehicle/VehicleInfoDialog.module.css";
 
@@ -154,7 +156,15 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
      LOAD LOGGED USER
   ========================================================= */
 
+  // Agent selling from the portal: the agent enters the customer's details
+  // (AgentCustomerForm) instead of a customer OTP login.
+  const [agentSelling, setAgentSelling] = useState(false);
+
   useEffect(() => {
+    if (isAgentSelling()) {
+      setAgentSelling(true);
+      return; // ignore any customer login on this browser
+    }
     const saved = localStorage.getItem("user");
 
     if (saved && saved !== "undefined") {
@@ -689,7 +699,39 @@ const VehicleInfoDialog: React.FC<VehicleInfoDialogProps> = ({
 
         <div className={styles.right}>
 
-          {!loggedUser && (
+          {agentSelling && !emailVerified && (
+            <AgentCustomerForm
+              headingClassName={styles.heading}
+              inputClassName={styles.input}
+              buttonClassName={styles.viewBtn}
+              buttonLabel="Continue"
+              onDone={(c) => {
+                setFullName(c.name);
+                setMobile("+91 " + c.mobile);
+                setEmail(c.email);
+                setMobileVerified(true);
+                setEmailVerified(true);
+              }}
+            />
+          )}
+
+          {agentSelling && emailVerified && (
+            <p style={{ margin: "0 0 12px", fontSize: 14, color: "#334155" }}>
+              Customer: <b>{fullName}</b> · {mobile} · {email}{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileVerified(false);
+                  setEmailVerified(false);
+                }}
+                style={{ border: 0, background: "none", color: "#1876bd", fontWeight: 700, cursor: "pointer", padding: 0 }}
+              >
+                Change
+              </button>
+            </p>
+          )}
+
+          {!loggedUser && !agentSelling && (
             <>
 
               <h3 className={styles.heading}>

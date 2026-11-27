@@ -5,6 +5,7 @@ import User from "@/models/User";
 import Agent from "@/models/Agent";
 import { verifyToken } from "@/utils/verifyToken";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentLeadFields } from "@/lib/agentAttribution";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -48,12 +49,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // ⭐ CREATE NEW RECORD
   if (req.method === "POST") {
     try {
+      const sellingAgent = await getSellingAgent(req);
       const newRecord = await HomeInsurance.create({
         ...req.body,
         email,
         assignedTo: null,
         assignedAgent: null,
+        // Enquiry raised by an agent from the agent portal -> straight into their Lead tab.
         assignedAt: null,
+        ...(sellingAgent ? agentLeadFields(sellingAgent) : {}),
       });
 
       return res.status(201).json({ success: true, data: newRecord });

@@ -16,6 +16,7 @@ import LeadSection from "@/components/agentpage/leadsection";
 import ListOfPolicy from "@/pages/listofpolicy";
 import DownloadCertificate from "@/components/agentpage/download";
 import MyCommission from "@/components/agentpage/MyCommission";
+import AgentBuyInsurance from "@/components/agentpage/AgentBuyInsurance";
 
 
 const AgentDashboard = () => {
@@ -23,10 +24,8 @@ const AgentDashboard = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
-
   const [agentName, setAgentName] = useState("");
   const [agentSales, setAgentSales] = useState(0);
-
   const [loading, setLoading] = useState(false);
   const [agent, setAgent] = useState<any>(null);
   const [agentProfile, setAgentProfile] = useState<{
@@ -42,6 +41,15 @@ const AgentDashboard = () => {
   useEffect(() => {
     const storedName = localStorage.getItem("agentName");
     if (storedName) setAgentName(storedName);
+  }, []);
+
+  /* ---------------------------------------
+     OPEN A SECTION FROM ?section= (sidebar links on website pages shown
+     inside the agent shell while selling come back here)
+  --------------------------------------- */
+  useEffect(() => {
+    const section = new URLSearchParams(window.location.search).get("section");
+    if (section) setActiveSection(section);
   }, []);
 
   /* ---------------------------------------
@@ -137,6 +145,7 @@ const AgentDashboard = () => {
               />
             )}
 
+            {activeSection === "buyinsurance" && <AgentBuyInsurance agentName={agentName} />}
             {activeSection === "leadsection" && <LeadSection />}
             {activeSection === "listofpolicy" && <ListOfPolicy />}
             {activeSection === "resetpassword" && <ResetPassword />}

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 import Marine from "@/models/Marinemodule";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentLeadFields } from "@/lib/agentAttribution";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
@@ -16,7 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case "POST": {
-        const record = await Marine.create(req.body);
+        const sellingAgent = await getSellingAgent(req);
+        // Enquiry raised by an agent from the agent portal -> straight into their Lead tab.
+        const record = await Marine.create({ ...req.body, ...(sellingAgent ? agentLeadFields(sellingAgent) : {}) });
         return res.status(201).json({ success: true, data: record });
       }
 

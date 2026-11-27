@@ -5,6 +5,7 @@ import User from "@/models/User";
 import Agent from "@/models/Agent";
 import { verifyToken } from "@/utils/verifyToken";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentLeadFields } from "@/lib/agentAttribution";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
@@ -54,12 +55,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // ⭐ CREATE SHOP INSURANCE
     if (req.method === "POST") {
+      const sellingAgent = await getSellingAgent(req);
       const newRecord = await Shop.create({
         ...req.body,
         email,
         assignedAgent: null,
         assignedTo: null,
         assignedAt: null,
+        // Enquiry raised by an agent from the agent portal -> straight into their Lead tab.
+        ...(sellingAgent ? agentLeadFields(sellingAgent) : {}),
       });
 
       return res.status(201).json({ success: true, data: newRecord });

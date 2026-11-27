@@ -9,6 +9,7 @@ import {
   FiLock,
   FiChevronRight,
   FiPercent,
+  FiShoppingBag,
 } from "react-icons/fi";
 import ProfileMenu from "./ProfileMenu";
 
@@ -68,6 +69,17 @@ const AgentSidebar: React.FC<AgentSidebarProps> = ({
             <div className={styles.iconLabel}>
               <FiHome className={styles.icon} />
               <span>Dashboard</span>
+            </div>
+          </li>
+          <li
+            className={`${styles.menuItem} ${
+              activeSection === "buyinsurance" ? styles.active : ""
+            }`}
+            onClick={() => handleClick("buyinsurance")}
+          >
+            <div className={styles.iconLabel}>
+              <FiShoppingBag className={styles.icon} />
+              <span>Buy Insurance</span>
             </div>
           </li>
         </ul>

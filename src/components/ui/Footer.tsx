@@ -4,6 +4,7 @@ import React from "react";
 
 
 import styles from "@/styles/components/ui/Footer.module.css";
+import { useInAgentShell } from "@/context/AgentShellContext";
 import Image from "next/image";
 import Link from "next/link";
 import { FaLinkedin, FaInstagram, FaYoutube } from "react-icons/fa";
@@ -52,6 +53,8 @@ const LIST = [
 ];
 
 function Footer() {
+  // Hidden inside the agent portal shell (agent selling from Buy Insurance).
+  if (useInAgentShell()) return null;
   return (
     <div className={styles.cont}>
       <div className={styles.top}>

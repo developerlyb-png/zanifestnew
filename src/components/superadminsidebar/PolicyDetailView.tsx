@@ -249,6 +249,38 @@ const PolicyDetailView: React.FC<PolicyDetailViewProps> = ({
           </div>
         </Section>
 
+        {(policy.soldByAgent?.name || policy.agentDetails) && (() => {
+          // Snapshot at sale time (portal sales) first, else the agent's
+          // current record (agent uploads / older portal sales).
+          const sold = policy.soldByAgent || {};
+          const live = policy.agentDetails || {};
+          const pick = (k: "name" | "code" | "mobile" | "email") => sold[k] || live[k];
+          return (
+            <Section
+              icon={<FiUser />}
+              title="Agent Details"
+              subtitle={
+                policy.soldByAgent?.name
+                  ? `Sold by the agent from the Agent Portal${policy.soldByAgent.soldAt ? " on " + new Date(policy.soldByAgent.soldAt).toLocaleString("en-IN") : ""}`
+                  : "Agent linked to this policy"
+              }
+              defaultOpen
+            >
+              <div className={styles.fieldGrid}>
+                <Field icon={<FiUser />} label="Agent Name" value={dashIfEmpty(pick("name"))} />
+                <Field icon={<FiUser />} label="Agent Code" value={dashIfEmpty(pick("code"))} />
+                <Field icon={<FiUser />} label="Agent Mobile" value={dashIfEmpty(pick("mobile"))} />
+                <Field icon={<FiUser />} label="Agent Email" value={dashIfEmpty(pick("email"))} />
+                <Field
+                  icon={<FiUser />}
+                  label="Sold Via"
+                  value={policy.soldByAgent?.name ? "Agent Portal (Buy Insurance)" : "Agent Upload"}
+                />
+              </div>
+            </Section>
+          );
+        })()}
+
         <Section icon={<FiUser />} title="Assignment" subtitle="Policy assignment and sales">
           <div className={styles.fieldGrid}>
             <Field icon={<FiUser />} label="Branch Name" value={dashIfEmpty(policy.assignment?.branchName)} />

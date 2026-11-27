@@ -11,13 +11,14 @@ import styles from "@/styles/components/home/CarInsuranceSection.module.css";
 import "aos/dist/aos.css";
 import AOS from "aos";
 
+export type InsuranceItem = Item;
 type Item = {
   name: string;
   image: any;
   link: string;
 };
 
-const INSURANCELIST: Item[] = [
+export const INSURANCELIST: Item[] = [
   {
     name: "Family Health Insurance",
     image: require("@/assets/home/car/family.png"),

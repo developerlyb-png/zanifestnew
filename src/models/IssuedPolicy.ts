@@ -305,6 +305,18 @@ const IssuedPolicySchema =
       ref: "Agent",
     },
 
+    // Set when an agent sold this policy from the agent portal's Buy
+    // Insurance tab (src/lib/agentAttribution.ts) — snapshot at sale time.
+    soldByAgent: {
+      id: { type: mongoose.Schema.Types.ObjectId, ref: "Agent" },
+      name: String,
+      code: String,
+      mobile: String,
+      email: String,
+      channel: String,
+      soldAt: Date,
+    },
+
     updatedBy: String,
 
     updatedAt: {

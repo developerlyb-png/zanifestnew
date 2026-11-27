@@ -5,6 +5,7 @@ import Agent from "@/models/Agent";
 import User from "@/models/User";
 import { verifyToken } from "@/utils/verifyToken";
 import { friendlyMessage, errorStatus } from "@/utils/friendlyError";
+import { getSellingAgent, agentLeadFields } from "@/lib/agentAttribution";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -66,12 +67,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // -------------------- CREATE TRAVEL INSURANCE --------------------
   if (req.method === "POST") {
     try {
+      const sellingAgent = await getSellingAgent(req);
       const newRecord = new TravelInsurance({
         ...req.body,
         email: emailFromToken ? emailFromToken : req.body.email,
         assignedAgent: null,
         assignedTo: null,
         assignedAt: null,
+        // Enquiry raised by an agent from the agent portal -> straight into their Lead tab.
+        ...(sellingAgent ? agentLeadFields(sellingAgent) : {}),
       });
 
       const saved = await newRecord.save();
